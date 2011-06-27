@@ -13,7 +13,7 @@ public final class StatisticMessage extends Message {
     public int getId() {
         return id;
     }
-    
+
     public byte getAmount() {
         return amount;
     }

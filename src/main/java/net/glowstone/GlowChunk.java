@@ -91,7 +91,7 @@ public final class GlowChunk implements Chunk {
      * The dimensions of a chunk.
      */
     public static final int WIDTH = 16, HEIGHT = 16, DEPTH = 128;
-    
+
     /**
      * The world of this chunk.
      */
@@ -106,7 +106,7 @@ public final class GlowChunk implements Chunk {
      * The data in this chunk representing all of the blocks and their state.
      */
     private final byte[] types, metaData, skyLight, blockLight;
-    
+
     /**
      * Whether the chunk has been populated by special features.
      * Used in map generation.
@@ -126,12 +126,12 @@ public final class GlowChunk implements Chunk {
         this.metaData = new byte[WIDTH * HEIGHT * DEPTH];
         this.skyLight = new byte[WIDTH * HEIGHT * DEPTH];
         this.blockLight = new byte[WIDTH * HEIGHT * DEPTH];
-        
+
         for (int i = 0; i < WIDTH * HEIGHT * DEPTH; ++i) {
             skyLight[i] = 15;
         }
     }
-    
+
     // ======== Basic stuff ========
 
     /**
@@ -158,7 +158,7 @@ public final class GlowChunk implements Chunk {
     public int getZ() {
         return z;
     }
-    
+
     /**
      * Gets a block from this chunk
      *
@@ -178,7 +178,7 @@ public final class GlowChunk implements Chunk {
     public BlockState[] getTileEntities() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     /**
      * Capture thread-safe read-only snapshot of chunk data
      * @return ChunkSnapshot
@@ -197,7 +197,7 @@ public final class GlowChunk implements Chunk {
     public ChunkSnapshot getChunkSnapshot(boolean includeMaxblocky, boolean includeBiome, boolean includeBiomeTempRain) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     /**
      * Gets whether this chunk has been populated by special features.
      * @return Population status.
@@ -205,7 +205,7 @@ public final class GlowChunk implements Chunk {
     public boolean getPopulated() {
         return populated;
     }
-    
+
     /**
      * Sets the population status of this chunk.
      * @param populated Population status.
@@ -213,7 +213,7 @@ public final class GlowChunk implements Chunk {
     public void setPopulated(boolean populated) {
         this.populated = populated;
     }
-    
+
     // ======== Data access ========
 
     /**
@@ -326,7 +326,7 @@ public final class GlowChunk implements Chunk {
 
         this.blockLight[coordToIndex(x, z, y)] = (byte) blockLight;
     }
-    
+
     // ======== Helper functions ========
 
     /**

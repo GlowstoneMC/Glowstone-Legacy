@@ -9,7 +9,7 @@ import net.glowstone.GlowServer;
  * @author Tad
  */
 public class OpCommand extends GlowCommand {
-    
+
     public OpCommand(GlowServer server) {
         super(server, "op", "Gives a player OP status", "<player>");
     }
@@ -25,5 +25,5 @@ public class OpCommand extends GlowCommand {
             return tellOps(sender, "Opping " + args[0]);
         }
     }
-    
+
 }

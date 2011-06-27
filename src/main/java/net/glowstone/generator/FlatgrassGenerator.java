@@ -12,7 +12,7 @@ public class FlatgrassGenerator extends GlowChunkGenerator {
 
     public byte[] generate(World world, Random random, int chunkX, int chunkZ) {
         clear();
-        
+
         for (int x = 0; x < GlowChunk.WIDTH; x++) {
             for (int z = 0; z < GlowChunk.HEIGHT; z++) {
                 for (int y = 0; y < GlowChunk.DEPTH; y++) {
@@ -28,7 +28,7 @@ public class FlatgrassGenerator extends GlowChunkGenerator {
                 }
             }
         }
-        
+
         return data;
     }
 

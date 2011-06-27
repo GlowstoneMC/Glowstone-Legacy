@@ -9,7 +9,7 @@ import net.glowstone.GlowServer;
  * @author Tad
  */
 public class DeopCommand extends GlowCommand {
-    
+
     public DeopCommand(GlowServer server) {
         super(server, "deop", "Removes a player's OP status", "<player>");
     }
@@ -25,5 +25,5 @@ public class DeopCommand extends GlowCommand {
             return tellOps(sender, "De-opping " + args[0]);
         }
     }
-    
+
 }

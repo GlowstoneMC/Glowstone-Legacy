@@ -10,27 +10,27 @@ import net.glowstone.GlowServer;
  * @author Graham Edgecombe
  */
 public class GlowTask implements BukkitTask {
-    
+
     /**
      * The next task ID pending.
      */
     private static Integer nextTaskId = 0;
-    
+
     /**
      * A lock to use when getting the next task ID.
      */
     private final static Object nextTaskIdLock = new Object();
-    
+
     /**
      * The ID of this task.
      */
     private final int taskId;
-    
+
     /**
      * The Runnable this task is representing.
      */
     private final Runnable task;
-    
+
     /**
      * The Plugin that owns this task
      */
@@ -102,7 +102,7 @@ public class GlowTask implements BukkitTask {
     boolean pulse() {
         if (!running)
             return false;
-        
+
         ++counter;
         if (counter >= delay) {
             if (period == -1) {
@@ -112,7 +112,7 @@ public class GlowTask implements BukkitTask {
                 task.run();
             }
         }
-        
+
         return running;
     }
 

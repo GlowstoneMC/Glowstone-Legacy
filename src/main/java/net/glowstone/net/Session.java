@@ -132,7 +132,7 @@ public final class Session {
 
         this.player = player;
         ((GlowWorld) this.server.getWorlds().get(0)).getRawPlayers().add(player);
-        
+
         GlowServer.logger.log(Level.INFO, "{0} joined the game", player.getName());
 
         String message = EventFactory.onPlayerJoin(player).getJoinMessage();
@@ -175,7 +175,7 @@ public final class Session {
     public void disconnect(String reason) {
         disconnect(reason, false);
     }
-    
+
     /**
      * Disconnects the session with the specified reason. This causes a
      * {@link KickMessage} to be sent. When it has been delivered, the channel
@@ -198,7 +198,7 @@ public final class Session {
                 server.broadcastMessage(event.getLeaveMessage());
             }
         }
-    
+
         channel.write(new KickMessage(reason)).addListener(ChannelFutureListener.CLOSE);
     }
 
@@ -209,7 +209,7 @@ public final class Session {
     public GlowServer getServer() {
         return server;
     }
-    
+
     /**
      * Returns the address of this session.
      * @return The remote address.
@@ -242,7 +242,7 @@ public final class Session {
      * one.
      */
     void dispose() {
-        if (player != null) {            
+        if (player != null) {
             player.remove();
             player = null; // in case we are disposed twice
         }

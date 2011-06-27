@@ -47,7 +47,7 @@ import net.glowstone.msg.TimeMessage;
  * @author Graham Edgecombe
  */
 public final class GlowWorld implements World {
-    
+
     /**
      * The name of this world.
      */
@@ -62,17 +62,17 @@ public final class GlowWorld implements World {
      * The entity manager.
      */
     private final EntityManager entities = new EntityManager();
-    
+
     /**
      * This world's Random instance.
      */
     private final Random random = new Random();
-    
+
     /**
      * A map between locations and cached Block objects.
      */
     private final HashMap<Location, GlowBlock> blockCache = new HashMap<Location, GlowBlock>();
-    
+
     /**
      * The world populators for this world.
      */
@@ -82,64 +82,64 @@ public final class GlowWorld implements World {
      * The spawn position.
      */
     private Location spawnLocation;
-    
+
     /**
      * The environment.
      */
     private final Environment environment;
-    
+
     /**
      * The world seed.
      */
     private final long seed;
-    
+
     /**
      * Whether PvP is allowed in this world.
      */
     private boolean pvpAllowed = true;
-    
+
     /**
      * Whether animals can spawn in this world.
      */
     private boolean spawnAnimals = true;
-    
+
     /**
      * Whether monsters can spawn in this world.
      */
     private boolean spawnMonsters = true;
-    
+
     /**
      * Whether it is currently raining/snowing on this world.
      */
     private boolean currentlyRaining = false;
-    
+
     /**
      * How many ticks until the rain/snow status is expected to change.
      */
     private int rainingTicks = 0;
-    
+
     /**
      * Whether it is currently thundering on this world.
      */
     private boolean currentlyThundering = false;
-    
+
     /**
      * How many ticks until the thundering status is expected to change.
      */
     private int thunderingTicks = 0;
-    
+
     /**
      * The current world time.
      */
     private long time = 0;
-    
+
     /**
      * The time until the next full-save.
      */
     private int saveTimer = 0;
 
     /**
-     * Creates a new world with the specified chunk I/O service, environment, 
+     * Creates a new world with the specified chunk I/O service, environment,
      * and world generator.
      * @param name The name of the world.
      * @param service The chunk I/O service.
@@ -151,22 +151,22 @@ public final class GlowWorld implements World {
         this.environment = environment;
         this.seed = seed;
         chunks = new ChunkManager(this, service, generator);
-        
+
         populators = generator.getDefaultPopulators(this);
         spawnLocation = generator.getFixedSpawnLocation(this, random);
-        
+
         int centerX = (spawnLocation == null) ? 0 : spawnLocation.getBlockX() >> 4;
         int centerZ = (spawnLocation == null) ? 0 : spawnLocation.getBlockZ() >> 4;
-        
+
         GlowServer.logger.log(Level.INFO, "Preparing spawn for {0}", name);
         long loadTime = new Date().getTime();
-        
+
         int radius = 4 * GlowChunk.VISIBLE_RADIUS / 3;
-        
+
         for (int x = centerX - radius; x <= centerX + radius; ++x) {
             for (int z = centerZ - radius; z <= centerZ + radius; ++z) {
                 chunks.getChunk(x, z);
-            
+
                 if (new Date().getTime() >= loadTime + 1000) {
                     int progress = 100 * (x - centerX + radius) / (2 * radius);
                     GlowServer.logger.log(Level.INFO, "Preparing spawn for {0}: {1}%", new Object[]{name, progress});
@@ -174,10 +174,10 @@ public final class GlowWorld implements World {
             }
         }
         GlowServer.logger.log(Level.INFO, "Preparing spawn for {0}: done", name);
-        
+
         if (spawnLocation == null) {
             spawnLocation = new Location(this, 0, 128, 0);
-            
+
             if (!generator.canSpawn(this, spawnLocation.getBlockX(), spawnLocation.getBlockZ())) {
                 // 10 tries only to prevent a return false; bomb
                 for (int tries = 0; tries < 10 && !generator.canSpawn(this, spawnLocation.getBlockX(), spawnLocation.getBlockZ()); ++tries) {
@@ -185,10 +185,10 @@ public final class GlowWorld implements World {
                     spawnLocation.setZ(spawnLocation.getZ() + random.nextDouble() * 128 - 64);
                 }
             }
-            
+
             spawnLocation.setY(1 + getHighestBlockYAt(spawnLocation.getBlockX(), spawnLocation.getBlockZ()));
         }
-        
+
         setStorm(false);
         setThundering(false);
     }
@@ -201,13 +201,13 @@ public final class GlowWorld implements World {
      */
     public void pulse() {
         ArrayList<GlowEntity> temp = new ArrayList<GlowEntity>(entities.getAll());
-        
+
         for (GlowEntity entity : temp)
             entity.pulse();
 
         for (GlowEntity entity : temp)
             entity.reset();
-        
+
         // We currently tick at 1/4 the speed of regular MC
         // Modulus by 12000 to force permanent day.
         time = (time + 1) % 12000;
@@ -217,29 +217,29 @@ public final class GlowWorld implements World {
                 player.getSession().send(new TimeMessage(player.getPlayerTime()));
             }
         }
-        
+
         if (--rainingTicks <= 0) {
             setStorm(!currentlyRaining);
         }
-        
+
         if (--thunderingTicks <= 0) {
             setThundering(!currentlyThundering);
         }
-        
+
         if (currentlyRaining && currentlyThundering) {
             if (random.nextDouble() < .01) {
                 GlowChunk[] chunkList = chunks.getLoadedChunks();
                 GlowChunk chunk = chunkList[random.nextInt(chunkList.length)];
-                
+
                 int x = (chunk.getX() << 4) + (int)(random.nextDouble() * 16);
                 int z = (chunk.getZ() << 4) + (int)(random.nextDouble() * 16);
                 int y = getHighestBlockYAt(x, z);
-                
+
                 // TODO: lightning.
                 // strikeLightning(new Location(this, x, z, y));
             }
         }
-        
+
         if (--saveTimer <= 0) {
             saveTimer = 60 * 20;
             save();
@@ -259,7 +259,7 @@ public final class GlowWorld implements World {
     }
 
     // GlowEntity lists
-    
+
     public List<Player> getPlayers() {
         Collection<GlowPlayer> players = entities.getAll(GlowPlayer.class);
         ArrayList<Player> result = new ArrayList<Player>();
@@ -344,7 +344,7 @@ public final class GlowWorld implements World {
             chunks.forceSave(chunk.getX(), chunk.getZ());
         }
     }
-    
+
     // map generation
 
     public ChunkGenerator getGenerator() {
@@ -479,10 +479,10 @@ public final class GlowWorld implements World {
         if (!isChunkLoaded(x, z)) {
             return false;
         }
-        
+
         GlowChunk.Key key = new GlowChunk.Key(x, z);
         boolean result = false;
-        
+
         for (Player p : getPlayers()) {
             GlowPlayer player = (GlowPlayer) p;
             if (player.canSee(key)) {
@@ -492,7 +492,7 @@ public final class GlowWorld implements World {
                 result = true;
             }
         }
-        
+
         return result;
     }
 
@@ -519,18 +519,18 @@ public final class GlowWorld implements World {
 
     public Arrow spawnArrow(Location location, Vector velocity, float speed, float spread) {
         Arrow arrow = spawn(location, Arrow.class);
-        
+
         // Transformative magic
         Vector randVec = new Vector(random.nextGaussian(), random.nextGaussian(), random.nextGaussian());
         randVec.multiply(0.007499999832361937D * (double) spread);
-        
+
         velocity.normalize();
         velocity.add(randVec);
         velocity.multiply(speed);
-        
+
         // yaw = Math.atan2(x, z) * 180.0D / 3.1415927410125732D;
         // pitch = Math.atan2(y, Math.sqrt(x * x + z * z)) * 180.0D / 3.1415927410125732D
-        
+
         arrow.setVelocity(velocity);
         return arrow;
     }
@@ -624,14 +624,14 @@ public final class GlowWorld implements World {
 
     public void setStorm(boolean hasStorm) {
         currentlyRaining = hasStorm;
-        
+
         // Numbers borrowed from CraftBukkit.
         if (currentlyRaining) {
             setWeatherDuration(random.nextInt(12000) + 12000);
         } else {
             setWeatherDuration(random.nextInt(168000) + 12000);
         }
-        
+
         for (GlowPlayer player : getRawPlayers()) {
             player.getSession().send(new StateChangeMessage((byte)(currentlyRaining ? 1 : 2)));
         }
@@ -651,7 +651,7 @@ public final class GlowWorld implements World {
 
     public void setThundering(boolean thundering) {
         currentlyThundering = thundering;
-        
+
         // Numbers borrowed from CraftBukkit.
         if (currentlyThundering) {
             setThunderDuration(random.nextInt(12000) + 3600);
@@ -667,7 +667,7 @@ public final class GlowWorld implements World {
     public void setThunderDuration(int duration) {
         thunderingTicks = duration;
     }
-    
+
     // explosions
 
     public boolean createExplosion(Location loc, float power, boolean setFire) {
@@ -685,7 +685,7 @@ public final class GlowWorld implements World {
     public boolean createExplosion(double x, double y, double z, float power) {
         return createExplosion(new Location(this, x, y, z), power, false);
     }
-    
+
     // effects
 
     public void playEffect(Location location, Effect effect, int data) {
@@ -699,7 +699,7 @@ public final class GlowWorld implements World {
             }
         }
     }
-    
+
     // misc
 
     public ChunkSnapshot getEmptyChunkSnapshot(int x, int z, boolean includeBiome, boolean includeBiomeTempRain) {

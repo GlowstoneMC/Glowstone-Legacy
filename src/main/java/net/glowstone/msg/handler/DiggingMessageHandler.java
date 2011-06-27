@@ -16,7 +16,7 @@ import net.glowstone.GlowWorld;
 public final class DiggingMessageHandler extends MessageHandler<DiggingMessage> {
 
     @Override
-    public void handle(Session session, GlowPlayer player, DiggingMessage message) {        
+    public void handle(Session session, GlowPlayer player, DiggingMessage message) {
         if (player == null)
             return;
 
@@ -26,7 +26,7 @@ public final class DiggingMessageHandler extends MessageHandler<DiggingMessage> 
             int x = message.getX();
             int y = message.getY();
             int z = message.getZ();
-            
+
             Block block = world.getBlockAt(x, y, z);
             if (block.getType() != Material.AIR) {
                 player.getInventory().addItem(new ItemStack(block.getType(), 1));

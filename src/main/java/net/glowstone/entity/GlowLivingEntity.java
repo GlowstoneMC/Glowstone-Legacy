@@ -26,7 +26,7 @@ import net.glowstone.GlowWorld;
  * @author Graham Edgecombe.
  */
 public abstract class GlowLivingEntity extends GlowEntity implements LivingEntity {
-    
+
     /**
      * The entity's health.
      */

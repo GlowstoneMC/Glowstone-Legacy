@@ -7,12 +7,12 @@ import org.bukkit.inventory.*;
  * @author Tad
  */
 public class GlowPlayerInventory extends GlowInventory implements PlayerInventory {
-    
+
     public static int HELMET_SLOT = 36;
     public static int CHESTPLATE_SLOT = 37;
     public static int LEGGINGS_SLOT = 38;
     public static int BOOTS_SLOT = 39;
-    
+
     private int heldSlot = 0;
 
     public GlowPlayerInventory() {
@@ -103,9 +103,9 @@ public class GlowPlayerInventory extends GlowInventory implements PlayerInventor
     public int getHeldItemSlot() {
         return heldSlot;
     }
-    
+
     // Helper static functions
-    
+
     private final static int slotConversion[] = {
         36, 37, 38, 39, 40, 41, 42, 43, 44, // quickbar
         9,  10, 11, 12, 13, 14, 15, 16, 17,
@@ -115,11 +115,11 @@ public class GlowPlayerInventory extends GlowInventory implements PlayerInventor
         1, 2, 3, 4, // crafting
         0 // crafting result
     };
-    
+
     public static int inventorySlotToNetwork(int slot) {
         return slotConversion[slot];
     }
-    
+
     public static int networkSlotToInventory(int slot) {
         for (int i = 0; i < slotConversion.length; ++i) {
             if (slotConversion[i] == slot) return i;

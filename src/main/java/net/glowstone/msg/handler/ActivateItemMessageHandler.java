@@ -17,7 +17,7 @@ public final class ActivateItemMessageHandler extends MessageHandler<ActivateIte
 
         if (message.getSlot() < 0 || message.getSlot() > 8) // sanity check
             return;
-        
+
         player.getInventory().setHeldItemSlot(message.getSlot());
     }
 

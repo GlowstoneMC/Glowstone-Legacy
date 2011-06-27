@@ -21,22 +21,22 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
      * The name of this human.
      */
     private final String name;
-    
+
     /**
      * The inventory of this human.
      */
     private final GlowPlayerInventory inventory = new GlowPlayerInventory();
-    
+
     /**
      * Whether this human is sleeping or not.
      */
     protected boolean sleeping = false;
-    
+
     /**
      * How long this human has been sleeping.
      */
     private int sleepingTicks = 0;
-    
+
     /**
      * Creates a human within the specified world and with the specified name.
      * @param world The world.
@@ -80,7 +80,7 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
     public int getSleepTicks() {
         return sleepingTicks;
     }
-    
+
     @Override
     public void pulse() {
         super.pulse();

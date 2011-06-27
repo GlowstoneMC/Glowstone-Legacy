@@ -14,17 +14,17 @@ import java.util.Scanner;
  * @author Tad
  */
 public final class PlayerListFile {
-    
+
     /**
      * The list as we currently know it.
      */
     private final ArrayList<String> list = new ArrayList<String>();
-    
+
     /**
      * The file the list is associated with.
      */
     private final File file;
-    
+
     /**
      * Initialize the player list from the given file.
      * @param path The file to use for this list.
@@ -32,7 +32,7 @@ public final class PlayerListFile {
     public PlayerListFile(String path) {
         this(new File(path));
     }
-    
+
     /**
      * Initialize the player list from the given file.
      * @param file The file to use for this list.
@@ -41,7 +41,7 @@ public final class PlayerListFile {
         this.file = file;
         load();
     }
-    
+
     /**
      * Reloads from the file.
      */
@@ -62,7 +62,7 @@ public final class PlayerListFile {
             save();
         }
     }
-    
+
     /**
      * Saves to the file.
      */
@@ -78,7 +78,7 @@ public final class PlayerListFile {
             // Pfft.
         }
     }
-    
+
     /**
      * Add a player to the list.
      */
@@ -87,7 +87,7 @@ public final class PlayerListFile {
         Collections.sort(list);
         save();
     }
-    
+
     /**
      * Remove a player from the list.
      */
@@ -95,7 +95,7 @@ public final class PlayerListFile {
         list.remove(player.trim());
         save();
     }
-    
+
     /**
      * Check if a player is in the list.
      */
@@ -106,5 +106,5 @@ public final class PlayerListFile {
         }
         return false;
     }
-    
+
 }

@@ -14,12 +14,12 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
     public void handle(Session session, GlowPlayer player, WindowClickMessage message) {
         if (player == null)
             return;
-        
+
         int slot = GlowPlayerInventory.networkSlotToInventory(message.getSlot());
-        
+
         GlowPlayerInventory inv = player.getInventory();
         ItemStack currentItem = inv.getItem(slot);
-        
+
         if (currentItem == null) {
             if (message.getItem() != -1) {
                 response(session, message, false);
@@ -31,7 +31,7 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
             response(session, message, false);
             return;
         }
-        
+
         if (message.isShift()) {
             if (false) {
                 // TODO: if player has e.g. chest open
@@ -61,13 +61,13 @@ public final class WindowClickMessageHandler extends MessageHandler<WindowClickM
             response(session, message, false);
             return;
         }
-        
+
         inv.setItem(slot, player.getItemOnCursor());
         player.setItemOnCursor(currentItem);
     }
-    
+
     private void response(Session session, WindowClickMessage message, boolean success) {
         session.send(new TransactionMessage(message.getId(), message.getTransaction(), success));
     }
-    
+
 }

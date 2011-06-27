@@ -55,22 +55,22 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
      * This player's session.
      */
     private final Session session;
-    
+
     /**
      * This player's current time offset.
      */
     private long timeOffset = 0;
-    
+
     /**
      * Whether the time offset is relative.
      */
     private boolean timeRelative = true;
-    
+
     /**
      * The display name of this player, for chat purposes.
      */
     private String displayName;
-    
+
     /**
      * The player's compass target.
      */
@@ -85,7 +85,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
      * The chunks that the client knows about.
      */
     private final Set<GlowChunk.Key> knownChunks = new HashSet<GlowChunk.Key>();
-    
+
     /**
      * The item the player has on their cursor.
      */
@@ -104,10 +104,10 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         setCompassTarget(world.getSpawnLocation()); // set our compass target
         teleport(world.getSpawnLocation()); // take us to spawn position
         session.send(new StateChangeMessage((byte)(getWorld().hasStorm() ? 1 : 2))); // send the world's weather
-        
+
         getInventory().addViewer(this);
     }
-    
+
     // -- Various internal mechanisms
 
     /**
@@ -160,7 +160,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
 
         int centralX = ((int) location.getX()) >> 4;
         int centralZ = ((int) location.getZ()) >> 4;
-        
+
         for (int x = (centralX - GlowChunk.VISIBLE_RADIUS); x <= (centralX + GlowChunk.VISIBLE_RADIUS); x++) {
             for (int z = (centralZ - GlowChunk.VISIBLE_RADIUS); z <= (centralZ + GlowChunk.VISIBLE_RADIUS); z++) {
                 GlowChunk.Key key = new GlowChunk.Key(x, z);
@@ -180,7 +180,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
 
         previousChunks.clear();
     }
-    
+
     /**
      * Checks whether the player can see the given chunk.
      * @return If the chunk is known to the player's client.
@@ -188,7 +188,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public boolean canSee(GlowChunk.Key chunk) {
         return knownChunks.contains(chunk);
     }
-    
+
     /**
      * Checks whether the player can see the given entity.
      * @return If the entity is known to the player's client.
@@ -196,7 +196,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public boolean canSee(GlowEntity entity) {
         return knownEntities.contains(entity);
     }
-    
+
     // -- Basic getters
 
     /**
@@ -210,7 +210,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public boolean isOnline() {
         return true;
     }
-    
+
     public InetSocketAddress getAddress() {
         return session.getAddress();
     }
@@ -218,7 +218,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public boolean isOp() {
         return getServer().getOpsList().contains(getName());
     }
-    
+
     // -- Malleable properties
 
     public String getDisplayName() {
@@ -253,7 +253,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public void setSleepingIgnored(boolean isSleeping) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     // -- Actions
 
     /**
@@ -265,19 +265,19 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public boolean teleport(Location location) {
         if (location.getWorld() != world) {
             world.getEntityManager().deallocate(this);
-            
+
             world = (GlowWorld) location.getWorld();
             world.getEntityManager().allocate(this);
-            
+
             for (GlowChunk.Key key : knownChunks) {
                 session.send(new LoadChunkMessage(key.getX(), key.getZ(), false));
             }
             knownChunks.clear();
-            
+
             session.send(new RespawnMessage((byte) world.getEnvironment().getId()));
-            
+
             streamBlocks(); // stream blocks
-            
+
             setCompassTarget(world.getSpawnLocation()); // set our compass target
             this.session.send(new PositionRotationMessage(location.getX(), location.getY() + EYE_HEIGHT + 0.01, location.getZ(), location.getY(), (float) location.getYaw(), (float) location.getPitch(), true));
             this.location = location; // take us to spawn position
@@ -288,7 +288,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
             this.location = location;
             reset();
         }
-        
+
         return true;
     }
 
@@ -323,7 +323,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
                 if (EventFactory.onPlayerCommand(this, text).isCancelled()) {
                     return;
                 }
-                
+
                 performCommand(text.substring(1));
             }
             catch (Exception ex) {
@@ -336,7 +336,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
             if (event.isCancelled()) {
                 return;
             }
-            
+
             String message = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
             getServer().getLogger().info(message);
             for (Player recipient : event.getRecipients()) {
@@ -352,9 +352,9 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public void loadData() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     // -- Data transmission
-    
+
     public void playNote(Location loc, Instrument instrument, Note note) {
         playNote(loc, instrument.getType(), note.getId());
     }
@@ -378,7 +378,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public boolean sendChunkChange(Location loc, int sx, int sy, int sz, byte[] data) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     // -- Achievements & Statistics [mostly borrowed from CraftBukkit]
 
     public void awardAchievement(Achievement achievement) {
@@ -424,13 +424,13 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
             session.send(new StatisticMessage(id, (byte) amount));
         }
     }
-    
+
     // -- Inventory
 
     public void updateInventory() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     /**
      * Get the current item on the player's cursor, for inventory screen purposes.
      * @return The ItemStack the player is holding.
@@ -438,7 +438,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public ItemStack getItemOnCursor() {
         return itemOnCursor;
     }
-    
+
     /**
      * Set the item on the player's cursor, for inventory screen purposes.
      * @param item The ItemStack to set the cursor to.
@@ -451,7 +451,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
             session.send(new SetWindowSlotMessage(-1, -1, item.getTypeId(), item.getAmount(), item.getDurability()));
         }
     }
-    
+
     /**
      * Inform the client that an item has changed.
      * @param inventory The GlowInventory in which a slot has changed.
@@ -466,9 +466,9 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
             session.send(new SetWindowSlotMessage(inventory.getId(), slot, item.getTypeId(), item.getAmount(), item.getDurability()));
         }
     }
-    
+
     // -- Goofy relative time stuff --
-    
+
     /**
      * Sets the current time on the player's client. When relative is true the player's time
      * will be kept synchronized to its world time with the specified offset.
@@ -482,7 +482,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public void setPlayerTime(long time, boolean relative) {
         timeOffset = time % 24000;
         timeRelative = relative;
-        
+
         if (timeOffset < 0) timeOffset += 24000;
     }
 
