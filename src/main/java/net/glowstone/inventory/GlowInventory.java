@@ -11,7 +11,7 @@ import org.bukkit.inventory.Inventory;
  * A class which represents an inventory and the items it contains.
  */
 public class GlowInventory implements Inventory {
-    
+
     /**
      * The ID of the inventory.
      */
@@ -21,21 +21,21 @@ public class GlowInventory implements Inventory {
      * The list of InventoryViewers attached to this inventory.
      */
     private final ArrayList<InventoryViewer> viewers = new ArrayList<InventoryViewer>();
-    
+
     /**
      * This inventory's contents.
      */
     private final ItemStack[] slots;
 
     /**
-     * Initialize the inventory 
-     * @param size 
+     * Initialize the inventory
+     * @param size
      */
     protected GlowInventory(byte id, int size) {
         this.id = id;
         slots = new ItemStack[size];
     }
-    
+
     /**
      * Add a viewer to the inventory.
      * @param viewer The InventoryViewer to add.
@@ -45,7 +45,7 @@ public class GlowInventory implements Inventory {
             viewers.add(viewer);
         }
     }
-    
+
     /**
      * Remove a viewer from the inventory.
      * @param viewer The InventoryViewer to remove.
@@ -57,7 +57,7 @@ public class GlowInventory implements Inventory {
     }
 
     // Basic Stuff ///////////////
-    
+
     /**
      * Gets the inventory ID.
      * @return The inventory id for wire purposes.
@@ -83,7 +83,7 @@ public class GlowInventory implements Inventory {
     public String getName() {
         return "Generic Inventory";
     }
-    
+
     /**
      * Updates all attached inventory viewers about a change to index.
      * @param index The index to update.
@@ -129,24 +129,24 @@ public class GlowInventory implements Inventory {
      */
     public HashMap<Integer, ItemStack> addItem(ItemStack... items) {
         HashMap<Integer, ItemStack> result = new HashMap<Integer, ItemStack>();
-        
+
         for (int i = 0; i < items.length; ++i) {
             Material mat = items[i].getType();
             int toAdd = items[i].getAmount();
-            
+
             for (int j = 0; toAdd > 0 && j < getSize(); ++j) {
                 // Look for existing stacks to add to
                 if (slots[j] != null && slots[j].getType() == mat) {
                     int space = mat.getMaxStackSize() - slots[j].getAmount();
                     if (space < 0) continue;
                     if (space > toAdd) space = toAdd;
-                    
+
                     slots[j].setAmount(slots[j].getAmount() + space);
                     toAdd -= space;
                     sendUpdate(j);
                 }
             }
-            
+
             if (toAdd > 0) {
                 // Look for empty slots to add to
                 for (int j = 0; toAdd > 0 && j < getSize(); ++j) {
@@ -158,13 +158,13 @@ public class GlowInventory implements Inventory {
                     }
                 }
             }
-            
+
             if (toAdd > 0) {
                 // Still couldn't stash them all.
                 result.put(i, new ItemStack(mat, toAdd));
             }
         }
-        
+
         return result;
     }
 
@@ -179,11 +179,11 @@ public class GlowInventory implements Inventory {
      */
     public HashMap<Integer, ItemStack> removeItem(ItemStack... items) {
         HashMap<Integer, ItemStack> result = new HashMap<Integer, ItemStack>();
-        
+
         for (int i = 0; i < items.length; ++i) {
             Material mat = items[i].getType();
             int toRemove = items[i].getAmount();
-            
+
             for (int j = 0; j < getSize(); ++j) {
                 // Look for stacks to remove from.
                 if (slots[j] != null && slots[j].getType() == mat) {
@@ -196,13 +196,13 @@ public class GlowInventory implements Inventory {
                     sendUpdate(j);
                 }
             }
-            
+
             if (toRemove > 0) {
                 // Couldn't remove them all.
                 result.put(i, new ItemStack(mat, toRemove));
             }
         }
-        
+
         return result;
     }
 
@@ -453,5 +453,5 @@ public class GlowInventory implements Inventory {
             clear(i);
         }
     }
-    
+
 }

@@ -19,7 +19,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
  * @author Graham Edgecombe
  */
 public abstract class GlowEntity implements Entity {
-    
+
     /**
      * The server this entity belongs to.
      */
@@ -49,7 +49,7 @@ public abstract class GlowEntity implements Entity {
      * The position in the last cycle.
      */
     protected Location previousLocation = Position.ZERO;
-    
+
     /**
      * An EntityDamageEvent representing the last damage cause on this entity.
      */
@@ -211,7 +211,7 @@ public abstract class GlowEntity implements Entity {
         return Position.hasRotated(location, previousLocation);
     }
 
-    
+
     public void setVelocity(Vector velocity) {
         throw new UnsupportedOperationException("Not supported yet.");
     }

@@ -12,16 +12,16 @@ import net.glowstone.GlowChunk;
  * @author Tad
  */
 public abstract class GlowChunkGenerator extends ChunkGenerator {
-    
+
     protected byte[] data = new byte[GlowChunk.HEIGHT * GlowChunk.WIDTH * GlowChunk.DEPTH];
-    
+
     /**
      * Clear data to a byte[] of the proper size.
      */
     protected void clear() {
         for (int i = 0; i < data.length; ++i) data[i] = 0;
     }
-    
+
     /**
      * Set the given block to the given type.
      * @param x The chunk X coordinate.
@@ -47,7 +47,7 @@ public abstract class GlowChunkGenerator extends ChunkGenerator {
      * @return byte[32768] containing the types for each block created by this generator
      */
     public abstract byte[] generate(World world, Random random, int chunkX, int chunkZ);
-    
+
     /**
      * Tests if the specified location is valid for a natural spawn position
      *

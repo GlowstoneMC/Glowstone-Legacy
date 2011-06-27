@@ -90,7 +90,7 @@ public class GlowBlock implements Block {
     public GlowBlock getRelative(BlockFace face) {
         return getRelative(face.getModX(), face.getModY(), face.getModZ());
     }
-    
+
     // type and typeid getters/setters
 
     public Material getType() {
@@ -116,12 +116,12 @@ public class GlowBlock implements Block {
     public boolean setTypeIdAndData(int type, byte data, boolean applyPhysics) {
         chunk.setType(x & 0xf, z & 0xf, y & 0x7f, type);
         chunk.setMetaData(x & 0xf, z & 0xf, y & 0x7f, data);
-        
+
         BlockChangeMessage bcmsg = new BlockChangeMessage(x, y, z, type, data);
         for (GlowPlayer p : getWorld().getRawPlayers()) {
             p.getSession().send(bcmsg);
         }
-        
+
         return true;
     }
 
@@ -137,7 +137,7 @@ public class GlowBlock implements Block {
 
     public void setData(byte data, boolean applyPhyiscs) {
         chunk.setMetaData(x & 0xf, z & 0xf, y & 0x7f, data);
-        
+
         BlockChangeMessage bcmsg = new BlockChangeMessage(x, y, z, getTypeId(), data);
         for (GlowPlayer p : getWorld().getRawPlayers()) {
             p.getSession().send(bcmsg);

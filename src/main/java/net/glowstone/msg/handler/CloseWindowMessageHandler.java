@@ -10,12 +10,12 @@ public final class CloseWindowMessageHandler extends MessageHandler<CloseWindowM
     public void handle(Session session, GlowPlayer player, CloseWindowMessage message) {
         if (player == null)
             return;
-        
+
         if (player.getItemOnCursor() != null) {
             // player.getWorld().dropItem(player.getEyeLocation(), player.getItemInHand());
             player.getInventory().addItem(player.getItemOnCursor());
             player.setItemOnCursor(null);
         }
     }
-    
+
 }

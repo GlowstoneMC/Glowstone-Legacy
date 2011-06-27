@@ -38,7 +38,7 @@ public final class BlockPlacementMessageHandler extends MessageHandler<BlockPlac
             case 5:
                 ++x; break;
         }
-        
+
         if (player.getItemInHand() != null && player.getItemInHand().getTypeId() < 256) {
             if (world.getBlockAt(x, y, z).getType() == Material.AIR) {
                 world.getBlockAt(x, y, z).setType(player.getItemInHand().getType());

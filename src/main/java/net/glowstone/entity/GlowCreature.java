@@ -3,7 +3,7 @@ package net.glowstone.entity;
 import java.util.ArrayList;
 import java.util.List;
 import net.glowstone.GlowServer;
-      
+
 import org.bukkit.entity.Creature;
 
 import net.glowstone.util.Position;
@@ -28,7 +28,7 @@ public final class GlowCreature extends GlowLivingEntity implements Creature {
      * The monster's metadata.
      */
     private final List<Parameter<?>> metadata = new ArrayList<Parameter<?>>();
-    
+
     /**
      * The monster's target.
      */

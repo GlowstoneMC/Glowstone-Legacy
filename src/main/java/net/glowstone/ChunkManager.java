@@ -28,7 +28,7 @@ public final class ChunkManager {
      * The chunk generator used to generate new chunks.
      */
     private final ChunkGenerator generator;
-    
+
     /**
      * The world this ChunkManager is managing.
      */
@@ -72,15 +72,15 @@ public final class ChunkManager {
                 chunk = new GlowChunk(world, x, z);
                 byte[] data = generator.generate(world, new Random(), x, z);
                 chunk.setTypes(data);
-                
+
                 chunks.put(key, chunk);
-                
+
                 for (int x2 = x - 1; x2 <= x + 1; ++x2) {
                     for (int z2 = z - 1; z2 <= z + 1; ++z2) {
                         if (canPopulate(x2, z2)) {
                             GlowChunk chunk2 = getChunk(x2, z2);
                             chunk2.setPopulated(true);
-                            
+
                             for (BlockPopulator p : world.getPopulators()) {
                                 p.populate(world, new Random(), chunk2);
                                 System.out.println("pop " + world.getName() + " " + p.getClass().getName());
@@ -92,10 +92,10 @@ public final class ChunkManager {
 
             chunks.put(key, chunk);
         }
-        
+
         return chunk;
     }
-    
+
     /**
      * Checks whether the given chunk can be populated by map features.
      * @return Whether population is needed and safe.
@@ -115,7 +115,7 @@ public final class ChunkManager {
         }
         return true;
     }
-    
+
     /**
      * Forces generation of the given chunk.
      * @param x The X coordinate.
@@ -126,22 +126,22 @@ public final class ChunkManager {
         GlowChunk.Key key = new GlowChunk.Key(x, z);
         GlowChunk chunk = new GlowChunk(world, x, z);
         chunk.setTypes(generator.generate(world, new Random(), x, z));
-        
+
         if (chunk == null || !unloadChunk(x, z, false)) {
             return false;
         }
-        
+
         if (canPopulate(x, z)) {
             chunk.setPopulated(true);
             for (BlockPopulator p : world.getPopulators()) {
                 p.populate(world, new Random(), chunk);
             }
         }
-        
+
         chunks.put(key, chunk);
         return true;
     }
-    
+
     /**
      * Checks whether the given Chunk is loaded.
      * @param x The X coordinate.
@@ -152,7 +152,7 @@ public final class ChunkManager {
         GlowChunk.Key key = new GlowChunk.Key(x, z);
         return chunks.get(key) != null;
     }
-    
+
     /**
      * Unloads a given chunk from memory.
      * @param x The X coordinate.
@@ -178,7 +178,7 @@ public final class ChunkManager {
         }
         return false;
     }
-    
+
     /**
      * Gets a list of loaded chunks.
      * @return The currently loaded chunks.
@@ -186,7 +186,7 @@ public final class ChunkManager {
     public GlowChunk[] getLoadedChunks() {
         return chunks.values().toArray(new GlowChunk[]{});
     }
-    
+
     /**
      * Force-saves the given chunk.
      * @param x The X coordinate.
@@ -206,7 +206,7 @@ public final class ChunkManager {
         }
         return false;
     }
-    
+
     /**
      * Get the chunk generator.
      */

@@ -28,7 +28,7 @@ public final class GlowScheduler implements BukkitScheduler {
      * The number of milliseconds between pulses.
      */
     private static final int PULSE_EVERY = 50;
-    
+
     /**
      * The server this scheduler is managing for.
      */
@@ -54,7 +54,7 @@ public final class GlowScheduler implements BukkitScheduler {
      */
     public GlowScheduler(GlowServer server) {
         this.server = server;
-        
+
         executor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -88,7 +88,7 @@ public final class GlowScheduler implements BukkitScheduler {
         server.getSessionRegistry().pulse();
         for (World world : server.getWorlds())
             ((GlowWorld) world).pulse();
-        
+
         // Bring in new tasks this tick.
         synchronized (newTasks) {
             for (GlowTask task : newTasks) {

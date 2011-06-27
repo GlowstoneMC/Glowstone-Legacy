@@ -29,7 +29,7 @@ public final class PlayEffectMessage extends Message {
     public int getZ() {
         return z;
     }
-    
+
     public int getData() {
         return data;
     }

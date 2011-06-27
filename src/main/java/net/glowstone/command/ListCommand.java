@@ -11,7 +11,7 @@ import org.bukkit.ChatColor;
  * @author Tad
  */
 public class ListCommand extends GlowCommand {
-    
+
     public ListCommand(GlowServer server) {
         super(server, "list", "List players online.", "<player>");
     }
@@ -30,5 +30,5 @@ public class ListCommand extends GlowCommand {
             return true;
         }
     }
-    
+
 }

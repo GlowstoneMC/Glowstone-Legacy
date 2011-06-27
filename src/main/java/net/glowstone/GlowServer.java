@@ -60,7 +60,7 @@ public final class GlowServer implements Server {
      * The logger for this class.
      */
     public static final Logger logger = Logger.getLogger(GlowServer.class.getName());
-            
+
     /**
      * The configuration the server uses.
      */
@@ -81,7 +81,7 @@ public final class GlowServer implements Server {
                 properties.save(new FileOutputStream(props), "Glowstone server properties");
             }
             int port = Integer.valueOf(properties.getProperty("server-port", "25565"));
-            
+
             GlowServer server = new GlowServer();
             server.bind(new InetSocketAddress(port));
             server.start();
@@ -110,22 +110,22 @@ public final class GlowServer implements Server {
      * A list of all the active {@link Session}s.
      */
     private final SessionRegistry sessions = new SessionRegistry();
-    
+
     /**
      * The list of OPs on the server.
      */
     private final PlayerListFile opsList = new PlayerListFile("ops.txt");
-    
+
     /**
      * The services manager of this server.
      */
     private final SimpleServicesManager servicesManager = new SimpleServicesManager();
-    
+
     /**
      * The command map of this server.
      */
     private final SimpleCommandMap commandMap = new SimpleCommandMap(this);
-    
+
     /**
      * The plugin manager of this server.
      */
@@ -154,7 +154,7 @@ public final class GlowServer implements Server {
      */
     private void init() {
         Bukkit.setServer(this);
-        
+
         ChannelFactory factory = new NioServerSocketChannelFactory(executor, executor);
         bootstrap.setFactory(factory);
 
@@ -180,7 +180,7 @@ public final class GlowServer implements Server {
         } catch (Exception ex) {
             logger.warning("Failed to load server.properties, using defaults");
         }
-        
+
         opsList.load();
 
         loadPlugins();
@@ -190,7 +190,7 @@ public final class GlowServer implements Server {
 
         logger.info("Ready for connections.");
     }
-    
+
     /**
      * Loads all plugins, calling onLoad, &c.
      */
@@ -200,10 +200,10 @@ public final class GlowServer implements Server {
         commandMap.register("glowstone", new net.glowstone.command.OpCommand(this));
         commandMap.register("glowstone", new net.glowstone.command.DeopCommand(this));
         commandMap.register("glowstone", new net.glowstone.command.ListCommand(this));
-            
+
         File folder = new File(properties.getProperty("plugin-folder", "plugins"));
         folder.mkdirs();
-            
+
         // clear plugins and prepare to load
         pluginManager.clearPlugins();
         pluginManager.registerInterface(JavaPluginLoader.class);
@@ -219,9 +219,9 @@ public final class GlowServer implements Server {
             }
         }
     }
-    
+
     /**
-     * 
+     *
      * @param type The type of plugin to enable.
      */
     public void enablePlugins(PluginLoadOrder type) {
@@ -251,12 +251,12 @@ public final class GlowServer implements Server {
         try {
             properties.load(new FileInputStream(new File("server.properties")));
             opsList.load();
-            
+
             // load plugins
             loadPlugins();
             enablePlugins(PluginLoadOrder.STARTUP);
             enablePlugins(PluginLoadOrder.POSTWORLD);
-            
+
             // TODO: register aliases
         }
         catch (Exception ex) {
@@ -280,7 +280,7 @@ public final class GlowServer implements Server {
     public SessionRegistry getSessionRegistry() {
         return sessions;
     }
-    
+
     /**
      * Returns the list of OPs on this server.
      */
@@ -300,7 +300,7 @@ public final class GlowServer implements Server {
         }
         return null;
     }
-    
+
     /**
      * Gets the list of worlds currently loaded.
      * @return An ArrayList containing all loaded worlds.
@@ -329,7 +329,7 @@ public final class GlowServer implements Server {
     public String getVersion() {
         return getClass().getPackage().getImplementationVersion();
     }
-    
+
     /**
      * Gets a list of all currently logged in players
      *
@@ -343,7 +343,7 @@ public final class GlowServer implements Server {
         }
         return result.toArray(new Player[] {});
     }
-    
+
     /**
      * Get the maximum amount of players which can login to this server
      *
@@ -369,7 +369,7 @@ public final class GlowServer implements Server {
     public String getIp() {
         return "";
     }
-    
+
     /**
      * Get the name of this server
      *
@@ -378,7 +378,7 @@ public final class GlowServer implements Server {
     public String getServerName() {
         return "Glowstone Server";
     }
-    
+
     /**
      * Get an ID of this server. The ID is a simple generally alphanumeric
      * ID that can be used for uniquely identifying this server.
@@ -401,7 +401,7 @@ public final class GlowServer implements Server {
         }
         return getOnlinePlayers().length;
     }
-    
+
     /**
      * Gets the name of the update folder. The update folder is used to safely update
      * plugins at the right moment on a plugin load.
@@ -411,7 +411,7 @@ public final class GlowServer implements Server {
     public String getUpdateFolder() {
         return properties.getProperty("update-folder", "update");
     }
-    
+
     /**
      * Gets a player object by the given username
      *
@@ -474,7 +474,7 @@ public final class GlowServer implements Server {
     public SimpleServicesManager getServicesManager() {
         return servicesManager;
     }
-    
+
     /**
      * Gets the default ChunkGenerator for the given environment.
      * @return The ChunkGenerator.
@@ -581,7 +581,7 @@ public final class GlowServer implements Server {
         }
         return false;
     }
-    
+
     /**
      * Returns the primary logger associated with this server instance
      *
@@ -590,7 +590,7 @@ public final class GlowServer implements Server {
     public Logger getLogger() {
         return logger;
     }
-    
+
     /**
      * Gets a {@link PluginCommand} with the given name or alias
      *
@@ -625,12 +625,12 @@ public final class GlowServer implements Server {
         try {
             String[] args = commandLine.split(" +");
             String commandName = args[0];
-            
+
             String[] newargs = new String[args.length - 1];
             for (int i = 1; i < args.length; ++i) {
                 newargs[i - 1] = args[i];
             }
-            
+
             Command command = commandMap.getCommand(commandName);
             if (command == null)
                 return false;
