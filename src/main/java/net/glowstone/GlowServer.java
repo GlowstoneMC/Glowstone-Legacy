@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -26,6 +27,7 @@ import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
@@ -187,6 +189,8 @@ public final class GlowServer implements Server {
         enablePlugins(PluginLoadOrder.STARTUP);
         createWorld(properties.getProperty("world-name", "world"), Environment.NORMAL);
         enablePlugins(PluginLoadOrder.POSTWORLD);
+
+        new ConsoleCommandThread(this).start();
 
         logger.info("Ready for connections.");
     }
@@ -678,4 +682,29 @@ public final class GlowServer implements Server {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    private class ConsoleCommandThread extends Thread{
+        Server server;
+        ConsoleCommandSender sender;
+        public ConsoleCommandThread(Server server){
+            this.server = server;
+            this.sender = new ConsoleCommandSender(server);
+        }
+        public void run(){
+            Scanner scan = new Scanner(System.in);
+            while (true) {
+                String command = scan.nextLine();
+                try {
+                    server.dispatchCommand(sender, command);
+                }
+                catch (CommandException e) {
+                        System.out.println("Error while executing command.");
+                        e.printStackTrace();
+                }
+                catch (Exception ex) {
+                        ex.printStackTrace();
+                }
+            }
+        }
+    }
+                
 }
