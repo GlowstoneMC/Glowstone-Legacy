@@ -7,7 +7,7 @@ import net.glowstone.GlowServer;
 import org.bukkit.ChatColor;
 
 /**
- * A built-in command to remove a player's OP status.
+ * A built-in command to list the players logged in on the server.
  * @author Tad
  */
 public class ListCommand extends GlowCommand {

@@ -215,7 +215,10 @@ public final class GlowServer implements Server {
         commandMap.register("glowstone", new net.glowstone.command.OpCommand(this));
         commandMap.register("glowstone", new net.glowstone.command.DeopCommand(this));
         commandMap.register("glowstone", new net.glowstone.command.ListCommand(this));
-            
+        commandMap.register("glowstone", new net.glowstone.command.MeCommand(this));
+        commandMap.register("glowstone", new net.glowstone.command.TimeCommand(this));
+        commandMap.register("glowstone", new net.glowstone.command.KickCommand(this));
+
         File folder = new File(properties.getProperty("plugin-folder", "plugins"));
         folder.mkdirs();
             
