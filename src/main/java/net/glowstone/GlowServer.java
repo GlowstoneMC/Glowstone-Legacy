@@ -16,6 +16,8 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jline.ConsoleReader;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommandYamlParser;
@@ -698,18 +700,33 @@ public final class GlowServer implements Server {
     }
 
     private class ConsoleCommandThread extends Thread{
-        Server server;
-        ConsoleCommandSender sender;
+        private Server server;
+        private ConsoleCommandSender sender;
         public ConsoleCommandThread(Server server){
             this.server = server;
             this.sender = new ConsoleCommandSender(server);
         }
         public void run(){
-            Scanner scan = new Scanner(System.in);
+            ConsoleReader reader; 
+            try{
+                reader = new ConsoleReader();
+            }
+            catch(Exception e) {
+                System.err.println("Failed to initialize console command reader.");
+                e.printStackTrace();
+                return;
+            }
             while (true) {
-                String command = scan.nextLine();
+                //TODO: Command completion
+                //Needs to get list of all commands?
                 try {
-                    server.dispatchCommand(sender, command);
+                    String command = reader.readLine();
+                    if (command == null || command.equals(""))
+                        continue;
+                    boolean success = server.dispatchCommand(sender, command);
+                    if (!success) {
+                        System.out.println("Unable to execute command.");
+                    }
                 }
                 catch (CommandException e) {
                         System.out.println("Error while executing command.");
