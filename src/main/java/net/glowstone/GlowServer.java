@@ -3,6 +3,7 @@ package net.glowstone;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
@@ -17,6 +18,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jline.ConsoleReader;
+import jline.ArgumentCompletor;
+import jline.Completor;
+import jline.NullCompletor;
+import jline.SimpleCompletor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -708,8 +713,10 @@ public final class GlowServer implements Server {
         }
         public void run(){
             ConsoleReader reader; 
+            ArgumentCompletor argcomplete = new ArgumentCompletor(new Completor[]{new SimpleCompletor(getAllCommands()), new NullCompletor()});
             try{
                 reader = new ConsoleReader();
+                reader.addCompletor(argcomplete);
             }
             catch(Exception e) {
                 System.err.println("Failed to initialize console command reader.");
@@ -736,6 +743,20 @@ public final class GlowServer implements Server {
                 catch (Exception ex) {
                         ex.printStackTrace();
                 }
+            }
+        }
+        private String[] getAllCommands() {
+            //There's probably a better way of doing this.
+            try {
+                Class clazz = commandMap.getClass();
+                Field knownCommandsField = clazz.getDeclaredField("knownCommands");
+                knownCommandsField.setAccessible(true);
+                Map<String, Command> knownCommands = (Map<String, Command>) knownCommandsField.get(commandMap);
+                return (String[]) knownCommands.keySet().toArray(new String[0]);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return new String[0];
             }
         }
     }
