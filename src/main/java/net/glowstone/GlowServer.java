@@ -720,6 +720,7 @@ public final class GlowServer implements Server {
                 //TODO: Command completion
                 //Needs to get list of all commands?
                 try {
+                    System.out.print(">");
                     String command = reader.readLine();
                     if (command == null || command.equals(""))
                         continue;
