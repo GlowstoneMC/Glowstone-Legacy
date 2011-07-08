@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.logging.Level;
 
 import org.bukkit.BlockChangeDelegate;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Effect;
@@ -36,6 +37,7 @@ import net.glowstone.block.GlowBlock;
 import net.glowstone.io.ChunkIoService;
 import net.glowstone.entity.GlowEntity;
 import net.glowstone.entity.EntityManager;
+import net.glowstone.entity.GlowLightningStrike;
 import net.glowstone.entity.GlowLivingEntity;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.msg.LoadChunkMessage;
@@ -236,7 +238,7 @@ public final class GlowWorld implements World {
                 int y = getHighestBlockYAt(x, z);
                 
                 // TODO: lightning.
-                // strikeLightning(new Location(this, x, z, y));
+                strikeLightning(new Location(this, x, z, y));
             }
         }
         
@@ -594,11 +596,15 @@ public final class GlowWorld implements World {
     }
 
     public LightningStrike strikeLightning(Location loc) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        LightningStrike strike = new GlowLightningStrike((GlowServer) Bukkit.getServer(), this, false);
+	strike.teleport(loc);
+        return strike;
     }
 
     public LightningStrike strikeLightningEffect(Location loc) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        LightningStrike strike = new GlowLightningStrike((GlowServer) Bukkit.getServer(), this, true);
+	strike.teleport(loc);
+        return strike;
     }
 
     // Time related methods
