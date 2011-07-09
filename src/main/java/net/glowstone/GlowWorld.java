@@ -237,8 +237,7 @@ public final class GlowWorld implements World {
                 int z = (chunk.getZ() << 4) + (int)(random.nextDouble() * 16);
                 int y = getHighestBlockYAt(x, z);
                 
-                // TODO: lightning.
-                strikeLightning(new Location(this, x, z, y));
+                strikeLightning(new Location(this, x, y, z));
             }
         }
         
