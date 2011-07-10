@@ -27,6 +27,7 @@ import net.glowstone.block.GlowBlock;
 import net.glowstone.io.ChunkIoService;
 import net.glowstone.entity.GlowEntity;
 import net.glowstone.entity.EntityManager;
+import net.glowstone.entity.GlowLightningStrike;
 import net.glowstone.entity.GlowLivingEntity;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.entity.*;
@@ -39,6 +40,11 @@ import net.glowstone.msg.TimeMessage;
  * @author Graham Edgecombe
  */
 public final class GlowWorld implements World {
+    
+    /**
+     * The server of this world.
+     */
+    private final GlowServer server;
     
     /**
      * The name of this world.
@@ -138,7 +144,8 @@ public final class GlowWorld implements World {
      * @param environment The environment.
      * @param generator The world generator.
      */
-    public GlowWorld(String name, Environment environment, long seed, ChunkIoService service, ChunkGenerator generator) {
+    public GlowWorld(GlowServer server, String name, Environment environment, long seed, ChunkIoService service, ChunkGenerator generator) {
+        this.server = server;
         this.name = name;
         this.environment = environment;
         this.seed = seed;
@@ -227,8 +234,7 @@ public final class GlowWorld implements World {
                 int z = (chunk.getZ() << 4) + (int)(random.nextDouble() * 16);
                 int y = getHighestBlockYAt(x, z);
                 
-                // TODO: lightning.
-                // strikeLightning(new Location(this, x, z, y));
+                strikeLightning(new Location(this, x, y, z));
             }
         }
         
@@ -502,7 +508,6 @@ public final class GlowWorld implements World {
         }
 
         GlowEntity entity = null;
-        GlowServer server = (GlowServer) Bukkit.getServer();
         GlowWorld world = this;
 
         double x = location.getX();
@@ -682,12 +687,16 @@ public final class GlowWorld implements World {
         }
     }
 
-    public LightningStrike strikeLightning(Location loc) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public GlowLightningStrike strikeLightning(Location loc) {
+        GlowLightningStrike strike = new GlowLightningStrike(server, this, false);
+        strike.teleport(loc);
+        return strike;
     }
 
-    public LightningStrike strikeLightningEffect(Location loc) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public GlowLightningStrike strikeLightningEffect(Location loc) {
+        GlowLightningStrike strike = new GlowLightningStrike(server, this, true);
+        strike.teleport(loc);
+        return strike;
     }
 
     // Time related methods
