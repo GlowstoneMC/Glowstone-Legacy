@@ -238,6 +238,12 @@ public final class GlowChunk implements Chunk {
         System.arraycopy(types, 0, this.types, 0, types.length);
     }
 
+    public byte[] getTypes() {
+        byte[] types = new byte[this.types.length];
+        System.arraycopy(this.types, 0, types, 0, this.types.length);
+        return types;
+    }
+
     /**
      * Sets the type of a block within this chunk.
      * @param x The X coordinate.

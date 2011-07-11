@@ -1,6 +1,7 @@
 package net.glowstone.io;
 
 import java.io.IOException;
+import java.util.Map;
 
 import net.glowstone.GlowChunk;
 import net.glowstone.GlowWorld;
@@ -19,6 +20,16 @@ public final class NbtChunkIoService implements ChunkIoService {
 
     @Override
     public void write(int x, int z, GlowChunk chunk) throws IOException {
+
+    }
+
+    @Override
+    public Map<WorldData, Object> readWorldData(GlowWorld world) throws IOException {
+        return null;
+    }
+
+    @Override
+    public void writeWorldData(GlowWorld world) throws IOException {
 
     }
 
