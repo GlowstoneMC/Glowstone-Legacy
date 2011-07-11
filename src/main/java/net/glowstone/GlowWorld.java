@@ -174,10 +174,10 @@ public final class GlowWorld implements World {
             e.printStackTrace();
         }
         if (!level.isEmpty()) {
-            if ((Long)level.get("seed") == 0L) {
+            if ((Long)level.get(WorldData.SEED) == 0L) {
                 this.seed = seed;
             } else {
-                this.seed = (Long)level.get("seed");
+                this.seed = (Long)level.get(WorldData.SEED);
             }
             this.spawnLocation = (Location)level.get(WorldData.SPAWN_LOCATION);
             this.time = (Long)level.get(WorldData.TIME);
@@ -200,15 +200,15 @@ public final class GlowWorld implements World {
         long loadTime = new Date().getTime();
         
         int radius = 4 * GlowChunk.VISIBLE_RADIUS / 3;
-        
+        int spamLimiter = 0;
         for (int x = centerX - radius; x <= centerX + radius; ++x) {
             for (int z = centerZ - radius; z <= centerZ + radius; ++z) {
                 chunks.getChunk(x, z);
-            
-                if (new Date().getTime() >= loadTime + 1000) {
+                if (new Date().getTime() >= loadTime + 1000 && spamLimiter % 8 == 0) {
                     int progress = 100 * (x - centerX + radius) / (2 * radius);
                     GlowServer.logger.log(Level.INFO, "Preparing spawn for {0}: {1}%", new Object[]{name, progress});
                 }
+                spamLimiter++;
             }
         }
         GlowServer.logger.log(Level.INFO, "Preparing spawn for {0}: done", name);
