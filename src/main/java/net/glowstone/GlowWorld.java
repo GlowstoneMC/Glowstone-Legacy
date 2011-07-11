@@ -1,12 +1,8 @@
 package net.glowstone;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.io.*;
+import java.util.*;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 
 import org.bukkit.BlockChangeDelegate;
@@ -35,6 +31,7 @@ import org.bukkit.util.Vector;
 
 import net.glowstone.block.GlowBlock;
 import net.glowstone.io.ChunkIoService;
+import net.glowstone.io.ChunkIoService.WorldData;
 import net.glowstone.entity.GlowEntity;
 import net.glowstone.entity.EntityManager;
 import net.glowstone.entity.GlowLightningStrike;
@@ -43,6 +40,7 @@ import net.glowstone.entity.GlowPlayer;
 import net.glowstone.msg.LoadChunkMessage;
 import net.glowstone.msg.StateChangeMessage;
 import net.glowstone.msg.TimeMessage;
+
 
 /**
  * A class which represents the in-game world.
@@ -146,6 +144,16 @@ public final class GlowWorld implements World {
     private int saveTimer = 0;
 
     /**
+     * The chunk format manager
+     */
+    private ChunkIoService service;
+
+    /**
+     * The world's metadata
+     */
+    private Map<WorldData, Object> level = new HashMap<WorldData, Object>();
+
+    /**
      * Creates a new world with the specified chunk I/O service, environment,
      * and world generator.
      * @param name The name of the world.
@@ -157,12 +165,34 @@ public final class GlowWorld implements World {
         this.server = server;
         this.name = name;
         this.environment = environment;
-        this.seed = seed;
         chunks = new ChunkManager(this, service, generator);
+        this.service = service;
+
+        try {
+            level = service.readWorldData(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (!level.isEmpty()) {
+            if ((Long)level.get("seed") == 0L) {
+                this.seed = seed;
+            } else {
+                this.seed = (Long)level.get("seed");
+            }
+            this.spawnLocation = (Location)level.get(WorldData.SPAWN_LOCATION);
+            this.time = (Long)level.get(WorldData.TIME);
+            this.currentlyRaining = (Boolean)level.get(WorldData.RAINING);
+            this.currentlyThundering = (Boolean)level.get(WorldData.THUNDERING);
+            this.rainingTicks = (Integer)level.get(WorldData.RAIN_TIME);
+            this.thunderingTicks = (Integer)level.get(WorldData.THUNDER_TIME);
+        } else {
+            this.seed = seed;
+        }
+
         
+
         populators = generator.getDefaultPopulators(this);
-        spawnLocation = generator.getFixedSpawnLocation(this, random);
-        
+        if (spawnLocation == null) spawnLocation = generator.getFixedSpawnLocation(this, random);
         int centerX = (spawnLocation == null) ? 0 : spawnLocation.getBlockX() >> 4;
         int centerZ = (spawnLocation == null) ? 0 : spawnLocation.getBlockZ() >> 4;
         
@@ -199,6 +229,11 @@ public final class GlowWorld implements World {
         
         setStorm(false);
         setThundering(false);
+        try {
+            service.writeWorldData(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     ////////////////////////////////////////
@@ -353,6 +388,11 @@ public final class GlowWorld implements World {
     public void save() {
         for (GlowChunk chunk : chunks.getLoadedChunks()) {
             chunks.forceSave(chunk.getX(), chunk.getZ());
+        }
+        try {
+            service.writeWorldData(this);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
     

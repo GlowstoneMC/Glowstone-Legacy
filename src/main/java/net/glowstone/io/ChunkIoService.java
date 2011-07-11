@@ -1,9 +1,11 @@
 package net.glowstone.io;
 
 import java.io.IOException;
+import java.util.Map;
 
 import net.glowstone.GlowChunk;
 import net.glowstone.GlowWorld;
+import org.bukkit.Location;
 
 /**
  * This interface should be implemented by classes which wish to provide some
@@ -32,4 +34,39 @@ public interface ChunkIoService {
      */
     public void write(int x, int z, GlowChunk chunk) throws IOException;
 
+    /**
+     * Reads the data from a chunk's world
+     * @param world A chunk in the world to get information from
+     * @return a map with world information
+     * @throws IOException if an I/O error occurs
+     */
+    public Map<WorldData, Object> readWorldData(GlowWorld world) throws IOException;
+
+    /**
+     * Writes data for a chunk's world
+     * @param world The world
+     * @throws IOException
+     */
+    public void writeWorldData(GlowWorld world) throws IOException;
+
+
+    public enum WorldData {
+        SEED(Long.class),
+        SPAWN_LOCATION(Location.class),
+        TIME(Long.class),
+        RAINING(Boolean.class),
+        THUNDERING(Boolean.class),
+        RAIN_TIME(Integer.class),
+        THUNDER_TIME(Integer.class);
+
+        private final Class<?> clazz;
+         WorldData(Class<?> clazz) {
+            this.clazz = clazz;
+        }
+
+        public Class<?> getType() {
+            return clazz;
+        }
+
+    }
 }
