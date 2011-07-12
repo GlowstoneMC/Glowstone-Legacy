@@ -6,8 +6,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -87,4 +89,10 @@ public final class EventFactory {
         callEvent(event);
         return event;
     }
+    public static BlockPlaceEvent onBlockPlace(Block placed, BlockState replacedBlockState, Block placedAgainst, Player player, boolean canBuild) {
+        BlockPlaceEvent event = new BlockPlaceEvent(placed, replacedBlockState, placedAgainst, player.getItemInHand(), player, canBuild);
+        callEvent(event);
+        return event;
+    }
+
 }
