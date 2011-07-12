@@ -713,6 +713,18 @@ public final class GlowWorld implements World {
             }
         }
     }
+
+    /**
+     * Plays a sound effect in the game world to everyone except for one player.
+     * @param doNotPlayTo The player which will not get the PlayEffectMessage.
+     */
+    public void playEffectExceptTo(Location location, Effect effect, int data, int radius, Player doNotPlayTo) {
+        for (Player player : getPlayers()) {
+            if (player.getLocation().distance(location) <= radius && player != doNotPlayTo) {
+                player.playEffect(location, effect, data);
+            }
+        }
+    }
     
     // misc
 
