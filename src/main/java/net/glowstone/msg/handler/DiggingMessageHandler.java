@@ -1,5 +1,6 @@
 package net.glowstone.msg.handler;
 
+import net.glowstone.block.BlockProperties;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -11,6 +12,8 @@ import net.glowstone.GlowWorld;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.msg.DiggingMessage;
 import net.glowstone.net.Session;
+
+import java.util.Arrays;
 
 /**
  * A {@link MessageHandler} which processes digging messages.
@@ -48,7 +51,11 @@ public final class DiggingMessageHandler extends MessageHandler<DiggingMessage> 
 
         if (blockBroken) {
             if (block.getType() != Material.AIR) {
-                player.getInventory().addItem(new ItemStack(block.getType(), 1));
+                ItemStack[] drops = BlockProperties.get(block.getType()).getDropsWithData(block.getData());
+                if (drops != null)
+                for (ItemStack stack : Arrays.asList(drops)) {
+                    player.getInventory().addItem(stack);
+                }
             }
             block.setType(Material.AIR);
         }
