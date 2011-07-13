@@ -235,7 +235,6 @@ public final class GlowServer implements Server {
     private void loadPlugins() {
         // clear the map
         commandMap.clearCommands();
-            
         File folder = new File(properties.getProperty("plugin-folder", "plugins"));
         folder.mkdirs();
             
@@ -288,6 +287,9 @@ public final class GlowServer implements Server {
         commandMap.register("#", new net.glowstone.command.ListCommand(this));
         commandMap.register("#", new net.glowstone.command.ColorCommand(this));
         commandMap.register("#", new net.glowstone.command.StopCommand(this));
+        commandMap.register("#", new net.glowstone.command.MeCommand(this));
+        commandMap.register("#", new net.glowstone.command.TimeCommand(this));
+        commandMap.register("#", new net.glowstone.command.KickCommand(this));
         
         consoleManager.refreshCommands();
     }
