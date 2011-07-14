@@ -143,6 +143,8 @@ public final class McRegionChunkIoService implements ChunkIoService {
                 heightMap[offset] = 0;
             }
         }
+        levelTags.put("xPos", new IntTag("xPos", x));
+        levelTags.put("zPos", new IntTag("zPos", z));
         levelTags.put("SkyLight", new ByteArrayTag("SkyLight", skyLightData));
         levelTags.put("BlockLight", new ByteArrayTag("BlockLight", blockLightData));
         levelTags.put("Data", new ByteArrayTag("Data", metaData));
