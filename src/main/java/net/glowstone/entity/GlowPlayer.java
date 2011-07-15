@@ -16,24 +16,14 @@ import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import net.glowstone.msg.*;
+import net.glowstone.block.GlowBlockState;
+import net.glowstone.block.GlowSign;
 import net.glowstone.GlowChunk;
 import net.glowstone.GlowWorld;
 import net.glowstone.inventory.GlowInventory;
 import net.glowstone.inventory.GlowPlayerInventory;
 import net.glowstone.inventory.InventoryViewer;
-import net.glowstone.msg.BlockChangeMessage;
-import net.glowstone.msg.ChatMessage;
-import net.glowstone.msg.DestroyEntityMessage;
-import net.glowstone.msg.LoadChunkMessage;
-import net.glowstone.msg.Message;
-import net.glowstone.msg.PlayEffectMessage;
-import net.glowstone.msg.PlayNoteMessage;
-import net.glowstone.msg.PositionRotationMessage;
-import net.glowstone.msg.RespawnMessage;
-import net.glowstone.msg.SetWindowSlotMessage;
-import net.glowstone.msg.SpawnPositionMessage;
-import net.glowstone.msg.StateChangeMessage;
-import net.glowstone.msg.StatisticMessage;
 import net.glowstone.net.Session;
 import org.bukkit.Instrument;
 import org.bukkit.Note;
@@ -168,6 +158,12 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
                     knownChunks.add(key);
                     session.send(new LoadChunkMessage(x, z, true));
                     session.send(world.getChunkAt(x, z).toMessage());
+                    for (GlowBlockState state: world.getChunkAt(x, z).getBlockStates().values()) {
+                        if (state instanceof GlowSign) {
+                            GlowSign sign = (GlowSign)state;
+                            session.send(new UpdateSignMessage(sign.getX(), sign.getY(), sign.getZ(), sign.getLines()));
+                        }
+                    }
                 }
                 previousChunks.remove(key);
             }
@@ -434,8 +430,11 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     
     // -- Inventory
 
+    /**
+     * This is a bit of a hack for most cases where the inventory will need to e updated without adding an item
+     */
     public void updateInventory() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        getInventory().setItemInHand(getInventory().getItemInHand());
     }
     
     /**

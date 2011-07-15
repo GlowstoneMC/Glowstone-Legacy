@@ -1,13 +1,18 @@
 package net.glowstone;
 
+import net.glowstone.block.GlowBlockState;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 
 import net.glowstone.block.GlowBlock;
 import net.glowstone.msg.CompressedChunkMessage;
 import net.glowstone.msg.Message;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Represents a chunk of the map.
@@ -114,6 +119,11 @@ public final class GlowChunk implements Chunk {
     private boolean populated = false;
 
     /**
+     * A hashmap of BlockStates
+     */
+
+    private Map<Block, GlowBlockState> blockStates = new ConcurrentHashMap<Block, GlowBlockState>();
+    /**
      * Creates a new chunk with a specified X and Z coordinate.
      * @param x The X coordinate.
      * @param z The Z coordinate.
@@ -176,7 +186,15 @@ public final class GlowChunk implements Chunk {
     }
 
     public BlockState[] getTileEntities() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return blockStates.values().toArray(new BlockState[blockStates.size()]);
+    }
+
+    public void addBlockState(Block block, GlowBlockState state) {
+        blockStates.put(block, state);
+    }
+
+    public Map<Block, GlowBlockState> getBlockStates() {
+        return Collections.unmodifiableMap(blockStates);
     }
     
     /**
