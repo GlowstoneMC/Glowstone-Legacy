@@ -6,18 +6,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDamageEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.block.*;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -74,6 +68,12 @@ public final class EventFactory {
         return event;
     }
 
+    public static PlayerInteractEvent onPlayerInteract(Player player, Action act, Block clicked, BlockFace face) {
+        PlayerInteractEvent event = new PlayerInteractEvent(player, act, player.getItemInHand(), clicked, face);
+        callEvent(event);
+        return event;
+    }
+
     public static BlockBreakEvent onBlockBreak(Block block, Player player) {
         BlockBreakEvent event = new BlockBreakEvent(block, player);
         callEvent(event);
@@ -89,8 +89,15 @@ public final class EventFactory {
         callEvent(event);
         return event;
     }
+
     public static BlockPlaceEvent onBlockPlace(Block placed, BlockState replacedBlockState, Block placedAgainst, Player player, boolean canBuild) {
         BlockPlaceEvent event = new BlockPlaceEvent(placed, replacedBlockState, placedAgainst, player.getItemInHand(), player, canBuild);
+        callEvent(event);
+        return event;
+    }
+
+    public static BlockCanBuildEvent onBlockCanBuild(Block block, int id, boolean canBuild) {
+        BlockCanBuildEvent event = new BlockCanBuildEvent(block, id, canBuild);
         callEvent(event);
         return event;
     }

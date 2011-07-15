@@ -1,12 +1,17 @@
 package net.glowstone.block;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.lang.reflect.InvocationTargetException;
 
+import org.bukkit.event.Event.Result;
 import org.bukkit.Material;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import net.glowstone.block.properties.*;
@@ -16,12 +21,12 @@ import net.glowstone.block.properties.*;
  */ public enum BlockProperties {
     
     AIR(passthru()),
-    STONE(drops(false, Material.COBBLESTONE)),
+    STONE(drops(false, Material.COBBLESTONE)), //todo: tool(ToolType.PICKAXE, ToolLevel.WOOD)
     GRASS(drops(false, Material.DIRT)),
     DIRT(),
     COBBLESTONE(),
     WOOD(),
-    SAPLING(passthru()),
+    SAPLING(passthru(), place(Material.GRASS, Material.DIRT, Material.SOIL)),
     BEDROCK(drops()),
     WATER(passthru(), physics(), opaque(2)),
     STATIONARY_WATER(passthru(), physics(), opaque(2)),
@@ -34,14 +39,14 @@ import net.glowstone.block.properties.*;
     COAL_ORE(drops(false, Material.COAL)),
     LOG(),
     LEAVES(physics(), drops(), interact(), opaque(1), specialClass(LeavesProperties.class)),
-    SPONGE(place()),
+    SPONGE(),
     GLASS(drops()),
     LAPIS_ORE(drops(), specialClass(LapisOreProperties.class)),
     LAPIS_BLOCK(),
     DISPENSER(interact(), place(), redstone()),
     SANDSTONE(),
     NOTE_BLOCK(interact(), redstone()),
-    BED_BLOCK(interact()), // todo: height
+    BED_BLOCK(interact(), height(0.5625F)),
     POWERED_RAIL(place(), passthru(), physics(), redstone(), specialClass(RailProperties.class)),
     DETECTOR_RAIL(place(), passthru(), physics(), redstone(), specialClass(RailProperties.class)),
     PISTON_STICKY_BASE(place(), redstone()),
@@ -59,18 +64,18 @@ import net.glowstone.block.properties.*;
     GOLD_BLOCK(),
     IRON_BLOCK(),
     DOUBLE_STEP(drops(true, new ItemStack(Material.STEP, 2))),
-    STEP(place(), passthru(), drops(true, Material.STEP)), // todo: height and better custom place
+    STEP(place(), passthru(), drops(true, Material.STEP), height(0.5F)), // todo: better custom place
     BRICK(),
-    TNT(redstone()),
+    TNT(redstone(), hardness(0F)),
     BOOKSHELF(drops()),
     MOSSY_COBBLESTONE(),
     OBSIDIAN(),
-    TORCH(place(), passthru(), emitsLight(14)),
-    FIRE(passthru(), emitsLight(15)),
+    TORCH(place(), passthru(), emitsLight(14), specialClass(TorchProperties.class), hardness(0F)),
+    FIRE(passthru(), emitsLight(15), drops(), hardness(0F)),
     MOB_SPAWNER(drops()),
     WOOD_STAIRS(place(), passthru()),
     CHEST(interact()),
-    REDSTONE_WIRE(redstone(), drops(false, Material.REDSTONE)),
+    REDSTONE_WIRE(redstone(), drops(false, Material.REDSTONE), hardness(0F)),
     DIAMOND_ORE(drops(false, Material.DIAMOND)),
     DIAMOND_BLOCK(),
     WORKBENCH(interact()),
@@ -78,40 +83,40 @@ import net.glowstone.block.properties.*;
     SOIL(),
     FURNACE(interact(), place()),
     BURNING_FURNACE(interact(), place()),
-    SIGN_POST(passthru(), drops(false, Material.SIGN)),
-    WOODEN_DOOR(passthru(), interact(), place(), drops(false, Material.WOOD_DOOR)),
+    SIGN_POST(passthru(), place(), drops(false, Material.SIGN)),
+    WOODEN_DOOR(passthru(), interact(), place(), drops(false, Material.WOOD_DOOR), specialClass(DoorProperties.class)),
     LADDER(place(), passthru()),
     RAILS(place(), passthru(), physics(), redstone(), specialClass(RailProperties.class)),
     COBBLESTONE_STAIRS(place(), passthru()),
     WALL_SIGN(passthru(), drops(false, Material.SIGN)),
-    LEVER(place(), interact(), passthru(), redstone()),
+    LEVER(place(), interact(), passthru(), redstone(), specialClass(LeverProperties.class)),
     STONE_PLATE(place(), passthru(), redstone()),
-    IRON_DOOR_BLOCK(place(), passthru(), drops(false, Material.IRON_DOOR)),
+    IRON_DOOR_BLOCK(place(), passthru(), drops(false, Material.IRON_DOOR), specialClass(DoorProperties.class)),
     WOOD_PLATE(place(), passthru(), redstone()),
     REDSTONE_ORE(interact(), drops(), specialClass(RedstoneOreProperties.class)),
-    GLOWING_REDSTONE_ORE(interact(), physics(), drops(), specialClass(RedstoneOreProperties.class)),
-    REDSTONE_TORCH_OFF(passthru(), redstone()),
-    REDSTONE_TORCH_ON(passthru(), redstone()),
+    GLOWING_REDSTONE_ORE(interact(), physics(), drops(false, Material.REDSTONE_ORE), specialClass(RedstoneOreProperties.class)),
+    REDSTONE_TORCH_OFF(passthru(), redstone(), hardness(0F), drops(false, Material.REDSTONE_TORCH_ON)),
+    REDSTONE_TORCH_ON(passthru(), redstone(), hardness(0F)),
     STONE_BUTTON(passthru(), interact(), redstone()),
     SNOW(passthru(), drops(false, Material.SNOW_BALL)),
     ICE(opaque(2), drops()),
     SNOW_BLOCK(drops(false, new ItemStack(Material.SNOW_BALL, 4))),
     CACTUS(place(Material.SAND), physics()),
     CLAY(drops(false, new ItemStack(Material.CLAY_BALL, 4))),
-    SUGAR_CANE_BLOCK(place(Material.GRASS, Material.DIRT, Material.SOIL), drops(false, Material.SUGAR_CANE)),
+    SUGAR_CANE_BLOCK(place(Material.GRASS, Material.DIRT, Material.SOIL), drops(false, Material.SUGAR_CANE), passthru(), hardness(0F)),
     JUKEBOX(interact()),
-    FENCE(place(), opaque(0)), //todo: height
-    PUMPKIN(place()),
+    FENCE(place(), opaque(0), height(1.5F)),
+    PUMPKIN(place()), //todo: exclusive place restrictions
     NETHERRACK(),
     SOUL_SAND(),
     GLOWSTONE(drops(false, new ItemStack(Material.GLOWSTONE_DUST, 4))),
     PORTAL(place(), physics()),
     JACK_O_LANTERN(place(), emitsLight(15)),
-    CAKE_BLOCK(passthru()), //todo: height
-    DIODE_BLOCK_OFF(passthru(), redstone(), interact()),
-    DIODE_BLOCK_ON(passthru(), redstone(), interact()),
-    LOCKED_CHEST(emitsLight(15)),
-    TRAP_DOOR(redstone(), interact(), place(), specialClass(TrapdoorProperties.class));
+    CAKE_BLOCK(height(0.4375F)),
+    DIODE_BLOCK_OFF(passthru(), redstone(), interact(), specialClass(DiodeProperties.class), drops(false, Material.DIODE), hardness(0F)),
+    DIODE_BLOCK_ON(passthru(), redstone(), interact(), specialClass(DiodeProperties.class), drops(false, Material.DIODE), hardness(0F)),
+    LOCKED_CHEST(emitsLight(15), hardness(0F)),
+    TRAP_DOOR(redstone(), interact(), place(), passthru(), specialClass(TrapdoorProperties.class));
     
     // -----------------
     
@@ -145,6 +150,12 @@ import net.glowstone.block.properties.*;
     private int blocksLight = 15;
     private Material[] placeMaterials;
     private Class<?> specialClass;
+    private float height = 1F;
+    private float hardness = 1F;
+    private Method dropMethod;
+    private Method canPlaceMethod;
+    private Method interactMethod;
+    private Method doPlaceMethod;
     
     private BlockProperties(Property... props) {
         material = Material.getMaterial(toString());
@@ -152,6 +163,28 @@ import net.glowstone.block.properties.*;
         
         for (Property p : props)
             p.apply(this);
+        if (specialClass  != null) {
+            try {
+                dropMethod = specialClass.getMethod("drops");
+            } catch (NoSuchMethodException e) {
+                dropMethod = null;
+            }
+            try {
+                canPlaceMethod = specialClass.getMethod("canPlace", Location.class);
+            } catch (NoSuchMethodException e) {
+                canPlaceMethod = null;
+            }
+            try {
+                interactMethod = specialClass.getMethod("doInteract", PlayerInteractEvent.class);
+            } catch (NoSuchMethodException e) {
+                interactMethod = null;
+            }
+            try {
+                doPlaceMethod = specialClass.getMethod("doPlace", Player.class, Block.class, BlockFace.class);
+            } catch (NoSuchMethodException e) {
+                doPlaceMethod = null;
+            }
+        }
     }
     
     public ItemStack[] getDrops() {
@@ -159,9 +192,7 @@ import net.glowstone.block.properties.*;
             return dataDrops;
         } else if (specialClass != null) {
             try {
-                return (ItemStack[])(specialClass.getMethod("drops").invoke(null));
-            } catch (NoSuchMethodException e) {
-                return drops;
+                return (ItemStack[])dropMethod.invoke(null);
             } catch (IllegalAccessException e) {
                 return drops;
             } catch (InvocationTargetException e) {
@@ -181,9 +212,9 @@ import net.glowstone.block.properties.*;
             return ret;
         } else if (specialClass != null) {
             try {
-                return (ItemStack[])(specialClass.getMethod("drops").invoke(null));
-            } catch (NoSuchMethodException e) {
-                return drops;
+                if (dropMethod == null)
+                    return drops;
+                return (ItemStack[])dropMethod.invoke(null);
             } catch (IllegalAccessException e) {
                 return drops;
             } catch (InvocationTargetException e) {
@@ -195,6 +226,10 @@ import net.glowstone.block.properties.*;
     
     public boolean hasPhysics() {
         return physics;
+    }
+
+    public float getHeight() {
+        return height;
     }
     
     public boolean hasRedstone() {
@@ -209,19 +244,45 @@ import net.glowstone.block.properties.*;
         return place;
     }
 
+    public PlayerInteractEvent doInteract(PlayerInteractEvent event) {
+        if (interactMethod != null && event.useInteractedBlock() != Result.DENY)
+        try {
+            return (PlayerInteractEvent)interactMethod.invoke(null, event);
+        } catch (IllegalAccessException e) {
+            event.setUseInteractedBlock(Result.DENY);
+            return event;
+        } catch (InvocationTargetException e) {
+            event.setUseInteractedBlock(Result.DENY);
+            return event;
+        }
+        event.setUseInteractedBlock(Result.DENY);
+        return event;
+    }
+
     public boolean isPlaceableAt(Location loc) {
-        if (place == false || specialClass == null)
-            return true;
+
         if (place == true && placeMaterials != null)
             return Arrays.asList(placeMaterials).contains(loc.getBlock().getRelative(BlockFace.DOWN).getType());
-        try {
-            return (Boolean)(specialClass.getMethod("canPlace", Location.class).invoke(null, loc));
-        } catch (NoSuchMethodException e) {
+        if (place == false || canPlaceMethod == null)
             return true;
+        try {
+            return (Boolean)canPlaceMethod.invoke(null, loc);
         } catch (IllegalAccessException e) {
             return true;
         } catch (InvocationTargetException e) {
             return true;
+        }
+    }
+
+    public Byte specialPlace(Player player, Block block, BlockFace against) {
+        if (place == false || doPlaceMethod == null)
+            return null;
+        try {
+            return (Byte)doPlaceMethod.invoke(null, player, block, against);
+        } catch (IllegalAccessException e) {
+            return null;
+        } catch (InvocationTargetException e) {
+            return null;
         }
     }
     
@@ -235,6 +296,10 @@ import net.glowstone.block.properties.*;
     
     public int blockedLightLevel() {
         return blocksLight;
+    }
+
+    public float getHardness() {
+        return hardness;
     }
     
     // -----------------
@@ -299,6 +364,12 @@ import net.glowstone.block.properties.*;
             p.redstone = true;
         }};
     }
+
+    private static Property hardness(final float hardness) {
+        return new Property() { public void apply(BlockProperties p) {
+            p.hardness = hardness;
+        }};
+    }
     
     private static Property interact() {
         return new Property() { public void apply(BlockProperties p) {
@@ -324,5 +395,10 @@ import net.glowstone.block.properties.*;
             p.specialClass = clazz;
         }};
     }
-    
+
+    private static Property height(final float height) {
+        return new Property() { public void apply(BlockProperties p) {
+                p.height = height;
+        }};
+    }
 }
