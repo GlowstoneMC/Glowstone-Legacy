@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.BlockChangeDelegate;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Effect;
@@ -18,16 +19,7 @@ import org.bukkit.TreeType;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Boat;
-import org.bukkit.entity.CreatureType;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.PoweredMinecart;
-import org.bukkit.entity.StorageMinecart;
+import org.bukkit.entity.*;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
@@ -40,6 +32,7 @@ import net.glowstone.entity.EntityManager;
 import net.glowstone.entity.GlowLightningStrike;
 import net.glowstone.entity.GlowLivingEntity;
 import net.glowstone.entity.GlowPlayer;
+import net.glowstone.entity.*;
 import net.glowstone.msg.LoadChunkMessage;
 import net.glowstone.msg.StateChangeMessage;
 import net.glowstone.msg.TimeMessage;
@@ -533,7 +526,103 @@ public final class GlowWorld implements World {
     // entity spawning
 
     public <T extends Entity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        //Copied from CraftBukkit
+        if (location == null || clazz == null) {
+            throw new IllegalArgumentException("Location or entity class cannot be null");
+        }
+
+        GlowEntity entity = null;
+        GlowWorld world = this;
+
+        double x = location.getX();
+        double y = location.getY();
+        double z = location.getZ();
+        float pitch = location.getPitch();
+        float yaw = location.getYaw();
+
+        // order is important for some of these
+        /*if (Boat.class.isAssignableFrom(clazz)) {
+            entity = new GlowBoat(world, x, y, z);
+        } else if (Egg.class.isAssignableFrom(clazz)) {
+            entity = new GlowEgg(world, x, y, z);
+        } else if (FallingSand.class.isAssignableFrom(clazz)) {
+            entity = new GlowFallingSand(world, x, y, z, 0);
+        } else if (Fireball.class.isAssignableFrom(clazz)) {
+            entity = new GlowFireball(server, world);
+            ((GlowFireball) entity).setPositionRotation(x, y, z, yaw, pitch);
+            Vector direction = location.getDirection().multiply(10);
+            ((GlowFireball) entity).setDirection(direction.getX(), direction.getY(), direction.getZ());
+        } else if (Snowball.class.isAssignableFrom(clazz)) {
+            entity = new GlowSnowball(world, x, y, z);
+        } else if (Minecart.class.isAssignableFrom(clazz)) {
+
+            if (PoweredMinecart.class.isAssignableFrom(clazz)) {
+                entity = new GlowMinecart(world, x, y, z, CraftMinecart.Type.PoweredMinecart.getId());
+            } else if (StorageMinecart.class.isAssignableFrom(clazz)) {
+                entity = new GlowMinecart(world, x, y, z, CraftMinecart.Type.StorageMinecart.getId());
+            } else {
+                entity = new GlowMinecart(world, x, y, z, CraftMinecart.Type.Minecart.getId());
+            }
+
+        } else if (Arrow.class.isAssignableFrom(clazz)) {
+            entity = new GlowArrow(server, world);
+            entity.setPositionRotation(x, y, z, 0, 0);
+        } else */if (LivingEntity.class.isAssignableFrom(clazz)) {
+
+            if (Chicken.class.isAssignableFrom(clazz)) {
+                entity = new GlowChicken(server, world);
+            } else if (Cow.class.isAssignableFrom(clazz)) {
+                entity = new GlowCow(server, world);
+            } /*else if (Creeper.class.isAssignableFrom(clazz)) {
+                entity = new GlowCreeper(server, world);
+            } else if (Ghast.class.isAssignableFrom(clazz)) {
+                entity = new GlowGhast(server, world);
+            }*/ else if (Pig.class.isAssignableFrom(clazz)) {
+                entity = new GlowPig(server, world);
+            } else if (Player.class.isAssignableFrom(clazz)) {
+                // need a net server handler for this one
+            } else if (Sheep.class.isAssignableFrom(clazz)) {
+                entity = new GlowSheep(server, world);
+            }/* else if (Skeleton.class.isAssignableFrom(clazz)) {
+                entity = new GlowSkeleton(server, world);
+            } else if (Slime.class.isAssignableFrom(clazz)) {
+                entity = new GlowSlime(server, world);
+            } else if (Spider.class.isAssignableFrom(clazz)) {
+                entity = new GlowSpider(server, world);
+            } else if (Squid.class.isAssignableFrom(clazz)) {
+                entity = new GlowSquid(server, world);
+            } else if (Wolf.class.isAssignableFrom(clazz)) {
+                entity = new GlowWolf(server, world);
+            } else if (PigZombie.class.isAssignableFrom(clazz)) {
+                entity = new GlowPigZombie(server, world);
+            } else if (Zombie.class.isAssignableFrom(clazz)) {
+                entity = new GlowZombie(server, world);
+            }*/
+
+            if (entity != null) {
+                entity.setRawLocation(location);
+            }
+
+        } /*else if (Painting.class.isAssignableFrom(clazz)) {
+            // negative
+        } else if (TNTPrimed.class.isAssignableFrom(clazz)) {
+            entity = new GlowTNTPrimed(world, x, y, z);
+        } else if (Weather.class.isAssignableFrom(clazz)) {
+            // not sure what this can do
+            entity = new GlowWeatherStorm(world, x, y, z);
+        } else if (LightningStrike.class.isAssignableFrom(clazz)) {
+            // what is this, I don't even
+        } else if (Fish.class.isAssignableFrom(clazz)) {
+            // this is not a fish, it's a bobber, and it's probably useless
+            entity = new GlowFish(server, world);
+            entity.setLocation(x, y, z, pitch, yaw);
+        }*/
+
+        if (entity != null) {
+            return (T) entity; //FIXME
+        }
+
+        throw new IllegalArgumentException("Cannot spawn an entity for " + clazz.getName());
     }
 
     public Item dropItem(Location location, ItemStack item) {
