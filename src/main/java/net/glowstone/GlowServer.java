@@ -61,7 +61,7 @@ public final class GlowServer implements Server {
      */
     public static final Logger logger = Logger.getLogger("Minecraft");
 
-     /**
+    /**
      * The directory configurations are stored in
      */
     private static final File configDir = new File("config");
@@ -78,9 +78,9 @@ public final class GlowServer implements Server {
      * @param args The command-line arguments.
      */
     public static void main(String[] args) {
-        if (!configDir.exists() || !configDir.isDirectory())
-            configDir.mkdirs();
         try {
+            if (!configDir.exists() || !configDir.isDirectory())
+                configDir.mkdirs();
             config.load();
             if (config.getKeys().size() == 0) { // setting defaults
                 // Server config
