@@ -69,13 +69,20 @@ public final class GlowServer implements Server {
     private static final Properties properties = new Properties();
 
     /**
+     * The directory configurations are stored in
+     */
+    private static final File configdir = new File("config");
+
+    /**
      * Creates a new server on TCP port 25565 and starts listening for
      * connections.
      * @param args The command-line arguments.
      */
     public static void main(String[] args) {
         try {
-            File props = new File("server.properties");
+            if (!configdir.isDirectory())
+                configdir.mkdirs();
+            File props = new File(configdir, "server.properties");
             if (props.exists()) {
                 properties.load(new FileInputStream(props));
             } else {
@@ -148,7 +155,7 @@ public final class GlowServer implements Server {
     /**
      * The list of OPs on the server.
      */
-    private final PlayerListFile opsList = new PlayerListFile("ops.txt");
+    private final PlayerListFile opsList = new PlayerListFile(new File(configdir, "ops.txt"));
 
     /**
      * The world this server is managing.
@@ -195,7 +202,7 @@ public final class GlowServer implements Server {
      */
     public void start() {
         try {
-            properties.load(new FileInputStream(new File("server.properties")));
+            properties.load(new FileInputStream(new File(configdir, "server.properties")));
         } catch (Exception ex) {
             logger.warning("Failed to load server.properties, using defaults");
         }
@@ -740,7 +747,19 @@ public final class GlowServer implements Server {
      * @param config ServerConfig to populate
      */
     public void configureDbConfig(com.avaje.ebean.config.ServerConfig config) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        com.avaje.ebean.config.DataSourceConfig ds = new com.avaje.ebean.config.DataSourceConfig();
+        ds.setDriver(properties.getProperty("database-driver", "org.sqlite.JDBC"));
+        ds.setUrl(properties.getProperty("database-url", "jdbc:sqlite:{DIR}{NAME}.db"));
+        ds.setUsername(properties.getProperty("database-user", "glow"));
+        ds.setPassword(properties.getProperty("database-pass", "stone"));
+        ds.setIsolationLevel(com.avaje.ebeaninternal.server.lib.sql.TransactionIsolation.getLevel(properties.getProperty("isolation", "SERIALIZABLE")));
+
+        if (ds.getDriver().contains("sqlite")) {
+            config.setDatabasePlatform(new com.avaje.ebean.config.dbplatform.SQLitePlatform());
+            config.getDatabasePlatform().getDbDdlSyntax().setIdentity("");
+        }
+
+        config.setDataSourceConfig(ds);
     }
     
     /**
