@@ -120,6 +120,10 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
         gameMode = mode;
     }
     
+    protected void setSleepTicks (int ticks) {
+        sleepingTicks = ticks;
+    }
+    
     @Override
     public void pulse() {
         super.pulse();

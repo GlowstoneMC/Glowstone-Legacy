@@ -20,6 +20,9 @@ import java.util.logging.Logger;
 
 import org.bukkit.*;
 import org.bukkit.command.*;
+import net.glowstone.io.StorageQueue;
+import net.glowstone.io.mcregion.McRegionChunkIoService;
+import net.glowstone.io.mcregion.McRegionWorldStorageProvider;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
@@ -34,7 +37,7 @@ import org.bukkit.plugin.PluginLoadOrder;
 import org.bukkit.util.config.Configuration;
 
 import net.glowstone.command.*;
-import net.glowstone.io.McRegionChunkIoService;
+import net.glowstone.io.mcregion.McRegionWorldStorageProvider;
 import net.glowstone.net.MinecraftPipelineFactory;
 import net.glowstone.net.Session;
 import net.glowstone.net.SessionRegistry;
@@ -186,6 +189,11 @@ public final class GlowServer implements Server {
      * The server's message of the day
      */
     private String motd;
+
+    /**
+     * The storage operation queue used
+     */
+    private final StorageQueue queue = new StorageQueue();
 
     /**
      * Creates a new server.
@@ -432,6 +440,8 @@ public final class GlowServer implements Server {
         
         // And finally kill the console
         consoleManager.stop();
+
+        queue.end();
     }
     
     /**
@@ -514,6 +524,8 @@ public final class GlowServer implements Server {
             enablePlugins(PluginLoadOrder.STARTUP);
             enablePlugins(PluginLoadOrder.POSTWORLD);
             consoleManager.refreshCommands();
+
+            queue.reset();
             
             // TODO: Register aliases
         }
@@ -863,7 +875,7 @@ public final class GlowServer implements Server {
      */
     public GlowWorld createWorld(String name, Environment environment, long seed, ChunkGenerator generator) {
         if (getWorld(name) != null) return getWorld(name);
-        GlowWorld world = new GlowWorld(this, name, environment, seed, new McRegionChunkIoService(new File(name)), generator);
+        GlowWorld world = new GlowWorld(this, name, environment, seed, new McRegionWorldStorageProvider(new File(name)), generator);
         if (world != null) worlds.add(world);
         return world;
     }
@@ -1139,6 +1151,10 @@ public final class GlowServer implements Server {
     public void setMOTD(String motd, boolean permanent) {
         this.motd = motd;
         if (permanent) config.setProperty("server.motd", motd);
+    }
+
+    public StorageQueue getStorageQueue() {
+        return queue;
     }
      
 }

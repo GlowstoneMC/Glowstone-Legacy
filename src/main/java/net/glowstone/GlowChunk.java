@@ -503,4 +503,8 @@ public final class GlowChunk implements Chunk {
         return dest;
     }
 
+    public byte[] getTypes() {
+        return types.clone();
+    }
+
 }
