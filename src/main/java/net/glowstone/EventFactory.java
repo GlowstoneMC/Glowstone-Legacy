@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -60,6 +61,12 @@ public final class EventFactory {
     }
     
     // -- Block Events
+
+    public static PlayerToggleSneakEvent onPlayerToggleSneak(Player player, boolean isSneaking) {
+        PlayerToggleSneakEvent event = new PlayerToggleSneakEvent(player, isSneaking);
+        callEvent(event);
+        return event;
+    }
 
     public static BlockBreakEvent onBlockBreak(Block block, Player player) {
         return callEvent(new BlockBreakEvent(block, player));
