@@ -555,7 +555,7 @@ public final class GlowServer implements Server {
      * @return version of this server implementation
      */
     public String getVersion() {
-        return getClass().getPackage().getImplementationVersion();
+        return "9001." + getClass().getPackage().getImplementationVersion();
     }
     
     /**
