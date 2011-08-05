@@ -15,6 +15,7 @@ import net.glowstone.msg.KickMessage;
 import net.glowstone.msg.Message;
 import net.glowstone.msg.handler.HandlerLookupService;
 import net.glowstone.msg.handler.MessageHandler;
+import net.glowstone.spout.GlowSpoutManager;
 import org.bukkit.event.player.PlayerKickEvent;
 
 import org.jboss.netty.channel.Channel;
@@ -141,6 +142,8 @@ public final class Session {
         ((GlowWorld) this.server.getWorlds().get(0)).getRawPlayers().add(player);
         
         GlowServer.logger.log(Level.INFO, "{0} joined the game", player.getName());
+        
+        GlowSpoutManager.registerPlayer(player);
 
         String message = EventFactory.onPlayerJoin(player).getJoinMessage();
         if (message != null) {

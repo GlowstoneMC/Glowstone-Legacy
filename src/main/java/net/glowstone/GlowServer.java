@@ -40,6 +40,8 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.plugin.PluginLoadOrder;
 import org.bukkit.util.config.Configuration;
 
+import org.getspout.spoutapi.SpoutManager;
+
 import net.glowstone.command.*;
 import net.glowstone.io.McRegionChunkIoService;
 import net.glowstone.net.MinecraftPipelineFactory;
@@ -48,6 +50,7 @@ import net.glowstone.net.SessionRegistry;
 import net.glowstone.scheduler.GlowScheduler;
 import net.glowstone.util.PlayerListFile;
 import net.glowstone.inventory.CraftingManager;
+import net.glowstone.spout.*;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
@@ -442,8 +445,9 @@ public final class GlowServer implements Server {
             config.load();
             opsList.load();
             
-            // reset crafting
+            // resetAll various things
             craftingManager.resetRecipes();
+            GlowSpoutManager.resetAll();
             
             // load plugins
             loadPlugins();

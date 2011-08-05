@@ -1,9 +1,5 @@
 package net.glowstone.block;
 
-import net.glowstone.GlowChunk;
-import net.glowstone.GlowWorld;
-import net.glowstone.entity.GlowPlayer;
-import net.glowstone.msg.BlockChangeMessage;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
@@ -11,10 +7,17 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
 
+import org.getspout.spoutapi.block.SpoutBlock;
+
+import net.glowstone.GlowChunk;
+import net.glowstone.GlowWorld;
+import net.glowstone.entity.GlowPlayer;
+import net.glowstone.msg.BlockChangeMessage;
+
 /**
  * Represents a single block in a world.
  */
-public class GlowBlock implements Block {
+public class GlowBlock implements Block, SpoutBlock {
 
     private GlowChunk chunk;
     private int x;
@@ -199,6 +202,24 @@ public class GlowBlock implements Block {
     }
 
     public PistonMoveReaction getPistonMoveReaction() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    // ==== Spout ====
+
+    public void setTypeAsync(Material type) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setTypeIdAsync(int type) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setDataAsync(byte data) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setTypeIdAndDataAsync(int type, byte data) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

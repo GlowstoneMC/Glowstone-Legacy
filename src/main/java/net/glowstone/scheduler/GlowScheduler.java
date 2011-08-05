@@ -9,14 +9,16 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import net.glowstone.GlowServer;
-import net.glowstone.GlowWorld;
-import org.bukkit.World;
 
+import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitWorker;
+
+import net.glowstone.EventFactory;
+import net.glowstone.GlowServer;
+import net.glowstone.GlowWorld;
 
 /**
  * A class which schedules {@link GlowTask}s.
@@ -101,6 +103,9 @@ public final class GlowScheduler implements BukkitScheduler {
         server.getSessionRegistry().pulse();
         for (World world : server.getWorlds())
             ((GlowWorld) world).pulse();
+        
+        // Spout tick event.
+        EventFactory.onSpoutTick();
         
         // Bring in new tasks this tick.
         synchronized (newTasks) {

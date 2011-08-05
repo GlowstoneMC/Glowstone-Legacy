@@ -12,6 +12,9 @@ import org.bukkit.event.player.*;
 import org.bukkit.event.block.*;
 import org.bukkit.inventory.ItemStack;
 
+import org.getspout.spoutapi.event.spout.*;
+import org.getspout.spoutapi.player.SpoutPlayer;
+
 /**
  * Central class for the calling of events.
  */
@@ -84,4 +87,15 @@ public final class EventFactory {
     public static BlockPlaceEvent onBlockPlace(Block block, BlockState newState, Block against, Player player) {
         return callEvent(new BlockPlaceEvent(block, newState, against, player.getItemInHand(), player, true));
     }
+    
+    // -- Spout Events
+    
+    public static ServerTickEvent onSpoutTick() {
+        return callEvent(new ServerTickEvent());
+    }
+    
+    public static SpoutCraftEnableEvent onSpoutCraftEnable(SpoutPlayer player) {
+        return callEvent(new SpoutCraftEnableEvent(player));
+    }
+    
 }

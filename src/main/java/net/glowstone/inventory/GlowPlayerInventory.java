@@ -2,10 +2,12 @@ package net.glowstone.inventory;
 
 import org.bukkit.inventory.*;
 
+import org.getspout.spoutapi.inventory.SpoutPlayerInventory;
+
 /**
  * An Inventory representing the items a player is holding.
  */
-public class GlowPlayerInventory extends GlowInventory implements PlayerInventory {
+public class GlowPlayerInventory extends GlowInventory implements PlayerInventory, SpoutPlayerInventory {
     
     public static final int HELMET_SLOT = 36;
     public static final int CHESTPLATE_SLOT = 37;
@@ -125,6 +127,28 @@ public class GlowPlayerInventory extends GlowInventory implements PlayerInventor
             if (slotConversion[i] == slot) return i;
         }
         return -1;
+    }
+    
+    // ==== Sput ====
+
+    public int getItemInHandSlot() {
+        return getHeldItemSlot();
+    }
+
+    public ItemStack getResult() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public ItemStack[] getMatrix() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setResult(ItemStack newResult) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setMatrix(ItemStack[] contents) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

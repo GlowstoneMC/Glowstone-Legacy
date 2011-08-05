@@ -10,6 +10,8 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 
+import org.getspout.spoutapi.block.SpoutChunk;
+
 import net.glowstone.block.BlockProperties;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
@@ -20,7 +22,7 @@ import net.glowstone.msg.Message;
  * Represents a chunk of the map.
  * @author Graham Edgecombe
  */
-public final class GlowChunk implements Chunk {
+public final class GlowChunk implements Chunk, SpoutChunk {
 
     /**
      * The radius (not including the current chunk) of the chunks that the

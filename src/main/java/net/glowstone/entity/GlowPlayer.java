@@ -16,8 +16,16 @@ import org.bukkit.Statistic;
 import org.bukkit.Instrument;
 import org.bukkit.Note;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.event.player.PlayerChatEvent;
+
+import org.getspout.spoutapi.event.input.RenderDistance;
+import org.getspout.spoutapi.gui.InGameScreen;
+import org.getspout.spoutapi.keyboard.Keyboard;
+import org.getspout.spoutapi.packet.*;
+import org.getspout.spoutapi.packet.standard.*;
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 import net.glowstone.EventFactory;
 import net.glowstone.GlowChunk;
@@ -27,28 +35,14 @@ import net.glowstone.inventory.GlowInventory;
 import net.glowstone.inventory.GlowPlayerInventory;
 import net.glowstone.inventory.InventoryViewer;
 import net.glowstone.util.Parameter;
-import net.glowstone.msg.BlockChangeMessage;
-import net.glowstone.msg.ChatMessage;
-import net.glowstone.msg.DestroyEntityMessage;
-import net.glowstone.msg.EntityEquipmentMessage;
-import net.glowstone.msg.EntityMetadataMessage;
-import net.glowstone.msg.LoadChunkMessage;
-import net.glowstone.msg.Message;
-import net.glowstone.msg.PlayEffectMessage;
-import net.glowstone.msg.PlayNoteMessage;
-import net.glowstone.msg.PositionRotationMessage;
-import net.glowstone.msg.RespawnMessage;
-import net.glowstone.msg.SetWindowSlotMessage;
-import net.glowstone.msg.SpawnPositionMessage;
-import net.glowstone.msg.StateChangeMessage;
-import net.glowstone.msg.StatisticMessage;
+import net.glowstone.msg.*;
 import net.glowstone.net.Session;
 
 /**
  * Represents an in-game player.
  * @author Graham Edgecombe
  */
-public final class GlowPlayer extends GlowHumanEntity implements Player, InventoryViewer {
+public final class GlowPlayer extends GlowHumanEntity implements Player, SpoutPlayer, InventoryViewer {
 
     /**
      * The normal height of a player's eyes above their feet.
@@ -591,6 +585,271 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
      */
     public void resetPlayerTime() {
         setPlayerTime(0, true);
+    }
+    
+    // ==== Spout ====
+    
+    /**
+     * A holder for Spoutcraft-only information.
+     */
+    private class SpoutcraftData {
+        public boolean enabled = false;
+        
+        public InGameScreen screen = new InGameScreen(getEntityId());
+        
+        public RenderDistance currentRender = RenderDistance.NORMAL;
+        public RenderDistance maxRender = RenderDistance.FAR;
+        public RenderDistance minRender = RenderDistance.TINY;
+        
+        public int verMajor, verMinor, verBuild;
+        
+        public Keyboard keyFront, keyBack, keyLeft, keyRight, keyJump;
+        public Keyboard keyInv, keyDrop, keyChat, keyFog, keySneak;
+        
+        public String clipboard;
+    }
+    
+    /**
+     * The SpoutCraft-only information attached to this player.
+     */
+    private final SpoutcraftData spoutcraft = new SpoutcraftData();
+    
+    // basics
+    
+    public void enableSpoutcraft(int major, int minor, int build) {
+        if (!spoutcraft.enabled) {
+            spoutcraft.enabled = true;
+            spoutcraft.verMajor = major;
+            spoutcraft.verMinor = minor;
+            spoutcraft.verBuild = build;
+            getServer().getLogger().log(Level.INFO, "{0} authenticated with SpoutCraft {1}.{2}.{3}", new Object[]{getName(), major, minor, build});
+        }
+    }
+
+    public boolean isSpoutCraftEnabled() {
+        return spoutcraft.enabled;
+    }
+
+    public int getVersion() {
+		if (isSpoutCraftEnabled()) {
+			return spoutcraft.verMajor * 100 + spoutcraft.verMinor * 10 + spoutcraft.verBuild;
+		} else {
+            return -1;
+        }
+    }
+    
+    // inventory
+
+    public boolean closeActiveWindow() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public boolean openInventoryWindow(Inventory inventory) {
+        return openInventoryWindow(inventory, null, false);
+    }
+
+    public boolean openInventoryWindow(Inventory inventory, Location location) {
+        return openInventoryWindow(inventory, location, false);
+    }
+
+    public boolean openInventoryWindow(Inventory inventory, Location location, boolean ignoreDistance) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public boolean openWorkbenchWindow(Location location) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Location getActiveInventoryLocation() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setActiveInventoryLocation(Location location) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    // gui
+
+    public InGameScreen getMainScreen() {
+        return spoutcraft.screen;
+    }
+    
+    // keys
+
+    public Keyboard getForwardKey() {
+        return spoutcraft.keyFront;
+    }
+
+    public Keyboard getBackwardKey() {
+        return spoutcraft.keyBack;
+    }
+
+    public Keyboard getLeftKey() {
+        return spoutcraft.keyLeft;
+    }
+
+    public Keyboard getRightKey() {
+        return spoutcraft.keyRight;
+    }
+
+    public Keyboard getJumpKey() {
+        return spoutcraft.keyJump;
+    }
+
+    public Keyboard getInventoryKey() {
+        return spoutcraft.keyInv;
+    }
+
+    public Keyboard getDropItemKey() {
+        return spoutcraft.keyDrop;
+    }
+
+    public Keyboard getChatKey() {
+        return spoutcraft.keyChat;
+    }
+
+    public Keyboard getToggleFogKey() {
+        return spoutcraft.keyFog;
+    }
+
+    public Keyboard getSneakKey() {
+        return spoutcraft.keySneak;
+    }
+
+	public void updateKeys(byte[] keys) {
+		spoutcraft.keyFront = Keyboard.getKey(keys[0]);
+		spoutcraft.keyBack = Keyboard.getKey(keys[2]);
+		spoutcraft.keyLeft = Keyboard.getKey(keys[1]);
+		spoutcraft.keyRight = Keyboard.getKey(keys[3]);
+		spoutcraft.keyJump = Keyboard.getKey(keys[4]);
+		spoutcraft.keyInv = Keyboard.getKey(keys[5]);
+		spoutcraft.keyDrop = Keyboard.getKey(keys[6]);
+		spoutcraft.keyChat = Keyboard.getKey(keys[7]);
+		spoutcraft.keyFog = Keyboard.getKey(keys[8]);
+		spoutcraft.keySneak = Keyboard.getKey(keys[9]);
+	}
+    
+    // render distance
+
+    public RenderDistance getRenderDistance() {
+        return spoutcraft.currentRender;
+    }
+
+    public void setRenderDistance(RenderDistance distance) {
+        setRenderDistance(distance, true);
+    }
+
+    public void setRenderDistance(RenderDistance currentRender, boolean update) {
+        if (spoutcraft.enabled) {
+            spoutcraft.currentRender = currentRender;
+            if (update) {
+                sendPacket(new PacketRenderDistance(currentRender, null, null));
+            }
+        }
+    }
+
+    public RenderDistance getMaximumRenderDistance() {
+        return spoutcraft.maxRender;
+    }
+
+    public void setMaximumRenderDistance(RenderDistance maximum) {
+        if (spoutcraft.enabled) {
+            spoutcraft.maxRender = maximum;
+            sendPacket(new PacketRenderDistance(null, maximum, null));
+        }
+    }
+
+    public void resetMaximumRenderDistance() {
+        setMaximumRenderDistance(RenderDistance.FAR);
+    }
+
+    public RenderDistance getMinimumRenderDistance() {
+        return spoutcraft.minRender;
+    }
+
+    public void resetMinimumRenderDistance() {
+        setMinimumRenderDistance(RenderDistance.TINY);
+    }
+
+    public void setMinimumRenderDistance(RenderDistance minimum) {
+        if (spoutcraft.enabled) {
+            spoutcraft.minRender = minimum;
+            sendPacket(new PacketRenderDistance(null, minimum, null));
+        }
+    }
+    
+    // clipboard
+
+    public String getClipboardText() {
+        return spoutcraft.clipboard;
+    }
+
+    public void setClipboardText(String text) {
+        setClipboardText(text, true);
+    }
+
+    public void setClipboardText(String text, boolean update) {
+        if (spoutcraft.enabled) {
+            spoutcraft.clipboard = text;
+            if (update) {
+                sendPacket(new PacketClipboardText(text));
+            }
+        }
+    }
+    
+    // senders & helpers
+
+    public void sendNotification(String title, String message, Material toRender) {
+        sendPacket(new PacketBukkitContribAlert(title, message, toRender.getId()));
+    }
+
+    public void sendNotification(String title, String message, Material toRender, short data, int time) {
+        sendPacket(new PacketNotification(title, message, toRender.getId(), data, time));
+    }
+
+    public void setTexturePack(String url) {
+        sendPacket(new PacketTexturePack(url));
+    }
+
+    public void sendPacket(SpoutPacket packet) {
+        if (spoutcraft.enabled) {
+            session.send(new SpoutMessage(packet));
+        }
+    }
+
+    public void sendPacket(MCPacket packet) {
+        Message message = makeMessage(packet);
+        if (message != null) {
+            session.send(message);
+        }
+    }
+
+    public void sendImmediatePacket(MCPacket packet) {
+        sendPacket(packet); // TODO
+    }
+    
+    private Message makeMessage(MCPacket packet) {
+        if (packet instanceof MCPacket0KeepAlive) {
+            return new PingMessage();
+        } else if (packet instanceof MCPacket3Chat) {
+            MCPacket3Chat chat = (MCPacket3Chat) packet;
+            return new ChatMessage(chat.getMessage());
+        } else if (packet instanceof MCPacket17) {
+            // Currently no corresponding Message
+            return null;
+        } else if (packet instanceof MCPacket18ArmAnimation) {
+            MCPacket18ArmAnimation anim = (MCPacket18ArmAnimation) packet;
+            return new AnimateEntityMessage(anim.getEntityId(), anim.getAnimate());
+        } else if (packet instanceof MCPacket51MapChunk) {
+            // Currently no corresponding Message
+            return null;
+        } else if (packet instanceof MCPacket51MapChunkUncompressed) {
+            MCPacket51MapChunkUncompressed chunk = (MCPacket51MapChunkUncompressed) packet;
+            return new CompressedChunkMessage(chunk.getX(), chunk.getY(), chunk.getZ(), chunk.getSizeX(), chunk.getSizeX(), chunk.getSizeZ(), chunk.getUncompressedChunkData());
+        } else {
+            // Unhandleable MCPacketUnknown or an otherwise unknown packet type
+            return null;
+        }
     }
 
 }
