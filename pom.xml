@@ -29,6 +29,15 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>heroes</id>
+            <name>Heroes Artifactory</name>
+            <layout>default</layout>
+            <url>http://repo.onarandombox.com/artifactory/repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
     
     <pluginRepositories>
@@ -75,9 +84,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.avaje</groupId>
-            <artifactId>ebean</artifactId>
-            <version>2.7.3</version>
+            <groupId>com.grahamedgecombe</groupId>
+            <artifactId>jterminal</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.getspout</groupId>
