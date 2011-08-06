@@ -153,6 +153,9 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, SpoutPl
                 session.send(entity.createSpawnMessage());
             }
         }
+        
+        // Spout
+        spoutcraft.screen.onTick();
     }
 
     /**
@@ -622,7 +625,9 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, SpoutPl
             spoutcraft.verMajor = major;
             spoutcraft.verMinor = minor;
             spoutcraft.verBuild = build;
-            getServer().getLogger().log(Level.INFO, "{0} authenticated with SpoutCraft {1}.{2}.{3}", new Object[]{getName(), major, minor, build});
+            getServer().getLogger().log(Level.INFO, "{0} is using SpoutCraft {1}.{2}.{3}", new Object[]{getName(), major, minor, build});
+            
+            EventFactory.onSpoutCraftEnable(this);
         }
     }
 
