@@ -20,7 +20,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.event.player.PlayerChatEvent;
 
-import org.getspout.spoutapi.event.input.RenderDistance;
+import org.getspout.spoutapi.player.RenderDistance;
 import org.getspout.spoutapi.gui.InGameScreen;
 import org.getspout.spoutapi.keyboard.Keyboard;
 import org.getspout.spoutapi.packet.*;
@@ -805,7 +805,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, SpoutPl
     // senders & helpers
 
     public void sendNotification(String title, String message, Material toRender) {
-        sendPacket(new PacketBukkitContribAlert(title, message, toRender.getId()));
+        sendPacket(new PacketAlert(title, message, toRender.getId()));
     }
 
     public void sendNotification(String title, String message, Material toRender, short data, int time) {

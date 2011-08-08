@@ -25,6 +25,7 @@ public final class HandlerLookupService {
             bind(ActivateItemMessage.class, ActivateItemMessageHandler.class);
             bind(EntityActionMessage.class, EntityActionMessageHandler.class);
             bind(AnimateEntityMessage.class, AnimateEntityMessageHandler.class);
+            bind(SpoutMessage.class, SpoutMessageHandler.class);
         } catch (Exception ex) {
             throw new ExceptionInInitializerError(ex);
         }

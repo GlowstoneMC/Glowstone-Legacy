@@ -11,6 +11,15 @@ public final class AnimateEntityMessageHandler extends MessageHandler<AnimateEnt
 
     @Override
     public void handle(Session session, GlowPlayer player, AnimateEntityMessage message) {
+        if (player == null)
+            return;
+        
+        // Spoutcraft check
+        if (message.getId() == -42 && !player.isSpoutCraftEnabled()) {
+            player.enableSpoutcraft(1, 0, 2);
+            return;
+        }
+        
         switch (message.getAnimation()) {
         case AnimateEntityMessage.ANIMATION_SWING_ARM:
             AnimateEntityMessage toSend = new AnimateEntityMessage(player.getEntityId(), AnimateEntityMessage.ANIMATION_SWING_ARM);

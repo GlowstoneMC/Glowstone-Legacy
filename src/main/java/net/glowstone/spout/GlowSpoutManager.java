@@ -1,10 +1,13 @@
 package net.glowstone.spout;
 
+import net.glowstone.entity.GlowPlayer;
+import net.glowstone.msg.AnimateEntityMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.packet.PacketAllowVisualCheats;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 /**
@@ -47,10 +50,13 @@ public class GlowSpoutManager {
         items.registerPlayer(player);
         sky.registerPlayer(player);
         
-        // send the magic version chat
-		String message = ChatColor.getByCode(verMajor).toString() + ChatColor.WHITE;
-		message = message + ChatColor.getByCode(verMinor) + ChatColor.WHITE +  ChatColor.getByCode(verBuild);
-        player.sendRawMessage(message);
+        // send the magic animate packet
+        ((GlowPlayer) player).getSession().send(new AnimateEntityMessage(-42, 0));
+        
+        // if they're ops, let them cheat
+        if (player.isOp()) {
+            player.sendPacket(new PacketAllowVisualCheats(true));
+        }
     }
     
     /**

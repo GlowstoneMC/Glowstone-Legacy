@@ -45,10 +45,6 @@ public final class SpoutCodec extends MessageCodec<SpoutMessage> {
         ByteArrayInputStream bytes = new ByteArrayInputStream(data);
         packet.readData(new DataInputStream(bytes));
         
-        if (packetType != PacketType.PacketKeyPress) {
-            System.out.println("[debug] Got Spout packet " + packetType.toString());
-        }
-        
         return new SpoutMessage(packet);
     }
 
@@ -62,8 +58,6 @@ public final class SpoutCodec extends MessageCodec<SpoutMessage> {
         buffer.writeInt(packet.getPacketType().getId());
         buffer.writeInt(packet.getNumBytes());
         buffer.writeBytes(bytes.toByteArray());
-        
-        System.out.println("[debug] Encoded Spout packet " + packet.getPacketType().toString());
         
         return buffer;
     }
