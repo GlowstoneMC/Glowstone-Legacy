@@ -52,11 +52,6 @@ public class GlowSpoutManager {
         
         // send the magic animate packet
         ((GlowPlayer) player).getSession().send(new AnimateEntityMessage(-42, 0));
-        
-        // if they're ops, let them cheat
-        if (player.isOp()) {
-            player.sendPacket(new PacketAllowVisualCheats(true));
-        }
     }
     
     /**

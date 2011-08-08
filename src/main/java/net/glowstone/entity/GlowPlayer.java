@@ -628,6 +628,10 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, SpoutPl
             getServer().getLogger().log(Level.INFO, "{0} is using SpoutCraft {1}.{2}.{3}", new Object[]{getName(), major, minor, build});
             
             EventFactory.onSpoutCraftEnable(this);
+            
+            if (isOp()) {
+                sendPacket(new PacketAllowVisualCheats(true));
+            }
         }
     }
 
