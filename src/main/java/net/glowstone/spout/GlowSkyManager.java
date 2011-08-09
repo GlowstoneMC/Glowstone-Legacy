@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.gui.Color;
 import org.getspout.spoutapi.packet.PacketSky;
 import org.getspout.spoutapi.player.SkyManager;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -22,6 +23,9 @@ public class GlowSkyManager implements SkyManager {
     private final HashMap<String, Integer> moonSize = new HashMap<String, Integer>();
     private final HashMap<String, String> sunUrl = new HashMap<String, String>();
     private final HashMap<String, String> moonUrl = new HashMap<String, String>();
+    private final HashMap<String, Color> skyColor = new HashMap<String, Color>();
+    private final HashMap<String, Color> fogColor = new HashMap<String, Color>();
+    private final HashMap<String, Color> cloudColor = new HashMap<String, Color>();
 
     // clouds
     
@@ -137,6 +141,39 @@ public class GlowSkyManager implements SkyManager {
         }
     }
 
+    @Override
+    public void setSkyColor(SpoutPlayer player, Color skycolor) {
+        skyColor.put(player.getName(), skycolor);
+        player.sendPacket(new PacketSky(skycolor, null, null));
+    }
+
+    @Override
+    public Color getSkyColor(SpoutPlayer player) {
+        return skyColor.get(player.getName());
+    }
+    
+    @Override
+    public void setFogColor(SpoutPlayer player, Color fogColor) {
+        this.fogColor.put(player.getName(), fogColor);
+        player.sendPacket(new PacketSky(null, fogColor, null));
+    }
+
+    @Override
+    public Color getFogColor(SpoutPlayer player) {
+        return fogColor.get(player.getName());
+    }
+
+    @Override
+    public void setCloudColor(SpoutPlayer player, Color cloudColor) {
+        this.cloudColor.put(player.getName(), cloudColor);
+        player.sendPacket(new PacketSky(null, null, cloudColor));
+    }
+
+    @Override
+    public Color getCloudColor(SpoutPlayer player) {
+        return cloudColor.get(player.getName());
+    }
+
     // misc
     
     public void registerPlayer(SpoutPlayer player) {
@@ -145,7 +182,7 @@ public class GlowSkyManager implements SkyManager {
             moon = moon == null ? "" : moon;
             String sun = getSunTextureUrl(player);
             sun = sun == null ? "" : sun;
-            player.sendPacket(new PacketSky(getRealCloudHeight(player), getStarFrequency(player), getSunSizePercent(player), getMoonSizePercent(player), sun, moon));
+            player.sendPacket(new PacketSky(getRealCloudHeight(player), getStarFrequency(player), getSunSizePercent(player), getMoonSizePercent(player), getSkyColor(player), getFogColor(player), getCloudColor(player), sun, moon));
         }
     }
 
@@ -156,8 +193,11 @@ public class GlowSkyManager implements SkyManager {
         moonSize.clear();
         sunUrl.clear();
         moonUrl.clear();
+        skyColor.clear();
+        fogColor.clear();
+        cloudColor.clear();
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            SpoutManager.getPlayer(player).sendPacket(new PacketSky(108, 1500, 100, 100, "[reset]", "[reset]"));
+            SpoutManager.getPlayer(player).sendPacket(new PacketSky(108, 1500, 100, 100, new Color(-2,-2,-2), new Color(-2,-2,-2), new Color(-2,-2,-2), "[reset]", "[reset]"));
         }
     }
     
