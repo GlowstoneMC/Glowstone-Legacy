@@ -195,6 +195,10 @@ public final class GlowServer implements Server {
             config.setProperty("server.online-mode", true);
             config.setProperty("server.log-file", "logs/log-%D.txt");
             config.setProperty("server.terminal-mode", "jline");
+            config.setProperty("server.allow-flight", true);
+            config.setProperty("server.white-list", false);
+            config.setProperty("server.allow-nether", true);
+            config.setProperty("server.view-distance", GlowChunk.VISIBLE_RADIUS);
 
             // Server folders config
             config.setProperty("server.folders.plugins", "plugins");
@@ -932,5 +936,43 @@ public final class GlowServer implements Server {
     public String getLogFile() {
         return config.getString("server.log-file", "logs/log-%D.txt");
     }
-     
+
+    /**
+     * Whether flying is allowed on the server
+     *
+     * @return True if flying is enabled.
+     */
+    public boolean getAllowFlight() {
+        return config.getBoolean("server.allow-flight", true);
+    }
+
+    /**
+     * Whether the server uses a whitelist
+     *
+     * @return True if a whitelist is enabled.
+     */
+    public boolean hasWhitelist() {
+	//FIXME: actually use a whitelist
+        return config.getBoolean("server.white-list", false);
+    }
+
+    /**
+     * Whether travel to the Nether world is allowed
+     *
+     * @return True if players could travel between the normal and the nether world
+     */
+    public boolean getAllowNether() {
+	//FIXME: actually add a nether world if true
+        return config.getBoolean("server.allow-nether", true);
+    }
+
+    /**
+     * The view distance for the server
+     *
+     * @return Radius of chunks sent to the client
+     */
+    public int getViewDistance() {
+        return config.getInt("server.view-distance", GlowChunk.VISIBLE_RADIUS);
+    }
+
 }
