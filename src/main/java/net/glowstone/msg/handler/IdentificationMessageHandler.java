@@ -8,10 +8,12 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import net.glowstone.EventFactory;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.msg.IdentificationMessage;
 import net.glowstone.net.Session;
 import net.glowstone.net.Session.State;
+import org.bukkit.event.player.PlayerPreLoginEvent;
 
 public final class IdentificationMessageHandler extends MessageHandler<IdentificationMessage> {
 
@@ -42,8 +44,12 @@ public final class IdentificationMessageHandler extends MessageHandler<Identific
             
             // Was the player allowed?
             if (allow) {
+                PlayerPreLoginEvent event = EventFactory.onPlayerPreLogin(message.getName(), session);
+                if (event.getResult() != PlayerPreLoginEvent.Result.ALLOWED) {
+                    session.disconnect(event.getKickMessage());
+                }
                 session.send(new IdentificationMessage(0, "", 0, 0));
-                session.setPlayer(new GlowPlayer(session, message.getName())); // TODO case-correct the name
+                session.setPlayer(new GlowPlayer(session, event.getName())); // TODO case-correct the name
             } else {
                 session.getServer().getLogger().log(Level.INFO, "Failed to authenticate {0} with minecraft.net.", message.getName());
                 session.disconnect("Player identification failed!");

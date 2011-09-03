@@ -1,6 +1,7 @@
 package net.glowstone;
 
 import net.glowstone.entity.GlowPlayer;
+import net.glowstone.net.Session;
 import net.glowstone.util.bans.BanManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -84,6 +85,10 @@ public final class EventFactory {
                     "The server is full (" + player.getServer().getMaxPlayers() + " players).");
         }
         return callEvent(event);
+    }
+
+    public static PlayerPreLoginEvent onPlayerPreLogin(String name, Session session) {
+        return callEvent(new PlayerPreLoginEvent(name, session.getAddress().getAddress()));
     }
     
     // -- Block Events
