@@ -3,6 +3,7 @@ package net.glowstone.command;
 import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -47,13 +48,7 @@ public abstract class GlowCommand extends Command {
             message = "(" + sender.getClass().getName() + ": " + message + ")";
         }
         
-        for (Player p : server.getOnlinePlayers()) {
-            if (p.isOp()) {
-                p.sendMessage(ChatColor.GRAY + message);
-            }
-        }
-        
-        server.getLogger().info(message);
+        server.broadcast(message, Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
         
         return true;
     }

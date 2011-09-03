@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommandYamlParser;
 import org.bukkit.command.SimpleCommandMap;
@@ -32,6 +33,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
@@ -175,7 +177,6 @@ public final class GlowServer implements Server {
      * Creates a new server.
      */
     public GlowServer() {
-        logger.log(Level.INFO, "This server is running {0} version {1}", new Object[]{getName(), getVersion()});
         init();
     }
 
@@ -648,10 +649,7 @@ public final class GlowServer implements Server {
      * @return the number of players
      */
     public int broadcastMessage(String message) {
-        for (Player player : getOnlinePlayers()) {
-            player.sendMessage(message);
-        }
-        return getOnlinePlayers().length;
+        return broadcast(message, BROADCAST_CHANNEL_USERS);
     }
     
     /**
@@ -969,6 +967,29 @@ public final class GlowServer implements Server {
 
     public boolean getAllowFlight() {
         return config.getBoolean("server.allow-flight", false);
+    }
+
+    public void shutdown() {
+        broadcast("Stopping the server", BROADCAST_CHANNEL_ADMINISTRATIVE);
+        stop();
+    }
+
+    public int broadcast(String message, String permission) {
+        int count = 0;
+        for (Permissible permissible : getPluginManager().getPermissionSubscriptions(permission)) {
+            if (permissible instanceof CommandSender) {
+                ((CommandSender) permissible).sendMessage(message);
+            }
+        }
+        return count;
+    }
+
+    public OfflinePlayer getOfflinePlayer(String name) {
+        OfflinePlayer player = getPlayer(name);
+        if (player == null) {
+            player = new GlowOfflinePlayer(this, name);
+        }
+        return player;
     }
 
     public int getViewDistance() {
