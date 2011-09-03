@@ -19,12 +19,6 @@ public final class IdentificationMessageHandler extends MessageHandler<Identific
     public void handle(Session session, GlowPlayer player, IdentificationMessage message) {
         Session.State state = session.getState();
         
-        // Is the player on the whitelist?
-        if (session.getServer().hasWhitelist() && !session.getServer().getWhitelist().contains(message.getName())) {
-            session.getServer().getLogger().log(Level.INFO, "Player {0} was not on the whitelist.", message.getName());
-            session.disconnect("You're not whitelisted!");
-        }
-        
         // Are we at the proper stage?
         if (state == Session.State.EXCHANGE_IDENTIFICATION) {
             session.setState(State.GAME);

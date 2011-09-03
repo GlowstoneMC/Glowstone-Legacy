@@ -29,7 +29,7 @@ public class KickCommand extends GlowCommand {
             }
             
             String senderName = (sender instanceof Player? ((Player) sender).getDisplayName(): "Console");
-            player.kickPlayer("Kicked by " + sender);
+            player.kickPlayer("Kicked by " + senderName);
             server.broadcastMessage(ChatColor.YELLOW + args[0] + " has been kicked");
             return true;
         }

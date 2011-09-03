@@ -13,12 +13,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.glowstone.util.bans.BanManager;
+import net.glowstone.util.bans.FlatFileBanManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -52,6 +55,7 @@ import net.glowstone.util.PlayerListFile;
 import net.glowstone.inventory.CraftingManager;
 import net.glowstone.map.GlowMapView;
 
+import org.bukkit.util.permissions.DefaultPermissions;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -162,6 +166,11 @@ public final class GlowServer implements Server {
      * The list of players whitelisted on the server.
      */
     private final PlayerListFile whitelist = new PlayerListFile(new File(configDir, "whitelist.txt"));
+
+    /**
+     * The server's ban manager.
+     */
+    private BanManager banManager = new FlatFileBanManager(this);
 
     /**
      * The world this server is managing.
@@ -293,7 +302,7 @@ public final class GlowServer implements Server {
         // Server config
         config.getInt("server.port", 25565);
         config.getString("server.world-name", "world");
-        config.getInt("server.max-players", 0);
+        config.getInt("server.max-players", 50);
         config.getInt("server.spawn-radius", 16);
         config.getBoolean("server.online-mode", true);
         config.getString("server.log-file", "logs/log-%D.txt");
@@ -333,6 +342,9 @@ public final class GlowServer implements Server {
         // Config should have already loaded by this point, but to be safe...
         config.load();
         
+        DefaultPermissions.registerCorePermissions();
+        consoleManager.setupConsole();
+        
         // Register these first so they're usable while the worlds are loading
         List<Command> commands = Arrays.<Command>asList(
                 new MeCommand(this),
@@ -343,13 +355,15 @@ public final class GlowServer implements Server {
                 new ListCommand(this),
                 new TimeCommand(this),
                 new StopCommand(this),
-                new WhitelistCommand(this));
+                new WhitelistCommand(this),
+                new BanCommand(this));
         builtinCommandMap.registerAll("#", commands);
         builtinCommandMap.register("#", new HelpCommand(this, commands));
         
         // Load player lists
         opsList.load();
         whitelist.load();
+        banManager.load();
 
         // Start loading plugins
         loadPlugins();
@@ -511,6 +525,26 @@ public final class GlowServer implements Server {
     }
 
     /**
+     * Returns the folder where configuration files are stored
+     */
+    public File getConfigDir() {
+        return configDir;
+    }
+
+    /**
+     * Returns the currently used ban manager for the server
+     */
+    public BanManager getBanManager() {
+        return banManager;
+    }
+
+    public void setBanManager(BanManager manager) {
+        this.banManager = manager;
+        manager.load();
+        logger.log(Level.INFO, "Using {0} for ban management", manager.getClass().getName());
+    }
+
+    /**
      * Gets the world by the given name.
      * @param name The name of the world to look up.
      * @return The {@link GlowWorld} this server manages.
@@ -603,7 +637,7 @@ public final class GlowServer implements Server {
      * @return The amount of players this server allows
      */
     public int getMaxPlayers() {
-        return config.getInt("server.max-players", 0);
+        return config.getInt("server.max-players", 50);
     }
 
     /**
@@ -875,7 +909,7 @@ public final class GlowServer implements Server {
     /**
      * Dispatches a command on the server, and executes it if found.
      *
-     * @param cmdLine command + arguments. Example: "test abc 123"
+     * @param commandLine command + arguments. Example: "test abc 123"
      * @return targetFound returns false if no target is found.
      * @throws CommandException Thrown when the executor for the given command fails with an unhandled exception
      */
@@ -900,7 +934,7 @@ public final class GlowServer implements Server {
     }
 
     /**
-     * Populates a given {@link ServerConfig} with values attributes to this server
+     * Populates a given {@link com.avaje.ebean.config.ServerConfig} with values attributes to this server
      *
      * @param dbConfig ServerConfig to populate
      */
@@ -990,6 +1024,26 @@ public final class GlowServer implements Server {
             player = new GlowOfflinePlayer(this, name);
         }
         return player;
+    }
+
+    public Set<String> getIPBans() {
+        return banManager.getIpBans();
+    }
+
+    public void banIP(String address) {
+       banManager.setIpBanned(address, true);
+    }
+
+    public void unbanIP(String address) {
+        banManager.setIpBanned(address, false);
+    }
+
+    public Set<OfflinePlayer> getBannedPlayers() {
+        Set<OfflinePlayer> bannedPlayers = new HashSet<OfflinePlayer>();
+        for (String name : banManager.getBans()) {
+            bannedPlayers.add(getOfflinePlayer(name));
+        }
+        return bannedPlayers;
     }
 
     public int getViewDistance() {

@@ -224,7 +224,15 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public boolean isOnline() {
         return true;
     }
-    
+
+    public boolean isBanned() {
+        return server.getBanManager().isBanned(getName());
+    }
+
+    public void setBanned(boolean banned) {
+        server.getBanManager().setBanned(getName(), banned);
+    }
+
     public InetSocketAddress getAddress() {
         return session.getAddress();
     }

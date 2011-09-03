@@ -6,8 +6,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 
 import net.glowstone.GlowServer;
 
@@ -30,26 +28,25 @@ public abstract class GlowCommand extends Command {
         }
         return true;
     }
+
+    protected boolean checkArgs(CommandSender sender, String[] args, int min, int max) {
+        if (args.length < min || args.length > max) {
+            sender.sendMessage(ChatColor.GRAY + "Wrong number of arguments. Usage: " + getUsage());
+            return false;
+        }
+        return true;
+    }
     
     protected boolean checkOp(CommandSender sender) {
         if (!sender.isOp()) {
-            sender.sendMessage(ChatColor.GRAY + "You do not have priveleges to use this command.");
+            sender.sendMessage(ChatColor.GRAY + "You do not have privileges to use this command.");
             return false;
         }
         return true;
     }
     
     protected boolean tellOps(CommandSender sender, String message) {
-        if (sender instanceof Player) {
-            message = "(" + ((Player) sender).getName() + ": " + message + ")";
-        } else if (sender instanceof ConsoleCommandSender) {
-            message = "(CONSOLE: " + message + ")";
-        } else {
-            message = "(" + sender.getClass().getName() + ": " + message + ")";
-        }
-        
-        server.broadcast(message, Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
-        
+        server.broadcast("(" + sender.getName() + ": " + message + ")", Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
         return true;
     }
     

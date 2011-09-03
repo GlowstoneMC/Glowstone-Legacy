@@ -21,6 +21,14 @@ public class GlowOfflinePlayer implements OfflinePlayer {
         return name;
     }
 
+    public boolean isBanned() {
+        return server.getBanManager().isBanned(name);
+    }
+
+    public void setBanned(boolean banned) {
+        server.getBanManager().setBanned(name, banned);
+    }
+
     public boolean isOp() {
         return server.getOpsList().contains(name);
     }
