@@ -16,6 +16,7 @@ import org.bukkit.Statistic;
 import org.bukkit.Instrument;
 import org.bukkit.Note;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.event.player.PlayerChatEvent;
 
@@ -298,6 +299,9 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
      */
     @Override
     public boolean teleport(Location location) {
+        PlayerTeleportEvent event = EventFactory.onPlayerTeleport(this, getLocation(), location);
+        if (event.isCancelled()) return false;
+        location = event.getTo();
         if (location.getWorld() != world) {
             world.getEntityManager().deallocate(this);
             

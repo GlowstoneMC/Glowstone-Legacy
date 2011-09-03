@@ -62,6 +62,10 @@ public final class EventFactory {
     public static PlayerInteractEvent onPlayerInteract(Player player, Action action, Block clicked, BlockFace face) {
         return callEvent(new PlayerInteractEvent(player, action, player.getItemInHand(), clicked, face));
     }
+
+    public static PlayerTeleportEvent onPlayerTeleport(Player player, Location from, Location to) {
+        return callEvent(new PlayerTeleportEvent(player, from, to));
+    }
     
     // -- Block Events
 
