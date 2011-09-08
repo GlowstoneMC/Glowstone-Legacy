@@ -3,7 +3,6 @@ package net.glowstone;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
@@ -26,7 +25,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommandYamlParser;
-import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
@@ -136,17 +134,17 @@ public final class GlowServer implements Server {
      * The services manager of this server.
      */
     private final SimpleServicesManager servicesManager = new SimpleServicesManager();
-    
+
     /**
      * The command map of this server.
      */
-    private final SimpleCommandMap commandMap = new SimpleCommandMap(this);
+    private final GlowCommandMap commandMap = new GlowCommandMap(this);
     
     /**
      * The command map for commands built-in to Glowstone.
      */
-    private final SimpleCommandMap builtinCommandMap = new SimpleCommandMap(this);
-    
+    private final GlowCommandMap builtinCommandMap = new GlowCommandMap(this);
+
     /**
      * The plugin manager of this server.
      */
@@ -343,22 +341,21 @@ public final class GlowServer implements Server {
         config.load();
         
         DefaultPermissions.registerCorePermissions();
-        consoleManager.setupConsole();
         
         // Register these first so they're usable while the worlds are loading
-        List<Command> commands = Arrays.<Command>asList(
+        GlowCommandMap.initGlowPermissions(this);
+        List<GlowCommand> commands = new ArrayList<GlowCommand>(Arrays.<GlowCommand>asList(
                 new MeCommand(this),
-                new OpCommand(this),
-                new DeopCommand(this),
                 new ColorCommand(this),
                 new KickCommand(this),
                 new ListCommand(this),
                 new TimeCommand(this),
-                new StopCommand(this),
                 new WhitelistCommand(this),
-                new BanCommand(this));
-        builtinCommandMap.registerAll("#", commands);
-        builtinCommandMap.register("#", new HelpCommand(this, commands));
+                new BanCommand(this)));
+        builtinCommandMap.registerAll(commands);
+        builtinCommandMap.registerFallbacksAsNormal();
+        builtinCommandMap.register(new HelpCommand(this, builtinCommandMap.getKnownCommands()));
+        consoleManager.setupConsole();
         
         // Load player lists
         opsList.load();
@@ -580,23 +577,13 @@ public final class GlowServer implements Server {
     }
     
     /**
-     * Use reflection to get a list of available commands from the command map.
+     * Gets a list of available commands from the command mapc.
      * @return A list of all commands at the time.
      */
     protected String[] getAllCommands() {
-        // There's probably a better way of doing this.
-        try {
-            Class clazz = commandMap.getClass();
-            Field knownCommandsField = clazz.getDeclaredField("knownCommands");
-            knownCommandsField.setAccessible(true);
-            HashSet<String> knownCommands = new HashSet<String>(((Map<String, Command>) knownCommandsField.get(commandMap)).keySet());
-            knownCommands.addAll(((Map<String, Command>) knownCommandsField.get(builtinCommandMap)).keySet());
-            return knownCommands.toArray(new String[0]);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return new String[0];
-        }
+        HashSet<String> knownCommands = new HashSet<String>(builtinCommandMap.getKnownCommandNames());
+        knownCommands.addAll(commandMap.getKnownCommandNames());
+        return knownCommands.toArray(new String[] {});
     }
 
     /**
@@ -705,6 +692,14 @@ public final class GlowServer implements Server {
      * @return Player if it was found, otherwise null
      */
     public Player getPlayer(String name) {
+        for (Player player : getOnlinePlayers()) {
+            if (player.getName().equalsIgnoreCase(name))
+                return player;
+        }
+        return null;
+    }
+
+    public Player getPlayerExact(String name) {
         for (Player player : getOnlinePlayers()) {
             if (player.getName().equalsIgnoreCase(name))
                 return player;
@@ -997,6 +992,18 @@ public final class GlowServer implements Server {
 
     public void setWhitelist(boolean enabled) {
         config.setProperty("server.whitelist", enabled);
+    }
+
+    public Set<OfflinePlayer> getWhitelistedPlayers() {
+        Set<OfflinePlayer> players = new HashSet<OfflinePlayer>();
+        for (String name : whitelist.getContents()) {
+            players.add(getOfflinePlayer(name));
+        }
+        return players;
+     }
+
+    public void reloadWhitelist() {
+        whitelist.load();
     }
 
     public boolean getAllowFlight() {

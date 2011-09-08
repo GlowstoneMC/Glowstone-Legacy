@@ -4,6 +4,11 @@ import net.glowstone.GlowServer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -15,7 +20,7 @@ public class BanCommand extends GlowCommand {
         super(server, "ban", "Manage player and ip bans", "[-ip] add|remove|check name|ip");
     }
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+    public boolean run(CommandSender sender, String commandLabel, String[] args) {
         int mod = 0;
         boolean ip = false;
         if (!checkArgs(sender, args, 2, 3) || !checkOp(sender)) return false;
@@ -28,23 +33,28 @@ public class BanCommand extends GlowCommand {
         String senderName = (sender instanceof Player? ((Player) sender).getDisplayName(): "Console");
         if (option.equalsIgnoreCase("add")) {
             if (ip) {
+                if (!checkPermission(sender, PERM_PREFIX  + ".ban.addip")) return false;
                 String newTarget = target;
                 if (player != null) newTarget = player.getAddress().getAddress().getHostAddress();
                 server.getBanManager().setIpBanned(newTarget, true);
             } else {
+                if (!checkPermission(sender, PERM_PREFIX  + ".ban.add")) return false;
                 server.getBanManager().setBanned(target, true);
             }
             if (player != null) player.kickPlayer("You have been " + (ip ? "ip banned" : "banned") + " by " + senderName);
             server.broadcastMessage(ChatColor.RED + target + " has been banned by " + senderName);
         } else if (option.equalsIgnoreCase("remove")) {
            if (ip) {
+               if (!checkPermission(sender, PERM_PREFIX  + ".ban.removeip")) return false;
                 server.getBanManager().setIpBanned(target, false);
             } else {
+               if (!checkPermission(sender, PERM_PREFIX  + ".ban.remove")) return false;
                 server.getBanManager().setBanned(target, false);
             }
             sender.sendMessage(ChatColor.RED + target + " was unbanned.");
         } else if (option.equalsIgnoreCase("check")) {
             boolean banned;
+            if (!checkPermission(sender, PERM_PREFIX  + ".ban.check")) return false;
             if (ip) {
                 banned = server.getBanManager().isIpBanned(target);
             } else {
@@ -56,5 +66,21 @@ public class BanCommand extends GlowCommand {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public Set<Permission> registerPermissions(String prefix) {
+        Set<Permission> perms = new HashSet<Permission>();
+        perms.add(new Permission(prefix + ".add", "Allow users to add name bans to the ban list"));
+        perms.add(new Permission(prefix + ".addip", "Allow users to add ip bans to the ban list"));
+        perms.add(new Permission(prefix + ".remove", "Allow users to remove name bans from the ban list"));
+        perms.add(new Permission(prefix + ".removeip", "Allow users to remove ip bans from the ban list"));
+        perms.add(new Permission(prefix + ".check", "Allow users to check if a name or ip is banned"));
+        return perms;
+    }
+
+    @Override
+    public PermissionDefault getPermissionDefault() {
+        return PermissionDefault.OP;
     }
 }

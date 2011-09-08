@@ -13,9 +13,7 @@ import java.util.Set;
 public class FlatFileBanManager implements BanManager{
     private final PlayerListFile bannedNames;
     private final PlayerListFile bannedIps;
-    private final GlowServer server;
     public FlatFileBanManager(GlowServer server) {
-        this.server = server;
         this.bannedIps = new PlayerListFile(new File(server.getConfigDir(), "banned-ips.txt"));
         this.bannedNames = new PlayerListFile(new File(server.getConfigDir(), "banned-names.txt"));
     }

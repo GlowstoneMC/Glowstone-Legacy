@@ -233,6 +233,18 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         server.getBanManager().setBanned(getName(), banned);
     }
 
+    public boolean isWhitelisted() {
+        return !server.hasWhitelist() || server.getWhitelist().contains(getName());
+    }
+
+    public void setWhitelisted(boolean value) {
+        if (value) {
+            server.getWhitelist().add(getName());
+        } else {
+            server.getWhitelist().remove(getName());
+        }
+    }
+
     public InetSocketAddress getAddress() {
         return session.getAddress();
     }
