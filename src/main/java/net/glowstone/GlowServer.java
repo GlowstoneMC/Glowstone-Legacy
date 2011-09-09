@@ -21,12 +21,9 @@ import java.util.logging.Logger;
 
 import net.glowstone.util.bans.BanManager;
 import net.glowstone.util.bans.FlatFileBanManager;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommandYamlParser;
-import org.bukkit.Server;
-import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
@@ -1051,6 +1048,14 @@ public final class GlowServer implements Server {
             bannedPlayers.add(getOfflinePlayer(name));
         }
         return bannedPlayers;
+    }
+
+    public GameMode getDefaultGameMode() {
+        return GameMode.SURVIVAL;
+    }
+
+    public void setDefaultGameMode(GameMode mode) {
+        throw new UnsupportedOperationException("Not on 1.8 yet");
     }
 
     public int getViewDistance() {

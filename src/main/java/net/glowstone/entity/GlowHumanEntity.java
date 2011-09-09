@@ -1,6 +1,8 @@
 package net.glowstone.entity;
 
 import java.util.Set;
+
+import org.bukkit.GameMode;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissibleBase;
@@ -94,6 +96,14 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
     public int getSleepTicks() {
         return sleepingTicks;
     }
+
+    public GameMode getGameMode() {
+        return GameMode.SURVIVAL;
+    }
+
+    public void setGameMode(GameMode mode) {
+        throw new UnsupportedOperationException("Not on 1.8 yet");
+    }
     
     @Override
     public void pulse() {
@@ -145,7 +155,6 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
 
     public void recalculatePermissions() {
         permissions.recalculatePermissions();
-        permissions.calculatePermissions();
     }
 
     public Set<PermissionAttachmentInfo> getEffectivePermissions() {

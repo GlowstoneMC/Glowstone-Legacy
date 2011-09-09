@@ -71,7 +71,7 @@ public class GlowCommandMap extends SimpleCommandMap {
     /**
      * Perpares the glowstone command permissions. Should be only run once per plugin manager
      */
-    static void initGlowPermissions(Server server) {
+    public static void initGlowPermissions(Server server) {
         PluginManager pm = server.getPluginManager();
         parent = new Permission(GlowCommand.PERM_PREFIX, "Gives access to all Glowstone commads");
         betterParent = new Permission("glowstone", "Gives access to all Glowstone commands and functions");
