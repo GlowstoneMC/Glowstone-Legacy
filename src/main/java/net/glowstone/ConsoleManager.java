@@ -108,9 +108,7 @@ public final class ConsoleManager {
         } else if (mode.equalsIgnoreCase("jline")) {
             jLine = true;
         }
-        
-        sender = new ColoredCommandSender();
-        thread = new ConsoleCommandThread();
+
         consoleHandler = new FancyConsoleHandler();
         
         String logFile = server.getLogFile();
@@ -137,11 +135,7 @@ public final class ConsoleManager {
         }
         
         Runtime.getRuntime().addShutdownHook(new ServerShutdownThread());
-        
-        if (jTerminal == null) {
-            thread.setDaemon(true);
-            thread.start();
-        }
+
         
         System.setOut(new PrintStream(new LoggerOutputStream(Level.INFO), true));
         System.setErr(new PrintStream(new LoggerOutputStream(Level.SEVERE), true));
@@ -156,6 +150,16 @@ public final class ConsoleManager {
             jFrame.dispose();
         }
     }
+
+    public void setupConsole() {
+        sender = new ColoredCommandSender();
+        thread = new ConsoleCommandThread();
+
+        if (jTerminal == null) {
+            thread.setDaemon(true);
+            thread.start();
+        }
+    }
     
     public void refreshCommands() {
         for (Object c : new ArrayList(reader.getCompletors())) {
@@ -164,6 +168,7 @@ public final class ConsoleManager {
         
         Completor[] list = new Completor[] { new SimpleCompletor(server.getAllCommands()), new NullCompletor() };
         reader.addCompletor(new ArgumentCompletor(list));
+        sender.recalculatePermissions();
     }
     
     public String colorize(String string) {

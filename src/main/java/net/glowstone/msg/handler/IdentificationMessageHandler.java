@@ -8,10 +8,13 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import net.glowstone.EventFactory;
+import net.glowstone.GlowServer;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.msg.IdentificationMessage;
 import net.glowstone.net.Session;
 import net.glowstone.net.Session.State;
+import org.bukkit.event.player.PlayerPreLoginEvent;
 
 public final class IdentificationMessageHandler extends MessageHandler<IdentificationMessage> {
 
@@ -19,22 +22,21 @@ public final class IdentificationMessageHandler extends MessageHandler<Identific
     public void handle(Session session, GlowPlayer player, IdentificationMessage message) {
         Session.State state = session.getState();
         
-        // Is the player on the whitelist?
-        if (session.getServer().hasWhitelist() && !session.getServer().getWhitelist().contains(message.getName())) {
-            session.getServer().getLogger().log(Level.INFO, "Player {0} was not on the whitelist.", message.getName());
-            session.disconnect("You're not whitelisted!");
-        }
-        
         // Are we at the proper stage?
         if (state == Session.State.EXCHANGE_IDENTIFICATION) {
             session.setState(State.GAME);
+            if (message.getId() < GlowServer.PROTOCOL_VERSION) {
+                session.disconnect("Outdated client!");
+            } else if (message.getId() > GlowServer.PROTOCOL_VERSION) {
+                session.disconnect("Outdated server!");
+            }
             boolean allow = true; // Default to okay
             
             // If we're in online mode, attempt to verify with mc.net
             if (session.getServer().getOnlineMode()) {
                 allow = false;
                 try {
-                    URL verify = new URL("http://www.minecraft.net/game/checkserver.jsp?user=" + URLEncoder.encode(message.getName(), "UTF-8") + "&serverId=" + URLEncoder.encode(session.getSessionId(), "UTF-8"));
+                    URL verify = new URL("http://session.minecraft.net/game/checkserver.jsp?user=" + URLEncoder.encode(message.getName(), "UTF-8") + "&serverId=" + URLEncoder.encode(session.getSessionId(), "UTF-8"));
                     BufferedReader reader = new BufferedReader(new InputStreamReader(verify.openStream()));
                     String result = reader.readLine();
                     reader.close();
@@ -48,8 +50,12 @@ public final class IdentificationMessageHandler extends MessageHandler<Identific
             
             // Was the player allowed?
             if (allow) {
-                session.send(new IdentificationMessage(0, "", 0, 0));
-                session.setPlayer(new GlowPlayer(session, message.getName())); // TODO case-correct the name
+                PlayerPreLoginEvent event = EventFactory.onPlayerPreLogin(message.getName(), session);
+                if (event.getResult() != PlayerPreLoginEvent.Result.ALLOWED) {
+                    session.disconnect(event.getKickMessage());
+                }
+                session.send(new IdentificationMessage(0, "", 0, 0, 0, session.getServer().getWorlds().get(0).getMaxHeight(), session.getServer().getMaxPlayers()));
+                session.setPlayer(new GlowPlayer(session, event.getName())); // TODO case-correct the name
             } else {
                 session.getServer().getLogger().log(Level.INFO, "Failed to authenticate {0} with minecraft.net.", message.getName());
                 session.disconnect("Player identification failed!");

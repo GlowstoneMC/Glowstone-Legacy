@@ -3,7 +3,6 @@ package net.glowstone;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
@@ -13,25 +12,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.PluginCommandYamlParser;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.Server;
-import org.bukkit.World;
+import net.glowstone.util.bans.BanManager;
+import net.glowstone.util.bans.FlatFileBanManager;
+import org.bukkit.*;
+import org.bukkit.command.*;
 import org.bukkit.World.Environment;
-import org.bukkit.command.CommandException;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
@@ -50,6 +46,7 @@ import net.glowstone.util.PlayerListFile;
 import net.glowstone.inventory.CraftingManager;
 import net.glowstone.map.GlowMapView;
 
+import org.bukkit.util.permissions.DefaultPermissions;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -77,6 +74,11 @@ public final class GlowServer implements Server {
      * The configuration the server uses.
      */
     private static final Configuration config = new Configuration(new File(configDir, "glowstone.yml"));
+
+    /**
+     * The protocol version supported by the server
+     */
+    public static final int PROTOCOL_VERSION = 15;
 
     /**
      * Creates a new server on TCP port 25565 and starts listening for
@@ -130,17 +132,17 @@ public final class GlowServer implements Server {
      * The services manager of this server.
      */
     private final SimpleServicesManager servicesManager = new SimpleServicesManager();
-    
+
     /**
      * The command map of this server.
      */
-    private final SimpleCommandMap commandMap = new SimpleCommandMap(this);
+    private final GlowCommandMap commandMap = new GlowCommandMap(this);
     
     /**
      * The command map for commands built-in to Glowstone.
      */
-    private final SimpleCommandMap builtinCommandMap = new SimpleCommandMap(this);
-    
+    private final GlowCommandMap builtinCommandMap = new GlowCommandMap(this);
+
     /**
      * The plugin manager of this server.
      */
@@ -162,6 +164,11 @@ public final class GlowServer implements Server {
     private final PlayerListFile whitelist = new PlayerListFile(new File(configDir, "whitelist.txt"));
 
     /**
+     * The server's ban manager.
+     */
+    private BanManager banManager = new FlatFileBanManager(this);
+
+    /**
      * The world this server is managing.
      */
     private final ArrayList<GlowWorld> worlds = new ArrayList<GlowWorld>();
@@ -175,7 +182,6 @@ public final class GlowServer implements Server {
      * Creates a new server.
      */
     public GlowServer() {
-        logger.log(Level.INFO, "This server is running {0} version {1}", new Object[]{getName(), getVersion()});
         init();
     }
 
@@ -278,6 +284,13 @@ public final class GlowServer implements Server {
                         catch (NumberFormatException ex) {}
                     }
 
+                    if (properties.containsKey("motd")) {
+                        String motd = properties.getProperty("motd", "Glowstone server");
+                        config.setProperty("server.motd", motd);
+                        moved += separator + "MOTD";
+                        separator = ", ";
+                    }
+
                     // TODO: move nether, view distance, monsters, etc when implemented
 
                     if (moved.length() > 0) {
@@ -292,7 +305,7 @@ public final class GlowServer implements Server {
         // Server config
         config.getInt("server.port", 25565);
         config.getString("server.world-name", "world");
-        config.getInt("server.max-players", 0);
+        config.getInt("server.max-players", 50);
         config.getInt("server.spawn-radius", 16);
         config.getBoolean("server.online-mode", true);
         config.getString("server.log-file", "logs/log-%D.txt");
@@ -301,6 +314,7 @@ public final class GlowServer implements Server {
         config.getBoolean("server.allow-nether", true);
         config.getBoolean("server.allow-flight", false);
         config.getInt("server.view-distance", GlowChunk.VISIBLE_RADIUS);
+        config.getString("server.motd", "Glowstone server");
 
         // Server folders config
         config.getString("server.folders.plugins", "plugins");
@@ -331,27 +345,32 @@ public final class GlowServer implements Server {
     public void start() {
         // Config should have already loaded by this point, but to be safe...
         config.load();
-        
-        // Register these first so they're usable while the worlds are loading
-        List<Command> commands = Arrays.<Command>asList(
-                new MeCommand(this),
-                new OpCommand(this),
-                new DeopCommand(this),
-                new ColorCommand(this),
-                new KickCommand(this),
-                new ListCommand(this),
-                new TimeCommand(this),
-                new StopCommand(this),
-                new WhitelistCommand(this));
-        builtinCommandMap.registerAll("#", commands);
-        builtinCommandMap.register("#", new HelpCommand(this, commands));
+        consoleManager.setupConsole();
         
         // Load player lists
         opsList.load();
         whitelist.load();
+        banManager.load();
 
         // Start loading plugins
         loadPlugins();
+
+        // Begin registering permissions
+        DefaultPermissions.registerCorePermissions();
+
+        // Register these first so they're usable while the worlds are loading
+        GlowCommandMap.initGlowPermissions(this);
+        builtinCommandMap.registerFallbacksAsNormal();
+        builtinCommandMap.register(new MeCommand(this));
+        builtinCommandMap.register(new ColorCommand(this));
+        builtinCommandMap.register(new KickCommand(this));
+        builtinCommandMap.register(new ListCommand(this));
+        builtinCommandMap.register(new TimeCommand(this));
+        builtinCommandMap.register(new WhitelistCommand(this));
+        builtinCommandMap.register(new BanCommand(this));
+        builtinCommandMap.register(new GameModeCommand(this));
+        builtinCommandMap.register(new HelpCommand(this, builtinCommandMap.getKnownCommands()));
+
         enablePlugins(PluginLoadOrder.STARTUP);
         
         // Create worlds
@@ -467,6 +486,9 @@ public final class GlowServer implements Server {
             
             // Load plugins
             loadPlugins();
+            DefaultPermissions.registerCorePermissions();
+            GlowCommandMap.initGlowPermissions(this);
+            builtinCommandMap.registerAllPermissions();
             enablePlugins(PluginLoadOrder.STARTUP);
             enablePlugins(PluginLoadOrder.POSTWORLD);
             consoleManager.refreshCommands();
@@ -510,6 +532,26 @@ public final class GlowServer implements Server {
     }
 
     /**
+     * Returns the folder where configuration files are stored
+     */
+    public File getConfigDir() {
+        return configDir;
+    }
+
+    /**
+     * Returns the currently used ban manager for the server
+     */
+    public BanManager getBanManager() {
+        return banManager;
+    }
+
+    public void setBanManager(BanManager manager) {
+        this.banManager = manager;
+        manager.load();
+        logger.log(Level.INFO, "Using {0} for ban management", manager.getClass().getName());
+    }
+
+    /**
      * Gets the world by the given name.
      * @param name The name of the world to look up.
      * @return The {@link GlowWorld} this server manages.
@@ -545,23 +587,13 @@ public final class GlowServer implements Server {
     }
     
     /**
-     * Use reflection to get a list of available commands from the command map.
+     * Gets a list of available commands from the command mapc.
      * @return A list of all commands at the time.
      */
     protected String[] getAllCommands() {
-        // There's probably a better way of doing this.
-        try {
-            Class clazz = commandMap.getClass();
-            Field knownCommandsField = clazz.getDeclaredField("knownCommands");
-            knownCommandsField.setAccessible(true);
-            HashSet<String> knownCommands = new HashSet<String>(((Map<String, Command>) knownCommandsField.get(commandMap)).keySet());
-            knownCommands.addAll(((Map<String, Command>) knownCommandsField.get(builtinCommandMap)).keySet());
-            return knownCommands.toArray(new String[0]);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return new String[0];
-        }
+        HashSet<String> knownCommands = new HashSet<String>(builtinCommandMap.getKnownCommandNames());
+        knownCommands.addAll(commandMap.getKnownCommandNames());
+        return knownCommands.toArray(new String[] {});
     }
 
     /**
@@ -602,7 +634,7 @@ public final class GlowServer implements Server {
      * @return The amount of players this server allows
      */
     public int getMaxPlayers() {
-        return config.getInt("server.max-players", 0);
+        return config.getInt("server.max-players", 50);
     }
 
     /**
@@ -648,10 +680,7 @@ public final class GlowServer implements Server {
      * @return the number of players
      */
     public int broadcastMessage(String message) {
-        for (Player player : getOnlinePlayers()) {
-            player.sendMessage(message);
-        }
-        return getOnlinePlayers().length;
+        return broadcast(message, BROADCAST_CHANNEL_USERS);
     }
     
     /**
@@ -673,6 +702,14 @@ public final class GlowServer implements Server {
      * @return Player if it was found, otherwise null
      */
     public Player getPlayer(String name) {
+        for (Player player : getOnlinePlayers()) {
+            if (player.getName().equalsIgnoreCase(name))
+                return player;
+        }
+        return null;
+    }
+
+    public Player getPlayerExact(String name) {
         for (Player player : getOnlinePlayers()) {
             if (player.getName().equalsIgnoreCase(name))
                 return player;
@@ -877,7 +914,7 @@ public final class GlowServer implements Server {
     /**
      * Dispatches a command on the server, and executes it if found.
      *
-     * @param cmdLine command + arguments. Example: "test abc 123"
+     * @param commandLine command + arguments. Example: "test abc 123"
      * @return targetFound returns false if no target is found.
      * @throws CommandException Thrown when the executor for the given command fails with an unhandled exception
      */
@@ -902,7 +939,7 @@ public final class GlowServer implements Server {
     }
 
     /**
-     * Populates a given {@link ServerConfig} with values attributes to this server
+     * Populates a given {@link com.avaje.ebean.config.ServerConfig} with values attributes to this server
      *
      * @param dbConfig ServerConfig to populate
      */
@@ -967,8 +1004,71 @@ public final class GlowServer implements Server {
         config.setProperty("server.whitelist", enabled);
     }
 
+    public Set<OfflinePlayer> getWhitelistedPlayers() {
+        Set<OfflinePlayer> players = new HashSet<OfflinePlayer>();
+        for (String name : whitelist.getContents()) {
+            players.add(getOfflinePlayer(name));
+        }
+        return players;
+     }
+
+    public void reloadWhitelist() {
+        whitelist.load();
+    }
+
     public boolean getAllowFlight() {
         return config.getBoolean("server.allow-flight", false);
+    }
+
+    public void shutdown() {
+        broadcast("Stopping the server", BROADCAST_CHANNEL_ADMINISTRATIVE);
+        stop();
+    }
+
+    public int broadcast(String message, String permission) {
+        int count = 0;
+        for (Permissible permissible : getPluginManager().getPermissionSubscriptions(permission)) {
+            if (permissible instanceof CommandSender) {
+                ((CommandSender) permissible).sendMessage(message);
+            }
+        }
+        return count;
+    }
+
+    public OfflinePlayer getOfflinePlayer(String name) {
+        OfflinePlayer player = getPlayer(name);
+        if (player == null) {
+            player = new GlowOfflinePlayer(this, name);
+        }
+        return player;
+    }
+
+    public Set<String> getIPBans() {
+        return banManager.getIpBans();
+    }
+
+    public void banIP(String address) {
+       banManager.setIpBanned(address, true);
+    }
+
+    public void unbanIP(String address) {
+        banManager.setIpBanned(address, false);
+    }
+
+    public Set<OfflinePlayer> getBannedPlayers() {
+        Set<OfflinePlayer> bannedPlayers = new HashSet<OfflinePlayer>();
+        for (String name : banManager.getBans()) {
+            bannedPlayers.add(getOfflinePlayer(name));
+        }
+        return bannedPlayers;
+    }
+
+    public GameMode getDefaultGameMode() {
+        return GameMode.SURVIVAL;
+    }
+
+    public void setDefaultGameMode(GameMode mode) {
+        throw new UnsupportedOperationException("Not on 1.8 yet");
     }
 
     public int getViewDistance() {
@@ -985,6 +1085,14 @@ public final class GlowServer implements Server {
 
     public GlowMapView createMap(World world) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public String getMOTD() {
+        return config.getString("server.motd");
+    }
+
+    public void setMOTD(String motd) {
+        config.setProperty("server.motd", motd);
     }
      
 }

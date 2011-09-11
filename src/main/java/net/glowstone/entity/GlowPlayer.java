@@ -7,15 +7,10 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.bukkit.Achievement;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Statistic;
-import org.bukkit.Instrument;
-import org.bukkit.Note;
+import net.glowstone.msg.*;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.event.player.PlayerChatEvent;
 
@@ -27,21 +22,6 @@ import net.glowstone.inventory.GlowPlayerInventory;
 import net.glowstone.inventory.InventoryViewer;
 import net.glowstone.util.Parameter;
 import net.glowstone.util.TextWrapper;
-import net.glowstone.msg.BlockChangeMessage;
-import net.glowstone.msg.ChatMessage;
-import net.glowstone.msg.DestroyEntityMessage;
-import net.glowstone.msg.EntityEquipmentMessage;
-import net.glowstone.msg.EntityMetadataMessage;
-import net.glowstone.msg.LoadChunkMessage;
-import net.glowstone.msg.Message;
-import net.glowstone.msg.PlayEffectMessage;
-import net.glowstone.msg.PlayNoteMessage;
-import net.glowstone.msg.PositionRotationMessage;
-import net.glowstone.msg.RespawnMessage;
-import net.glowstone.msg.SetWindowSlotMessage;
-import net.glowstone.msg.SpawnPositionMessage;
-import net.glowstone.msg.StateChangeMessage;
-import net.glowstone.msg.StatisticMessage;
 import net.glowstone.net.Session;
 import org.bukkit.map.MapView;
 
@@ -113,7 +93,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         streamBlocks(); // stream the initial set of blocks
         setCompassTarget(world.getSpawnLocation()); // set our compass target
         teleport(world.getSpawnLocation()); // take us to spawn position
-        session.send(new StateChangeMessage((byte)(getWorld().hasStorm() ? 1 : 2))); // send the world's weather
+        session.send(new StateChangeMessage((byte)(getWorld().hasStorm() ? 1 : 2), (byte)0)); // send the world's weather
         
         getInventory().addViewer(this);
         getInventory().getCraftingInventory().addViewer(this);
@@ -223,7 +203,27 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public boolean isOnline() {
         return true;
     }
-    
+
+    public boolean isBanned() {
+        return server.getBanManager().isBanned(getName());
+    }
+
+    public void setBanned(boolean banned) {
+        server.getBanManager().setBanned(getName(), banned);
+    }
+
+    public boolean isWhitelisted() {
+        return !server.hasWhitelist() || server.getWhitelist().contains(getName());
+    }
+
+    public void setWhitelisted(boolean value) {
+        if (value) {
+            server.getWhitelist().add(getName());
+        } else {
+            server.getWhitelist().remove(getName());
+        }
+    }
+
     public InetSocketAddress getAddress() {
         return session.getAddress();
     }
@@ -240,7 +240,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         } else {
             getServer().getOpsList().remove(getName());
         }
-        this.recalculatePermissions();
+        permissions.recalculatePermissions();
     }
     
     // -- Malleable properties
@@ -288,6 +288,12 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public void setSleepingIgnored(boolean isSleeping) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public void setGameMode(GameMode mode) {
+        super.setGameMode(mode);
+        session.send(new StateChangeMessage((byte)3, gameModeNum(mode)));
+    }
     
     // -- Actions
 
@@ -298,6 +304,11 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
      */
     @Override
     public boolean teleport(Location location) {
+        if (location != null && location.getWorld() != null) {
+            PlayerTeleportEvent event = EventFactory.onPlayerTeleport(this, getLocation(), location);
+            if (event.isCancelled()) return false;
+            location = event.getTo();
+        }
         if (location.getWorld() != world) {
             world.getEntityManager().deallocate(this);
             
@@ -309,14 +320,14 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
             }
             knownChunks.clear();
             
-            session.send(new RespawnMessage((byte) world.getEnvironment().getId()));
+            session.send(new RespawnMessage((byte) world.getEnvironment().getId(), gameModeNum(getGameMode()), (short)world.getMaxHeight(), world.getSeed()));
             
             streamBlocks(); // stream blocks
             
             setCompassTarget(world.getSpawnLocation()); // set our compass target
             this.session.send(new PositionRotationMessage(location.getX(), location.getY() + EYE_HEIGHT + 0.01, location.getZ(), location.getY(), (float) location.getYaw(), (float) location.getPitch(), true));
             this.location = location; // take us to spawn position
-            session.send(new StateChangeMessage((byte)(getWorld().hasStorm() ? 1 : 2))); // send the world's weather
+            session.send(new StateChangeMessage((byte)(getWorld().hasStorm() ? 1 : 2), (byte)0)); // send the world's weather
             reset();
         } else {
             this.session.send(new PositionRotationMessage(location.getX(), location.getY() + EYE_HEIGHT + 0.01, location.getZ(), location.getY(), (float) location.getYaw(), (float) location.getPitch(), true));
@@ -603,6 +614,18 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
      */
     public void sendMap(MapView map) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setHealth(int health) {
+        super.setHealth(health);
+        session.send(prepareHealthMessage());
+    }
+
+    @Override
+    public void setFood(int food) {
+        super.setFood(food);
+        session.send(prepareHealthMessage());
     }
 
 }

@@ -146,6 +146,11 @@ public final class GlowWorld implements World {
     private int saveTimer = 0;
 
     /**
+     * The check to autosave
+     */
+    private boolean autosave = true;
+
+    /**
      * Creates a new world with the specified chunk I/O service, environment,
      * and world generator.
      * @param name The name of the world.
@@ -187,7 +192,7 @@ public final class GlowWorld implements World {
         
         spawnLocation = generator.getFixedSpawnLocation(this, random);
         if (spawnLocation == null) {
-            spawnLocation = new Location(this, 0, 128, 0);
+            spawnLocation = new Location(this, 0, getMaxHeight(), 0);
             
             if (!generator.canSpawn(this, spawnLocation.getBlockX(), spawnLocation.getBlockZ())) {
                 // 10 tries only to prevent a return false; bomb
@@ -250,7 +255,7 @@ public final class GlowWorld implements World {
             }
         }
         
-        if (--saveTimer <= 0) {
+        if (autosave && --saveTimer <= 0) {
             saveTimer = 60 * 20;
             save();
         }
@@ -352,7 +357,7 @@ public final class GlowWorld implements World {
     }
 
     public int getMaxHeight() {
-        return 128;
+        return GlowChunk.DEPTH;
     }
 
     // force-save
@@ -672,7 +677,7 @@ public final class GlowWorld implements World {
         }
         
         for (GlowPlayer player : getRawPlayers()) {
-            player.getSession().send(new StateChangeMessage((byte)(currentlyRaining ? 1 : 2)));
+            player.getSession().send(new StateChangeMessage((byte)(currentlyRaining ? 1 : 2), (byte)0));
         }
     }
 
@@ -759,6 +764,14 @@ public final class GlowWorld implements World {
 
     public void setKeepSpawnInMemory(boolean keepLoaded) {
         keepSpawnLoaded = keepLoaded;
+    }
+
+    public boolean isAutoSave() {
+        return autosave;
+    }
+
+    public void setAutoSave(boolean value) {
+        autosave = value;
     }
 
 }
