@@ -2,6 +2,7 @@ package net.glowstone.entity;
 
 import java.util.Set;
 
+import net.glowstone.msg.HealthMessage;
 import org.bukkit.GameMode;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
@@ -46,12 +47,22 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
     /**
      * This human's PermissibleBase for permissions.
      */
-    private PermissibleBase permissions = new PermissibleBase(this);
+    protected PermissibleBase permissions = new PermissibleBase(this);
     
     /**
      * Whether this human is considered an op.
      */
     private boolean isOp;
+
+    /**
+     * The player's active game mode
+     */
+    private GameMode gameMode;
+
+    /**
+     * The human entity's current food level
+     */
+    private int food = 20;
     
     /**
      * Creates a human within the specified world and with the specified name.
@@ -61,6 +72,8 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
     public GlowHumanEntity(GlowServer server, GlowWorld world, String name) {
         super(server, world);
         this.name = name;
+        gameMode = server.getDefaultGameMode();
+        recalculatePermissions();
     }
 
     @Override
@@ -98,11 +111,11 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
     }
 
     public GameMode getGameMode() {
-        return GameMode.SURVIVAL;
+        return gameMode;
     }
 
     public void setGameMode(GameMode mode) {
-        throw new UnsupportedOperationException("Not on 1.8 yet");
+        gameMode = mode;
     }
     
     @Override
@@ -167,6 +180,33 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
 
     public void setOp(boolean value) {
         isOp = value;
+        recalculatePermissions();
+    }
+
+    public int getFood() {
+        return food;
+    }
+
+    public void setFood(int food) {
+        this.food = Math.min(food, 20);
+    }
+
+    public Message prepareHealthMessage() {
+        return new HealthMessage(getHealth(), getFood(), 1.0F);
+    }
+
+    public static byte gameModeNum(GameMode mode) {
+        byte ret;
+        switch (mode) {
+            case CREATIVE:
+                ret = 1;
+                break;
+            case SURVIVAL:
+            default:
+                ret = 0;
+                break;
+        }
+        return ret;
     }
     
 }

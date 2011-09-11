@@ -93,19 +93,33 @@ public class GlowCommandMap extends SimpleCommandMap {
      * @param command
      */
     public void register(GlowCommand command) {
+        registerPermissions(command);
+        register("#", command);
+    }
+
+    public void registerPermissions(GlowCommand command) {
         PluginManager pm = server.getPluginManager();
         Permission child = new Permission(GlowCommand.PERM_PREFIX + "." + command.getName(), command.getPermissionDefault());
         for (Permission permission : command.registerPermissions(child.getName())) {
             child.getChildren().put(permission.getName(), true);
-            pm.addPermission(permission);
+            if (pm.getPermission(permission.getName()) == null)
+                pm.addPermission(permission);
             permission.recalculatePermissibles();
         }
         parent.getChildren().put(child.getName(), true);
-        pm.addPermission(child);
+        if (pm.getPermission(child.getName()) == null)
+            pm.addPermission(child);
         command.setPermission(child.getName());
-        register("#", command);
         child.recalculatePermissibles();
         parent.recalculatePermissibles();
+    }
+
+    public void registerAllPermissions() {
+        for (Command command : knownCommands.values()) {
+            if (command instanceof GlowCommand) {
+                registerPermissions((GlowCommand) command);
+            }
+        }
     }
 
     /**
