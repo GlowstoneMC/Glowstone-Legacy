@@ -1,13 +1,7 @@
 package net.glowstone;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 import net.glowstone.io.StorageOperation;
@@ -78,7 +72,7 @@ public final class GlowWorld implements World {
     /**
      * A map between locations and cached Block objects.
      */
-    private final HashMap<Location, GlowBlock> blockCache = new HashMap<Location, GlowBlock>();
+    private final Map<Location, GlowBlock> blockCache = new HashMap<Location, GlowBlock>();
     
     /**
      * The world populators for this world.
@@ -198,7 +192,7 @@ public final class GlowWorld implements World {
         this.uid = (UUID) data.get(WorldData.UUID);
         this.time = (Long) data.get(WorldData.TIME);
         this.currentlyRaining = (Boolean) data.get(WorldData.RAINING);
-        this.currentlyThundering = (Boolean) data.get(WorldData.THUNDERING);
+        // this.currentlyThundering = (Boolean) data.get(WorldData.THUNDERING);
         this.rainingTicks = (Integer) data.get(WorldData.RAIN_TIME);
         this.thunderingTicks = (Integer) data.get(WorldData.THUNDER_TIME);
 
@@ -414,9 +408,34 @@ public final class GlowWorld implements World {
     // force-save
 
     public void save() {
-        for (GlowChunk chunk : chunks.getLoadedChunks()) {
-            chunks.forceSave(chunk.getX(), chunk.getZ());
-        }
+        server.getStorageQueue().queue(new StorageOperation() {
+            @Override
+            public boolean isParallel() {
+                return false;
+            }
+
+            @Override
+            public String getGroup() {
+                return getName();
+            }
+
+            @Override
+            public String getOperation() {
+                return "world-save";
+            }
+
+            @Override
+            public boolean queueMultiple() {
+                return false;
+            }
+
+            public void run() {
+                for (GlowChunk chunk : chunks.getLoadedChunks()) {
+                    chunks.forceSave(chunk.getX(), chunk.getZ());
+                }
+            }
+        });
+        
         for (GlowPlayer player : getRawPlayers()) {
             player.saveData();
         }
@@ -444,7 +463,7 @@ public final class GlowWorld implements World {
 
     // get block, chunk, id, highest methods with coords
 
-    public GlowBlock getBlockAt(int x, int y, int z) {
+    public synchronized GlowBlock getBlockAt(int x, int y, int z) {
         Location blockLoc = new Location(this, x, y, z);
         if (blockCache.containsKey(blockLoc)) {
             return blockCache.get(blockLoc);
@@ -468,7 +487,7 @@ public final class GlowWorld implements World {
         return 0;
     }
 
-    public GlowChunk getChunkAt(int x, int z) {
+    public synchronized GlowChunk getChunkAt(int x, int z) {
         return chunks.getChunk(x, z);
     }
 
@@ -856,6 +875,11 @@ public final class GlowWorld implements World {
         @Override
         public String getGroup() {
             return world.getName();
+        }
+
+        @Override
+        public boolean queueMultiple() {
+            return false;
         }
 
         @Override

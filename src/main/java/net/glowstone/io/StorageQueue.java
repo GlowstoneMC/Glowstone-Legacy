@@ -1,23 +1,21 @@
 package net.glowstone.io;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Vector;
 
 public class StorageQueue extends Thread {
-        private List<StorageOperation> pending =
-            Collections.synchronizedList(new ArrayList<StorageOperation>());
-    private final List<ParalellTaskThread> active =
-            Collections.synchronizedList(new ArrayList<ParalellTaskThread>());
+    private final Vector<StorageOperation> pending = new Vector<StorageOperation>();
+    private final Vector<ParallelTaskThread> active = new Vector<ParallelTaskThread>();
 
     @Override
     public void run() {
         while (!this.isInterrupted()) {
-            if (pending.size() > 0) {
-                StorageOperation op = pending.get(0);
-                if (op != null) {
-                    op.run();
-                    pending.remove(op);
+            synchronized (pending) {
+                if (pending.size() > 0) {
+                    StorageOperation op = pending.get(0);
+                    if (op != null) {
+                        op.run();
+                        pending.remove(0);
+                    }
                 }
             }
         }
@@ -29,13 +27,19 @@ public class StorageQueue extends Thread {
                         "Cannot queue tasks while thread is not running");
         }
         if (op.isParallel()) {
-            ParalellTaskThread thread = new ParalellTaskThread(op);
-            if (!active.contains(thread)) {
-               thread.start();
+            synchronized (active) {
+                ParallelTaskThread thread = new ParallelTaskThread(op);
+                if (!active.contains(thread)) {
+                   thread.start();
+                } else if (op.queueMultiple()) {
+                    active.get(active.indexOf(thread)).addOperation(op);
+                }
             }
         } else {
-            if (!pending.contains(op)) {
-                pending.add(op);
+            synchronized (pending) {
+                if (!pending.contains(op) || op.queueMultiple()) {
+                    pending.add(op);
+                }
             }
         }
     }
@@ -49,33 +53,47 @@ public class StorageQueue extends Thread {
     public void end() {
         interrupt();
         pending.clear();
-        for (ParalellTaskThread thread : active) {
-            thread.interrupt();
+        synchronized (active) {
+            for (ParallelTaskThread thread : active) {
+                thread.interrupt();
+            }
         }
     }
 
-    class ParalellTaskThread extends Thread {
-        private final StorageOperation op;
-        public ParalellTaskThread(StorageOperation op) {
-            this.op = op;
+    class ParallelTaskThread extends Thread {
+        private final Vector<StorageOperation> ops = new Vector<StorageOperation>();
+        public ParallelTaskThread(StorageOperation op) {
+            ops.add(op);
         }
 
         @Override
         public void run() {
             active.add(this);
             try {
-                if (!interrupted()) op.run();
+                while (!interrupted() && ops.size() > 0) {
+                    StorageOperation op = ops.get(0);
+                    if (op != null) {
+                        op.run();
+                        ops.remove(0);
+                    }
+                }
             } finally {
                 active.remove(this);
             }
         }
 
+        public void addOperation(StorageOperation op) {
+            if (!isAlive() || interrupted())
+                throw new IllegalStateException("Thread is not running");
+            ops.add(op);
+        }
+
         @Override
-        public boolean equals(Object other) {
-            if (!(other instanceof ParalellTaskThread)) {
+        public synchronized boolean equals(Object other) {
+            if (!(other instanceof ParallelTaskThread)) {
                 return false;
             }
-            return op.equals(((ParalellTaskThread) other).op);
+            return ops.size() > 0 && ((ParallelTaskThread) other).ops.size() > 0 && ops.get(0).equals(((ParallelTaskThread) other).ops.get(0));
         }
     }
 }

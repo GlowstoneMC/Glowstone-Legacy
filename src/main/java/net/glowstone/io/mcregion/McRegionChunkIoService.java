@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sun.tools.javac.code.Attribute;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.entity.GlowEntity;
 import net.glowstone.io.ChunkIoService;
@@ -17,10 +16,6 @@ import net.glowstone.io.mcregion.region.RegionFile;
 import net.glowstone.io.mcregion.region.RegionFileCache;
 import net.glowstone.GlowChunk;
 import net.glowstone.GlowWorld;
-import net.glowstone.io.nbt.blockstate.NbtBlockStateStorage;
-import net.glowstone.io.nbt.blockstate.NbtBlockStateStorageLookup;
-import net.glowstone.io.nbt.entity.NbtEntityStorage;
-import net.glowstone.io.nbt.entity.NbtEntityStorageLookup;
 import net.glowstone.util.nbt.ByteArrayTag;
 import net.glowstone.util.nbt.ByteTag;
 import net.glowstone.util.nbt.CompoundTag;
@@ -28,7 +23,6 @@ import net.glowstone.util.nbt.IntTag;
 import net.glowstone.util.nbt.ListTag;
 import net.glowstone.util.nbt.NBTInputStream;
 import net.glowstone.util.nbt.NBTOutputStream;
-import net.glowstone.util.nbt.StringTag;
 import net.glowstone.util.nbt.Tag;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
@@ -117,7 +111,6 @@ public final class McRegionChunkIoService implements ChunkIoService {
         }
         List<CompoundTag> storedTileEntities = ((ListTag<CompoundTag>)levelTags.get("TileEntities")).getValue();
         for (CompoundTag tileEntityTag : storedTileEntities) {
-            ((IntTag)tileEntityTag.getValue().get("x")).getValue();
             GlowBlockState state = world.getBlockAt(((IntTag)tileEntityTag.getValue().get("x")).getValue(),
                     ((IntTag)tileEntityTag.getValue().get("y")).getValue(), ((IntTag)tileEntityTag.getValue().get("z")).getValue()).getState();
             if (state.getClass() != GlowBlockState.class) {
@@ -166,7 +159,7 @@ public final class McRegionChunkIoService implements ChunkIoService {
         levelTags.put("TerrainPopulated", new ByteTag("TerrainPopulated", (byte)(chunk.getPopulated() ? 1 : 0)));
 
         List<CompoundTag> entities = new ArrayList<CompoundTag>();
-        /* for (Entity entity : chunk.getEntities()) {
+         /* for (Entity entity : chunk.getEntities()) {
             GlowEntity glowEntity = (GlowEntity) entity;
             NbtEntityStorage store = NbtEntityStorageLookup.find(glowEntity.getClass());
             if (store == null)

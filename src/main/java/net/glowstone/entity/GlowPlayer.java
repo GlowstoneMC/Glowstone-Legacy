@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import net.glowstone.io.StorageOperation;
 import net.glowstone.io.WorldMetadataService.PlayerData;
 import net.glowstone.msg.*;
 import net.glowstone.util.Position;
@@ -30,7 +31,6 @@ import net.glowstone.util.Parameter;
 import net.glowstone.util.TextWrapper;
 import net.glowstone.net.Session;
 import org.bukkit.map.MapView;
-import org.bukkit.util.Vector;
 
 /**
  * Represents an in-game player.
@@ -134,8 +134,8 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         if (session.getState() != Session.State.GAME) {
             session.send(new IdentificationMessage(getEntityId(), "", world.getSeed(), getGameMode().getValue(), world.getEnvironment().getId(), 1, world.getMaxHeight(), session.getServer().getMaxPlayers()));
         }
-
         streamBlocks(); // stream the initial set of blocks
+        health = 20;
         setCompassTarget(world.getSpawnLocation()); // set our compass target
         session.send(new StateChangeMessage((byte)(getWorld().hasStorm() ? 1 : 2), (byte)0)); // send the world's weather
 
@@ -427,7 +427,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
      */
     @Override
     public boolean teleport(Location location) {
-        if (location != null && location.getWorld() != null) {
+        if (location != null && this.location != null) {
             PlayerTeleportEvent event = EventFactory.onPlayerTeleport(this, getLocation(), location);
             if (event.isCancelled()) return false;
             location = event.getTo();
@@ -519,28 +519,34 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     }
 
     public void saveData() {
-        Map<PlayerData, Object> dat = new HashMap<PlayerData, Object>();
-        dat.put(PlayerData.LOCATION, getLocation());
-        // dat.put(PlayerData.FALL_DISTANCE, getFallDistance());
-        Map<Byte, ItemStack> invItems = new HashMap<Byte, ItemStack>();
-        for (int i = 0; i < getInventory().getSize(); i++) {
-            ItemStack stack = getInventory().getItem(i);
-            if (stack != null)
-                invItems.put((byte)i, stack);
-        }
-        dat.put(PlayerData.INVENTORY, invItems);
-        dat.put(PlayerData.HEALTH, getHealth());
-        dat.put(PlayerData.MOTION, getVelocity());
-        // dat.put(PlayerData.FIRE_TICKS, getFireTicks());
-        // dat.put(PlayerData.AIR_TICKS, getRemainingAir());
-        // dat.put(PlayerData.HURT_TICKS, getNoDamageTicks());
-        dat.put(PlayerData.IS_SLEEPING, isSleeping());
-        dat.put(PlayerData.SLEEP_TICKS, getSleepTicks());
-        if (bedSpawn != null)
-            dat.put(PlayerData.BED_LOCATION, bedSpawn);
+        final GlowPlayer player = this;
+        server.getStorageQueue().queue(new StorageOperation() {
+            @Override
+            public boolean isParallel() {
+                return true;
+            }
 
-        GlowWorld dataWorld = (GlowWorld)server.getWorlds().get(0);
-        dataWorld.getMetadataService().writePlayerData(this, dat);
+            @Override
+            public String getGroup() {
+                return getName() + "_" + getWorld().getName();
+            }
+
+            @Override
+            public boolean queueMultiple() {
+                return true;
+            }
+
+            @Override
+            public String getOperation() {
+                return "player-data-save";
+            }
+
+            public void run() {
+                Map<PlayerData, Object> dat = new HashMap<PlayerData, Object>();
+                GlowWorld dataWorld = (GlowWorld) server.getWorlds().get(0);
+                dataWorld.getMetadataService().writePlayerData(player, dat);
+            }
+        });
     }
 
     public void loadData() {
@@ -548,21 +554,19 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         GlowWorld dataWorld = (GlowWorld)server.getWorlds().get(0);
         Map<PlayerData, Object> dat = dataWorld.getMetadataService().readPlayerData(this);
 
-        teleport((Location) dat.get(PlayerData.LOCATION));
+        //teleport((Location) dat.get(PlayerData.LOCATION));
         // setFallDistance((Float)dat.get(PlayerData.FALL_DISTANCE));
-        if (dat.containsKey(PlayerData.INVENTORY))
-            for (Map.Entry<Byte, ItemStack> item : ((Map<Byte, ItemStack>)dat.get(PlayerData.INVENTORY)).entrySet()) {
-                getInventory().setItem(item.getKey(), item.getValue());
-            }
-        setHealth((Short)dat.get(PlayerData.HEALTH));
+        //if (dat.containsKey(PlayerData.INVENTORY))
+        //    getInventory().setContents((ItemStack[])dat.get(PlayerData.INVENTORY));
+        //setHealth((Short)dat.get(PlayerData.HEALTH));
         // setVelocity((Vector)dat.get(PlayerData.MOTION));
         // setFireTicks((Short)dat.get(PlayerData.FIRE_TICKS));
         // setRemainingAir((Short)dat.get(PlayerData.AIR_TICKS));
         // setNoDamageTicks((Short)dat.get(PlayerData.HURT_TICKS));
-        sleeping = (Boolean)dat.get(PlayerData.IS_SLEEPING);
-        setSleepTicks((Short)dat.get(PlayerData.SLEEP_TICKS));
-        if (dat.containsKey(PlayerData.BED_LOCATION))
-            bedSpawn = (Location)dat.get(PlayerData.BED_LOCATION);
+        // sleeping = (Boolean)dat.get(PlayerData.IS_SLEEPING);
+        //setSleepTicks((Short)dat.get(PlayerData.SLEEP_TICKS));
+        //if (dat.containsKey(PlayerData.BED_LOCATION))
+        //    bedSpawn = (Location)dat.get(PlayerData.BED_LOCATION);
 
 
     }
@@ -834,6 +838,10 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         experience += exp;
         level += (experience / 200);
         experience %= 200;
+    }
+
+    public Location getBedSpawnLocation() {
+        return bedSpawn;
     }
 
 }
