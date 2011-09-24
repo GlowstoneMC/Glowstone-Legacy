@@ -31,13 +31,12 @@ public final class NbtChunkIoService implements ChunkIoService {
 
 
     @Override
-    public GlowChunk read(GlowWorld world, int x, int z) {
+    public boolean read(GlowChunk chunk, int x, int z) {
         int fileX = formatInt(x);
         int fileZ = formatInt(z);
 
         File chunkFile = new File(dir, Integer.toString(fileX & 63, 36) + File.separatorChar + Integer.toString(fileZ & 63, 36)
                 + File.separatorChar + "c." + Integer.toString(fileX, 36) + "." + Integer.toString(fileZ, 36) + ".dat");
-        GlowChunk chunk = new GlowChunk(world, x, z);
 
         Map<String, Tag> levelTags;
         try {
@@ -45,7 +44,7 @@ public final class NbtChunkIoService implements ChunkIoService {
             CompoundTag tag = (CompoundTag) nbt.readTag();
             levelTags = ((CompoundTag) tag.getValue().get("Level")).getValue();
         } catch (IOException e) {
-            return chunk;
+            return false;
         }
 
         byte[] tileData = ((ByteArrayTag) levelTags.get("Blocks")).getValue();
@@ -79,7 +78,7 @@ public final class NbtChunkIoService implements ChunkIoService {
             }
         }
 
-        return chunk;
+        return true;
     }
 
     @Override

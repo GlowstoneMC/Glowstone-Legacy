@@ -4,28 +4,23 @@ import net.glowstone.GlowServer;
 import net.glowstone.GlowWorld;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.io.WorldMetadataService;
+import net.glowstone.io.entity.EntityStoreLookupService;
 import net.glowstone.util.nbt.ByteTag;
 import net.glowstone.util.nbt.CompoundTag;
-import net.glowstone.util.nbt.DoubleTag;
-import net.glowstone.util.nbt.FloatTag;
 import net.glowstone.util.nbt.IntTag;
-import net.glowstone.util.nbt.ListTag;
 import net.glowstone.util.nbt.LongTag;
 import net.glowstone.util.nbt.NBTInputStream;
 import net.glowstone.util.nbt.NBTOutputStream;
-import net.glowstone.util.nbt.ShortTag;
 import net.glowstone.util.nbt.StringTag;
 import net.glowstone.util.nbt.Tag;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 
 import java.io.*;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 public class NbtWorldMetadataService implements WorldMetadataService {
@@ -42,9 +37,8 @@ public class NbtWorldMetadataService implements WorldMetadataService {
         server = (GlowServer) Bukkit.getServer();
     }
 
-    public Map<WorldData, Object> readWorldData() throws IOException {
+    public WorldFinalValues readWorldData() throws IOException {
         Map<String, Tag> level = new HashMap<String, Tag>();
-        Map<WorldData, Object> ret = new HashMap<WorldData, Object>();
 
         File levelFile = new File(dir, "level.dat");
         if (!levelFile.exists()) {
@@ -64,12 +58,11 @@ public class NbtWorldMetadataService implements WorldMetadataService {
                 handleWorldException("level.dat", e);
             }
         }
-
+        UUID uid = null;
         File uuidFile = new File(dir, "uid.dat");
         if (!uuidFile.exists()) {
             try {
                 uuidFile.createNewFile();
-                ret.put(WorldData.UUID, UUID.randomUUID());
             } catch (IOException e) {
                 handleWorldException("uid.dat", e);
             }
@@ -77,7 +70,7 @@ public class NbtWorldMetadataService implements WorldMetadataService {
             DataInputStream str = null;
             try {
             str = new DataInputStream(new FileInputStream(uuidFile));
-            ret.put(WorldData.UUID, new UUID(str.readLong(), str.readLong()));
+            uid = new UUID(str.readLong(), str.readLong());
             } catch (EOFException e) {
             } finally {
                 if (str != null) {
@@ -85,53 +78,41 @@ public class NbtWorldMetadataService implements WorldMetadataService {
                 }
             }
         }
-
-
+        long seed = 0L;
         if (level.containsKey("thundering")) {
             ByteTag thunderTag = (ByteTag) level.remove("thundering");
             world.setThundering(thunderTag.getValue() == 1);
-        } else {
-            ret.put(WorldData.THUNDERING, false);
         }
         if (level.containsKey("raining")) {
             ByteTag rainTag = (ByteTag) level.remove("raining");
-            ret.put(WorldData.RAINING, Boolean.parseBoolean(rainTag.getValue().toString()));
+            world.setStorm(rainTag.getValue() == 1);
 
-        } else {
-            ret.put(WorldData.RAINING, false);
         }
         if (level.containsKey("thunderTime")) {
             IntTag thunderTimeTag = (IntTag) level.remove("thunderTime");
-            ret.put(WorldData.THUNDER_TIME, thunderTimeTag.getValue());
-        } else {
-            ret.put(WorldData.THUNDER_TIME, 0);
+            world.setThunderDuration(thunderTimeTag.getValue());
         }
         if (level.containsKey("rainTime")) {
             IntTag rainTimeTag = (IntTag) level.remove("rainTime");
-            ret.put(WorldData.RAIN_TIME, rainTimeTag.getValue());
-        } else {
-            ret.put(WorldData.RAIN_TIME, 0);
+            world.setWeatherDuration(rainTimeTag.getValue());
         }
-        if (level.containsKey("seed")) {
-            LongTag seedTag = (LongTag) level.remove("seed");
-            ret.put(WorldData.SEED, seedTag.getValue());
-        } else {
-            ret.put(WorldData.SEED, 0L);
+        if (level.containsKey("RandomSeed")) {
+            LongTag seedTag = (LongTag) level.remove("RandomSeed");
+            seed = seedTag.getValue();
         }
         if (level.containsKey("Time")) {
             LongTag timeTag = (LongTag) level.remove("Time");
-            ret.put(WorldData.TIME, timeTag.getValue());
-        } else {
-            ret.put(WorldData.TIME, 0L);
+            world.setTime(timeTag.getValue());
         }
         if (level.containsKey("SpawnX") && level.containsKey("SpawnY") && level.containsKey("SpawnZ")) {
             IntTag spawnXTag = (IntTag) level.remove("SpawnX");
             IntTag spawnYTag = (IntTag) level.remove("SpawnY");
             IntTag spawnZTag = (IntTag) level.remove("SpawnZ");
-            ret.put(WorldData.SPAWN_LOCATION, new Location(world, spawnXTag.getValue(), spawnYTag.getValue(), spawnZTag.getValue()));
+            world.setSpawnLocation(spawnXTag.getValue(), spawnYTag.getValue(), spawnZTag.getValue());
         }
         unknownTags.putAll(level);
-        return ret;
+        if (uid == null) uid= UUID.randomUUID();
+        return new WorldFinalValues(seed, uid);
     }
 
     private void handleWorldException(String file, IOException e) {
@@ -185,9 +166,10 @@ public class NbtWorldMetadataService implements WorldMetadataService {
         }
     }
 
-    public Map<PlayerData, Object> readPlayerData(GlowPlayer player) {
+    public void readPlayerData(GlowPlayer player) {
         Map<String, Tag> playerData = new HashMap<String, Tag>();
-        Map<PlayerData, Object> ret = new HashMap<PlayerData, Object>();
+        CompoundTag playerTag = null;
+        // Map<PlayerData, Object> ret = new HashMap<PlayerData, Object>();
 
         File playerDir = new File(world.getName(), "players");
         if (!playerDir.exists())
@@ -203,7 +185,7 @@ public class NbtWorldMetadataService implements WorldMetadataService {
         } else {
             try {
                 NBTInputStream in = new NBTInputStream(new FileInputStream(playerFile));
-                CompoundTag playerTag = (CompoundTag) in.readTag();
+                playerTag = (CompoundTag) in.readTag();
                 in.close();
                 if (playerTag != null) playerData.putAll(playerTag.getValue());
             } catch (EOFException e) {
@@ -214,100 +196,11 @@ public class NbtWorldMetadataService implements WorldMetadataService {
             }
         }
         
-        World playerWorld = null;
-        if (playerData.containsKey("UUIDLeast") && playerData.containsKey("UUIDMost")) {
-            LongTag uuidLeastTag = (LongTag) playerData.get("UUIDLeast");
-            LongTag uuidMostTag = (LongTag) playerData.get("UUIDMost");
-            playerWorld = server.getWorld(new UUID(uuidLeastTag.getValue(), uuidMostTag.getValue()));
-        }
-        if (playerWorld == null && playerData.containsKey("World")) {
-            StringTag worldTag = (StringTag) playerData.get("World");
-            playerWorld = server.getWorld(worldTag.getValue());
-        }
-        if (playerWorld == null  && playerData.containsKey("Dimension")) {
-            IntTag dimensionTag = (IntTag) playerData.get("Dimension");
-            int dim = dimensionTag.getValue();
-            for (World world : server.getWorlds()) {
-                if (world.getEnvironment().getId() == dim)
-                    playerWorld = world;
-            }
-        }
-        if (playerWorld == null) {
-            playerWorld = world;
-        }
-        if (playerData.containsKey("SleepTimer")) {
-            ShortTag sleepTimerTag = (ShortTag) playerData.get("SleepTimer");
-            ret.put(PlayerData.SLEEP_TICKS, sleepTimerTag.getValue());
-        } else {
-            ret.put(PlayerData.SLEEP_TICKS, (short) 0);
-        }
-        if (playerData.containsKey("HurtTime")) {
-            ShortTag hurtTimeTag = (ShortTag) playerData.get("HurtTime");
-            ret.put(PlayerData.HURT_TICKS, hurtTimeTag.getValue());
-        } else {
-            ret.put(PlayerData.HURT_TICKS, (short) 0);
-        }
-        if (playerData.containsKey("Health")) {
-            player.setHealth(((ShortTag) playerData.get("Health")).getValue());
-        }
-        if (playerData.containsKey("Air")) {
-            ShortTag airTag = (ShortTag) playerData.get("Air");
-            // player.setRemainingAir(airTag.getValue());
-        }
-        if (playerData.containsKey("Fire")) {
-            ShortTag fireTimeTag = (ShortTag) playerData.get("Fire");
-            // player.setFireTicks(fireTimeTag.getValue());
-        }
-        if (playerData.containsKey("AttackTime")) {
-            ShortTag attackTimeTag = (ShortTag) playerData.get("AttackTime");
-            ret.put(PlayerData.ATTACK_TICKS, attackTimeTag.getValue());
-        } else {
-            ret.put(PlayerData.ATTACK_TICKS, (short) 0);
-        }
-        if (playerData.containsKey("DeathTime")) {
-            ShortTag deathTimeTag = (ShortTag) playerData.get("DeathTime");
-            ret.put(PlayerData.DEATH_TICKS, deathTimeTag.getValue());
-        } else {
-            ret.put(PlayerData.DEATH_TICKS, (short) 0);
-        }
-        if (playerData.containsKey("FallDistance")) {
-            FloatTag fallDistanceTag = (FloatTag) playerData.get("FallDistance");
-            // player.setFallDistance(fallDistanceTag.getValue());
-        }
-        if (playerData.containsKey("Pos") && playerData.containsKey("Rotation")) {
-            ListTag posTag = (ListTag) playerData.get("Pos");
-            ListTag rotTag = (ListTag) playerData.get("Rotation");
-            player.teleport(NbtFormattingUtils.listTagsToLocation(playerWorld, posTag, rotTag));
-        } else {
-            player.teleport(playerWorld.getSpawnLocation());
-        }
-        if (playerData.containsKey("Inventory")) {
-            ListTag<CompoundTag> inventoryTag = (ListTag<CompoundTag>) playerData.get("Inventory");
-            player.getInventory().setContents(NbtFormattingUtils.tagToInventory(inventoryTag, player.getInventory().getSize()));
-        }
-        if (playerData.containsKey("Motion")) {
-            ListTag<DoubleTag> motionTag = (ListTag<DoubleTag>) playerData.get("Motion");
-            // player.setVelocity(NbtFormattingUtils.listTagToVector(motionTag));
-        }
-        if (playerData.containsKey("OnGround")) {
-            ByteTag onGroundTag = (ByteTag) playerData.get("OnGround");
-            player.setOnGround(onGroundTag.getValue() == 1);
-        }
-        if (playerData.containsKey("Sleeping")) {
-            ByteTag isSleepingTag = (ByteTag) playerData.get("Sleeping");
-            ret.put(PlayerData.IS_SLEEPING, isSleepingTag.getValue() == 1);
-        }
-        if (playerData.containsKey("SpawnX") && playerData.containsKey("SpawnY") && playerData.containsKey("SpawnZ")) {
-            IntTag spawnXTag = (IntTag) playerData.get("SpawnX");
-            IntTag spawnYTag = (IntTag) playerData.get("SpawnY");
-            IntTag spawnZTag = (IntTag) playerData.get("SpawnZ");
-            ret.put(PlayerData.BED_LOCATION, new Location(world, spawnXTag.getValue(), spawnYTag.getValue(), spawnZTag.getValue()));
-        }
-        return ret;
+        if (playerTag == null) playerTag = new CompoundTag("", new HashMap<String, Tag>());
+        EntityStoreLookupService.find(GlowPlayer.class).load(player, playerTag);
     }
 
-    public void writePlayerData(GlowPlayer player, Map<PlayerData, Object> data) {
-        Map<String, Tag> out = new HashMap<String, Tag>();
+    public void writePlayerData(GlowPlayer player) {
 
         File playerDir = new File(world.getName(), "players");
         if (!playerDir.exists())
@@ -321,40 +214,7 @@ public class NbtWorldMetadataService implements WorldMetadataService {
             server.getLogger().severe("Failed to access player.dat for player " + player.getName() + " in world " + world.getName() + "!");
         }
 
-        Location loc = player.getLocation();
-        out.putAll(NbtFormattingUtils.locationToListTags(loc));
-        UUID worldUUID = loc.getWorld().getUID();
-        out.put("UUIDLeast", new LongTag("UUIDLeast", worldUUID.getLeastSignificantBits()));
-        out.put("UUIDMost", new LongTag("UUIDMost", worldUUID.getMostSignificantBits()));
-        out.put("World", new StringTag("world", loc.getWorld().getName()));
-        out.put("Dimension", new IntTag("Dimension", loc.getWorld().getEnvironment().getId()));
-        out.putAll(NbtFormattingUtils.locationToListTags(loc));
-        out.put("SleepTimer", new ShortTag("SleepTimer", (short) player.getSleepTicks()));
-        // out.put("HurtTime", new ShortTag("HurtTime", (short) 0)); // NYI
-        out.put("Health", new ShortTag("Health", (short) player.getHealth()));
-        // out.put("Air", new ShortTag("Air", (short) player.getRemainingAir()));
-        // out.put("Fire", new ShortTag("Fire", (short) player.getFireTicks()));
-        if (data.containsKey(PlayerData.ATTACK_TICKS)) {
-            out.put("AttackTime", new ShortTag("AttackTime", (Short) data.get(PlayerData.ATTACK_TICKS)));
-        } else {
-            out.put("AttackTime", new ShortTag("AttackTime", (short) 0));
-        }
-        if (data.containsKey(PlayerData.DEATH_TICKS)) {
-            out.put("DeathTime", new ShortTag("DeathTime", (Short) data.get(PlayerData.DEATH_TICKS)));
-        } else {
-            out.put("DeathTime", new ShortTag("DeathTime", (short) 0));
-        }
-        // out.put("FallDistance", new FloatTag("FallDistance", player.getFallDistance()));
-        out.put("Inventory", NbtFormattingUtils.inventoryToTag(player.getInventory().getContents()));
-        out.put("Motion", NbtFormattingUtils.vectorToListTag(player.getVelocity()));
-        out.put("OnGround", new ByteTag("OnGround", (byte) (player.isOnGround() ? 1 : 0)));
-        out.put("Sleeping", new ByteTag("Sleeping", (byte) (player.isSleeping() ? 1 : 0)));
-        Location bedLoc = player.getBedSpawnLocation();
-        if (bedLoc != null) {
-            out.put("SpawnX", new IntTag("SpawnX", bedLoc.getBlockX()));
-            out.put("SpawnY", new IntTag("SpawnY", bedLoc.getBlockY()));
-            out.put("SpawnZ", new IntTag("SpawnZ", bedLoc.getBlockZ()));
-        }
+        Map<String, Tag> out = EntityStoreLookupService.find(GlowPlayer.class).save(player);
         try {
             NBTOutputStream outStream = new NBTOutputStream(new FileOutputStream(playerFile));
             outStream.writeTag(new CompoundTag("", out));

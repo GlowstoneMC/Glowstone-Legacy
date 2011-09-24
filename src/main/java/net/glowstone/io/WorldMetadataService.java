@@ -4,6 +4,7 @@ import net.glowstone.entity.GlowPlayer;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 
 public interface WorldMetadataService {
@@ -13,7 +14,7 @@ public interface WorldMetadataService {
      * @return a map with world information
      * @throws IOException if an I/O error occurs
      */
-    public Map<WorldData, Object> readWorldData() throws IOException;
+    public WorldFinalValues readWorldData() throws IOException;
 
     /**
      * Writes data for a chunk's world
@@ -21,16 +22,22 @@ public interface WorldMetadataService {
      */
     public void writeWorldData() throws IOException;
 
+    public class WorldFinalValues {
+        private final long seed;
+        private final UUID uid;
 
-    public enum WorldData {
-        SEED,
-        UUID,
-        SPAWN_LOCATION,
-        TIME,
-        RAINING,
-        THUNDERING,
-        RAIN_TIME,
-        THUNDER_TIME
+        public WorldFinalValues(long seed, UUID uid) {
+            this.seed = seed;
+            this.uid = uid;
+        }
+
+        public long getSeed() {
+            return seed;
+        }
+
+        public UUID getUuid() {
+            return uid;
+        }
     }
 
     /**
@@ -39,30 +46,11 @@ public interface WorldMetadataService {
      * @return a Map with the player's data
      * @throws IOException in the event of unanticipated error
      */
-    public Map<PlayerData, Object> readPlayerData(GlowPlayer player);
+    public void readPlayerData(GlowPlayer player);
 
     /**
      * Write a player's data to their storage file
      * @param player The player to save data for
-     * @param data The data to save for the player
      */
-    public void writePlayerData(GlowPlayer player, Map<PlayerData, Object> data);
-
-
-    public enum PlayerData {
-        LOCATION,
-        INVENTORY,
-        SLEEP_TICKS,
-        MOTION,
-        ON_GROUND,
-        HEALTH,
-        AIR_TICKS,
-        IS_SLEEPING,
-        FIRE_TICKS,
-        FALL_DISTANCE,
-        DEATH_TICKS,
-        HURT_TICKS,
-        ATTACK_TICKS,
-        BED_LOCATION
-    }
+    public void writePlayerData(GlowPlayer player);
 }

@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NbtFormattingUtils {
+public class NbtSerialization {
 
     public static ItemStack[] tagToInventory(ListTag<CompoundTag> tagList, int size) {
        ItemStack[] items = new ItemStack[size];
@@ -32,7 +32,7 @@ public class NbtFormattingUtils {
             byte count = (countTag == null) ? 0 : ((ByteTag)countTag).getValue();
             byte slot = (slotTag == null) ? -1 : ((ByteTag)slotTag).getValue();
             if (id != 0 && slot >= 0 && count != 0) {
-                if (items.length < slot) {
+                if (items.length > slot) {
                     items[slot] = new ItemStack(id, count, damage);
                 }
             }
@@ -56,9 +56,9 @@ public class NbtFormattingUtils {
         return new ListTag<CompoundTag>("Inventory", CompoundTag.class, out);
     }
 
-    public static Location listTagsToLocation(World world, ListTag pos, ListTag rot) {
-        List<DoubleTag> posList = (pos.getType().equals(DoubleTag.class)) ? pos.getValue() : new ArrayList<DoubleTag>();
-        List<FloatTag> rotList = (rot.getType().equals(FloatTag.class)) ? rot.getValue() : new ArrayList<FloatTag>();
+    public static Location listTagsToLocation(World world, ListTag<DoubleTag> pos, ListTag<FloatTag> rot) {
+        List<DoubleTag> posList = pos.getValue();
+        List<FloatTag> rotList = rot.getValue();
         if (posList.size() == 3 && rotList.size() == 2) {
             return new Location(world, posList.get(0).getValue(), posList.get(1).getValue(), posList.get(2).getValue(), rotList.get(0).getValue(), rotList.get(1).getValue());
         }

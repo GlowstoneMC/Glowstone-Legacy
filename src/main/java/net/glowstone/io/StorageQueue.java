@@ -5,24 +5,25 @@ import java.util.Vector;
 public class StorageQueue extends Thread {
     private final Vector<StorageOperation> pending = new Vector<StorageOperation>();
     private final Vector<ParallelTaskThread> active = new Vector<ParallelTaskThread>();
+    private boolean running = false;
 
     @Override
     public void run() {
         while (!this.isInterrupted()) {
             synchronized (pending) {
                 if (pending.size() > 0) {
-                    StorageOperation op = pending.get(0);
+                    StorageOperation op = pending.remove(0);
                     if (op != null) {
                         op.run();
-                        pending.remove(0);
                     }
                 }
             }
         }
+        running = false;
     }
 
-    public void queue(StorageOperation op) {
-        if (isInterrupted()) {
+    public synchronized void queue(StorageOperation op) {
+        if (!running) {
                 throw new IllegalStateException(
                         "Cannot queue tasks while thread is not running");
         }
@@ -52,12 +53,19 @@ public class StorageQueue extends Thread {
 
     public void end() {
         interrupt();
+        running = false;
         pending.clear();
         synchronized (active) {
             for (ParallelTaskThread thread : active) {
                 thread.interrupt();
             }
         }
+    }
+
+    @Override
+    public void start() {
+        running = true;
+        super.start();
     }
 
     class ParallelTaskThread extends Thread {
@@ -71,10 +79,9 @@ public class StorageQueue extends Thread {
             active.add(this);
             try {
                 while (!interrupted() && ops.size() > 0) {
-                    StorageOperation op = ops.get(0);
+                    StorageOperation op = ops.remove(0);
                     if (op != null) {
-                        op.run();
-                        ops.remove(0);
+                            op.run();
                     }
                 }
             } finally {
@@ -83,7 +90,7 @@ public class StorageQueue extends Thread {
         }
 
         public void addOperation(StorageOperation op) {
-            if (!isAlive() || interrupted())
+            if (!isAlive() || isInterrupted())
                 throw new IllegalStateException("Thread is not running");
             ops.add(op);
         }

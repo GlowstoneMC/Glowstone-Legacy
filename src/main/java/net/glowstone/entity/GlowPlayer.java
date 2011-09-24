@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import net.glowstone.block.GlowBlockState;
 import net.glowstone.io.StorageOperation;
-import net.glowstone.io.WorldMetadataService.PlayerData;
 import net.glowstone.msg.*;
 import net.glowstone.util.Position;
 import org.bukkit.*;
@@ -229,6 +229,9 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         for (GlowChunk.Key key : newChunks) {
             session.send(new LoadChunkMessage(key.getX(), key.getZ(), true));
             session.send(world.getChunkAt(key.getX(), key.getZ()).toMessage());
+            for (GlowBlockState state : world.getChunkAt(key.getX(), key.getZ()).getTileEntities()) {
+                state.update(this);
+            }
         }
 
         for (GlowChunk.Key key : previousChunks) {
@@ -291,10 +294,6 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
 
     public InetSocketAddress getAddress() {
         return session.getAddress();
-    }
-
-    public Location getBedSpawnLocation() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -368,8 +367,9 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
 
     @Override
     public void setGameMode(GameMode mode) {
+        boolean changed = getGameMode() != mode;
         super.setGameMode(mode);
-        session.send(new StateChangeMessage((byte) 3, (byte) mode.getValue()));
+        if (changed) session.send(new StateChangeMessage((byte) 3, (byte) mode.getValue()));
     }
 
     public int getExperience() {
@@ -390,7 +390,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         for (int i = 0; i <= level; i++) {
             calcExperience += (level + 1) * 10;
         }
-        this.experience = calcExperience;
+        setExperience(calcExperience);
         session.send(createExperienceMessage());
     }
 
@@ -399,7 +399,11 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     }
 
     public void setTotalExperience(int exp) {
+        int calcExperience = exp;
         this.experience = exp;
+        level = 0;
+        while ((calcExperience -= (getLevel() + 1) * 10) > 0) ++level;
+        session.send(createExperienceMessage());
     }
 
     public float getExhaustion() {
@@ -416,6 +420,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
 
     public void setSaturation(float value) {
         saturation = value;
+        session.send(createHealthMessage());
     }
     
     // -- Actions
@@ -542,9 +547,8 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
             }
 
             public void run() {
-                Map<PlayerData, Object> dat = new HashMap<PlayerData, Object>();
                 GlowWorld dataWorld = (GlowWorld) server.getWorlds().get(0);
-                dataWorld.getMetadataService().writePlayerData(player, dat);
+                dataWorld.getMetadataService().writePlayerData(player);
             }
         });
     }
@@ -552,7 +556,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     public void loadData() {
         
         GlowWorld dataWorld = (GlowWorld)server.getWorlds().get(0);
-        Map<PlayerData, Object> dat = dataWorld.getMetadataService().readPlayerData(this);
+        dataWorld.getMetadataService().readPlayerData(this);
 
         //teleport((Location) dat.get(PlayerData.LOCATION));
         // setFallDistance((Float)dat.get(PlayerData.FALL_DISTANCE));
@@ -838,10 +842,6 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         experience += exp;
         level += (experience / 200);
         experience %= 200;
-    }
-
-    public Location getBedSpawnLocation() {
-        return bedSpawn;
     }
 
 }

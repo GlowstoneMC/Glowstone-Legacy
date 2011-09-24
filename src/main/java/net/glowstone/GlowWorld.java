@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 
+import net.glowstone.entity.*;
 import net.glowstone.io.StorageOperation;
 import org.bukkit.BlockChangeDelegate;
 import org.bukkit.Chunk;
@@ -26,14 +27,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import net.glowstone.io.WorldMetadataService;
-import net.glowstone.io.WorldMetadataService.WorldData;
+import net.glowstone.io.WorldMetadataService.WorldFinalValues;
 import net.glowstone.io.WorldStorageProvider;
 import net.glowstone.block.GlowBlock;
-import net.glowstone.entity.GlowEntity;
-import net.glowstone.entity.EntityManager;
-import net.glowstone.entity.GlowLightningStrike;
-import net.glowstone.entity.GlowLivingEntity;
-import net.glowstone.entity.GlowPlayer;
 import net.glowstone.msg.LoadChunkMessage;
 import net.glowstone.msg.StateChangeMessage;
 import net.glowstone.msg.TimeMessage;
@@ -175,26 +171,24 @@ public final class GlowWorld implements World {
         chunks = new ChunkManager(this, provider.getChunkIoService(), generator);
         metadataService = provider.getMetadataService();
 
-        Map<WorldData, Object> data = new HashMap<WorldData, Object>();
+        WorldFinalValues values = null;
         try {
-            data = metadataService.readWorldData();
+            values = metadataService.readWorldData();
         } catch (IOException e) {
             e.printStackTrace();
         }
         // Extra checks for seed
-        if (!data.containsKey(WorldData.SEED) || (Long) data.get(WorldData.SEED) == 0L) {
-            this.seed = seed;
+        if (values != null) {
+            if (values.getSeed() == 0L) {
+                this.seed = seed;
+            } else {
+                this.seed = values.getSeed();
+            }
+            this.uid = values.getUuid();
         } else {
-            this.seed = (Long) data.get(WorldData.SEED);
+            this.seed = seed;
+            this.uid = UUID.randomUUID();
         }
-        if (data.containsKey(WorldData.SPAWN_LOCATION))
-            this.spawnLocation = (Location) data.get(WorldData.SPAWN_LOCATION);
-        this.uid = (UUID) data.get(WorldData.UUID);
-        this.time = (Long) data.get(WorldData.TIME);
-        this.currentlyRaining = (Boolean) data.get(WorldData.RAINING);
-        // this.currentlyThundering = (Boolean) data.get(WorldData.THUNDERING);
-        this.rainingTicks = (Integer) data.get(WorldData.RAIN_TIME);
-        this.thunderingTicks = (Integer) data.get(WorldData.THUNDER_TIME);
 
         populators = generator.getDefaultPopulators(this);
         if (spawnLocation == null) spawnLocation = generator.getFixedSpawnLocation(this, random);
@@ -697,6 +691,12 @@ public final class GlowWorld implements World {
                 return spawn(loc, org.bukkit.entity.Zombie.class);
             case WOLF:
                 return spawn(loc, org.bukkit.entity.Wolf.class);
+            case CAVE_SPIDER:
+                return spawn(loc, org.bukkit.entity.CaveSpider.class);
+            case SILVERFISH:
+                return spawn(loc, org.bukkit.entity.Silverfish.class);
+            case ENDERMAN:
+                return spawn(loc, org.bukkit.entity.Enderman.class);
             default:
                 throw new IllegalArgumentException();
         }

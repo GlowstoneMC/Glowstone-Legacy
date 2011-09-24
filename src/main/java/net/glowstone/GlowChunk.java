@@ -179,8 +179,8 @@ public final class GlowChunk implements Chunk {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public BlockState[] getTileEntities() {
-        return tileEntities.values().toArray(new BlockState[tileEntities.size()]);
+    public GlowBlockState[] getTileEntities() {
+        return tileEntities.values().toArray(new GlowBlockState[tileEntities.size()]);
     }
     
     /**
@@ -443,6 +443,11 @@ public final class GlowChunk implements Chunk {
 
         this.blockLight[coordToIndex(x, z, y)] = (byte) blockLight;
     }
+
+    public byte[] getTypes() {
+        load();
+        return types.clone();
+    }
     
     // ======== Helper functions ========
 
@@ -501,10 +506,6 @@ public final class GlowChunk implements Chunk {
         }
 
         return dest;
-    }
-
-    public byte[] getTypes() {
-        return types.clone();
     }
 
 }

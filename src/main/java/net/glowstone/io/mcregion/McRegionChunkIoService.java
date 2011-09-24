@@ -9,23 +9,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.glowstone.GlowServer;
 import net.glowstone.block.GlowBlockState;
-import net.glowstone.entity.GlowEntity;
 import net.glowstone.io.ChunkIoService;
+import net.glowstone.io.StorageOperation;
+import net.glowstone.io.blockstate.BlockStateStore;
+import net.glowstone.io.blockstate.BlockStateStoreLookupService;
 import net.glowstone.io.mcregion.region.RegionFile;
 import net.glowstone.io.mcregion.region.RegionFileCache;
 import net.glowstone.GlowChunk;
 import net.glowstone.GlowWorld;
-import net.glowstone.util.nbt.ByteArrayTag;
-import net.glowstone.util.nbt.ByteTag;
-import net.glowstone.util.nbt.CompoundTag;
-import net.glowstone.util.nbt.IntTag;
-import net.glowstone.util.nbt.ListTag;
-import net.glowstone.util.nbt.NBTInputStream;
-import net.glowstone.util.nbt.NBTOutputStream;
-import net.glowstone.util.nbt.Tag;
+import net.glowstone.util.nbt.*;
 import org.bukkit.block.BlockState;
-import org.bukkit.entity.Entity;
 
 /**
  * An implementation of the {@link net.glowstone.io.ChunkIoService} which reads and writes
@@ -63,23 +58,22 @@ public final class McRegionChunkIoService implements ChunkIoService {
         this.dir = dir;
     }
 
-    public GlowChunk read(GlowWorld world, int x, int z) throws IOException {
+    public boolean read(GlowChunk chunk, int x, int z) throws IOException {
         RegionFile region = cache.getRegionFile(dir, x, z);
         int regionX = x & (REGION_SIZE - 1);
         int regionZ = z & (REGION_SIZE - 1);
         if (!region.hasChunk(regionX, regionZ)){
-            return null;
+            return false;
         }
 
         DataInputStream in = region.getChunkDataInputStream(regionX, regionZ);
-        GlowChunk chunk = new GlowChunk(world, x, z);
 
         NBTInputStream nbt = new NBTInputStream(in, false);
         CompoundTag tag = (CompoundTag) nbt.readTag();
         Map<String, Tag> levelTags = ((CompoundTag) tag.getValue().get("Level")).getValue();
 
         byte[] tileData = ((ByteArrayTag) levelTags.get("Blocks")).getValue();
-        chunk.setTypes(tileData);
+        chunk.initializeTypes(tileData);
         chunk.setPopulated(((ByteTag) levelTags.get("TerrainPopulated")).getValue() == 1);
 
         byte[] skyLightData = ((ByteArrayTag) levelTags.get("SkyLight")).getValue();
@@ -111,16 +105,28 @@ public final class McRegionChunkIoService implements ChunkIoService {
         }
         List<CompoundTag> storedTileEntities = ((ListTag<CompoundTag>)levelTags.get("TileEntities")).getValue();
         for (CompoundTag tileEntityTag : storedTileEntities) {
-            GlowBlockState state = world.getBlockAt(((IntTag)tileEntityTag.getValue().get("x")).getValue(),
+            GlowBlockState state = chunk.getBlock(((IntTag)tileEntityTag.getValue().get("x")).getValue(),
                     ((IntTag)tileEntityTag.getValue().get("y")).getValue(), ((IntTag)tileEntityTag.getValue().get("z")).getValue()).getState();
             if (state.getClass() != GlowBlockState.class) {
-                state.load(tileEntityTag);
+                BlockStateStore store = BlockStateStoreLookupService.find(((StringTag)tileEntityTag.getValue().get("id")).getValue());
+                if (store != null) {
+                    store.load(state, tileEntityTag);
+                } else {
+                    GlowServer.logger.severe("Unable to find store for BlockState " + state.getClass());
+                }
             }
         }
 
-        return chunk;
+        return true;
     }
 
+    /**
+     * Writes a chunk. Currently not compatible with the vanilla server.
+     * @param x The X coordinate.
+     * @param z The Z coordinate.
+     * @param chunk The {@link GlowChunk}.
+     * @throws IOException
+     */
     public void write(int x, int z, GlowChunk chunk) throws IOException {
         RegionFile region = cache.getRegionFile(dir, x, z);
         int regionX = x & (REGION_SIZE - 1);
@@ -130,23 +136,22 @@ public final class McRegionChunkIoService implements ChunkIoService {
         NBTOutputStream nbt = new NBTOutputStream(out, false);
         Map<String, Tag> levelTags = new HashMap<String, Tag>();
 
-        byte[] skyLightData = new byte[GlowChunk.DEPTH * GlowChunk.WIDTH * GlowChunk.HEIGHT];
-        byte[] blockLightData = new byte[GlowChunk.DEPTH * GlowChunk.WIDTH * GlowChunk.HEIGHT];
-        byte[] metaData = new byte[GlowChunk.DEPTH * GlowChunk.WIDTH * GlowChunk.HEIGHT];
+        byte[] skyLightData = new byte[GlowChunk.DEPTH * GlowChunk.WIDTH * GlowChunk.HEIGHT / 2];
+        byte[] blockLightData = new byte[GlowChunk.DEPTH * GlowChunk.WIDTH * GlowChunk.HEIGHT / 2];
+        byte[] metaData = new byte[GlowChunk.DEPTH * GlowChunk.WIDTH * GlowChunk.HEIGHT / 2];
         byte[] heightMap = new byte[GlowChunk.WIDTH * GlowChunk.HEIGHT];
 
         for (int cx = 0; cx < GlowChunk.WIDTH; cx++) {
-            for (int cz = 0; cz < GlowChunk.HEIGHT; cz++) {
-                int heightOffset = (cx * GlowChunk.HEIGHT + cz) / 2;
-                heightMap[heightOffset] = (byte)chunk.getWorld().getHighestBlockYAt(x > 0 ? x * cx : cx, z > 0 ? z * cz : cz);
-                for (int cy = 0; cy < GlowChunk.DEPTH; cy++) {
-                    int offset = ((cx * GlowChunk.HEIGHT + cz) * GlowChunk.DEPTH + cy) / 2;
-                    skyLightData[offset] = (byte) ((chunk.getSkyLight(cx, cz, cy) << 4) | chunk.getSkyLight(cx, cz, cy));
-					blockLightData[offset] = (byte) ((chunk.getBlockLight(cx, cz, cy) << 4) | chunk.getBlockLight(cx, cz, cy));
-					metaData[offset] = (byte) ((chunk.getMetaData(cx, cz, cy) << 4) | chunk.getMetaData(cx, cz, cy));
-                }
-            }
-        }
+			for (int cz = 0; cz < GlowChunk.HEIGHT; cz++) {
+                heightMap[(cx * GlowChunk.HEIGHT + cz) / 2] = (byte)chunk.getWorld().getHighestBlockYAt(x > 0 ? x * cx : cx, z > 0 ? z * cz : cz);
+				for (int cy = 0; cy < GlowChunk.DEPTH; cy+=2) {
+					int offset = ((cx * GlowChunk.HEIGHT + cz) * GlowChunk.DEPTH + cy) /2;
+					skyLightData[offset] = (byte) ((chunk.getSkyLight(cx, cz, cy + 1) << 4) | chunk.getSkyLight(cx, cz, cy));
+					blockLightData[offset] = (byte) ((chunk.getBlockLight(cx, cz, cy + 1) << 4) | chunk.getBlockLight(cx, cz, cy));
+					metaData[offset] = (byte) ((chunk.getMetaData(cx, cz, cy + 1) << 4) | chunk.getMetaData(cx, cz, cy));
+				}
+			}
+		}
 
         levelTags.put("Blocks", new ByteArrayTag("Blocks", chunk.getTypes()));
         levelTags.put("SkyLight", new ByteArrayTag("SkyLight", skyLightData));
@@ -154,24 +159,28 @@ public final class McRegionChunkIoService implements ChunkIoService {
         levelTags.put("Data", new ByteArrayTag("Data", metaData));
         levelTags.put("HeightMap", new ByteArrayTag("HeightMap", heightMap));
 
-        levelTags.put("xPos", new IntTag("xPos", regionX));
-        levelTags.put("zPos", new IntTag("zPos", regionZ));
+        levelTags.put("xPos", new IntTag("xPos", chunk.getX()));
+        levelTags.put("zPos", new IntTag("zPos", chunk.getZ()));
         levelTags.put("TerrainPopulated", new ByteTag("TerrainPopulated", (byte)(chunk.getPopulated() ? 1 : 0)));
 
         List<CompoundTag> entities = new ArrayList<CompoundTag>();
-         /* for (Entity entity : chunk.getEntities()) {
+        /* for (Entity entity : chunk.getEntities()) {
             GlowEntity glowEntity = (GlowEntity) entity;
-            NbtEntityStorage store = NbtEntityStorageLookup.find(glowEntity.getClass());
+            EntityStore store = EntityStoreLookupService.find(glowEntity.getClass());
             if (store == null)
                 continue;
-            entities.add(store.save(glowEntity));
+            entities.add(new CompoundTag("", store.save(glowEntity)));
         } */
         levelTags.put("Entities", new ListTag<CompoundTag>("Entities", CompoundTag.class, entities)); // TODO: entity storage
         List<CompoundTag> tileEntities = new ArrayList<CompoundTag>();
-        for (BlockState state : chunk.getTileEntities()) {
-            GlowBlockState glowState = (GlowBlockState) state;
-            if (glowState.getClass() != GlowBlockState.class) {
-                tileEntities.add(glowState.save());
+        for (GlowBlockState state : chunk.getTileEntities()) {
+            if (state.getClass() != GlowBlockState.class) {
+                BlockStateStore store = BlockStateStoreLookupService.find(state.getClass());
+                if (store != null) {
+                    tileEntities.add(new CompoundTag("", store.save(state)));
+                } else {
+                    GlowServer.logger.severe("Unable to find store for BlockState " + state.getClass());
+                }
             }
         }
         levelTags.put("TileEntities", new ListTag<CompoundTag>("TileEntities", CompoundTag.class, tileEntities));
