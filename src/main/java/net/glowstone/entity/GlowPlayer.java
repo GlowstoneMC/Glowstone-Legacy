@@ -124,6 +124,11 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
     private Location bedSpawn;
 
     /**
+     * The name a player has in the player list
+     */
+    private String playerListName;
+
+    /**
      * Creates a new player and adds it to the world.
      * @param session The player's session.
      * @param name The player's name.
@@ -321,6 +326,24 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         displayName = name;
     }
 
+    public String getListName() {
+        return playerListName == null || "".equals(playerListName) ? getName() : playerListName;
+    }
+
+    public void setListName(String name) {
+        if (name.length() > 15) throw new IllegalArgumentException("The given name was " + name.length() + " chars long, longer than the maximum of 16");
+        for (Player player : server.getOnlinePlayers()) {
+            if (player.getListName().equals(getListName())) throw new IllegalArgumentException("The name given, " + name + ", is already used by " + player.getName() + ".");
+        }
+        Message removeMessage = new UserListItemMessage(getListName(), false, (short)0);
+        playerListName = name;
+        Message reAddMessage = new UserListItemMessage(getListName(), true, (short)0);
+        for (Player player : server.getOnlinePlayers()) {
+            ((GlowPlayer) player).getSession().send(removeMessage);
+            ((GlowPlayer) player).getSession().send(reAddMessage);
+        }
+    }
+
     public Location getCompassTarget() {
         return compassTarget;
     }
@@ -438,6 +461,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
             location = event.getTo();
         }
         if (location.getWorld() != world) {
+            GlowWorld oldWorld = world;
             world.getEntityManager().deallocate(this);
             
             world = (GlowWorld) location.getWorld();
@@ -456,6 +480,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
             this.location = location; // take us to spawn position
             session.send(new StateChangeMessage((byte)(getWorld().hasStorm() ? 1 : 2), (byte)0)); // send the world's weather
             reset();
+            EventFactory.onPlayerChangedWorld(this, oldWorld);
         } else {
             this.session.send(new PositionRotationMessage(location.getX(), location.getY() + EYE_HEIGHT + 0.01, location.getZ(), location.getY(), (float) location.getYaw(), (float) location.getPitch(), true));
             this.location = location;
@@ -557,22 +582,6 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         
         GlowWorld dataWorld = (GlowWorld)server.getWorlds().get(0);
         dataWorld.getMetadataService().readPlayerData(this);
-
-        //teleport((Location) dat.get(PlayerData.LOCATION));
-        // setFallDistance((Float)dat.get(PlayerData.FALL_DISTANCE));
-        //if (dat.containsKey(PlayerData.INVENTORY))
-        //    getInventory().setContents((ItemStack[])dat.get(PlayerData.INVENTORY));
-        //setHealth((Short)dat.get(PlayerData.HEALTH));
-        // setVelocity((Vector)dat.get(PlayerData.MOTION));
-        // setFireTicks((Short)dat.get(PlayerData.FIRE_TICKS));
-        // setRemainingAir((Short)dat.get(PlayerData.AIR_TICKS));
-        // setNoDamageTicks((Short)dat.get(PlayerData.HURT_TICKS));
-        // sleeping = (Boolean)dat.get(PlayerData.IS_SLEEPING);
-        //setSleepTicks((Short)dat.get(PlayerData.SLEEP_TICKS));
-        //if (dat.containsKey(PlayerData.BED_LOCATION))
-        //    bedSpawn = (Location)dat.get(PlayerData.BED_LOCATION);
-
-
     }
     
     // -- Data transmission

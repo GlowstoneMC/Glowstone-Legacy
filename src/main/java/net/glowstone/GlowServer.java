@@ -188,11 +188,6 @@ public final class GlowServer implements Server {
     private GameMode defaultGameMode = GameMode.SURVIVAL;
 
     /**
-     * The server's message of the day
-     */
-    private String motd;
-
-    /**
      * Creates a new server.
      */
     public GlowServer() {
@@ -340,7 +335,7 @@ public final class GlowServer implements Server {
         config.getBoolean("server.allow-nether", true);
         config.getBoolean("server.allow-flight", false);
         config.getInt("server.view-distance", GlowChunk.VISIBLE_RADIUS);
-        motd = config.getString("server.motd", "Glowstone server");
+        config.getString("server.motd", "Glowstone server");
         setDefaultGameMode(config.getString("server.def-game-mode", GameMode.SURVIVAL.name()));
 
         // Server folders config
@@ -403,13 +398,13 @@ public final class GlowServer implements Server {
         builtinCommandMap.register(new HelpCommand(this, builtinCommandMap.getKnownCommands()));
 
         enablePlugins(PluginLoadOrder.STARTUP);
-        
+
         // Create worlds
         createWorld(config.getString("server.world-name", "world"), Environment.NORMAL);
         if (getAllowNether()) {
             createWorld(config.getString("server.world-name", "world") + "_nether", Environment.NETHER);
         }
-        
+
         // Finish loading plugins
         enablePlugins(PluginLoadOrder.POSTWORLD);
         consoleManager.refreshCommands();
@@ -910,7 +905,7 @@ public final class GlowServer implements Server {
      * If the world is already loaded, it will just return the equivalent of
      * getWorld(creator.name()).
      *
-     * @param options Options to use when creating the world
+     * @param creator Options to use when creating the world
      * @return Newly created or loaded world
      */
     public GlowWorld createWorld(WorldCreator creator) {
@@ -945,6 +940,7 @@ public final class GlowServer implements Server {
         }
         if (worlds.contains((GlowWorld) world)) {
             worlds.remove((GlowWorld) world);
+            EventFactory.onWorldUnload((GlowWorld)world);
             return true;
         }
         return false;
@@ -1172,17 +1168,12 @@ public final class GlowServer implements Server {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public String getMOTD() {
-        return motd;
+    public String getMotd() {
+        return config.getString("server.motd", "Glowstone server");
     }
 
-    public void setMOTD(String motd) {
-        setMOTD(motd, true);
-    }
-
-    public void setMOTD(String motd, boolean permanent) {
-        this.motd = motd;
-        if (permanent) config.setProperty("server.motd", motd);
+    public void setMotd(String motd) {
+        config.setProperty("server.motd", motd);
     }
 
     public StorageQueue getStorageQueue() {

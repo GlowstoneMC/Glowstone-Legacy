@@ -17,6 +17,7 @@ import net.glowstone.msg.UserListItemMessage;
 import net.glowstone.msg.handler.HandlerLookupService;
 import net.glowstone.msg.handler.MessageHandler;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerKickEvent;
 
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -162,13 +163,10 @@ public final class Session {
         if (message != null) {
             server.broadcastMessage(message);
         }
-        Message userListMessage = new UserListItemMessage(player.getName(), true, (short)timeoutCounter);
-        for (World world : server.getWorlds()) {
-            for (GlowPlayer sendPlayer : ((GlowWorld)world).getRawPlayers()) {
-                sendPlayer.getSession().send(userListMessage);
-                if (sendPlayer != player) send(new UserListItemMessage(sendPlayer.getName(), true,
-                        (short)sendPlayer.getSession().timeoutCounter));
-            }
+        Message userListMessage = new UserListItemMessage(player.getListName(), true, (short)timeoutCounter);
+        for (Player sendPlayer : server.getOnlinePlayers()) {
+            ((GlowPlayer) sendPlayer).getSession().send(userListMessage);
+            send(new UserListItemMessage(sendPlayer.getListName(), true, (short)((GlowPlayer)sendPlayer).getSession().timeoutCounter));
         }
     }
 
@@ -281,11 +279,9 @@ public final class Session {
     void dispose() {
         if (player != null) {            
             player.remove();
-            Message userListMessage = new UserListItemMessage(player.getName(), false, (short)0);
-            for (World world : server.getWorlds()) {
-                for (GlowPlayer player : ((GlowWorld)world).getRawPlayers()) {
-                    player.getSession().send(userListMessage);
-                }
+            Message userListMessage = new UserListItemMessage(player.getListName(), false, (short)0);
+            for (Player player : server.getOnlinePlayers()) {
+                ((GlowPlayer) player).getSession().send(userListMessage);
             }
             player = null; // in case we are disposed twice
         }
