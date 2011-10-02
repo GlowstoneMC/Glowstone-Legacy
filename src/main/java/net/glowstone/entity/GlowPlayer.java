@@ -4,10 +4,8 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -326,18 +324,18 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         displayName = name;
     }
 
-    public String getListName() {
+    public String getPlayerListName() {
         return playerListName == null || "".equals(playerListName) ? getName() : playerListName;
     }
 
-    public void setListName(String name) {
+    public void setPlayerListName(String name) {
         if (name.length() > 15) throw new IllegalArgumentException("The given name was " + name.length() + " chars long, longer than the maximum of 16");
         for (Player player : server.getOnlinePlayers()) {
-            if (player.getListName().equals(getListName())) throw new IllegalArgumentException("The name given, " + name + ", is already used by " + player.getName() + ".");
+            if (player.getPlayerListName().equals(getPlayerListName())) throw new IllegalArgumentException("The name given, " + name + ", is already used by " + player.getName() + ".");
         }
-        Message removeMessage = new UserListItemMessage(getListName(), false, (short)0);
+        Message removeMessage = new UserListItemMessage(getPlayerListName(), false, (short)0);
         playerListName = name;
-        Message reAddMessage = new UserListItemMessage(getListName(), true, (short)0);
+        Message reAddMessage = new UserListItemMessage(getPlayerListName(), true, (short)0);
         for (Player player : server.getOnlinePlayers()) {
             ((GlowPlayer) player).getSession().send(removeMessage);
             ((GlowPlayer) player).getSession().send(reAddMessage);
@@ -455,7 +453,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
      */
     @Override
     public boolean teleport(Location location) {
-        if (location != null && this.location != null) {
+        if (this.location != null && this.location.getWorld() != null) {
             PlayerTeleportEvent event = EventFactory.onPlayerTeleport(this, getLocation(), location);
             if (event.isCancelled()) return false;
             location = event.getTo();

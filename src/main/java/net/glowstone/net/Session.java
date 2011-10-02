@@ -7,8 +7,6 @@ import java.util.logging.Level;
 import net.glowstone.EventFactory;
 
 import net.glowstone.GlowServer;
-import net.glowstone.GlowWorld;
-import net.glowstone.entity.EntityEffect;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.msg.KickMessage;
 import net.glowstone.msg.Message;
@@ -16,7 +14,6 @@ import net.glowstone.msg.PingMessage;
 import net.glowstone.msg.UserListItemMessage;
 import net.glowstone.msg.handler.HandlerLookupService;
 import net.glowstone.msg.handler.MessageHandler;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerKickEvent;
 
@@ -163,10 +160,10 @@ public final class Session {
         if (message != null) {
             server.broadcastMessage(message);
         }
-        Message userListMessage = new UserListItemMessage(player.getListName(), true, (short)timeoutCounter);
+        Message userListMessage = new UserListItemMessage(player.getPlayerListName(), true, (short)timeoutCounter);
         for (Player sendPlayer : server.getOnlinePlayers()) {
             ((GlowPlayer) sendPlayer).getSession().send(userListMessage);
-            send(new UserListItemMessage(sendPlayer.getListName(), true, (short)((GlowPlayer)sendPlayer).getSession().timeoutCounter));
+            send(new UserListItemMessage(sendPlayer.getPlayerListName(), true, (short)((GlowPlayer)sendPlayer).getSession().timeoutCounter));
         }
     }
 
@@ -279,7 +276,7 @@ public final class Session {
     void dispose() {
         if (player != null) {            
             player.remove();
-            Message userListMessage = new UserListItemMessage(player.getListName(), false, (short)0);
+            Message userListMessage = new UserListItemMessage(player.getPlayerListName(), false, (short)0);
             for (Player player : server.getOnlinePlayers()) {
                 ((GlowPlayer) player).getSession().send(userListMessage);
             }
