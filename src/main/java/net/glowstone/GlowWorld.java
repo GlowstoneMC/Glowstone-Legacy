@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import org.bukkit.BlockChangeDelegate;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
+import org.bukkit.Difficulty;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.TreeType;
@@ -856,6 +857,14 @@ public final class GlowWorld implements World {
 
     public void setAutoSave(boolean value) {
         autosave = value;
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public Difficulty getDifficulty() {
+        return Difficulty.PEACEFUL;
     }
 
     // level data write
