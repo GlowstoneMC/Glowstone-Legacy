@@ -1,10 +1,16 @@
 package net.glowstone;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.serialization.SerializableAs;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents a player which is not connected to the server.
  */
+@SerializableAs("Player")
 public class GlowOfflinePlayer implements OfflinePlayer {
 
     private final GlowServer server;
@@ -54,5 +60,15 @@ public class GlowOfflinePlayer implements OfflinePlayer {
             server.getOpsList().remove(name);
         }
     }
-    
+
+    public Map<String, Object> serialize() {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        ret.put("name", name);
+        return null;
+    }
+
+    public static OfflinePlayer deserialize(Map<String, Object> val) {
+        return Bukkit.getServer().getOfflinePlayer(val.get("name").toString());
+    }
 }

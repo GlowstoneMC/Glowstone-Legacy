@@ -4,16 +4,20 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import net.glowstone.GlowOfflinePlayer;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.io.StorageOperation;
 import net.glowstone.msg.*;
 import net.glowstone.util.Position;
 import org.bukkit.*;
+import org.bukkit.configuration.serialization.DelegateDeserialization;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
@@ -34,6 +38,7 @@ import org.bukkit.map.MapView;
  * Represents an in-game player.
  * @author Graham Edgecombe
  */
+@DelegateDeserialization(GlowOfflinePlayer.class)
 public final class GlowPlayer extends GlowHumanEntity implements Player, InventoryViewer {
 
     /**
@@ -851,4 +856,9 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         experience %= 200;
     }
 
+    public Map<String, Object> serialize() {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        ret.put("name", getName());
+        return ret;
+    }
 }
