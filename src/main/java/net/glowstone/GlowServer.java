@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import java.util.logging.Logger;
 import org.bukkit.*;
 import org.bukkit.command.*;
 import org.bukkit.World.Environment;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfigurationOptions;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -225,7 +227,13 @@ public final class GlowServer implements Server {
             logger.severe("Error creating default config: Config not found in classpath");
             return;
         }
-        config.setDefaults(YamlConfiguration.loadConfiguration(stream));
+        try {
+            config.setDefaults(YamlConfiguration.loadConfiguration(stream));
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException e) {}
+        }
         config.set("server.view-distance", GlowChunk.VISIBLE_RADIUS);
 
         // If the configuration is empty, attempt to migrate non-Glowstone configs
@@ -347,9 +355,14 @@ public final class GlowServer implements Server {
 
     private static boolean loadConfiguration() {
         try {
+            if (!configDir.exists() || !configDir.isDirectory()) {
+                configDir.mkdirs();
+            }
+            if (!configFile.exists()) {
+                configFile.createNewFile();
+            }
             config.load(configFile);
             return true;
-        } catch (FileNotFoundException ex) {
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Cannot load " + configFile, ex);
         } catch (InvalidConfigurationException ex) {
@@ -367,8 +380,6 @@ public final class GlowServer implements Server {
     private static boolean saveConfiguration() {
         try {
             config.save(configFile);
-            return true;
-        } catch (FileNotFoundException ex) {
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Cannot save " + configFile, ex);
         }
@@ -423,9 +434,9 @@ public final class GlowServer implements Server {
         enablePlugins(PluginLoadOrder.STARTUP);
 
         // Create worlds
-        createWorld(config.getString("server.world-name", "world"), Environment.NORMAL);
+        createWorld(WorldCreator.name(config.getString("server.world-name", "world")).environment(Environment.NORMAL));
         if (getAllowNether()) {
-            createWorld(config.getString("server.world-name", "world") + "_nether", Environment.NETHER);
+            createWorld(WorldCreator.name(config.getString("server.world-name", "world") + "_nether").environment(Environment.NETHER));
         }
 
         // Finish loading plugins
@@ -445,6 +456,7 @@ public final class GlowServer implements Server {
         
         // Save worlds
         for (World world : getWorlds()) {
+            world.setAutoSave(false);
             world.save();
         }
         
@@ -520,6 +532,7 @@ public final class GlowServer implements Server {
                 }
             }
         }
+        commandMap.registerServerAliases();
     }
 
     /**
@@ -592,7 +605,11 @@ public final class GlowServer implements Server {
     }
 
     public Set<OfflinePlayer> getOperators() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Set<OfflinePlayer> offlinePlayers = new HashSet<OfflinePlayer>();
+        for (String name : opsList.getContents()) {
+            offlinePlayers.add(getOfflinePlayer(name));
+        }
+        return offlinePlayers;
     }
 
     /**
@@ -909,17 +926,7 @@ public final class GlowServer implements Server {
      */
     @Deprecated
     public GlowWorld createWorld(String name, Environment environment, long seed, ChunkGenerator generator) {        
-        if (getWorld(name) != null) {
-            return getWorld(name);
-        }
-        
-        if (generator == null) {
-            generator = getGenerator(name, environment);
-        }
-        
-        GlowWorld world = new GlowWorld(this, name, environment, seed, new McRegionWorldStorageProvider(new File(name)), generator);
-        worlds.add(world);
-        return world;
+        return createWorld(WorldCreator.name(name).environment(environment).seed(seed).generator(generator));
     }
     
     /**
@@ -932,7 +939,18 @@ public final class GlowServer implements Server {
      * @return Newly created or loaded world
      */
     public GlowWorld createWorld(WorldCreator creator) {
-        return createWorld(creator.name(), creator.environment(), creator.seed(), creator.generator());
+        GlowWorld world = getWorld(creator.name());
+        if (world != null) {
+            return world;
+        }
+
+        if (creator.generator() == null) {
+            creator.generator(getGenerator(creator.name(), creator.environment()));
+        }
+
+        world = new GlowWorld(this, creator.name(), creator.environment(), creator.seed(), new McRegionWorldStorageProvider(new File(creator.name())), creator.generator());
+        worlds.add(world);
+        return world;
     }
 
     /**
@@ -943,8 +961,9 @@ public final class GlowServer implements Server {
      * @return Whether the action was Successful
      */
     public boolean unloadWorld(String name, boolean save) {
-        if (getWorld(name) == null) return false;
-        return unloadWorld(getWorld(name), save);
+        GlowWorld world = getWorld(name);
+        if (world == null) return false;
+        return unloadWorld(world, save);
     }
 
     /**
@@ -1067,7 +1086,16 @@ public final class GlowServer implements Server {
     }
 
     public Map<String, String[]> getCommandAliases() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Map<String, String[]> aliases = new HashMap<String, String[]>();
+        ConfigurationSection section = config.getConfigurationSection("aliases");
+        if (section == null) return aliases;
+        List<String> cmdAliases = new ArrayList<String>();
+        for (String key : section.getKeys(false)) {
+            cmdAliases.clear();
+            cmdAliases.addAll(section.getList(key));
+            aliases.put(key, cmdAliases.toArray(new String[cmdAliases.size()]));
+        }
+        return aliases;
     }
 
     public int getSpawnRadius() {
@@ -1121,7 +1149,7 @@ public final class GlowServer implements Server {
     }
 
     public OfflinePlayer getOfflinePlayer(String name) {
-        OfflinePlayer player = getPlayer(name);
+        OfflinePlayer player = getPlayerExact(name);
         if (player == null) {
             player = new GlowOfflinePlayer(this, name);
         }

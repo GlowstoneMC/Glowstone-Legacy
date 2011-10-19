@@ -300,6 +300,10 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         }
     }
 
+    public Player getPlayer() {
+        return this;
+    }
+
     public InetSocketAddress getAddress() {
         return session.getAddress();
     }

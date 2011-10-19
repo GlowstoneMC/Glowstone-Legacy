@@ -22,3 +22,8 @@ database:
     username: glowstone
     password: nether
     isolation: SERIALIZABLE
+
+aliases:
+    "<3glowstone":
+        - version
+        - plugins

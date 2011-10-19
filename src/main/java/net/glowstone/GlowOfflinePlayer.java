@@ -3,6 +3,7 @@ package net.glowstone;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.serialization.SerializableAs;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +50,10 @@ public class GlowOfflinePlayer implements OfflinePlayer {
         }
     }
 
+    public Player getPlayer() {
+        return server.getPlayerExact(name);
+    }
+
     public boolean isOp() {
         return server.getOpsList().contains(name);
     }
@@ -65,7 +70,7 @@ public class GlowOfflinePlayer implements OfflinePlayer {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         ret.put("name", name);
-        return null;
+        return ret;
     }
 
     public static OfflinePlayer deserialize(Map<String, Object> val) {
