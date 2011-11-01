@@ -1,7 +1,15 @@
 package net.glowstone.net.codec;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
+import net.glowstone.block.ItemProperties;
+import net.glowstone.inventory.GlowItemStack;
+import net.glowstone.util.ChannelBufferUtils;
+import net.glowstone.util.nbt.NBTInputStream;
+import net.glowstone.util.nbt.Tag;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
@@ -18,7 +26,7 @@ public final class SetWindowSlotsCodec extends MessageCodec<SetWindowSlotsMessag
     public SetWindowSlotsMessage decode(ChannelBuffer buffer) throws IOException {
         int id = buffer.readUnsignedByte();
         int count = buffer.readUnsignedShort();
-        ItemStack[] items = new ItemStack[count];
+        GlowItemStack[] items = new GlowItemStack[count];
         for (int slot = 0; slot < count; slot++) {
             int item = buffer.readUnsignedShort();
             if (item == 0xFFFF) {
@@ -26,7 +34,8 @@ public final class SetWindowSlotsCodec extends MessageCodec<SetWindowSlotsMessag
             } else {
                 int itemCount = buffer.readUnsignedByte();
                 int damage = buffer.readUnsignedByte();
-                items[slot] = new ItemStack(item, itemCount, (short) damage);
+                Map<String, Tag> nbtData = (id > 255 && ItemProperties.get(id).hasNbtData()) ? ChannelBufferUtils.readCompound(buffer) : null;
+                items[slot] = new GlowItemStack(item, itemCount, (short) damage, nbtData);
             }
         }
         return new SetWindowSlotsMessage(id, items);
@@ -34,19 +43,22 @@ public final class SetWindowSlotsCodec extends MessageCodec<SetWindowSlotsMessag
 
     @Override
     public ChannelBuffer encode(SetWindowSlotsMessage message) throws IOException {
-        ItemStack[] items = message.getItems();
+        GlowItemStack[] items = message.getItems();
 
         ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
         buffer.writeByte(message.getId());
         buffer.writeShort(items.length);
         for (int slot = 0; slot < items.length; slot++) {
-            ItemStack item = items[slot];
+            GlowItemStack item = items[slot];
             if (item == null) {
                 buffer.writeShort(-1);
             } else {
                 buffer.writeShort(item.getTypeId());
                 buffer.writeByte(item.getAmount());
                 buffer.writeByte(item.getDurability());
+                if (item.getTypeId() > 255 && ItemProperties.get(item.getTypeId()).hasNbtData()) {
+                    ChannelBufferUtils.writeCompound(buffer, item.getNbtData());
+                }
             }
         }
 

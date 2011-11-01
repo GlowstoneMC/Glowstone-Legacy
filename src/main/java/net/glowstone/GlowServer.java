@@ -88,7 +88,7 @@ public final class GlowServer implements Server {
     /**
      * The protocol version supported by the server
      */
-    public static final int PROTOCOL_VERSION = 17;
+    public static final int PROTOCOL_VERSION = 21;
 
 
     public static final StorageQueue storeQueue = new StorageQueue();

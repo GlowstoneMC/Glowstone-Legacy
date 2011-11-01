@@ -1,7 +1,11 @@
 package net.glowstone.net.codec;
 
 import java.io.IOException;
+import java.util.Map;
 
+import net.glowstone.block.ItemProperties;
+import net.glowstone.util.ChannelBufferUtils;
+import net.glowstone.util.nbt.Tag;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
@@ -25,7 +29,8 @@ public final class BlockPlacementCodec extends MessageCodec<BlockPlacementMessag
         } else {
             int count = buffer.readUnsignedByte();
             int damage = buffer.readShort();
-            return new BlockPlacementMessage(x, y, z, direction, id, count, damage);
+            Map<String, Tag> nbtData = (id > 255 && ItemProperties.get(id).hasNbtData()) ? ChannelBufferUtils.readCompound(buffer) : null;
+            return new BlockPlacementMessage(x, y, z, direction, id, count, damage, nbtData);
         }
     }
 
@@ -33,7 +38,7 @@ public final class BlockPlacementCodec extends MessageCodec<BlockPlacementMessag
     public ChannelBuffer encode(BlockPlacementMessage message) throws IOException {
         int id = message.getId();
 
-        ChannelBuffer buffer = ChannelBuffers.buffer(12);
+        ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
         buffer.writeInt(message.getX());
         buffer.writeByte(message.getY());
         buffer.writeInt(message.getZ());
@@ -42,6 +47,9 @@ public final class BlockPlacementCodec extends MessageCodec<BlockPlacementMessag
         if (id != -1) {
             buffer.writeByte(message.getCount());
             buffer.writeShort(message.getDamage());
+            if (id > 255 && ItemProperties.get(id).hasNbtData()) {
+                ChannelBufferUtils.writeCompound(buffer, message.getNbtData());
+            }
         }
         return buffer;
     }
