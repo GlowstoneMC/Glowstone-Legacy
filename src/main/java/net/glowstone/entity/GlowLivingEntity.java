@@ -121,7 +121,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         }
         List<Block> ret = new ArrayList<Block>();
         TargetBlock target = new TargetBlock(this, maxDistance, 0.2, transparentBlocks);
-        while (target.getNextBlock() != null) {
+        while (target.getNextBlock()) {
             Block block = target.getCurrentBlock().getBlock();
             if (!transparentBlocks.contains(block.getTypeId())) {
                 ret.add(block);
