@@ -16,4 +16,9 @@ public class EnchantItemMessage extends Message {
     public int getEnchantment() {
         return enchantment;
     }
+
+    @Override
+    public String toString() {
+        return "EnchantItemMessage{transaction=" + transaction + ",enchantment=" + enchantment + "}";
+    }
 }

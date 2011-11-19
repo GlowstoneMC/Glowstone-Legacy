@@ -30,7 +30,11 @@ public final class WindowClickCodec extends MessageCodec<WindowClickMessage> {
         } else {
             int count = buffer.readUnsignedByte();
             int damage = buffer.readUnsignedShort();
-            Map<String, Tag> nbtData = (id > 255 && ItemProperties.get(id).hasNbtData()) ? ChannelBufferUtils.readCompound(buffer) : null;
+            Map<String, Tag> nbtData = null;
+            if (item > 255) {
+                ItemProperties props = ItemProperties.get(item);
+                if (props != null && props.hasNbtData()) ChannelBufferUtils.readCompound(buffer);
+            }
             return new WindowClickMessage(id, slot, rightClick, transaction, shift, item, count, damage, nbtData);
         }
     }
@@ -49,8 +53,9 @@ public final class WindowClickCodec extends MessageCodec<WindowClickMessage> {
         if (item != -1) {
             buffer.writeByte(message.getCount());
             buffer.writeShort(message.getDamage());
-            if (item > 255 && ItemProperties.get(item).hasNbtData()) {
-                ChannelBufferUtils.writeCompound(buffer, message.getNbtData());
+            if (item > 255) {
+                ItemProperties props = ItemProperties.get(item);
+                if (props != null && props.hasNbtData())ChannelBufferUtils.writeCompound(buffer, message.getNbtData());
             }
         }
         return buffer;

@@ -132,7 +132,8 @@ public enum BlockProperties {
     CAULDRON(BlockID.CAULDRON, drops(ItemID.CAULDRON)),
     END_PORTAL(BlockID.END_PORTAL, passthru()),
     END_PORTAL_FRAME(BlockID.END_PORTAL_FRAME),
-    END_STONE(BlockID.END_STONE);
+    END_STONE(BlockID.END_STONE),
+    DRAGON_EGG(BlockID.DRAGON_EGG);
     
     // -----------------
 

@@ -29,7 +29,11 @@ public final class BlockPlacementCodec extends MessageCodec<BlockPlacementMessag
         } else {
             int count = buffer.readUnsignedByte();
             int damage = buffer.readShort();
-            Map<String, Tag> nbtData = (id > 255 && ItemProperties.get(id).hasNbtData()) ? ChannelBufferUtils.readCompound(buffer) : null;
+            Map<String, Tag> nbtData = null;
+            if (id > 255) {
+                ItemProperties props = ItemProperties.get(id);
+                if (props != null && props.hasNbtData()) ChannelBufferUtils.readCompound(buffer);
+            }
             return new BlockPlacementMessage(x, y, z, direction, id, count, damage, nbtData);
         }
     }
@@ -47,8 +51,9 @@ public final class BlockPlacementCodec extends MessageCodec<BlockPlacementMessag
         if (id != -1) {
             buffer.writeByte(message.getCount());
             buffer.writeShort(message.getDamage());
-            if (id > 255 && ItemProperties.get(id).hasNbtData()) {
-                ChannelBufferUtils.writeCompound(buffer, message.getNbtData());
+            if (id > 255) {
+                ItemProperties props = ItemProperties.get(id);
+                if (props != null && props.hasNbtData())ChannelBufferUtils.writeCompound(buffer, message.getNbtData());
             }
         }
         return buffer;
