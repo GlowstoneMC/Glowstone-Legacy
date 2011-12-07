@@ -401,7 +401,7 @@ public final class GlowWorld implements World {
     }
 
     public int getMaxHeight() {
-        return GlowChunk.DEPTH;
+        return GlowChunk.HEIGHT;
     }
 
     public int getSeaLevel() {
