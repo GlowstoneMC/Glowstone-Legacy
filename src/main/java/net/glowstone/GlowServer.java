@@ -1276,5 +1276,9 @@ public final class GlowServer implements Server {
     public File getWorldContainer() {
         return new File(config.getString("server.folders.world-container", "."));
     }
+
+    public boolean getAllowEnd() {
+        return config.getBoolean("server.allow-end", true);
+    }
      
 }
