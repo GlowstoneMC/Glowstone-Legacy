@@ -1141,6 +1141,10 @@ public final class GlowServer implements Server {
         return config.getBoolean("server.allow-nether", true);
     }
 
+    public boolean getAllowEnd() {
+        return config.getBoolean("server.allow-end", true);
+    }
+
     public boolean hasWhitelist() {
         return config.getBoolean("server.whitelist", false);
     }
