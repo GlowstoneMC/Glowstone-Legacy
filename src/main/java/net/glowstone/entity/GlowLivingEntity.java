@@ -34,21 +34,32 @@ import net.glowstone.GlowWorld;
 public abstract class GlowLivingEntity extends GlowEntity implements LivingEntity {
     
     /**
+     * Indicates how often, in ticks, to send position refresh packets to the client
+     */
+    private static final int POSITION_REFRESH_RATE = 20;
+    
+    /**
+     * Indicates the last tick that the entity sent a refresh teleport packet
+     */
+    private int lastRefresh = 0;
+    
+    /**
      * The entity's health.
      */
     protected int health = 0;
 
     /**
-     * The monster's metadata.
+     * The entity's metadata.
      */
     protected final List<Parameter<?>> metadata = new ArrayList<Parameter<?>>();
-
+    
     /**
      * Creates a mob within the specified world.
      * @param world The world.
      */
     public GlowLivingEntity(GlowServer server, GlowWorld world) {
         super(server, world);
+        lastRefresh = (this.id % POSITION_REFRESH_RATE) + getTicksLived(); // refreshs should be spread out
     }
 
     @Override
@@ -68,8 +79,12 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
 
         int yaw = Position.getIntYaw(previousLocation);
         int pitch = Position.getIntPitch(previousLocation);
-
-        if (moved && teleport) {
+        
+        int ticks = getTicksLived();
+        boolean refreshPosition = (ticks - lastRefresh) > POSITION_REFRESH_RATE;
+        
+        if (refreshPosition || (moved && teleport)) {
+            lastRefresh = ticks;
             return new EntityTeleportMessage(id, x, y, z, yaw, pitch);
         } else if (moved && rotated) {
             return new RelativeEntityPositionRotationMessage(id, dx, dy, dz, yaw, pitch);
@@ -226,6 +241,22 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         } else {
             metadata.add(data);
         }
+    }
+    
+    /**
+     * Gets the creature's age
+     * @return the creature's age
+     */
+    public int getAge() {
+        return getTicksLived();
+    }
+
+    /**
+     * Sets the creature's age
+     * @param age the creature's new age
+     */
+    public void setAge(int age) {
+        setTicksLived(age);
     }
 
 }

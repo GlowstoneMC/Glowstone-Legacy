@@ -1,26 +1,44 @@
 package net.glowstone.entity;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import org.bukkit.util.Vector;
-import org.bukkit.entity.Entity;
-import org.bukkit.Location;
 
 import net.glowstone.GlowChunk;
 import net.glowstone.GlowServer;
-import net.glowstone.util.Position;
-
-import net.glowstone.msg.Message;
 import net.glowstone.GlowWorld;
+import net.glowstone.msg.Message;
+import net.glowstone.util.Position;
+import net.glowstone.util.reflection.ReflectHelper;
+
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.util.Vector;
 
 /**
  * Represents some entity in the world such as an item on the floor or a player.
  * @author Graham Edgecombe
  */
 public abstract class GlowEntity implements Entity {
-    
+
+    /**
+     * Static array that is used for the entity reflection based constructor
+     */
+    private final static Class<?>[] spawnArgumentTypes = new Class<?>[] {GlowServer.class, GlowWorld.class};
+
+    /**
+     * Map that maps bukkit classes to internal GlowStone classes
+     */
+    private final static HashMap<Class<? extends Entity>, Class<? extends GlowEntity>> creatureMap;
+
+    static {
+        creatureMap = new HashMap<Class<? extends Entity>, Class<? extends GlowEntity>>();
+
+        creatureMap.put(org.bukkit.entity.Chicken.class, GlowChicken.class);
+    }
+
     /**
      * The server this entity belongs to.
      */
@@ -73,6 +91,35 @@ public abstract class GlowEntity implements Entity {
         this.server = server;
         this.world = world;
         world.getEntityManager().allocate(this);
+    }
+    
+    /**
+     * Maps Bukkit entities to their Glowstone equivalent
+     * @param bukkitEntity the Bukkit entity class
+     * @return the GlowStone entity class
+     */
+    public static Class<? extends GlowEntity> getGlowEntityClass(Class<? extends Entity> bukkitEntity) {
+    	return creatureMap.get(bukkitEntity);
+    }
+    
+    /**
+     * Creates an entity in the current world matching a Bukkit entity
+     * @param bukkitEntity the Bukkit entity class
+     * @return the GlowStone entity or null on failure
+     */
+    
+    public static GlowEntity createEntity(Class<? extends Entity> bukkitEntity, GlowWorld world) {
+    	
+    	Class<? extends GlowEntity> glowEntityClass = getGlowEntityClass(bukkitEntity);
+    	
+    	if (glowEntityClass == null) {
+    	    System.out.println("Hash map lookup failed");
+    		return null;
+    	}
+    	
+    	GlowEntity glowEntity = (GlowEntity)ReflectHelper.construct(glowEntityClass, spawnArgumentTypes, world.getEntitySpawnArguments());
+    	
+    	return glowEntity;
     }
 
     /**

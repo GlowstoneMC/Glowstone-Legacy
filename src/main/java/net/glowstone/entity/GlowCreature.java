@@ -1,7 +1,7 @@
 package net.glowstone.entity;
 
 import net.glowstone.GlowServer;
-      
+
 import org.bukkit.entity.Creature;
 
 import net.glowstone.util.Position;
@@ -12,25 +12,25 @@ import net.glowstone.GlowWorld;
 import org.bukkit.entity.LivingEntity;
 
 /**
- * Represents a monster such as a creeper.
+ * Represents a creature such as a creeper.
  * @author Graham Edgecombe
  */
-public final class GlowCreature extends GlowLivingEntity implements Creature {
+public class GlowCreature extends GlowLivingEntity implements Creature {
 
     /**
-     * The type of monster.
+     * The type of creature.
      */
     private final int type;
-   
+
     /**
-     * The monster's target.
+     * The creature target.
      */
     private LivingEntity target;
 
     /**
-     * Creates a new monster.
-     * @param world The world this monster is in.
-     * @param type The type of monster.
+     * Creates a new creature.
+     * @param world The world this creature is in.
+     * @param type The type of creature.
      */
     public GlowCreature(GlowServer server, GlowWorld world, int type) {
         super(server, world);
@@ -38,8 +38,8 @@ public final class GlowCreature extends GlowLivingEntity implements Creature {
     }
 
     /**
-     * Gets the type of monster.
-     * @return The type of monster.
+     * Gets the type of creature.
+     * @return The type of creature.
      */
     public int getType() {
         return type;
@@ -66,4 +66,5 @@ public final class GlowCreature extends GlowLivingEntity implements Creature {
     public int getMaxHealth() {
         throw new UnsupportedOperationException("Not supported yet!");
     }
+
 }
