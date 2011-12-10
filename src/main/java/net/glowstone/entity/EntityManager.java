@@ -89,6 +89,10 @@ public final class EntityManager implements Iterable<GlowEntity> {
 
         throw new IllegalStateException("No free entity ids");
     }
+    
+    public int add(GlowEntity entity) {
+        return allocate(entity);
+    }
 
     /**
      * Deallocates the id for an entity.

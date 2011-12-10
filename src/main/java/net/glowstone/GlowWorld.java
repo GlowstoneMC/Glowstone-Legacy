@@ -42,7 +42,7 @@ import net.glowstone.msg.TimeMessage;
  * @author Graham Edgecombe
  */
 public final class GlowWorld implements World {
-    
+	
     /**
      * The server of this world.
      */
@@ -148,6 +148,11 @@ public final class GlowWorld implements World {
      */
     private boolean autosave = true;
 
+    /**
+     * Arguments used to spawn entities
+     */
+    private final Object[] entitySpawnArguments;
+    
     /*
      * The world metadata service used
      */
@@ -170,6 +175,7 @@ public final class GlowWorld implements World {
         this.server = server;
         this.name = name;
         this.environment = environment;
+        entitySpawnArguments = new Object[] {this.server, this};
         provider.setWorld(this);
         chunks = new ChunkManager(this, provider.getChunkIoService(), generator);
         storageProvider = provider;
@@ -645,8 +651,21 @@ public final class GlowWorld implements World {
 
     // entity spawning
 
+    @SuppressWarnings("unchecked")
     public <T extends Entity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (location == null) {
+            throw new IllegalArgumentException("Location may not be null when spawning an entity");
+        } else if (clazz == null) {
+            throw new IllegalArgumentException("Entity type class may not be null when spawning an entity");
+        } else {
+            GlowEntity glowEntity = GlowEntity.createEntity(clazz, this);
+            if (glowEntity == null) {
+                throw new IllegalArgumentException("Unable to create entity of type " + clazz.getName());
+            }
+            glowEntity.setRawLocation(location);
+            entities.add(glowEntity);
+            return (T)glowEntity;
+        }
     }
 
     public Item dropItem(Location location, ItemStack item) {
@@ -946,5 +965,12 @@ public final class GlowWorld implements World {
      */
     public File getWorldFolder() {
         return storageProvider.getFolder();
+    }
+    
+    /** Get the arguments needed for entity spawn
+     * @return spawn arguments
+     */
+    public Object[] getEntitySpawnArguments() {
+        return entitySpawnArguments;
     }
 }
