@@ -10,6 +10,7 @@ import net.glowstone.msg.SpawnMobMessage;
 import net.glowstone.util.Parameter;
 import net.glowstone.GlowWorld;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 /**
  * Represents a monster such as a creeper.
@@ -65,5 +66,9 @@ public final class GlowCreature extends GlowLivingEntity implements Creature {
 
     public int getMaxHealth() {
         throw new UnsupportedOperationException("Not supported yet!");
+    }
+
+    public Player getKiller() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
