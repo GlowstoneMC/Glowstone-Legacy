@@ -919,4 +919,16 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    public long getFirstPlayed() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public long getLastPlayed() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public boolean hasPlayedBefore() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

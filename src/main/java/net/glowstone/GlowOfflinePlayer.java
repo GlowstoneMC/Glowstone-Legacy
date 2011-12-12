@@ -76,4 +76,16 @@ public class GlowOfflinePlayer implements OfflinePlayer {
     public static OfflinePlayer deserialize(Map<String, Object> val) {
         return Bukkit.getServer().getOfflinePlayer(val.get("name").toString());
     }
+
+    public long getFirstPlayed() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public long getLastPlayed() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public boolean hasPlayedBefore() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
