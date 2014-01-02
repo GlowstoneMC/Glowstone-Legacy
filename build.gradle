@@ -1,0 +1,62 @@
+apply plugin: 'java'
+apply plugin: 'pmd'
+apply plugin: 'project-report'
+
+def getVersionName = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
+group = 'net.glowstone'
+version = '0.0.1-SNAPSHOT'
+description = "Glowstone"
+sourceCompatibility = 1.5
+targetCompatiblity = 1.5
+bukkitVersion = "1.0.0-R1-SNAPSHOT"
+gitDescribe = "git-Glowstone-" + getVersionName()
+
+tasks.withType(Compile) {
+    options.encoding = 'UTF-8'
+}
+
+pmd {
+    targetJdk = 1.6
+    ruleSetFiles = files("rules.xml")
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'net.glowstone.GlowServer',
+                   'Implementation-Title': description, 
+                   'Implementation-Version': gitDescribe,
+                   'Implementation-Vendor': 'SpaceManiac',
+                   'Specification-Title': 'Bukkit',
+    		       'Specification-Version': bukkitVersion,
+                   'Specification-Vender': 'Bukkit Team',
+                   'Sealed': true
+	}
+}
+
+repositories {
+    mavenCentral()
+    
+    maven { url "http://repo.bukkit.org/content/groups/public/" }
+    
+    maven { url "https://repository.jboss.org/nexus/content/groups/public/" }
+}
+
+dependencies {
+    compile group: 'org.bukkit', name: 'bukkit', version: bukkitVersion    
+    compile 'org.jboss.netty:netty:3.2.4.Final'
+    compile 'jline:jline:0.9.94' 
+    compile 'org.xerial:sqlite-jdbc:3.7.2'
+    compile 'mysql:mysql-connector-java:5.1.14'
+    compile 'com.grahamedgecombe.jterminal:jterminal:1.0.1'
+    compile 'net.sf.trove4j:trove4j:3.0.1'
+    testCompile 'junit:junit:4.8.1'
+}
+
