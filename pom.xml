@@ -34,15 +34,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>heroes</id>
-            <name>Heroes Artifactory</name>
-            <layout>default</layout>
-            <url>http://repo.onarandombox.com/artifactory/repo/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
     </repositories>
     
     <pluginRepositories>
@@ -89,9 +80,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.grahamedgecombe</groupId>
+            <groupId>com.grahamedgecombe.jterminal</groupId>
             <artifactId>jterminal</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
