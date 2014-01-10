@@ -7,16 +7,6 @@ apply plugin: 'application' // Adds the 'gradle run' task
 apply plugin: 'project-report' // Adds project report tasks
 apply plugin: 'shadow' // Allows for dependency shading
 
-// Method allowing us to run git describe
-def getVersionName = { ->
-    def stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'describe'
-        standardOutput = stdout
-    }
-    return stdout.toString().trim()
-}
-
 // Basic project information
 group = 'net.glowstone'
 version = '0.0.1-SNAPSHOT'
@@ -26,7 +16,6 @@ mainClassName = "net.glowstone.GlowServer"
 // Extended project information
 ext.url = 'https://github.com/SpaceManiac/Glowstone'
 ext.bukkitVersion = '1.7.2-R0.2'
-ext.gitDescribe = "git-Glowstone-" + getVersionName()
 
 // Minimum Java version required
 sourceCompatibility = '1.6'
@@ -76,7 +65,7 @@ shadow {
 manifest.mainAttributes(
     'Main-Class': mainClassName,
     'Implementation-Title': description,
-    'Implementation-Version': ext.gitDescribe,
+    'Implementation-Version': ext.bukkitVersion,
     'Implementation-Vendor': 'SpaceManiac',
     'Specification-Title': 'Bukkit',
     'Specification-Version': ext.bukkitVersion,
