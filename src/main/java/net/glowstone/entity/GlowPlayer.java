@@ -138,6 +138,11 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
      */
     private String playerListName;
 
+    /**
+     * The location where the player will spawn
+     */
+    private Location targetLocation;
+
 
     /**
      * Creates a new player and adds it to the world.
@@ -168,11 +173,16 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
         getInventory().getCraftingInventory().addViewer(this);
 
         loadData();
-        saveData();
 
         streamBlocks(); // stream the initial set of blocks
         setCompassTarget(world.getSpawnLocation()); // set our compass target
         session.send(new StateChangeMessage(getWorld().hasStorm() ? 2 : 1, 0)); // send the world's weather
+
+        //chunks have been sent, let player join
+        teleport(targetLocation, TeleportCause.UNKNOWN, true);
+
+        //save after joining
+        saveData();
     }
 
     // -- Various internal mechanisms
@@ -608,10 +618,19 @@ public final class GlowPlayer extends GlowHumanEntity implements Player, Invento
 
     @Override
     public boolean teleport(Location location, TeleportCause cause) {
+        return teleport(location, cause, false);
+    }
+
+    public boolean teleport(Location location, TeleportCause cause, boolean shouldInitialize) {
         if (this.location != null && this.location.getWorld() != null) {
             PlayerTeleportEvent event = EventFactory.onPlayerTeleport(this, getLocation(), location, cause);
             if (event.isCancelled()) return false;
             location = event.getTo();
+        } else if (!shouldInitialize) {
+            // if player hasn't spawned yet and player should not initialize, save target and cancel
+            targetLocation = location;
+            // teleport "succeeded", because player will be teleported afterwards
+            return true;
         }
 
         // account for floating point shenanigans in client physics
