@@ -22,7 +22,7 @@ body {
 	padding: 20px;
 	
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 10pt;
+	font-size: 12pt;
 }
 
 hr {
@@ -47,13 +47,17 @@ td {
 
 /* Text style classes */
 .smalltext {
-	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 10px;
 }
 
 .seriftext {
 	font-size: 16px;
 	font-family: "Times New Roman", Times, Georgia, serif;
+}
+
+#copyright {
+	font-size: 10pt;
 }
 
 /* Layout */
