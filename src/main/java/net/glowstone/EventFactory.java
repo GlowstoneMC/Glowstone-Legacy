@@ -1,5 +1,6 @@
 package net.glowstone;
 
+import com.google.common.collect.Sets;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.ItemTable;
 import net.glowstone.block.blocktype.BlockType;
@@ -71,8 +72,8 @@ public final class EventFactory {
 
     // -- Player Events
 
-    public static PlayerChatEvent onPlayerChat(Player player, String message) {
-        return callEvent(new PlayerChatEvent(player, message));
+    public static AsyncPlayerChatEvent onAsyncPlayerChat(boolean async, Player player, String message) {
+        return callEvent(new AsyncPlayerChatEvent(async, player, message, Sets.newHashSet(Bukkit.getOnlinePlayers())));
     }
 
     public static PlayerCommandPreprocessEvent onPlayerCommand(Player player, String message) {

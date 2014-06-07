@@ -961,6 +961,10 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     }
 
     public void chat(String text) {
+        chat(text, false);
+    }
+
+    public void chat(String text, boolean async) {
         if (text.startsWith("/")) {
             server.getLogger().info(getName() + " issued command: " + text);
             try {
@@ -974,17 +978,28 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
                 getServer().getLogger().log(Level.SEVERE, "Exception while executing command: " + text, ex);
             }
         } else {
-            // todo: async this
-            PlayerChatEvent event = EventFactory.onPlayerChat(this, text);
-            if (event.isCancelled()) {
-                return;
-            }
+            final String theText = text;
+            final boolean isAsync = async;
+            Runnable task = new Runnable() {
+                @Override
+                public void run() {
+                    AsyncPlayerChatEvent event = EventFactory.onAsyncPlayerChat(isAsync, GlowPlayer.this, theText);
+                    if (event.isCancelled()) {
+                        return;
+                    }
 
-            String message = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
-            getServer().getLogger().info(message);
-            for (Player recipient : event.getRecipients()) {
-                recipient.sendMessage(message);
-            }
+                    String message = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
+                    getServer().getLogger().info(message);
+                    for (Player recipient : event.getRecipients()) {
+                        recipient.sendMessage(message);
+                    }
+                }
+            };
+
+            if (async)
+                server.getScheduler().runTaskAsynchronously(null, task);
+            else
+                task.run();
         }
     }
 
