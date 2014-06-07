@@ -997,7 +997,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
             };
 
             if (async)
-                server.getScheduler().runTaskAsynchronously(null, task);
+                server.getScheduler().runTaskImmediateAsynchronously(task);
             else
                 task.run();
         }
