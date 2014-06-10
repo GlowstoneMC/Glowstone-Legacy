@@ -40,8 +40,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 
 /**
