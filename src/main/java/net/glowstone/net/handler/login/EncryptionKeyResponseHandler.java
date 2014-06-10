@@ -1,19 +1,5 @@
 package net.glowstone.net.handler.login;
 
-import com.flowpowered.networking.MessageHandler;
-import net.glowstone.GlowServer;
-import net.glowstone.entity.GlowPlayer;
-import net.glowstone.entity.meta.PlayerProperty;
-import net.glowstone.net.EncryptionChannelProcessor;
-import net.glowstone.net.GlowSession;
-import net.glowstone.net.message.login.EncryptionKeyResponseMessage;
-import net.glowstone.util.UuidUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import javax.crypto.Cipher;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
@@ -28,6 +14,25 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
+import net.glowstone.GlowServer;
+import net.glowstone.entity.GlowPlayer;
+import net.glowstone.entity.meta.PlayerProperty;
+import net.glowstone.net.EncryptionChannelProcessor;
+import net.glowstone.net.GlowSession;
+import net.glowstone.net.message.login.EncryptionKeyResponseMessage;
+import net.glowstone.util.UuidUtils;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import com.flowpowered.networking.MessageHandler;
 
 public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSession, EncryptionKeyResponseMessage> {
 
@@ -46,10 +51,10 @@ public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSe
         }
 
         // decrypt shared secret
-        byte[] sharedSecret;
+        SecretKey sharedSecret;
         try {
             rsaCipher.init(Cipher.DECRYPT_MODE, privateKey);
-            sharedSecret = rsaCipher.doFinal(message.getSharedSecret());
+            sharedSecret = new SecretKeySpec(rsaCipher.doFinal(message.getSharedSecret()), "AES");
         } catch (Exception ex) {
             GlowServer.logger.log(Level.WARNING, "Could not decrypt shared secret", ex);
             session.disconnect("Unable to decrypt shared secret.");
@@ -81,7 +86,7 @@ public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSe
         try {
             final MessageDigest digest = MessageDigest.getInstance("SHA-1");
             digest.update(session.getSessionId().getBytes());
-            digest.update(sharedSecret);
+            digest.update(sharedSecret.getEncoded());
             digest.update(session.getServer().getKeyPair().getPublic().getEncoded());
 
             // BigInteger takes care of sign and leading zeroes
