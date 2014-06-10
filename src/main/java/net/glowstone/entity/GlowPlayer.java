@@ -40,6 +40,8 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 
 /**
@@ -981,9 +983,23 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
             Runnable task = new Runnable() {
                 @Override
                 public void run() {
-                    AsyncPlayerChatEvent event = EventFactory.onAsyncPlayerChat(async, GlowPlayer.this, text);
+                    final AsyncPlayerChatEvent event = EventFactory.onAsyncPlayerChat(async, GlowPlayer.this, text);
                     if (event.isCancelled()) {
                         return;
+                    }
+
+                    if (PlayerChatEvent.getHandlerList().getRegisteredListeners().length > 0) {
+                        // We still have sync chat handlers. Run these as well.
+                        PlayerChatEvent event1 = EventFactory.callEvent(new PlayerChatEvent(GlowPlayer.this, event.getMessage(), event.getFormat(), event.getRecipients()));
+
+                        if (event1.isCancelled()) {
+                            return;
+                        }
+
+                        event.setFormat(event1.getFormat());
+                        event.setMessage(event1.getMessage());
+                        event.getRecipients().clear();
+                        event.getRecipients().addAll(event1.getRecipients());
                     }
 
                     String message = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
