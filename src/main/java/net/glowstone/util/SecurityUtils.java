@@ -1,11 +1,15 @@
 package net.glowstone.util;
 
-import net.glowstone.GlowServer;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
-import java.security.*;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.logging.Level;
+
+import net.glowstone.GlowServer;
 
 /**
  * Utility class for performing encrypted authentication
@@ -13,10 +17,6 @@ import java.util.logging.Level;
 public class SecurityUtils {
 
     private static SecureRandom random = new SecureRandom();
-
-    static {
-        Security.addProvider(new BouncyCastleProvider());
-    }
 
     private SecurityUtils() {
     }

@@ -1,29 +1,38 @@
 package net.glowstone.net;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.ShortBufferException;
+import javax.crypto.spec.IvParameterSpec;
+
 import com.flowpowered.networking.processor.simple.SimpleMessageProcessor;
-import org.bouncycastle.crypto.BufferedBlockCipher;
-import org.bouncycastle.crypto.CipherParameters;
-import org.bouncycastle.crypto.engines.AESEngine;
-import org.bouncycastle.crypto.modes.CFBBlockCipher;
-import org.bouncycastle.crypto.params.KeyParameter;
-import org.bouncycastle.crypto.params.ParametersWithIV;
 
 public class EncryptionChannelProcessor extends SimpleMessageProcessor {
 
     private CryptBuf encodeBuf;
     private CryptBuf decodeBuf;
 
-    public EncryptionChannelProcessor(byte[] sharedSecret, int capacity) {
+    public EncryptionChannelProcessor(SecretKey sharedSecret, int capacity) {
         super(capacity);
 
-        CipherParameters parameters = new ParametersWithIV(new KeyParameter(sharedSecret), sharedSecret);
-        BufferedBlockCipher encode = new BufferedBlockCipher(new CFBBlockCipher(new AESEngine(), 8));
-        BufferedBlockCipher decode = new BufferedBlockCipher(new CFBBlockCipher(new AESEngine(), 8));
-        encode.init(true, parameters);
-        decode.init(false, parameters);
+        Cipher encode;
+        try {
+            encode = Cipher.getInstance("AES/CFB8/NoPadding");
+            Cipher decode = Cipher.getInstance("AES/CFB8/NoPadding");
+            encode.init(Cipher.ENCRYPT_MODE, sharedSecret,  new IvParameterSpec(sharedSecret.getEncoded()));
+            decode.init(Cipher.DECRYPT_MODE, sharedSecret, new IvParameterSpec(sharedSecret.getEncoded()));
 
-        this.encodeBuf = new CryptBuf(encode, capacity * 2);
-        this.decodeBuf = new CryptBuf(decode, capacity * 2);
+            this.encodeBuf = new CryptBuf(encode, capacity * 2);
+            this.decodeBuf = new CryptBuf(decode, capacity * 2);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
+            e.printStackTrace(); //should never happen
+            throw new AssertionError(e);
+        }
     }
 
     @Override
@@ -47,12 +56,12 @@ public class EncryptionChannelProcessor extends SimpleMessageProcessor {
     }
 
     private static class CryptBuf {
-        private final BufferedBlockCipher cipher;
+        private final Cipher cipher;
         private final byte[] buffer;
         private int writePosition;
         private int readPosition;
 
-        private CryptBuf(BufferedBlockCipher cipher, int bufSize) {
+        private CryptBuf(Cipher cipher, int bufSize) {
             this.cipher = cipher;
             this.buffer = new byte[bufSize];
         }
@@ -72,7 +81,11 @@ public class EncryptionChannelProcessor extends SimpleMessageProcessor {
             if (readPosition < writePosition) {
                 throw new IllegalStateException("Stored data must be completely read before writing more data");
             }
-            writePosition = cipher.processBytes(src, 0, length, buffer, 0);
+            try {
+                writePosition = cipher.update(src, 0, length, buffer, 0);
+            } catch (ShortBufferException e) {
+                e.printStackTrace(); //Should never happen
+            }
             readPosition = 0;
         }
     }
