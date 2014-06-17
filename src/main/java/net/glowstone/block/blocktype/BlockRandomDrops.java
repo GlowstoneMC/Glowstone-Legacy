@@ -33,6 +33,6 @@ public class BlockRandomDrops extends BlockType {
 
     @Override
     public Collection<ItemStack> getDrops(GlowBlock block) {
-        return Collections.unmodifiableList(Arrays.asList(new ItemStack(dropType, random.nextInt(maxDrops + 1) + minDrops, data)));
+        return Collections.unmodifiableList(Arrays.asList(new ItemStack(dropType, random.nextInt(maxDrops - minDrops + 1) + minDrops, data)));
     }
 }
