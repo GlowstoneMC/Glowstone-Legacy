@@ -4,10 +4,7 @@ import net.glowstone.GlowChunk;
 import net.glowstone.block.entity.TEMobSpawner;
 import net.glowstone.block.entity.TileEntity;
 
-public class BlockMobSpawner extends BlockType {
-    public BlockMobSpawner() {
-        super.setDrops();
-    }
+public class BlockMobSpawner extends BlockDropless {
 
     @Override
     public TileEntity createTileEntity(GlowChunk chunk, int cx, int cy, int cz) {

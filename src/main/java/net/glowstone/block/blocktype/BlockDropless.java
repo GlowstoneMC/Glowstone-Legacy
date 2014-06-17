@@ -1,17 +1,14 @@
 package net.glowstone.block.blocktype;
 
 import net.glowstone.block.GlowBlock;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Random;
 
-public class BlockGlowstone extends BlockType {
-    private final Random random = new Random();
-
+public class BlockDropless extends BlockType {
+    private final Collection<ItemStack> emptyStack = Collections.unmodifiableList(Arrays.asList(new ItemStack[0]));
     /**
      * Get the items that will be dropped by digging the block.
      *
@@ -19,7 +16,7 @@ public class BlockGlowstone extends BlockType {
      * @return The drops that should be returned.
      */
     @Override
-    public Collection<ItemStack> getDrops(GlowBlock block) {
-        return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.GLOWSTONE_DUST, random.nextInt(3) + 2)));
+    public final Collection<ItemStack> getDrops(GlowBlock block) {
+        return emptyStack;
     }
 }
