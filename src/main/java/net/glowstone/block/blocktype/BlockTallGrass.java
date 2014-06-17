@@ -14,7 +14,7 @@ public class BlockTallGrass extends BlockType {
 
     @Override
     public Collection<ItemStack> getDrops(GlowBlock block) {
-        if (random.nextFloat() < 12.5) {
+        if (random.nextFloat() < .125) {
             return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.SEEDS, 1)));
         }
         return Collections.unmodifiableList(Arrays.asList(new ItemStack[0]));
