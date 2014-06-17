@@ -24,7 +24,8 @@ public final class ItemTable {
         return INSTANCE;
     }
 
-    private ItemTable() {}
+    private ItemTable() {
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     // Data
@@ -56,7 +57,7 @@ public final class ItemTable {
         reg(Material.DIRT, new BlockDirt());
         reg(Material.GRAVEL, new BlockGravel());
         reg(Material.ICE, new BlockIce());
-        reg(Material.PACKED_ICE, new BlockPackedIce());
+        reg(Material.PACKED_ICE, new BlockIcePacked());
         reg(Material.SNOW, new BlockSnow());
         reg(Material.SNOW_BLOCK, new BlockSnowBlock());
         reg(Material.STONE, new BlockStone());
@@ -113,6 +114,7 @@ public final class ItemTable {
 
     /**
      * Register a new, non-Vanilla ItemType. It will be assigned an ID automatically.
+     *
      * @param type the ItemType to register.
      */
     public void register(ItemType type) {
