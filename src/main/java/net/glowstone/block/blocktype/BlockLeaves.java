@@ -4,20 +4,26 @@ import net.glowstone.block.GlowBlock;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
 
 public class BlockLeaves extends BlockType {
     private final Random random = new Random();
 
     @Override
     public Collection<ItemStack> getDrops(GlowBlock block) {
-        //todo: add logic to drop correct sapling type and apples
-        if (random.nextInt(100) < 5) {
-            return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.SAPLING, 1)));
+        List<ItemStack> drops = new ArrayList<>();
+
+        int data = block.getData() % 4; //ignore "non-decay" and "check-decay" data.
+        if (block.getType() == Material.LEAVES_2) {
+            data += 4;
         }
-        return Collections.unmodifiableList(Arrays.asList(new ItemStack[0]));
+
+        if (random.nextFloat() < (block.getData() == 3 ? .025f : .05f)) { //jungle leaves drop with 2.5% chance, others drop with 5%
+            drops.add(new ItemStack(Material.SAPLING, 1, (short) data));
+        }
+        if (data == 0 && random.nextFloat() < .005) { //oak leaves have a .5% chance to drop an apple
+            drops.add(new ItemStack(Material.APPLE));
+        }
+        return Collections.unmodifiableList(drops);
     }
 }
