@@ -36,7 +36,6 @@ import org.bukkit.map.MapView;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.messaging.StandardMessenger;
 import org.bukkit.scoreboard.Scoreboard;
-import org.json.simple.JSONObject;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -983,10 +982,6 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         for (String line : TextWrapper.wrapText(message)) {
             session.send(new ChatMessage(line));
         }
-    }
-
-    public void sendJSONMessage(JSONObject json) {
-        session.send(new ChatMessage(json));
     }
 
     public void kickPlayer(String message) {
