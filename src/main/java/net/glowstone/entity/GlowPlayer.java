@@ -24,6 +24,7 @@ import net.glowstone.net.message.play.game.*;
 import net.glowstone.net.message.play.inv.*;
 import net.glowstone.net.message.play.player.PlayerAbilitiesMessage;
 import net.glowstone.net.protocol.ProtocolType;
+import net.glowstone.scoreboard.GlowScoreboard;
 import net.glowstone.util.StatisticMap;
 import net.glowstone.util.TextMessage;
 import net.glowstone.util.TextWrapper;
@@ -241,6 +242,11 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     private float walkSpeed = 0.2f;
 
     /**
+     * The scoreboard the player is currently subscribed to.
+     */
+    private GlowScoreboard scoreboard;
+
+    /**
      * Creates a new player and adds it to the world.
      * @param session The player's session.
      * @param profile The player's profile with name and UUID information.
@@ -298,6 +304,9 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         sendTime();
         sendWeather();
         sendAbilities();
+
+        scoreboard = server.getScoreboardManager().getMainScoreboard();
+        scoreboard.subscribe(this);
 
         invMonitor = new InventoryMonitor(getOpenInventory());
         updateInventory(); // send inventory contents
@@ -359,6 +368,10 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         getInventory().removeViewer(this);
         getInventory().getCraftingInventory().removeViewer(this);
         permissions.clearPermissions();
+        if (scoreboard != null) {
+            scoreboard.unsubscribe(this);
+            scoreboard = null;
+        }
         super.remove();
     }
 
@@ -1623,12 +1636,21 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
     @Override
     public Scoreboard getScoreboard() {
-        return null;
+        return scoreboard;
     }
 
     @Override
     public void setScoreboard(Scoreboard scoreboard) throws IllegalArgumentException, IllegalStateException {
-
+        Validate.notNull(scoreboard, "Scoreboard must not be null");
+        if (!(scoreboard instanceof GlowScoreboard)) {
+            throw new IllegalArgumentException("Scoreboard must be GlowScoreboard");
+        }
+        if (this.scoreboard == null) {
+            throw new IllegalStateException("Player has not loaded or is already offline");
+        }
+        this.scoreboard.unsubscribe(this);
+        this.scoreboard = (GlowScoreboard) scoreboard;
+        this.scoreboard.subscribe(this);
     }
 
     ////////////////////////////////////////////////////////////////////////////
