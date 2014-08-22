@@ -136,4 +136,11 @@ public class ItemType {
     public final String toString() {
         return getClass().getSimpleName() + "{" + getId() + " -> " + getMaterial() + "}";
     }
+    
+    
+    //BeYkeRYkt - Start
+    public BlockType getPlaceAs(){
+    	return placeAs;
+    }
+    //BeYkeRYkt - End
 }

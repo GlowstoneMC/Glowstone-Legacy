@@ -1,6 +1,10 @@
 package net.glowstone.entity;
 
-import com.flowpowered.networking.Message;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 import net.glowstone.entity.meta.PlayerProfile;
 import net.glowstone.inventory.GlowCraftingInventory;
 import net.glowstone.inventory.GlowInventory;
@@ -9,6 +13,7 @@ import net.glowstone.inventory.GlowPlayerInventory;
 import net.glowstone.net.message.play.entity.EntityHeadRotationMessage;
 import net.glowstone.net.message.play.entity.SpawnPlayerMessage;
 import net.glowstone.util.Position;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -25,10 +30,7 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import com.flowpowered.networking.Message;
 
 /**
  * Represents a human entity, such as an NPC or a player.
@@ -302,7 +304,7 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
         /*InventoryView view = new GlowInventoryView(this, new GlowEnchantInventory() ...);*/
         return null;
     }
-
+    
     public void openInventory(InventoryView inventory) {
         Validate.notNull(inventory);
         this.inventory.getDragTracker().reset();

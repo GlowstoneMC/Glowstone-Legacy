@@ -26,6 +26,9 @@ import java.util.List;
 public class BlockType extends ItemType {
 
     protected List<ItemStack> drops = null;
+    //BeYkeRYkt - Start
+    private Sound place_sound = Sound.DIG_WOOD; //Default DIG_WOOD
+    //BeYkeRYkt - End
 
     ////////////////////////////////////////////////////////////////////////////
     // Setters for subclass use
@@ -146,8 +149,12 @@ public class BlockType extends ItemType {
 
         // play a sound effect
         // todo: vary sound effect based on block type
-        target.getWorld().playSound(target.getLocation(), Sound.DIG_WOOD, 1, 1);
-
+        //target.getWorld().playSound(target.getLocation(), Sound.DIG_WOOD, 1, 1); - old
+        
+        //BeYkeRYkt - Start
+        target.getWorld().playSound(target.getLocation(), place_sound, 1, 0.8F);
+        //BeYkeRYkt - End
+        
         // do any after-place actions
         afterPlace(player, target, holding);
 
@@ -156,4 +163,21 @@ public class BlockType extends ItemType {
             holding.setAmount(holding.getAmount() - 1);
         }
     }
+
+    
+    //BeYkeRYkt - Start
+	/**
+	 * @return the place_sound
+	 */
+	public Sound getPlaceSound() {
+		return place_sound;
+	}
+
+	/**
+	 * @param place_sound the place_sound to set
+	 */
+	public void setPlaceSound(Sound place_sound) {
+		this.place_sound = place_sound;
+	}
+	//BeYkeRYkt - End
 }
