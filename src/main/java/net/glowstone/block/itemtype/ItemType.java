@@ -137,10 +137,8 @@ public class ItemType {
         return getClass().getSimpleName() + "{" + getId() + " -> " + getMaterial() + "}";
     }
     
-    
-    //BeYkeRYkt - Start
+
     public BlockType getPlaceAs(){
     	return placeAs;
     }
-    //BeYkeRYkt - End
 }

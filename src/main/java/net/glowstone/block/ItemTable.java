@@ -97,9 +97,7 @@ public final class ItemTable {
         reg(Material.SKULL_ITEM, new ItemPlaceAs(Material.SKULL)).setPlaceSound(Sound.DIG_STONE);
         reg(Material.REDSTONE_COMPARATOR, new ItemPlaceAs(Material.REDSTONE_COMPARATOR_OFF)).setPlaceSound(Sound.DIG_STONE);
         
-        //BeYkeRYkt - Start
         reg(Material.SAND, new BlockDirectDrops(Material.SAND)).setPlaceSound(Sound.DIG_SAND);
-        //BeYkeRYkt - End
     }
 
     private BlockType reg(Material material, ItemType type) {
@@ -111,16 +109,12 @@ public final class ItemTable {
 
         if (material.isBlock()) {
             nextBlockId = Math.max(nextBlockId, material.getId() + 1);
-            //BeYkeRYkt - Start
             BlockType block = (BlockType) type;
             return block;
-            //BeYkeRYkt - End
         } else {
             nextItemId = Math.max(nextItemId, material.getId() + 1);
-            //BeYkeRYkt - Start
             BlockType block = type.getPlaceAs();
             return block;
-            //BeYkeRYkt - End
         }
     }
 
