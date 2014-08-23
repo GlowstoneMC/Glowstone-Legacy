@@ -29,8 +29,16 @@ public final class LoginStartHandler implements MessageHandler<GlowSession, Logi
             //Send created request message and wait for the response
             session.send(new EncryptionKeyRequestMessage(sessionId, publicKey, verifyToken));
         } else {
-            UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
-            session.setPlayer(new PlayerProfile(name, uuid));
+            UUID uuid = session.getSpoofedUUID();
+            if (uuid == null) {
+                uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
+            }
+            
+            if (session.getSpoofedProperties() == null) {
+                session.setPlayer(new PlayerProfile(name, uuid));
+            } else {
+                session.setPlayer(new PlayerProfile(name, uuid, session.getSpoofedProperties()));
+            }
         }
     }
 }
