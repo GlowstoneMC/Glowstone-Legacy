@@ -117,8 +117,8 @@ public class BlockType extends ItemType {
         GlowBlock target = against.getRelative(face);
         GlowBlockState newState = target.getState();
 
-        // only allow placement inside tall-grass, air, or liquid
-        if (against.getType() == Material.LONG_GRASS) {
+        // only allow placement inside tall-grass, air, liquid or fire
+        if (against.getType() == Material.LONG_GRASS || against.getType() == Material.FIRE) {
             target = against;
         } else if (!target.isEmpty() && !target.isLiquid()) {
             //revert(player, target);
@@ -145,7 +145,7 @@ public class BlockType extends ItemType {
         newState.update(true);
 
         // play a sound effect
-        // todo: vary sound effect based on block type
+        // TODO: vary sound effect based on block type
         target.getWorld().playSound(target.getLocation(), Sound.DIG_WOOD, 1, 1);
 
         // do any after-place actions
