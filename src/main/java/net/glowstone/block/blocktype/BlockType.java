@@ -117,10 +117,8 @@ public class BlockType extends ItemType {
         GlowBlock target = against.getRelative(face);
         GlowBlockState newState = target.getState();
 
-        // only allow placement inside tall-grass, air, liquid or fire
-        if (against.getType() == Material.LONG_GRASS || against.getType() == Material.FIRE) {
-            target = against;
-        } else if (!target.isEmpty() && !target.isLiquid()) {
+        // only allow placement inside tall-grass, air, liquids or fire
+        if (!target.isEmpty() && !target.isLiquid() && !(target.getType() == Material.FIRE || target.getType() == Material.LONG_GRASS)) {
             //revert(player, target);
             return;
         }
