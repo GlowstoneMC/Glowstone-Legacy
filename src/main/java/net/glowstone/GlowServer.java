@@ -607,7 +607,6 @@ public final class GlowServer implements Server {
 
     /**
      * Return the crafting manager.
-     *
      * @return The server's crafting manager.
      */
     public CraftingManager getCraftingManager() {
@@ -616,7 +615,6 @@ public final class GlowServer implements Server {
 
     /**
      * The key pair generated at server start up
-     *
      * @return The key pair generated at server start up
      */
     public KeyPair getKeyPair() {
@@ -1012,6 +1010,7 @@ public final class GlowServer implements Server {
 
     ////////////////////////////////////////////////////////////////////////////
     // Inventory and crafting
+
     public List<Recipe> getRecipesFor(ItemStack result) {
         return craftingManager.getRecipesFor(result);
     }
