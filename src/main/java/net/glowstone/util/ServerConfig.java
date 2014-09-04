@@ -9,10 +9,12 @@ import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.*;
 import java.net.URL;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
+import org.apache.commons.lang.Validate;
 
 /**
  * Utilities for handling the server configuration files.
@@ -40,10 +42,27 @@ public final class ServerConfig {
     private final Map<String, YamlConfiguration> extraConfig = new HashMap<>();
 
     /**
+     * Parameters with which the server is ran.
+     */
+    private final Map<Key, Object> parameters;
+
+    public ServerConfig(File configDir, File configFile, Map<Key, Object> parameters) {
+        Validate.notNull(configFile);
+        Validate.notNull(configDir);
+        Validate.notNull(parameters);
+
+        this.configDir = configDir;
+        this.configFile = configFile;
+        this.parameters = parameters;
+    }
+
+    /**
      * Initialize a new ServerConfig and associated settings.
+     *
      * @param configDir The config directory, or null for default.
      * @param configFile The config file, or null for default.
      */
+    @Deprecated
     public ServerConfig(File configDir, File configFile) {
         if (configDir == null) {
             configDir = new File("config");
@@ -54,6 +73,7 @@ public final class ServerConfig {
 
         this.configDir = configDir;
         this.configFile = configFile;
+        this.parameters = new EnumMap<>(Key.class);
 
         config.options().indent(4);
     }
@@ -62,14 +82,26 @@ public final class ServerConfig {
     // Value getters
 
     public String getString(Key key) {
+        if (parameters.containsKey(key)) {
+            return parameters.get(key).toString();
+        }
+
         return config.getString(key.path, key.def.toString());
     }
 
     public int getInt(Key key) {
+        if (parameters.containsKey(key)) {
+            return (Integer) parameters.get(key);
+        }
+
         return config.getInt(key.path, (Integer) key.def);
     }
 
     public boolean getBoolean(Key key) {
+        if (parameters.containsKey(key)) {
+            return (Boolean) parameters.get(key);
+        }
+
         return config.getBoolean(key.path, (Boolean) key.def);
     }
 
@@ -82,8 +114,8 @@ public final class ServerConfig {
             return extraConfig.get(filename);
         }
 
-        YamlConfiguration conf = new YamlConfiguration();
-        File file = getFile(filename), migrateFrom = new File(key.def.toString());
+        final YamlConfiguration conf = new YamlConfiguration();
+        final File file = getFile(filename), migrateFrom = new File(key.def.toString());
 
         // create file if it doesn't exist
         if (!file.exists()) {
@@ -127,7 +159,7 @@ public final class ServerConfig {
         extraConfig.clear();
 
         // create default file if needed
-        boolean exists = configFile.exists();
+        final boolean exists = configFile.exists();
         if (!exists) {
             // create config directory
             if (!configDir.isDirectory() && !configDir.mkdirs()) {
@@ -162,15 +194,15 @@ public final class ServerConfig {
     }
 
     private void copyDefaults(String source, File dest) {
-        URL resource = getClass().getClassLoader().getResource("defaults/" + source);
+        final URL resource = getClass().getClassLoader().getResource("defaults/" + source);
         if (resource == null) {
             GlowServer.logger.warning("Could not find default " + source + " on classpath");
             return;
         }
 
-        try (InputStream in = resource.openStream();
-             OutputStream out = new FileOutputStream(dest)) {
-            byte[] buf = new byte[2048];
+        try (final InputStream in = resource.openStream();
+                final OutputStream out = new FileOutputStream(dest)) {
+            final byte[] buf = new byte[2048];
             int len;
             while ((len = in.read(buf)) > 0) {
                 out.write(buf, 0, len);
@@ -196,7 +228,7 @@ public final class ServerConfig {
     private boolean migrate() {
         boolean migrateStatus = false;
 
-        File bukkitYml = new File("bukkit.yml");
+        final File bukkitYml = new File("bukkit.yml");
         if (bukkitYml.exists()) {
             YamlConfiguration bukkit = new YamlConfiguration();
             try {
@@ -217,7 +249,7 @@ public final class ServerConfig {
             config.set("worlds", bukkit.get("worlds"));
         }
 
-        File serverProps = new File("server.properties");
+        final File serverProps = new File("server.properties");
         if (serverProps.exists()) {
             Properties props = new Properties();
             try {
@@ -323,10 +355,7 @@ public final class ServerConfig {
         DB_URL("database.url", "jdbc:sqlite:config/database.db", Migrate.BUKKIT, "database.url"),
         DB_USERNAME("database.username", "glowstone", Migrate.BUKKIT, "database.username"),
         DB_PASSWORD("database.password", "nether", Migrate.BUKKIT, "database.password"),
-        DB_ISOLATION("database.isolation", "SERIALIZABLE", Migrate.BUKKIT, "database.isolation"),
-
-        ;
-
+        DB_ISOLATION("database.isolation", "SERIALIZABLE", Migrate.BUKKIT, "database.isolation"),;
         private final String path;
         private final Object def;
         private final Migrate migrate;
@@ -347,9 +376,26 @@ public final class ServerConfig {
         public String toString() {
             return name() + "(" + path + ", " + def + ")";
         }
+
+        /**
+         * Attempts to retrieve a Key from its path.
+         *
+         * @param path The path to retrieve the key from.
+         * @return The matched Key. If none can be found, the method returns null.
+         */
+        public static Key fromPath(String path) {
+            for (Key keyInstance : Key.values()) {
+                if (keyInstance.path.equals(path)) {
+                    return keyInstance;
+                }
+            }
+
+            return null;
+        }
     }
 
     private static enum Migrate {
+
         BUKKIT, PROPS
     }
 
