@@ -133,7 +133,7 @@ public final class GlowServer implements Server {
             }
 
             // Below this point, options require parameters
-            if (args.length == i) {
+            if (i == args.length - 1) {
                 System.err.println("Option specified without value: " + opt);
                 System.exit(1);
                 return null;
