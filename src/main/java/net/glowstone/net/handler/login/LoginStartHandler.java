@@ -9,12 +9,20 @@ import net.glowstone.util.SecurityUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import org.bukkit.entity.Player;
 
 public final class LoginStartHandler implements MessageHandler<GlowSession, LoginStartMessage> {
 
     @Override
     public void handle(GlowSession session, LoginStartMessage message) {
         final String name = message.getUsername();
+
+        for (Player player : session.getServer().getOnlinePlayers()) {
+            if (player.getName().equalsIgnoreCase(name)) {
+                session.disconnect("You are already logged in from another location.");
+                return;
+            }
+        }
 
         if (session.getServer().getOnlineMode()) {
             // Get necessary information to create our request message
