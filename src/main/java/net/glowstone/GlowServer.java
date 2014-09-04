@@ -104,7 +104,6 @@ public final class GlowServer implements Server {
         // Calculate acceptable parameters
         for (int i = 0; i < args.length; i++) {
             final String opt = args[i];
-            final boolean isLast = args.length == i;
 
             if (!opt.startsWith("-")) {
                 System.err.println("Invalid Option: " + opt);
