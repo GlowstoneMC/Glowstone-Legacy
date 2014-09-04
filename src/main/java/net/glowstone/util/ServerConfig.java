@@ -395,8 +395,7 @@ public final class ServerConfig {
     }
 
     private static enum Migrate {
-
-        BUKKIT, PROPS
+        BUKKIT, PROPS;
     }
 
 }

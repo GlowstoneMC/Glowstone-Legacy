@@ -49,7 +49,6 @@ import net.glowstone.util.ServerConfig.Key;
 
 /**
  * The core class of the Glowstone server.
- *
  * @author Graham Edgecombe
  */
 public final class GlowServer implements Server {
@@ -58,10 +57,12 @@ public final class GlowServer implements Server {
      * The logger for this class.
      */
     public static final Logger logger = Logger.getLogger("Minecraft");
+
     /**
      * The game version supported by the server.
      */
     public static final String GAME_VERSION = "1.8";
+
     /**
      * The protocol version supported by the server.
      */
@@ -70,7 +71,6 @@ public final class GlowServer implements Server {
     /**
      * Creates a new server on TCP port 25565 and starts listening for
      * connections.
-     *
      * @param args The command-line arguments.
      */
     public static void main(String[] args) {
@@ -489,7 +489,6 @@ public final class GlowServer implements Server {
 
     /**
      * Enable all plugins of the given load order type.
-     *
      * @param type The type of plugin to enable.
      */
     private void enablePlugins(PluginLoadOrder type) {
@@ -568,9 +567,9 @@ public final class GlowServer implements Server {
 
     ////////////////////////////////////////////////////////////////////////////
     // Access to internals
+
     /**
      * Gets the command map.
-     *
      * @return The {@link SimpleCommandMap}.
      */
     public SimpleCommandMap getCommandMap() {
@@ -579,7 +578,6 @@ public final class GlowServer implements Server {
 
     /**
      * Gets the session registry.
-     *
      * @return The {@link SessionRegistry}.
      */
     public SessionRegistry getSessionRegistry() {
@@ -627,7 +625,6 @@ public final class GlowServer implements Server {
 
     /**
      * Returns the player data service attached to the first world.
-     *
      * @return The server's player data service.
      */
     public PlayerDataService getPlayerDataService() {
@@ -636,7 +633,6 @@ public final class GlowServer implements Server {
 
     /**
      * Get the threshold to use for network compression defined in the config.
-     *
      * @return The compression threshold, or -1 for no compression.
      */
     public int getCompressionThreshold() {
@@ -645,6 +641,7 @@ public final class GlowServer implements Server {
 
     ////////////////////////////////////////////////////////////////////////////
     // Static server properties
+
     public String getName() {
         return "Glowstone";
     }
@@ -667,6 +664,7 @@ public final class GlowServer implements Server {
 
     ////////////////////////////////////////////////////////////////////////////
     // Access to Bukkit API
+
     public PluginManager getPluginManager() {
         return pluginManager;
     }
@@ -713,6 +711,7 @@ public final class GlowServer implements Server {
 
     ////////////////////////////////////////////////////////////////////////////
     // Commands and console
+
     public ConsoleCommandSender getConsoleSender() {
         return consoleManager.getSender();
     }
@@ -922,6 +921,7 @@ public final class GlowServer implements Server {
 
     ////////////////////////////////////////////////////////////////////////////
     // World management
+
     public GlowWorld getWorld(String name) {
         return worlds.getWorld(name);
     }
@@ -943,7 +943,6 @@ public final class GlowServer implements Server {
 
     /**
      * Gets the default ChunkGenerator for the given environment and type.
-     *
      * @return The ChunkGenerator.
      */
     private ChunkGenerator getGenerator(String name, Environment environment, WorldType type) {
@@ -1051,6 +1050,7 @@ public final class GlowServer implements Server {
 
     ////////////////////////////////////////////////////////////////////////////
     // Server icons
+
     @Override
     public GlowServerIcon getServerIcon() {
         return defaultIcon;
@@ -1068,6 +1068,7 @@ public final class GlowServer implements Server {
 
     ////////////////////////////////////////////////////////////////////////////
     // Plugin messages
+
     @Override
     public void sendPluginMessage(Plugin source, String channel, byte[] message) {
         StandardMessenger.validatePluginMessage(getMessenger(), source, channel, message);
@@ -1087,6 +1088,7 @@ public final class GlowServer implements Server {
 
     ////////////////////////////////////////////////////////////////////////////
     // Configuration with special handling
+
     public GameMode getDefaultGameMode() {
         return defaultGameMode;
     }
@@ -1141,6 +1143,7 @@ public final class GlowServer implements Server {
 
     ////////////////////////////////////////////////////////////////////////////
     // Configuration
+
     public String getIp() {
         return config.getString(ServerConfig.Key.SERVER_IP);
     }
