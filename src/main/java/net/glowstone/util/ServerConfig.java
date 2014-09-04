@@ -58,7 +58,6 @@ public final class ServerConfig {
 
     /**
      * Initialize a new ServerConfig and associated settings.
-     *
      * @param configDir The config directory, or null for default.
      * @param configFile The config file, or null for default.
      */
