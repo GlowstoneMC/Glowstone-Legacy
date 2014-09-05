@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public final class GlowItemFactory implements ItemFactory {
 
     private static final GlowItemFactory instance = new GlowItemFactory();
-    private static final Color LEATHER_COLOR = Color.fromRGB(0xA06540);
+    static final Color LEATHER_COLOR = Color.fromRGB(0xA06540);
 
     private GlowItemFactory() {
     }
@@ -104,6 +104,11 @@ public final class GlowItemFactory implements ItemFactory {
             case BOOK_AND_QUILL:
             case WRITTEN_BOOK:
                 return new GlowMetaBook(meta);
+            case LEATHER_LEGGINGS:
+            case LEATHER_BOOTS:
+            case LEATHER_CHESTPLATE:
+            case LEATHER_HELMET:
+                return new GlowMetaLeatherArmor(meta);
             default:
                 return new GlowMetaItem(meta);
         }
