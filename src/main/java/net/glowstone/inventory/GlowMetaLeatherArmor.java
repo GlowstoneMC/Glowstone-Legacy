@@ -12,7 +12,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import java.util.Map;
 
 class GlowMetaLeatherArmor extends GlowMetaItem implements LeatherArmorMeta {
-    private Color color = Color.FUCHSIA;
+    private Color color = LEATHER_COLOR;
 
     public GlowMetaLeatherArmor (GlowMetaItem meta) {
         super(meta);
