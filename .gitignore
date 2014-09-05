@@ -11,6 +11,10 @@ bin
 lib
 doc
 target
+worlds
+config
+logs
+players
 !.gitignore
 !.gitmodules
 !.mailmap
