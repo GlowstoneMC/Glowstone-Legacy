@@ -241,11 +241,21 @@ public final class GlowSession extends BasicSession {
         }
 
         // login event
-        PlayerLoginEvent event = EventFactory.onPlayerLogin(player);
+        final PlayerLoginEvent event = EventFactory.onPlayerLogin(player);
+
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             disconnect(event.getKickMessage(), true);
             return;
         }
+
+        // Kick other players with the same UUID
+        for (Player onlinePlayer : getServer().getOnlinePlayers()) {
+            if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
+                onlinePlayer.kickPlayer("You logged in from another location.");
+                break;
+            }
+        }
+
         player.getWorld().getRawPlayers().add(player);
 
         GlowServer.logger.info(player.getName() + " [" + address + "] connected, UUID: " + player.getUniqueId());

@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
-import org.bukkit.entity.Player;
 
 public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSession, EncryptionKeyResponseMessage> {
 
@@ -140,14 +139,6 @@ public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSe
                     GlowServer.logger.log(Level.SEVERE, "Returned authentication UUID invalid: {0}", ex.getMessage());
                     session.disconnect("Invalid UUID.");
                     return;
-                }
-
-                // Kick other players with the same UUID
-                for (Player player : session.getServer().getOnlinePlayers()) {
-                    if (player.getUniqueId().equals(uuid)) {
-                        player.kickPlayer("You logged in from another location.");
-                        break;
-                    }
                 }
 
                 // Parse properties
