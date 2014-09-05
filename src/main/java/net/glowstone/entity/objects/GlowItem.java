@@ -10,6 +10,7 @@ import net.glowstone.net.message.play.entity.SpawnObjectMessage;
 import net.glowstone.util.Position;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
@@ -50,6 +51,11 @@ public final class GlowItem extends GlowEntity implements Item {
     @Override
     public EntityType getType() {
         return EntityType.DROPPED_ITEM;
+    }
+
+    @Override
+    public Spigot spigot() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
