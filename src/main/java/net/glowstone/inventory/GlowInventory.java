@@ -402,5 +402,4 @@ public class GlowInventory implements Inventory {
             clear(i);
         }
     }
-
 }
