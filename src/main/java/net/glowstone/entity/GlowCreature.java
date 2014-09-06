@@ -6,6 +6,7 @@ import net.glowstone.net.message.play.entity.SpawnMobMessage;
 import net.glowstone.util.Position;
 import org.bukkit.Location;
 import org.bukkit.entity.Creature;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
@@ -40,6 +41,11 @@ public final class GlowCreature extends GlowLivingEntity implements Creature {
 
     public EntityType getType() {
         return type;
+    }
+
+    @Override
+    public Spigot spigot() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

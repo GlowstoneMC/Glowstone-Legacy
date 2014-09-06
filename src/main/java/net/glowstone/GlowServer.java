@@ -649,6 +649,11 @@ public final class GlowServer implements Server {
         return getClass().getPackage().getSpecificationVersion();
     }
 
+    @Override
+    public Player[] _INVALID_getOnlinePlayers() {
+        return getOnlinePlayers().toArray(new Player[0]);
+    }
+
     public Logger getLogger() {
         return logger;
     }
@@ -758,14 +763,14 @@ public final class GlowServer implements Server {
         return offlinePlayers;
     }
 
-    public Player[] getOnlinePlayers() {
+    public Collection<Player> getOnlinePlayers() {
         ArrayList<Player> result = new ArrayList<>();
         for (World world : getWorlds()) {
             for (Player player : world.getPlayers()) {
                 result.add(player);
             }
         }
-        return result.toArray(new Player[result.size()]);
+        return result;
     }
 
     public OfflinePlayer[] getOfflinePlayers() {

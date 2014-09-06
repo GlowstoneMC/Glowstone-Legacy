@@ -40,6 +40,11 @@ public class GlowLightningStrike extends GlowWeather implements LightningStrike 
     }
 
     @Override
+    public LightningStrike.Spigot spigot() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void pulse() {
         super.pulse();
         if (getTicksLived() >= ticksToLive) {

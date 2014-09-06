@@ -1000,6 +1000,11 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         return healthScale;
     }
 
+    @Override
+    public Player.Spigot spigot() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public void setHealthScale(double scale) throws IllegalArgumentException {
         healthScaled = true;
         healthScale = scale;

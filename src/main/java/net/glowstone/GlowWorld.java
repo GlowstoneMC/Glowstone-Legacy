@@ -1170,6 +1170,11 @@ public final class GlowWorld implements World {
         return gameRules.containsKey(rule);
     }
 
+    @Override
+    public Spigot spigot() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Metadata
 
