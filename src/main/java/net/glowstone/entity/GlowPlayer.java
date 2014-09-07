@@ -54,7 +54,7 @@ import java.util.logging.Level;
  * Represents an in-game player.
  * @author Graham Edgecombe
  */
-@DelegateDeserialization(GlowOfflinePlayer.class)
+//@DelegateDeserialization(GlowOfflinePlayer.class) // TODO: fix cannot find value()
 public final class GlowPlayer extends GlowHumanEntity implements Player {
 
     /**

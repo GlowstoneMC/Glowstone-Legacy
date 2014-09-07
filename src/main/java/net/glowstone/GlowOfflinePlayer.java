@@ -16,7 +16,7 @@ import java.util.UUID;
 /**
  * Represents a player which is not connected to the server.
  */
-@SerializableAs("Player")
+//@SerializableAs("Player") // TODO: fix cannot find value()
 public final class GlowOfflinePlayer implements OfflinePlayer {
 
     private final GlowServer server;
