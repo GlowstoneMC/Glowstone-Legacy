@@ -29,8 +29,7 @@ public final class CloseWindowHandler implements MessageHandler<GlowSession, Clo
             player.setItemOnCursor(null);
         }
         
-        if (player.GetBindChest() != null)
-        {
+        if (player.GetBindChest() != null){  
         	World world = player.getWorld();
         	Block bl = world.getBlockAt(player.GetBindChest());
         	
