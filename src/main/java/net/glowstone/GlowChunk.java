@@ -99,6 +99,7 @@ public final class GlowChunk implements Chunk {
         public final char[] types;
         public final NibbleArray skyLight;
         public final NibbleArray blockLight;
+        public int count;
 
         /**
          * Create a new, empty ChunkSection.
@@ -122,6 +123,7 @@ public final class GlowChunk implements Chunk {
             this.types = types;
             this.skyLight = skyLight;
             this.blockLight = blockLight;
+            recount();
         }
 
         /**
@@ -135,13 +137,13 @@ public final class GlowChunk implements Chunk {
         }
 
         /**
-         * Check whether the section is empty (all blocks are air).
+         * Recount the amount of non-air blocks in the chunk section
          */
-        public boolean isEmpty() {
-            for (char type : types) {
-                if (type != 0) return false;
+        public void recount() {
+            count = 0;
+            for(char type : types) {
+                if (type != 0) count++;
             }
-            return true;
         }
 
         /**
@@ -432,9 +434,15 @@ public final class GlowChunk implements Chunk {
         }
 
         // update the type
-        section.types[section.index(x, y, z)] = (char) (type << 4);
+        int index = section.index(x, y, z);
+        if (type == 0) {
+            if(section.types[index] != 0) section.count--;
+        } else {
+            if(section.types[index] == 0) section.count++;
+        }
+        section.types[index] = (char) (type << 4);
 
-        if (type == 0 && section.isEmpty()) {
+        if (type == 0 && section.count == 0) {
             // destroy the empty section
             sections[y / SEC_DEPTH] = null;
             return;
@@ -468,7 +476,9 @@ public final class GlowChunk implements Chunk {
             throw new IllegalArgumentException("Metadata out of range: " + metaData);
         ChunkSection section = getSection(y);
         if (section == null) return;  // can't set metadata on an empty section
-        section.types[section.index(x, y, z)] |= metaData;
+        int index = section.index(x, y, z);
+        if ((section.types[index] << 4) == 0) return;  // can't set metadata on air
+        section.types[index] |= metaData;
     }
 
     /**
@@ -619,7 +629,7 @@ public final class GlowChunk implements Chunk {
             }
 
             for (int i = 0; i < sections.length; ++i) {
-                if (sections[i] == null || sections[i].isEmpty()) {
+                if (sections[i] == null || sections[i].count == 0) {
                     // remove empty sections from bitmask
                     sectionBitmask &= ~(1 << i);
                     sectionCount--;
