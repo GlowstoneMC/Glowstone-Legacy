@@ -3,7 +3,7 @@ package net.glowstone.block.state;
 import net.glowstone.GlowChunk;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
-import net.glowstone.block.entity.TEChest;
+import net.glowstone.block.entity.TEEnderChest;
 import net.glowstone.entity.GlowPlayer;
 
 import org.bukkit.Location;
@@ -11,16 +11,16 @@ import org.bukkit.Material;
 import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
 
-public class GlowChest extends GlowBlockState implements Chest {
+public class GlowEnderChest extends GlowBlockState implements Chest {
 
 	public int state;
-    public GlowChest(GlowBlock block) {
+    public GlowEnderChest(GlowBlock block) {
         super(block);
         state = 0;
     }
 
-    private TEChest getTileEntity() {
-        return (TEChest) getBlock().getTileEntity();
+    private TEEnderChest getTileEntity() {
+        return (TEEnderChest) getBlock().getTileEntity();
     }
 
     @Override
@@ -44,7 +44,7 @@ public class GlowChest extends GlowBlockState implements Chest {
     }
     
     public boolean ChestAnimation(byte state) {
-        if (getBlock().getType() != Material.CHEST) {
+        if (getBlock().getType() != Material.ENDER_CHEST) {
             return false;
         }
         Location location = getBlock().getLocation();
