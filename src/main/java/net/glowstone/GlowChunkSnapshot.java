@@ -105,7 +105,7 @@ public class GlowChunkSnapshot implements ChunkSnapshot {
     }
 
     public boolean isSectionEmpty(int sy) {
-        return sy >= 0 && sy < sections.length && sections[sy] != null;
+        return sy < 0 || sy >= sections.length || (sections[sy] == null);
     }
 
     public int getBlockTypeId(int x, int y, int z) {
@@ -120,7 +120,7 @@ public class GlowChunkSnapshot implements ChunkSnapshot {
 
     public int getBlockSkyLight(int x, int y, int z) {
         ChunkSection section = getSection(y);
-        return section == null ? 0 : section.skyLight.get(section.index(x, y, z));
+        return section == null ? 15 : section.skyLight.get(section.index(x, y, z));
     }
 
     public int getBlockEmittedLight(int x, int y, int z) {
@@ -169,7 +169,7 @@ public class GlowChunkSnapshot implements ChunkSnapshot {
 
         @Override
         public int getBlockSkyLight(int x, int y, int z) {
-            return 0;
+            return 15;
         }
 
         @Override
