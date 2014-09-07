@@ -125,7 +125,7 @@ public final class ConsoleManager {
     }
 
     private String colorize(String string) {
-        if (string.indexOf(ChatColor.COLOR_CHAR) < 0) {
+        if (string.indexOf(ChatColor.COLOR_CHAR.ordinal()) < 0) {
             return string;  // no colors in the message
         } else if (!jLine || !reader.getTerminal().isAnsiSupported()) {
             return ChatColor.stripColor(string);  // color not supported

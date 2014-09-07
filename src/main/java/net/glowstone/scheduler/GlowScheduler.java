@@ -5,6 +5,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import net.glowstone.GlowServer;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitWorker;
@@ -215,12 +216,27 @@ public final class GlowScheduler implements BukkitScheduler {
         return scheduleSyncRepeatingTask(plugin, task, delay, -1);
     }
 
+    @Override
+    public int scheduleSyncDelayedTask(Plugin plugin, BukkitRunnable bukkitRunnable, long l) {
+        return scheduleSyncDelayedTask(plugin, (Runnable) bukkitRunnable, l);
+    }
+
     public int scheduleSyncDelayedTask(Plugin plugin, Runnable task) {
         return scheduleSyncDelayedTask(plugin, task, 0);
     }
 
+    @Override
+    public int scheduleSyncDelayedTask(Plugin plugin, BukkitRunnable bukkitRunnable) {
+        return scheduleSyncDelayedTask(plugin, (Runnable) bukkitRunnable);
+    }
+
     public int scheduleSyncRepeatingTask(Plugin plugin, Runnable task, long delay, long period) {
         return schedule(new GlowTask(plugin, task, true, delay, period)).getTaskId();
+    }
+
+    @Override
+    public int scheduleSyncRepeatingTask(Plugin plugin, BukkitRunnable bukkitRunnable, long l, long l2) {
+        return scheduleSyncRepeatingTask(plugin, (Runnable) bukkitRunnable, l, l2);
     }
 
     @Deprecated
@@ -258,24 +274,54 @@ public final class GlowScheduler implements BukkitScheduler {
         return runTaskLater(plugin, task, 0);
     }
 
+    @Override
+    public BukkitTask runTask(Plugin plugin, BukkitRunnable bukkitRunnable) throws IllegalArgumentException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public BukkitTask runTaskAsynchronously(Plugin plugin, Runnable task) throws IllegalArgumentException {
         return runTaskLaterAsynchronously(plugin, task, 0);
+    }
+
+    @Override
+    public BukkitTask runTaskAsynchronously(Plugin plugin, BukkitRunnable bukkitRunnable) throws IllegalArgumentException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public BukkitTask runTaskLater(Plugin plugin, Runnable task, long delay) throws IllegalArgumentException {
         return runTaskTimer(plugin, task, delay, -1);
     }
 
+    @Override
+    public BukkitTask runTaskLater(Plugin plugin, BukkitRunnable bukkitRunnable, long l) throws IllegalArgumentException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public BukkitTask runTaskLaterAsynchronously(Plugin plugin, Runnable task, long delay) throws IllegalArgumentException {
         return runTaskTimerAsynchronously(plugin, task, delay, -1);
+    }
+
+    @Override
+    public BukkitTask runTaskLaterAsynchronously(Plugin plugin, BukkitRunnable bukkitRunnable, long l) throws IllegalArgumentException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public BukkitTask runTaskTimer(Plugin plugin, Runnable task, long delay, long period) throws IllegalArgumentException {
         return schedule(new GlowTask(plugin, task, true, delay, period));
     }
 
+    @Override
+    public BukkitTask runTaskTimer(Plugin plugin, BukkitRunnable bukkitRunnable, long l, long l2) throws IllegalArgumentException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public BukkitTask runTaskTimerAsynchronously(Plugin plugin, Runnable task, long delay, long period) throws IllegalArgumentException {
         return schedule(new GlowTask(plugin, task, false, delay, period));
+    }
+
+    @Override
+    public BukkitTask runTaskTimerAsynchronously(Plugin plugin, BukkitRunnable bukkitRunnable, long l, long l2) throws IllegalArgumentException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void cancelTask(int taskId) {

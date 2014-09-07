@@ -50,6 +50,11 @@ public class ServerShim implements Server {
         return "Test-Shim";
     }
 
+    @Override
+    public Player[] _INVALID_getOnlinePlayers() {
+        return getOnlinePlayers().toArray(new Player[0]);
+    }
+
     public ItemFactory getItemFactory() {
         return GlowItemFactory.instance();
     }
@@ -60,8 +65,8 @@ public class ServerShim implements Server {
 
     // do nothing stubs
 
-    public Player[] getOnlinePlayers() {
-        return new Player[0];
+    public Collection<Player> getOnlinePlayers() {
+        return new ArrayList<Player>();
     }
 
     public int getMaxPlayers() {

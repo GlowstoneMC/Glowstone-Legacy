@@ -51,7 +51,7 @@ mainClassName = "net.glowstone.GlowServer"
 
 // Extended project information
 ext.url = 'https://github.com/SpaceManiac/Glowstone'
-ext.bukkitVersion = '1.7.9-R0.1'
+ext.bukkitVersion = '0.0.1'
 ext.gitDescribe = getVersionName()
 
 // Minimum Java version required
@@ -88,7 +88,7 @@ repositories {
 
 // Dependencies used by our project
 dependencies {
-    compile group: 'org.bukkit', name: 'bukkit', version: project.ext.bukkitVersion
+    compile group: 'com.github.deathcap', name: 'bedrock-api', version: project.ext.bukkitVersion
     compile 'com.flowpowered:flow-networking:1.0.0-SNAPSHOT'
     compile 'jline:jline:2.11'
     //compile 'mysql:mysql-connector-java:5.1.14'
