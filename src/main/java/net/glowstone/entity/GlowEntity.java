@@ -9,6 +9,7 @@ import net.glowstone.entity.meta.MetadataMap;
 import net.glowstone.net.message.play.entity.*;
 import net.glowstone.util.Position;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -293,6 +294,11 @@ public abstract class GlowEntity implements Entity {
         }
         world.getEntityManager().move(this, location);
         Position.copyLocation(location, this.location);
+        if (location.getY() < this.previousLocation.getY()) {
+            this.fallDistance += (previousLocation.getY() - location.getY());
+        } else if (location.getY() > this.previousLocation.getY()) {
+            this.fallDistance = 0;
+        }
     }
 
     /**

@@ -1,9 +1,11 @@
 package net.glowstone.entity;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -390,6 +392,21 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
 
     public Collection<PotionEffect> getActivePotionEffects() {
         return Collections.unmodifiableCollection(potionEffects.values());
+    }
+
+    @Override
+    public void setOnGround(boolean onGround) {
+        Bukkit.getLogger().info("On ground ! "+onGround+" -- FalLDistance : "+this.getFallDistance());
+        Bukkit.getLogger().info("POSITION : "+this.getLocation().toString());
+        super.setOnGround(onGround);
+        if (onGround && this.getFallDistance() > 3) {
+            float damage = this.getFallDistance() - 3;
+            this.damage(damage);
+            EntityDamageEvent ev = new EntityDamageEvent(this, EntityDamageEvent.DamageCause.FALL, damage);
+            this.getServer().getPluginManager().callEvent(ev);
+            this.setLastDamageCause(ev);
+        }
+        this.setFallDistance(0);
     }
 
     ////////////////////////////////////////////////////////////////////////////
