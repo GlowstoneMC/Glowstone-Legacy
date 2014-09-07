@@ -47,6 +47,17 @@ public abstract class GlowEntity implements Entity {
     private final static MetadataStore<Entity> bukkitMetadata = new EntityMetadataStore();
 
     /**
+     * Velocity reduction applied each tick.
+     */
+    private final static double airDrag = 0.99;
+    private final static double liquidDrag = 0.8;
+
+    /**
+     * Gravity acceleration applied each tick.
+     */
+    private final static Vector GRAVITY = new Vector(0, 0.05, 0);
+
+    /**
      * The server this entity belongs to.
      */
     protected final GlowServer server;
@@ -400,8 +411,14 @@ public abstract class GlowEntity implements Entity {
     }
 
     protected void pulsePhysics() {
-        // todo: update location based on velocity,
         // do gravity, all that other good stuff
+        location.add(velocity);
+        if (location.getBlock().isLiquid()) {
+            velocity.multiply(liquidDrag);
+        } else {
+            velocity.multiply(airDrag);
+        }
+        velocity.add(GRAVITY);
 
         // make sure bounding box is up to date
         if (boundingBox != null) {
