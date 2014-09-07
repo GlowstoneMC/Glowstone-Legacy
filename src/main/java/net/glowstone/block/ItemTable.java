@@ -44,6 +44,7 @@ public final class ItemTable {
         reg(Material.WORKBENCH, new BlockWorkbench());
         reg(Material.ENDER_CHEST, new BlockEnderchest());
         reg(Material.CHEST, new BlockChest());
+        reg(Material.DISPENSER, new BlockDispenser());
         reg(Material.BOOKSHELF, new BlockDirectDrops(Material.BOOK, 3));
         reg(Material.CLAY, new BlockDirectDrops(Material.CLAY_BALL, 4));
         reg(Material.DOUBLE_STEP, new BlockDoubleSlab());
