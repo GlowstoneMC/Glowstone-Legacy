@@ -1,10 +1,11 @@
 package net.glowstone.util;
 
+import net.glowstone.GlowServer;
+
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.glowstone.GlowServer;
 
 /**
  * Thread started on shutdown that monitors for and kills rogue non-daemon threads.
@@ -20,13 +21,12 @@ public class ShutdownMonitorThread extends Thread {
      * Toggle for if ShutdownMonitor should be sleeping threads.
      */
     private volatile boolean run;
-    
+
     private ExecutorService execute;
-    
+
     public ShutdownMonitorThread() {
         setName("ShutdownMonitorThread");
         setDaemon(true);
-        
     }
 
     @Override
@@ -41,9 +41,9 @@ public class ShutdownMonitorThread extends Thread {
                 return;
             }
         }
-        
+
         GlowServer.logger.warning("Still running after shutdown, finding rogue threads...");
-        
+
         final Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
         for (Map.Entry<Thread, StackTraceElement[]> entry : traces.entrySet()) {
             final Thread thread = entry.getKey();
@@ -65,11 +65,8 @@ public class ShutdownMonitorThread extends Thread {
                 } catch (InterruptedException ex) {
                     Logger.getLogger(ShutdownMonitorThread.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
-                
         }
             //stop the scheduler and tasks
             execute.shutdownNow();
     }
-
 }
