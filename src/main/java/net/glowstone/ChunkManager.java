@@ -239,10 +239,8 @@ public final class ChunkManager {
                 // this is sort of messy.
                 if (extSections[i] != null) {
                     sections[i] = new GlowChunk.ChunkSection();
-                    // truncate shorts down to bytes
-                    // todo: when chunk structure is updated for 1.8+, include lower 0xfff
                     for (int j = 0; j < extSections[i].length; ++j) {
-                        sections[i].types[j] = (byte) extSections[i][j];
+                        sections[i].types[j] = (char) (extSections[i][j] << 4);
                     }
                 }
             }
@@ -258,7 +256,9 @@ public final class ChunkManager {
                 // this is sort of messy.
                 if (blockSections[i] != null) {
                     sections[i] = new GlowChunk.ChunkSection();
-                    System.arraycopy(blockSections[i], 0, sections[i].types, 0, sections[i].types.length);
+                    for (int j = 0; j < blockSections[i].length; ++j) {
+                        sections[i].types[j] = (char) (blockSections[i][j] << 4);
+                    }
                 }
             }
             chunk.initializeSections(sections);
@@ -276,7 +276,7 @@ public final class ChunkManager {
             for (int cx = 0; cx < 16; ++cx) {
                 for (int cz = 0; cz < 16; ++cz) {
                     for (int cy = by; cy < by + 16; ++cy) {
-                        sec.types[sec.index(cx, cy, cz)] = types[(cx * 16 + cz) * 128 + cy];
+                        sec.types[sec.index(cx, cy, cz)] = (char) (((char) types[(cx * 16 + cz) * 128 + cy]) << 4);
                     }
                 }
             }
