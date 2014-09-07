@@ -232,6 +232,12 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
      * The player's base walking speed.
      */
     private float walkSpeed = 0.2f;
+    
+    /**
+     * If the player currently has an open chest.
+     */
+    private Location bindchest;
+
 
     /**
      * Creates a new player and adds it to the world.
@@ -1165,6 +1171,18 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         session.send(new BlockActionMessage(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), instrument, note, Material.NOTE_BLOCK.getId()));
     }
 
+    public Location GetBindChest() {
+    	return bindchest;
+    }
+    
+    public void SetBindChest(Location loc) {
+    	bindchest = loc;
+    }
+    
+    public void playChestAnimation(Location loc, byte state) {
+        session.send(new BlockActionMessage(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), (byte) 1, state, Material.CHEST.getId()));
+    }
+    
     public void playEffect(Location loc, Effect effect, int data) {
         int id = effect.getId();
         boolean ignoreDistance = id == 1013; // mob.wither.spawn, not in Bukkit yet
