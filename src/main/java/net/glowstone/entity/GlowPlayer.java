@@ -601,7 +601,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         String type = world.getWorldType().getName().toLowerCase();
         session.send(new RespawnMessage(world.getEnvironment().getId(), world.getDifficulty().getValue(), getGameMode().getValue(), type));
         Position.copyLocation(location, this.previousLocation); // Prevents fall on spawn
-        setRawLocation(location); // take us to spawn position
+        teleport(location); // take us to spawn position
         streamBlocks(); // stream blocks
         setCompassTarget(world.getSpawnLocation()); // set our compass target
         session.send(new PositionRotationMessage(location, getEyeHeight() + 0.05));
