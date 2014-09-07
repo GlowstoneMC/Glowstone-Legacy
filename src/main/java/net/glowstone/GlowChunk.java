@@ -477,7 +477,7 @@ public final class GlowChunk implements Chunk {
         ChunkSection section = getSection(y);
         if (section == null) return;  // can't set metadata on an empty section
         int index = section.index(x, y, z);
-        if ((section.types[index] << 4) == 0) return;  // can't set metadata on air
+        if (section.types[index] == 0) return;  // can't set metadata on air
         section.types[index] &= 0xfff0;
         section.types[index] |= metaData;
     }
