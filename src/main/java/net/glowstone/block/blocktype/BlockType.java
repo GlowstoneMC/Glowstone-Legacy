@@ -116,11 +116,13 @@ public class BlockType extends ItemType {
     public final void rightClickBlock(GlowPlayer player, GlowBlock against, BlockFace face, ItemStack holding, Vector clickedLoc) {
         GlowBlock target = against.getRelative(face);
         GlowBlockState newState = target.getState();
+        BlockSlab.SlabPlaceable slabplaceable = BlockSlab.isSlabPlaceable(player, target, against, face, holding);
 
         // only allow placement inside tall-grass, air, or liquid
-        if (against.getType() == Material.LONG_GRASS) {
+        if (against.getType() == Material.LONG_GRASS || slabplaceable == BlockSlab.SlabPlaceable.AGAINSTBLOCK) {
             target = against;
-        } else if (!target.isEmpty() && !target.isLiquid()) {
+            newState = target.getState();
+        } else if (!target.isEmpty() && !target.isLiquid() && slabplaceable == BlockSlab.SlabPlaceable.NO) {
             //revert(player, target);
             return;
         }
