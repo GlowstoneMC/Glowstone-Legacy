@@ -49,8 +49,12 @@ public abstract class GlowEntity implements Entity {
     /**
      * Velocity reduction applied each tick.
      */
-    private final static double airDrag = 0.99;
-    private final static double liquidDrag = 0.8;
+    private final static double AIR_DRAG = 0.99;
+
+    /**
+     * Velocity reduction applied each tick.
+     */
+    private final static double LIQUID_DRAG = 0.8;
 
     /**
      * Gravity acceleration applied each tick.
@@ -414,9 +418,9 @@ public abstract class GlowEntity implements Entity {
         // do gravity, all that other good stuff
         location.add(velocity);
         if (location.getBlock().isLiquid()) {
-            velocity.multiply(liquidDrag);
+            velocity.multiply(LIQUID_DRAG);
         } else {
-            velocity.multiply(airDrag);
+            velocity.multiply(AIR_DRAG);
         }
         velocity.add(GRAVITY);
 
