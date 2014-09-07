@@ -47,16 +47,13 @@ public class GlowChest extends GlowBlockState implements Chest {
         if (getBlock().getType() != Material.CHEST) {
             return false;
         }
-
         Location location = getBlock().getLocation();
-
         GlowChunk.Key key = new GlowChunk.Key(getX() >> 4, getZ() >> 4);
         for (GlowPlayer player : getWorld().getRawPlayers()) {
             if (player.canSee(key)) {
                 player.playChestAnimation(location, state);
             }
         }
-
         return true;
     }
     

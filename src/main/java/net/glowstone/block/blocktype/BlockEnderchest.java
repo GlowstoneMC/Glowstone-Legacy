@@ -9,7 +9,6 @@ import net.glowstone.block.entity.TEEnderChest;
 import net.glowstone.block.entity.TileEntity;
 import net.glowstone.block.state.GlowEnderChest;
 import net.glowstone.entity.GlowPlayer;
-
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
@@ -29,20 +28,19 @@ public class BlockEnderchest extends BlockType {
 
     @Override
     public boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
-	  //  player.openInventory(player.getEnderChest());
-    	TileEntity te = block.getTileEntity();
-        if (te instanceof TEContainer) {
-            player.openInventory(((TEContainer) te).getInventory());
-	    //Only open when chest is closed player interacts, only close when player closes chest inventory
-	        if (((GlowEnderChest) block.getState()).getState() == 0){
-	    	player.SetBindChest(block.getLocation());
-	    	((GlowEnderChest) block.getState()).setState((byte)1);
-	        ((GlowEnderChest) block.getState()).ChestAnimation((byte)1);
-	        }
-	    return true;
-        }
-        
-        return false;
+	//player.openInventory(player.getEnderChest());
+	TileEntity te = block.getTileEntity();
+	if (te instanceof TEContainer) {
+		player.openInventory(((TEContainer) te).getInventory());
+		//Only open when chest is closed player interacts, only close when player closes chest inventory
+		if (((GlowEnderChest) block.getState()).getState() == 0){
+			player.SetBindChest(block.getLocation());
+			((GlowEnderChest) block.getState()).setState((byte)1);
+			((GlowEnderChest) block.getState()).ChestAnimation((byte)1);
+		}
+		return true;
+	}
+	return false;
     }
 
     @Override
