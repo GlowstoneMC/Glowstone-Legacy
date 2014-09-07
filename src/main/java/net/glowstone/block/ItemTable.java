@@ -84,6 +84,8 @@ public final class ItemTable {
         reg(Material.WEB, new BlockDirectDrops(Material.STRING));
         reg(Material.FIRE, new BlockDropless());
         reg(Material.MONSTER_EGGS, new BlockDropless());
+        reg(Material.STONE_BUTTON, new BlockButton(Material.STONE_BUTTON));
+        reg(Material.WOOD_BUTTON, new BlockButton(Material.WOOD_BUTTON));
 
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
