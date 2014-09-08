@@ -8,5 +8,5 @@ public final class StatusRequestMessage implements AsyncableMessage {
     public boolean isAsync() {
         return true;
     }
-    
+
 }
