@@ -227,6 +227,7 @@ public final class GlowWorld implements World {
         storageProvider.setWorld(this);
         chunks = new ChunkManager(this, storageProvider.getChunkIoService(), generator);
         populators = generator.getDefaultPopulators(this);
+        keepSpawnLoaded = server.keepSpawnChunks();
 
         // set up values from server defaults
         ticksPerAnimal = server.getTicksPerAnimalSpawns();

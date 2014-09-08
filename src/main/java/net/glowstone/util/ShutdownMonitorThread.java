@@ -19,6 +19,7 @@ public class ShutdownMonitorThread extends Thread {
         setDaemon(true);
     }
 
+    @Override
     public void run() {
         try {
             Thread.sleep(DELAY);
@@ -27,7 +28,7 @@ public class ShutdownMonitorThread extends Thread {
             return;
         }
 
-        GlowServer.logger.warning("Still running after shutdown, finding rouge threads...");
+        GlowServer.logger.warning("Still running after shutdown, finding rogue threads...");
 
         final Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
         for (Map.Entry<Thread, StackTraceElement[]> entry : traces.entrySet()) {
@@ -39,15 +40,16 @@ public class ShutdownMonitorThread extends Thread {
                 continue;
             }
 
-            GlowServer.logger.warning("Rogue thread: " + thread);
+            GlowServer.logger.warning("Rogue thread: " + thread.toString());
             for (StackTraceElement trace : stack) {
-                GlowServer.logger.warning("\tat " + trace);
+                GlowServer.logger.warning("\tat " + trace.toString());
             }
 
-            // really get it out of there
+            // ask nicely to kill them
             thread.interrupt();
-            thread.stop();
         }
+        // kill them forcefully
+        System.exit(1000);
     }
 
 }
