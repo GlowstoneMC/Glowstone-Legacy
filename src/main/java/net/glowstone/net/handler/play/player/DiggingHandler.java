@@ -4,6 +4,7 @@ import com.flowpowered.networking.MessageHandler;
 import net.glowstone.EventFactory;
 import net.glowstone.GlowWorld;
 import net.glowstone.block.GlowBlock;
+import net.glowstone.block.ItemTable;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.net.GlowSession;
 import net.glowstone.net.message.play.player.DiggingMessage;
@@ -28,6 +29,7 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
         GlowBlock block = world.getBlockAt(x, y, z);
         BlockFace face = BlockPlacementHandler.convertFace(message.getFace());
         ItemStack holding = player.getItemInHand();
+        GameMode gamemode = player.getGameMode();
 
 
         boolean blockBroken = false;
@@ -52,6 +54,8 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
                 BlockDamageEvent damageEvent = EventFactory.onBlockDamage(player, block);
                 if (damageEvent.isCancelled()) {
                     revert = true;
+                } else if(gamemode == GameMode.CREATIVE && holding.getType() == Material.STONE_SWORD || holding.getType() == Material.WOOD_SWORD || holding.getType() == Material.IRON_SWORD || holding.getType() == Material.DIAMOND_SWORD || holding.getType() == Material.GOLD_SWORD) {
+                revert = true;
                 } else {
                     blockBroken = damageEvent.getInstaBreak();
                 }
@@ -63,7 +67,7 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
             BlockBreakEvent event = EventFactory.onBlockBreak(block, player);
             if (event.isCancelled()) {
                 revert = true;
-            } else {
+            }  else {
                 blockBroken = true;
             }
         } else {
