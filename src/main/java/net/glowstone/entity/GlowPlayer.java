@@ -34,6 +34,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -1358,12 +1359,16 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         invMonitor = new InventoryMonitor(getOpenInventory());
         int viewId = invMonitor.getId();
         if (viewId != 0) {
+            int size = view.getTopInventory().getSize();
             String title = view.getTitle();
             boolean defaultTitle = view.getType().getDefaultTitle().equals(title);
             if (view.getTopInventory() instanceof PlayerInventory && defaultTitle) {
                 title = ((PlayerInventory) view.getTopInventory()).getHolder().getName();
             }
-            Message open = new OpenWindowMessage(viewId, invMonitor.getType(), title, view.getTopInventory().getSize());
+            if (view.getTopInventory() instanceof CraftingInventory) {
+                size = 0;
+            }
+            Message open = new OpenWindowMessage(viewId, invMonitor.getType(), title, size);
             session.send(open);
         }
 
