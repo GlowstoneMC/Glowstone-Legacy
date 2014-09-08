@@ -32,8 +32,13 @@ import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.BrewerInventory;
+import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.EnchantingInventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -1358,12 +1363,18 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         invMonitor = new InventoryMonitor(getOpenInventory());
         int viewId = invMonitor.getId();
         if (viewId != 0) {
+        	int size = view.getTopInventory().getSize();
             String title = view.getTitle();
             boolean defaultTitle = view.getType().getDefaultTitle().equals(title);
             if (view.getTopInventory() instanceof PlayerInventory && defaultTitle) {
                 title = ((PlayerInventory) view.getTopInventory()).getHolder().getName();
             }
-            Message open = new OpenWindowMessage(viewId, invMonitor.getType(), title, view.getTopInventory().getSize());
+            
+			if (view.getType() == InventoryType.WORKBENCH || view.getType() == InventoryType.ENCHANTING || view.getType() == InventoryType.ANVIL) {
+				size = 0;
+            }     
+			
+			Message open = new OpenWindowMessage(viewId, invMonitor.getType(), title, size);
             session.send(open);
         }
 
@@ -1528,4 +1539,19 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
             session.send(new PluginMessage("REGISTER", buf.array()));
         }
     }
+
+	@Override
+	public InventoryView openEnchanting(Location arg0, boolean arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public InventoryView openWorkbench(Location arg0, boolean arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
 }

@@ -289,28 +289,17 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
         return view;
     }
 
-    public InventoryView openWorkbench(Location location, boolean force) {
-        if (location == null) {
+    public InventoryView openBlockWindow(Location location, boolean force, Material material, InventoryType inventorytype) {
+    	if (location == null) {
             location = getLocation();
         }
-        if (!force && location.getBlock().getType() != Material.WORKBENCH) {
-            return null;
-        }
-        return openInventory(new GlowCraftingInventory(this, InventoryType.WORKBENCH));
+    	
+    	if (!force && location.getBlock().getType() != material) {
+    		return null; 
+    	}
+    	return openInventory(new GlowCraftingInventory(this, inventorytype));
     }
-
-    public InventoryView openEnchanting(Location location, boolean force) {
-        if (location == null) {
-            location = getLocation();
-        }
-        if (!force && location.getBlock().getType() != Material.ENCHANTMENT_TABLE) {
-            return null;
-        }
-        // todo: actually open
-        /*InventoryView view = new GlowInventoryView(this, new GlowEnchantInventory() ...);*/
-        return null;
-    }
-
+    
     public void openInventory(InventoryView inventory) {
         Validate.notNull(inventory);
         this.inventory.getDragTracker().reset();
