@@ -55,7 +55,7 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
                 if (damageEvent.isCancelled()) {
                     revert = true;
                 } else if(gamemode == GameMode.CREATIVE && EnchantmentTarget.WEAPON.includes(holding)) {
-                revert = true;
+                    revert = true;
                 } else {
                     blockBroken = damageEvent.getInstaBreak();
                 }
@@ -67,7 +67,7 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
             BlockBreakEvent event = EventFactory.onBlockBreak(block, player);
             if (event.isCancelled()) {
                 revert = true;
-            }  else {
+            } else {
                 blockBroken = true;
             }
         } else {
