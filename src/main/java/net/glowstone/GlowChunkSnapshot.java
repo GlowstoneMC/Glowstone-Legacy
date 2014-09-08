@@ -110,12 +110,12 @@ public class GlowChunkSnapshot implements ChunkSnapshot {
 
     public int getBlockTypeId(int x, int y, int z) {
         ChunkSection section = getSection(y);
-        return section == null ? 0 : (section.types[section.index(x, y, z)] & 0xff);
+        return section == null ? 0 : section.types[section.index(x, y, z)] >> 4;
     }
 
     public int getBlockData(int x, int y, int z) {
         ChunkSection section = getSection(y);
-        return section == null ? 0 : section.metaData.get(section.index(x, y, z));
+        return section == null ? 0 : section.types[section.index(x, y, z)] & 0xF;
     }
 
     public int getBlockSkyLight(int x, int y, int z) {
