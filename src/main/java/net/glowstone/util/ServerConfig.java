@@ -307,6 +307,7 @@ public final class ServerConfig {
         GENERATOR_SETTINGS("world.gen-settings", "", Migrate.PROPS, "generator-settings"),
         ALLOW_NETHER("world.allow-nether", true, Migrate.PROPS, "allow-nether"),
         ALLOW_END("world.allow-end", true, Migrate.BUKKIT, "settings.allow-end"),
+        PERSIST_SPAWN("world.keep-spawn-chunks", true),
 
         // game props
         GAMEMODE("game.gamemode", "SURVIVAL", Migrate.PROPS, "gamemode"),
