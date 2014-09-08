@@ -45,11 +45,11 @@ public class ShutdownMonitorThread extends Thread {
                 GlowServer.logger.warning("\tat " + trace.toString());
             }
 
-            //ask nicely to kill them
+            // ask nicely to kill them
             thread.interrupt();
         }
-        //kill them forcefully
+        // kill them forcefully
         System.exit(1000);
     }
-    
+
 }
