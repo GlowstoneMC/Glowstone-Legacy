@@ -42,5 +42,4 @@ public class BlockTorch extends BlockType {
     public Collection<ItemStack> getDrops(GlowBlock block) {
         return Collections.unmodifiableList(Arrays.asList(new ItemStack(matType, 1, (byte)0)));
     }
-}
-
+} 
