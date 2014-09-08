@@ -9,8 +9,10 @@ import net.glowstone.entity.meta.MetadataMap;
 import net.glowstone.net.message.play.entity.*;
 import net.glowstone.util.Position;
 import org.apache.commons.lang.Validate;
-import org.bukkit.*;
-import org.bukkit.block.Block;
+import org.bukkit.EntityEffect;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -185,6 +187,30 @@ public abstract class GlowEntity implements Entity {
 
     public Location getLocation(Location loc) {
         return Position.copyLocation(location, loc);
+    }
+
+    /**
+     * Get the direction (SOUTH, WEST, NORTH, or EAST) this entity is facing.
+     * @return The cardinal BlockFace of this entity.
+     */
+    public BlockFace getDirection() {
+        double rot = getLocation().getYaw() % 360;
+        if (rot < 0) {
+            rot += 360.0;
+        }
+        if (0 <= rot && rot < 45) {
+            return BlockFace.SOUTH;
+        } else if (45 <= rot && rot < 135) {
+            return BlockFace.WEST;
+        } else if (135 <= rot && rot < 225) {
+            return BlockFace.NORTH;
+        } else if (225 <= rot && rot < 315) {
+            return BlockFace.EAST;
+        } else if (315 <= rot && rot < 360.0) {
+            return BlockFace.SOUTH;
+        } else {
+            return BlockFace.EAST;
+        }
     }
 
     public void setVelocity(Vector velocity) {
