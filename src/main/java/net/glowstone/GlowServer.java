@@ -87,6 +87,14 @@ public final class GlowServer implements Server {
             server.start();
             server.bind();
             logger.info("Ready for connections.");
+
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    logger.warning("Caught SIGTERM, shutting down server");
+                    server.shutdown();
+                }
+            });
         } catch (Throwable t) {
             logger.log(Level.SEVERE, "Error during server startup.", t);
             System.exit(1);
