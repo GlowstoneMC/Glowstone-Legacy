@@ -1,5 +1,6 @@
 package net.glowstone;
 
+import java.net.InetSocketAddress;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.ItemTable;
 import net.glowstone.block.blocktype.BlockType;
@@ -20,6 +21,7 @@ import org.bukkit.event.world.*;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
+import java.util.UUID;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -131,8 +133,22 @@ public final class EventFactory {
         return callEvent(event);
     }
 
-    public static PlayerPreLoginEvent onPlayerPreLogin(String name, GlowSession session) {
-        return callEvent(new PlayerPreLoginEvent(name, session.getAddress().getAddress()));
+    public static AsyncPlayerPreLoginEvent onPlayerPreLogin(String name, InetSocketAddress address, UUID uuid) {
+        final AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(name, address.getAddress(), uuid);
+        callEvent(asyncEvent);
+
+        if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length > 0) {
+
+            final PlayerPreLoginEvent event = new PlayerPreLoginEvent(name, address.getAddress(), uuid);
+            if (asyncEvent.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+                event.disallow(asyncEvent.getResult(), asyncEvent.getKickMessage());
+            }
+
+            callEvent(event);
+            asyncEvent.disallow(event.getResult(), event.getKickMessage());
+        }
+
+        return asyncEvent;
     }
 
     public static PlayerAnimationEvent onPlayerAnimate(GlowPlayer player) {

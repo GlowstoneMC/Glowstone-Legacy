@@ -29,6 +29,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
+import net.glowstone.EventFactory;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSession, EncryptionKeyResponseMessage> {
 
@@ -94,10 +98,12 @@ public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSe
         }
 
         // start auth thread
-        new ClientAuthThread(session, session.getVerifyUsername(), hash).start();
+        Thread clientAuthThread = new Thread(new ClientAuthRunnable(session, session.getVerifyUsername(), hash));
+        clientAuthThread.setName("ClientAuthThread{" + session.getVerifyUsername() + "}");
+        clientAuthThread.start();
     }
 
-    private static class ClientAuthThread extends Thread {
+    private static class ClientAuthRunnable implements Runnable {
 
         private static final String BASE_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined";
 
@@ -105,19 +111,19 @@ public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSe
         private final String username;
         private final String postURL;
 
-        private ClientAuthThread(GlowSession session, String username, String hash) {
+        private ClientAuthRunnable(GlowSession session, String username, String hash) {
             this.session = session;
             this.username = username;
             this.postURL = BASE_URL + "?username=" + username + "&serverId=" + hash;
-            setName("ClientAuthThread{" + username + "}");
         }
 
         @Override
         public void run() {
             try {
-                URLConnection conn = new URL(postURL).openConnection();
+                // cuthenticate
+                URLConnection connection = new URL(postURL).openConnection();
                 JSONObject json;
-                try (InputStream is = conn.getInputStream()) {
+                try (InputStream is = connection.getInputStream()) {
                     try {
                         json = (JSONObject) new JSONParser().parse(new InputStreamReader(is));
                     } catch (ParseException e) {
@@ -128,20 +134,20 @@ public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSe
                 }
 
                 final String name = (String) json.get("name");
-                final String id = (String) json.get("id");
-                final JSONArray propsArray = (JSONArray) json.get("properties");
 
-                // Parse UUID
+                // parse UUID
                 final UUID uuid;
                 try {
-                    uuid = UuidUtils.fromFlatString(id);
+                    uuid = UuidUtils.fromFlatString((String) json.get("id"));
                 } catch (IllegalArgumentException ex) {
                     GlowServer.logger.log(Level.SEVERE, "Returned authentication UUID invalid: {0}", ex.getMessage());
                     session.disconnect("Invalid UUID.");
                     return;
                 }
 
-                // Parse properties
+                final JSONArray propsArray = (JSONArray) json.get("properties");
+
+                // parse properties
                 final List<PlayerProperty> properties = new ArrayList<>(propsArray.size());
                 for (Object obj : propsArray) {
                     JSONObject propJson = (JSONObject) obj;
@@ -151,16 +157,23 @@ public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSe
                     properties.add(new PlayerProperty(propName, value, signature));
                 }
 
-                // Spawn in player
-                session.getServer().getScheduler().runTask(null, new Runnable() {
+                final AsyncPlayerPreLoginEvent event = EventFactory.onPlayerPreLogin(username, session.getAddress(), uuid);
+                if (event.getLoginResult() != Result.ALLOWED) {
+                    session.disconnect(event.getKickMessage(), true);
+                    return;
+                }
+
+                // spawn player
+                new BukkitRunnable() {
                     @Override
                     public void run() {
                         session.setPlayer(new PlayerProfile(name, uuid, properties));
                     }
-                });
+                }.runTask(null);
+
             } catch (Exception e) {
                 GlowServer.logger.log(Level.SEVERE, "Error in authentication thread", e);
-                session.disconnect("Internal error during authentication.");
+                session.disconnect("Internal error during authentication.", true);
             }
         }
     }
