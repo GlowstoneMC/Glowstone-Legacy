@@ -21,31 +21,35 @@ public class ShutdownMonitorThread extends Thread {
 
     @Override
     public void run() {
-            try {
-                Thread.sleep(DELAY);
-            } catch (InterruptedException e) {
-                GlowServer.logger.severe("ShutdownMonitor interrupted");
-                return;
-            }
+        try {
+            Thread.sleep(DELAY);
+        } catch (InterruptedException e) {
+            GlowServer.logger.severe("ShutdownMonitor interrupted");
+            return;
+        }
 
         GlowServer.logger.warning("Still running after shutdown, finding rogue threads...");
 
-        Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
+        final Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
         for (Map.Entry<Thread, StackTraceElement[]> entry : traces.entrySet()) {
-            Thread thread = entry.getKey();
-            StackTraceElement[] stack = entry.getValue();
+            final Thread thread = entry.getKey();
+            final StackTraceElement[] stack = entry.getValue();
+
             if (thread.isDaemon() || !thread.isAlive() || stack.length == 0) {
                 // won't keep JVM from exiting
                 continue;
             }
+
             GlowServer.logger.warning("Rogue thread: " + thread.toString());
             for (StackTraceElement trace : stack) {
                 GlowServer.logger.warning("\tat " + trace.toString());
             }
+
             //ask nicely to kill them
             thread.interrupt();
         }
         //kill them forcefully
         System.exit(1000);
     }
+    
 }
