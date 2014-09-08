@@ -4,7 +4,6 @@ import com.flowpowered.networking.MessageHandler;
 import net.glowstone.EventFactory;
 import net.glowstone.GlowWorld;
 import net.glowstone.block.GlowBlock;
-import net.glowstone.block.ItemTable;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.net.GlowSession;
 import net.glowstone.net.message.play.player.DiggingMessage;
@@ -18,8 +17,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.enchantments.EnchantmentTarget;
 
 public final class DiggingHandler implements MessageHandler<GlowSession, DiggingMessage> {
+    @Override
     public void handle(GlowSession session, DiggingMessage message) {
         final GlowPlayer player = session.getPlayer();
         GlowWorld world = player.getWorld();
@@ -30,7 +31,6 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
         BlockFace face = BlockPlacementHandler.convertFace(message.getFace());
         ItemStack holding = player.getItemInHand();
         GameMode gamemode = player.getGameMode();
-
 
         boolean blockBroken = false;
         boolean revert = false;
@@ -55,7 +55,7 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
                 if (damageEvent.isCancelled()) {
                     revert = true;
                 } else if(gamemode == GameMode.CREATIVE && EnchantmentTarget.WEAPON.includes(holding)) {
-                    revert = true;
+                revert = true;
                 } else {
                     blockBroken = damageEvent.getInstaBreak();
                 }
@@ -67,7 +67,7 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
             BlockBreakEvent event = EventFactory.onBlockBreak(block, player);
             if (event.isCancelled()) {
                 revert = true;
-            } else {
+            }  else {
                 blockBroken = true;
             }
         } else {
