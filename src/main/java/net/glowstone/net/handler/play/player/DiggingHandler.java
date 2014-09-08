@@ -67,7 +67,7 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
             BlockBreakEvent event = EventFactory.onBlockBreak(block, player);
             if (event.isCancelled()) {
                 revert = true;
-            }  else {
+            } else {
                 blockBroken = true;
             }
         } else {
