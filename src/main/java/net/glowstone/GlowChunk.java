@@ -142,7 +142,9 @@ public final class GlowChunk implements Chunk {
         public void recount() {
             count = 0;
             for(char type : types) {
-                if (type != 0) count++;
+                if (type != 0) {
+                    count++;
+                }
             }
         }
 
@@ -436,9 +438,13 @@ public final class GlowChunk implements Chunk {
         // update the type
         int index = section.index(x, y, z);
         if (type == 0) {
-            if(section.types[index] != 0) section.count--;
+            if(section.types[index] != 0) {
+                section.count--;
+            }
         } else {
-            if(section.types[index] == 0) section.count++;
+            if(section.types[index] == 0) {
+                section.count++;
+            }
         }
         section.types[index] = (char) (type << 4);
 

@@ -81,7 +81,7 @@ public final class AnvilChunkIoService implements ChunkIoService {
             NibbleArray data = new NibbleArray(sectionTag.getByteArray("Data"));
             NibbleArray blockLight = new NibbleArray(sectionTag.getByteArray("BlockLight"));
             NibbleArray skyLight = new NibbleArray(sectionTag.getByteArray("SkyLight"));
-            
+
             char[] types = new char[rawTypes.length];
             for(int i = 0; i < rawTypes.length; i++) {
                 types[i] = (char) (((extTypes == null ? 0 : extTypes.get(i)) << 12) | (rawTypes[i] << 4) | data.get(i));
@@ -170,7 +170,9 @@ public final class AnvilChunkIoService implements ChunkIoService {
                 rawTypes[j] = (byte) ((sec.types[j] >> 4) & 0xFF);
                 byte extType = (byte) (sec.types[j] >> 12);
                 if(extType > 0) {
-                    if(extTypes == null) extTypes = new NibbleArray(sec.types.length);
+                    if(extTypes == null) {
+                        extTypes = new NibbleArray(sec.types.length);
+                    }
                     extTypes.set(j, extType);
                 }
                 data.set(j, (byte) (sec.types[j] & 0xF));
