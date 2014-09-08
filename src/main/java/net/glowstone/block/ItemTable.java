@@ -89,6 +89,7 @@ public final class ItemTable {
         reg(Material.FURNACE, new BlockFurnace());
         reg(Material.LEVER, new BlockLever());
         reg(Material.HOPPER, new BlockHopper());
+        reg(Material.SNOW, new BlockSnow());
 
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
