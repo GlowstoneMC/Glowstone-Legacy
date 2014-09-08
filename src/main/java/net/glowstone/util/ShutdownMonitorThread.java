@@ -49,7 +49,7 @@ public class ShutdownMonitorThread extends Thread {
             thread.interrupt();
         }
         // kill them forcefully
-        System.exit(1000);
+        System.exit(0);
     }
 
 }
