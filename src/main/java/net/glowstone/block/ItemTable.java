@@ -44,6 +44,8 @@ public final class ItemTable {
         reg(Material.WORKBENCH, new BlockWorkbench());
         reg(Material.ENDER_CHEST, new BlockEnderchest());
         reg(Material.CHEST, new BlockChest());
+        reg(Material.DISPENSER, new BlockDispenser());
+        reg(Material.DROPPER, new BlockDropper());
         reg(Material.BOOKSHELF, new BlockDirectDrops(Material.BOOK, 3));
         reg(Material.CLAY, new BlockDirectDrops(Material.CLAY_BALL, 4));
         reg(Material.DOUBLE_STEP, new BlockDoubleSlab());
@@ -98,7 +100,10 @@ public final class ItemTable {
         reg(Material.WOOD_STAIRS, new BlockStairs());
         reg(Material.STEP, new BlockSlab());
         reg(Material.WOOD_STEP, new BlockSlab());
-        
+        reg(Material.FURNACE, new BlockFurnace());
+        reg(Material.LEVER, new BlockLever());
+        reg(Material.HOPPER, new BlockHopper());
+
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
         reg(Material.SUGAR_CANE, new ItemPlaceAs(Material.SUGAR_CANE_BLOCK));
