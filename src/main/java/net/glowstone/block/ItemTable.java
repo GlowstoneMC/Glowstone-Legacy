@@ -84,7 +84,21 @@ public final class ItemTable {
         reg(Material.WEB, new BlockDirectDrops(Material.STRING));
         reg(Material.FIRE, new BlockDropless());
         reg(Material.MONSTER_EGGS, new BlockDropless());
-
+        reg(Material.ACACIA_STAIRS, new BlockStairs());
+        reg(Material.BIRCH_WOOD_STAIRS, new BlockStairs());
+        reg(Material.BRICK_STAIRS, new BlockStairs());
+        reg(Material.COBBLESTONE_STAIRS, new BlockStairs());
+        reg(Material.DARK_OAK_STAIRS, new BlockStairs());
+        reg(Material.JUNGLE_WOOD_STAIRS, new BlockStairs());
+        reg(Material.NETHER_BRICK_STAIRS, new BlockStairs());
+        reg(Material.QUARTZ_STAIRS, new BlockStairs());
+        reg(Material.SANDSTONE_STAIRS, new BlockStairs());
+        reg(Material.SPRUCE_WOOD_STAIRS, new BlockStairs());
+        reg(Material.SMOOTH_STAIRS, new BlockStairs());
+        reg(Material.WOOD_STAIRS, new BlockStairs());
+        reg(Material.STEP, new BlockSlab());
+        reg(Material.WOOD_STEP, new BlockSlab());
+        
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
         reg(Material.SUGAR_CANE, new ItemPlaceAs(Material.SUGAR_CANE_BLOCK));

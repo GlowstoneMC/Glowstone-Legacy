@@ -29,12 +29,32 @@ public class BlockEnderchest extends BlockType {
 
         MaterialData data = state.getData();
         if (data instanceof EnderChest) {
-            // todo: determine facing direction
-            ((EnderChest) data).setFacingDirection(BlockFace.EAST);
+            ((EnderChest)data).setFacingDirection(getOppositeDirection(player));
             state.setData(data);
         } else {
             // complain?
             GlowServer.logger.warning("Placing EnderChest: MaterialData was of wrong type");
         }
+    }
+    
+    public BlockFace getOppositeDirection(GlowPlayer player) {
+        double rot = player.getLocation().getYaw() % 360.0F;
+
+        if (rot < 0.0D) {
+            rot += 360.0D;
+        }
+
+        if ((0.0D <= rot) && (rot < 45.0D))
+            return BlockFace.NORTH;
+        if ((45.0D <= rot) && (rot < 135.0D))
+            return BlockFace.EAST;
+        if ((135.0D <= rot) && (rot < 225.0D))
+            return BlockFace.SOUTH;
+        if ((225.0D <= rot) && (rot < 315.0D))
+            return BlockFace.WEST;
+        if ((315.0D <= rot) && (rot < 360.0D)) {
+            return BlockFace.NORTH;
+        }
+        return BlockFace.EAST;
     }
 }
