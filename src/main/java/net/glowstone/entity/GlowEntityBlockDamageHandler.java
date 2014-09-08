@@ -1,6 +1,5 @@
 package net.glowstone.entity;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -9,19 +8,16 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-/**
- * Created by zyuiop on 08/09/14.
- */
 public class GlowEntityBlockDamageHandler {
 
 
     /**
-     * The entity that takes damages
+     * The entity that takes damages.
      */
     private GlowEntity parentEntity = null;
 
     /**
-     * The last taken damage from a cactus
+     * The last taken damage from a cactus.
      */
     private long lastCactusDamageTick = 0;
 
@@ -42,14 +38,15 @@ public class GlowEntityBlockDamageHandler {
         }
     }
 
-
     /**
-     * Check damages that needs to be applied this tick
+     * Check damages that needs to be applied this tick.
      */
     public void pulse() {
 
         Location location = parentEntity.getLocation();
         World w = location.getWorld();
+
+        // TODO : fix x or z < 0 problems.
 
         double x = location.getX() % 1;
         double y = location.getY() % 1;
@@ -59,23 +56,25 @@ public class GlowEntityBlockDamageHandler {
 
         if (x >= 0.7) {
             blocksTouching[0] = new Location(w, location.getX() + 1, location.getY(), location.getZ()).getBlock();
-        } else if (x <= 0.3) {
+        } else if (x <= 0.3) { // There is a problem here if x < 0.
             blocksTouching[0] = new Location(w, location.getX() - 1, location.getY(), location.getZ()).getBlock();
         }
 
         if (z >= 0.7) {
             blocksTouching[1] = new Location(w, location.getX(), location.getY(), location.getZ() + 1).getBlock();
-        } else if (z <= 0.3) {
+        } else if (z <= 0.3) { // There is a problem here if z < 0.
             blocksTouching[1] = new Location(w, location.getX(), location.getY(), location.getZ() - 1).getBlock();
         }
 
         if (y > 0.9) {
-            // We a re on the block above us ? (it happens with some blocks, such as cactus)
             blocksTouching[2] = new Location(w, location.getX(), location.getY(), location.getZ()).getBlock();
         }
 
         for (Block touching : blocksTouching) {
-            if (touching == null) continue;
+            if (touching == null) {
+                continue;
+            }
+
             if (touching.getType().equals(Material.CACTUS)) {
                 // Cactus //
                 if (lastCactusDamageTick + 10 < parentEntity.getWorld().getWorldAge()) {
