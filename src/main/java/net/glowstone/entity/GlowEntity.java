@@ -9,9 +9,8 @@ import net.glowstone.entity.meta.MetadataMap;
 import net.glowstone.net.message.play.entity.*;
 import net.glowstone.util.Position;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.EntityEffect;
-import org.bukkit.Location;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -124,6 +123,11 @@ public abstract class GlowEntity implements Entity {
      * How long the entity has been on fire, or 0 if it is not.
      */
     private int fireTicks = 0;
+
+    /**
+     * Block damage handler
+     */
+    protected GlowEntityBlockDamageHandler blockDamageHandler = new GlowEntityBlockDamageHandler(this);
 
     /**
      * Creates an entity and adds it to the specified world.
@@ -264,6 +268,9 @@ public abstract class GlowEntity implements Entity {
         if (ticksLived % (30 * 20) == 0) {
             teleported = true;
         }
+
+        // checks damages
+        blockDamageHandler.pulse();
     }
 
     /**
@@ -295,8 +302,8 @@ public abstract class GlowEntity implements Entity {
         world.getEntityManager().move(this, location);
         Position.copyLocation(location, this.location);
 
-        if (location.getBlock().isLiquid()) {
-            // Fall in liquid cancels fall
+        if (location.getBlock().getType() != Material.AIR) {
+            // Ladder, vine, water...
             this.fallDistance = 0;
             return;
         }

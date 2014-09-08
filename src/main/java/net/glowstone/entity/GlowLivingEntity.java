@@ -399,6 +399,8 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         super.setOnGround(onGround);
         if (onGround && this.getFallDistance() > 3) {
             float damage = this.getFallDistance() - 3;
+            damage = Math.round(damage);
+            if (damage == 0) return;
             EntityDamageEvent ev = new EntityDamageEvent(this, EntityDamageEvent.DamageCause.FALL, damage);
             this.getServer().getPluginManager().callEvent(ev);
             if (ev.isCancelled())
