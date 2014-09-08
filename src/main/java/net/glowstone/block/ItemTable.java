@@ -112,6 +112,9 @@ public final class ItemTable {
         reg(Material.STONE_BUTTON, new BlockButton(Material.STONE_BUTTON));
         reg(Material.WOOD_BUTTON, new BlockButton(Material.WOOD_BUTTON));
         reg(Material.BED_BLOCK, new BlockBed());
+        reg(Material.TORCH, new BlockTorch(Material.TORCH));
+        reg(Material.REDSTONE_TORCH_ON, new BlockTorch(Material.REDSTONE_TORCH_ON));
+        reg(Material.REDSTONE_TORCH_OFF, new BlockTorch(Material.REDSTONE_TORCH_ON));
 
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
