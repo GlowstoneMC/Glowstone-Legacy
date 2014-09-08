@@ -294,6 +294,13 @@ public abstract class GlowEntity implements Entity {
         }
         world.getEntityManager().move(this, location);
         Position.copyLocation(location, this.location);
+
+        if (location.getBlock().isLiquid()) {
+            // Fall in liquid cancels fall
+            this.fallDistance = 0;
+            return;
+        }
+
         if (location.getY() < this.previousLocation.getY()) {
             this.fallDistance += (previousLocation.getY() - location.getY());
         } else if (location.getY() > this.previousLocation.getY()) {

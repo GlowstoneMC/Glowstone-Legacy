@@ -396,15 +396,15 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
 
     @Override
     public void setOnGround(boolean onGround) {
-        Bukkit.getLogger().info("On ground ! "+onGround+" -- FalLDistance : "+this.getFallDistance());
-        Bukkit.getLogger().info("POSITION : "+this.getLocation().toString());
         super.setOnGround(onGround);
         if (onGround && this.getFallDistance() > 3) {
             float damage = this.getFallDistance() - 3;
-            this.damage(damage);
             EntityDamageEvent ev = new EntityDamageEvent(this, EntityDamageEvent.DamageCause.FALL, damage);
             this.getServer().getPluginManager().callEvent(ev);
+            if (ev.isCancelled())
+                return;
             this.setLastDamageCause(ev);
+            this.damage(damage);
         }
         this.setFallDistance(0);
     }

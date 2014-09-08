@@ -337,7 +337,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         if (this.getGameMode().equals(GameMode.CREATIVE))
             return;
         super.damage(amount, cause);
-        this.getSession().send(new HealthMessage((float) this.getHealth(), this.getFoodLevel(), this.getSaturation()));
+        sendHealth();
     }
 
 
