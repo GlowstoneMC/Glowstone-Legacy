@@ -154,7 +154,7 @@ public class RSManager {
         for(int x = 0; x < 16; x++, pos++) {
             // Get type from chunk
             // TODO: Source from world
-            RSBlock type = B_AIR;
+            RSBlock type = RSBlock.B_AIR;
             int meta = 0x00;
             boolean charged = false;
 
@@ -203,7 +203,7 @@ public class RSManager {
      */
     public synchronized void pulse() {
         // Swap chunksDirty buffers
-        HashSet<RSPos> cdtemp = chunksDirty;
+        Set<RSPos> cdtemp = chunksDirty;
         chunksDirty = chunksDirtyBack;
         chunksDirtyBack = cdtemp;
 
@@ -256,7 +256,7 @@ public class RSManager {
         }
 
         // Swap RS sources and sinks
-        HashSet<RSPos> rstemp = redSources;
+        Set<RSPos> rstemp = redSources;
         redSources = redSinks;
         redSinks = rstemp;
     }
