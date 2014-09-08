@@ -178,7 +178,9 @@ public final class AnvilChunkIoService implements ChunkIoService {
                 data.set(j, (byte) (sec.types[j] & 0xF));
             }
             sectionTag.putByteArray("Blocks", rawTypes);
-            if(extTypes != null) sectionTag.putByteArray("Add", extTypes.getRawData());
+            if(extTypes != null) {
+                sectionTag.putByteArray("Add", extTypes.getRawData());
+            }
             sectionTag.putByteArray("Data", data.getRawData());
             sectionTag.putByteArray("BlockLight", sec.blockLight.getRawData());
             sectionTag.putByteArray("SkyLight", sec.skyLight.getRawData());
