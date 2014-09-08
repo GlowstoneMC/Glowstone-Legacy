@@ -3,9 +3,6 @@ package net.glowstone.util;
 import net.glowstone.GlowServer;
 
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Thread started on shutdown that monitors for and kills rogue non-daemon threads.
@@ -17,13 +14,6 @@ public class ShutdownMonitorThread extends Thread {
      */
     private static final int DELAY = 8000;
 
-    /**
-     * Toggle for if ShutdownMonitor should be sleeping threads.
-     */
-    private volatile boolean run;
-
-    private ExecutorService execute;
-
     public ShutdownMonitorThread() {
         setName("ShutdownMonitorThread");
         setDaemon(true);
@@ -31,42 +21,31 @@ public class ShutdownMonitorThread extends Thread {
 
     @Override
     public void run() {
-        this.run = true;
-        while(this.run){
             try {
-                Thread.sleep((long) DELAY);
+                Thread.sleep(DELAY);
             } catch (InterruptedException e) {
                 GlowServer.logger.severe("ShutdownMonitor interrupted");
-                this.run = false;
                 return;
             }
-        }
 
         GlowServer.logger.warning("Still running after shutdown, finding rogue threads...");
 
-        final Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
+        Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
         for (Map.Entry<Thread, StackTraceElement[]> entry : traces.entrySet()) {
-            final Thread thread = entry.getKey();
-            final StackTraceElement[] stack = entry.getValue();
-
+            Thread thread = entry.getKey();
+            StackTraceElement[] stack = entry.getValue();
             if (thread.isDaemon() || !thread.isAlive() || stack.length == 0) {
                 // won't keep JVM from exiting
                 continue;
             }
-
-            GlowServer.logger.log(Level.WARNING, "Rogue thread: {0}", thread);
+            GlowServer.logger.warning("Rogue thread: " + thread.toString());
             for (StackTraceElement trace : stack) {
-                GlowServer.logger.log(Level.WARNING, "\tat {0}", trace);
+                GlowServer.logger.warning("\tat " + trace.toString());
             }
-                // really get it out of there
-                thread.interrupt();
-                try {
-                    thread.join();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(ShutdownMonitorThread.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            //ask nicely to kill them
+            thread.interrupt();
         }
-            //stop the scheduler and tasks
-            execute.shutdownNow();
+        //kill them forcefully
+        System.exit(1000);
     }
 }
