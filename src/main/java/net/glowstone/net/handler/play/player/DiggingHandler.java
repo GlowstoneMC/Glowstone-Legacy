@@ -54,7 +54,7 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
                 BlockDamageEvent damageEvent = EventFactory.onBlockDamage(player, block);
                 if (damageEvent.isCancelled()) {
                     revert = true;
-                } else if(gamemode == GameMode.CREATIVE && holding.getType() == Material.STONE_SWORD || holding.getType() == Material.WOOD_SWORD || holding.getType() == Material.IRON_SWORD || holding.getType() == Material.DIAMOND_SWORD || holding.getType() == Material.GOLD_SWORD) {
+                } else if(gamemode == GameMode.CREATIVE && EnchantmentTarget.WEAPON.includes(holding) {
                 revert = true;
                 } else {
                     blockBroken = damageEvent.getInstaBreak();
