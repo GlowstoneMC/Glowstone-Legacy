@@ -37,7 +37,7 @@ For those who wish to contribute, we encourage you to fork the repository and su
 * No 80 character line limit or 'weird' midstatement newlines.
 * Avoid nested code structures.
 * Use 4 spaces instead of tabs.
-* All files must end with a new line.
+* Changes must be future-proof. For example, changes that target only a specific Minecraft version are unlikely to be accepted.
 
 ## Committing your changes ##
 * Check for unnecessary whitespace with `git diff --check` before committing.
