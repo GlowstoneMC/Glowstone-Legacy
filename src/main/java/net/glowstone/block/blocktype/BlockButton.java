@@ -23,24 +23,12 @@ public class BlockButton extends BlockType {
     private void setAttachedFace(Button button, BlockFace attachedFace) {
         byte data = button.getData();
         switch (attachedFace) {
-            case UP:
-                data |= 0;
-                break;
-            case WEST:
-                data |= 1;
-                break;
-            case EAST:
-                data |= 2;
-                break;
-            case NORTH:
-                data |= 3;
-                break;
-            case SOUTH:
-                data |= 4;
-                break;
-            case DOWN:
-                data |= 5;
-                break;
+            case UP: data |= 0; break;
+            case WEST: data |= 1; break;
+            case EAST: data |= 2; break;
+            case NORTH: data |= 3; break;
+            case SOUTH: data |= 4; break;
+            case DOWN: data |= 5; break;
         }
         button.setData(data);
     }
@@ -78,14 +66,13 @@ public class BlockButton extends BlockType {
     public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {
         super.placeBlock(player, state, face, holding, clickedLoc);
 
-        final MaterialData data = state.getData();
+        MaterialData data = state.getData();
+
         if (!(data instanceof Button)) {
             GlowServer.logger.warning("Placing " + getMaterial().name() + ": MaterialData was of wrong type (" + data.getClass().getName() + ")");
             return;
         }
 
-        final Button button = (Button) data;
-
-        setAttachedFace(button, face.getOppositeFace());
+        setAttachedFace((Button) data, face.getOppositeFace());
     }
 }
