@@ -3,6 +3,8 @@ package net.glowstone.util;
 import net.glowstone.GlowServer;
 
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Thread started on shutdown that monitors for and kills rogue non-daemon threads.
@@ -47,6 +49,12 @@ public class ShutdownMonitorThread extends Thread {
 
             // ask nicely to kill them
             thread.interrupt();
+            // wait for them to die on their own
+            try {
+                thread.join(1000);
+            } catch (InterruptedException ex) {
+                GlowServer.logger.severe(ex.toString());
+            }
         }
         // kill them forcefully
         System.exit(0);
