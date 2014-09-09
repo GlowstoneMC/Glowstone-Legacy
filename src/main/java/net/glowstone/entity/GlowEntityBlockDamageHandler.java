@@ -10,7 +10,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 public class GlowEntityBlockDamageHandler {
 
-
     /**
      * The entity that takes damages.
      */
@@ -20,7 +19,6 @@ public class GlowEntityBlockDamageHandler {
      * The last taken damage from a cactus.
      */
     private long lastCactusDamageTick = 0;
-
 
     public GlowEntityBlockDamageHandler(GlowEntity targetEntity) {
         this.parentEntity = targetEntity;
@@ -42,7 +40,6 @@ public class GlowEntityBlockDamageHandler {
      * Check damages that needs to be applied this tick.
      */
     public void pulse() {
-
         Location location = parentEntity.getLocation();
         World w = location.getWorld();
 
