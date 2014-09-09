@@ -2,11 +2,13 @@ package net.glowstone.block.blocktype;
 
 import net.glowstone.EventFactory;
 import net.glowstone.GlowChunk;
+import net.glowstone.block.BlockSound;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.entity.TileEntity;
 import net.glowstone.block.itemtype.ItemType;
 import net.glowstone.entity.GlowPlayer;
+
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -50,6 +52,14 @@ public class BlockType extends ItemType {
         } else {
             return Collections.unmodifiableList(drops);
         }
+    }
+    
+    /**
+     * Gets the sound that will be played when a player places the block.
+     * @return The sound to be played
+     */
+    public BlockSound getSound() {
+        return new BlockSound(Sound.DIG_WOOD); // default place sound
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -146,8 +156,7 @@ public class BlockType extends ItemType {
         newState.update(true);
 
         // play a sound effect
-        // todo: vary sound effect based on block type
-        target.getWorld().playSound(target.getLocation(), Sound.DIG_WOOD, 1, 1);
+        getSound().play(target);
 
         // do any after-place actions
         afterPlace(player, target, holding);
