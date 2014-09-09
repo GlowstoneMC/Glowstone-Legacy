@@ -54,15 +54,15 @@ public class GlowEntityBlockDamageHandler {
 
         Block[] blocksTouching = new Block[]{null, null, new Location(w, location.getX(), location.getY() - 1, location.getZ()).getBlock()};
 
-        if (x >= 0.7) {
+        if ((x > 0 && x >= 0.7) || (x < 0 && x > -0.3)) {
             blocksTouching[0] = new Location(w, location.getX() + 1, location.getY(), location.getZ()).getBlock();
-        } else if (x <= 0.3) { // There is a problem here if x < 0.
+        } else if ((x > 0 && x <= 0.3) || (x < 0 && x < -0.7)) { // There is a problem here if x < 0.
             blocksTouching[0] = new Location(w, location.getX() - 1, location.getY(), location.getZ()).getBlock();
         }
 
-        if (z >= 0.7) {
+        if ((z > 0 && z >= 0.7) || (z < 0 && z > -0.3)) {
             blocksTouching[1] = new Location(w, location.getX(), location.getY(), location.getZ() + 1).getBlock();
-        } else if (z <= 0.3) { // There is a problem here if z < 0.
+        } else if ((z > 0 && z <= 0.3) || (z < 0 && z < -0.7)) { // There is a problem here if x < 0.
             blocksTouching[1] = new Location(w, location.getX(), location.getY(), location.getZ() - 1).getBlock();
         }
 
