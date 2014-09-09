@@ -71,10 +71,10 @@ public class BlockTorch extends BlockType {
         Material mat = block.getType();
         if(mat == Material.REDSTONE_TORCH_ON && power == 0) {
             mat = Material.REDSTONE_TORCH_OFF;
-            block.setTypeIdAndData(mat.getId(), (byte)block.getTypeId(), false);
+            block.setTypeIdAndData(mat.getId(), (byte)block.getData(), false);
         } else if(mat == Material.REDSTONE_TORCH_OFF && power != 0) {
             mat = Material.REDSTONE_TORCH_ON;
-            block.setTypeIdAndData(mat.getId(), (byte)block.getTypeId(), false);
+            block.setTypeIdAndData(mat.getId(), (byte)block.getData(), false);
         }
 
         rsManager.addSource(block);
