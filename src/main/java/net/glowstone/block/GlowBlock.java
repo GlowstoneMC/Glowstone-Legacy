@@ -2,6 +2,7 @@ package net.glowstone.block;
 
 import net.glowstone.GlowChunk;
 import net.glowstone.GlowWorld;
+import net.glowstone.block.blocktype.BlockType;
 import net.glowstone.block.entity.TileEntity;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.net.message.play.game.BlockChangeMessage;
@@ -261,32 +262,44 @@ public final class GlowBlock implements Block {
 
     @Override
     public boolean isBlockPowered() {
-        return false;
+        return isBlockFacePowered(BlockFace.SELF);
     }
 
     @Override
     public boolean isBlockIndirectlyPowered() {
-        return false;
+        return isBlockFaceIndirectlyPowered(BlockFace.SELF);
     }
 
     @Override
     public boolean isBlockFacePowered(BlockFace face) {
-        return false;
+        BlockType type = ItemTable.instance().getBlock(getType());
+        if(type == null) {
+            return false;
+        }
+        return type.getBlockPower(this, face, true) > 0;
     }
 
     @Override
     public boolean isBlockFaceIndirectlyPowered(BlockFace face) {
-        return false;
+        BlockType type = ItemTable.instance().getBlock(getType());
+        if(type == null) {
+            return false;
+        }
+        return type.getBlockPower(this, face, false) > 0;
     }
 
     @Override
     public int getBlockPower(BlockFace face) {
-        return 0;
+        BlockType type = ItemTable.instance().getBlock(getType());
+        if(type == null) {
+            return 0;
+        }
+        return type.getBlockPower(this, face, true);
     }
 
     @Override
     public int getBlockPower() {
-        return 0;
+        return getBlockPower(BlockFace.SELF);
     }
 
     @Override
