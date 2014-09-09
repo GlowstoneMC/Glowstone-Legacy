@@ -276,7 +276,8 @@ public final class GlowBlock implements Block {
         if(type == null) {
             return false;
         }
-        return type.getBlockPower(this, face, true) > 0;
+        return type.isBlockEmittingPower(this, face, true) &&
+            getWorld().getRSManager().getBlockPower(this) > 0;
     }
 
     @Override
@@ -285,7 +286,8 @@ public final class GlowBlock implements Block {
         if(type == null) {
             return false;
         }
-        return type.getBlockPower(this, face, false) > 0;
+        return type.isBlockEmittingPower(this, face, false) &&
+            getWorld().getRSManager().getBlockPower(this) > 0;
     }
 
     @Override
@@ -294,12 +296,14 @@ public final class GlowBlock implements Block {
         if(type == null) {
             return 0;
         }
-        return type.getBlockPower(this, face, true);
+        return (type.isBlockEmittingPower(this, face, false) 
+            ? getWorld().getRSManager().getBlockPower(this)
+            : 0);
     }
 
     @Override
     public int getBlockPower() {
-        return getBlockPower(BlockFace.SELF);
+        return getWorld().getRSManager().getBlockPower(this);
     }
 
     @Override

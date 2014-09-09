@@ -197,18 +197,17 @@ public class BlockType extends ItemType {
     // Redstone
 
     /**
-     * Get this block's power level.
+     * Determines whether redstone is emitted from this face or not.
      * @param block The block we are operating on.
      * @param face The face of the block that is being touched, or SELF for internal charge.
      * @param isDirect Whether we are looking for direct or indirect power.
      */
-    public int getBlockPower(GlowBlock block, BlockFace face, boolean isDirect) {
-        // TODO.
-        return 0;
+    public boolean isBlockEmittingPower(GlowBlock block, BlockFace face, boolean isDirect) {
+        return true;
     }
 
     /**
-     * Checks if this block is a suitable source to add to an RSManager.
+     * Checks if this block is a suitable source to add to an RSManager initially.
      * This function is called on chunk loads.
      * @param block The block we are querying.
      */
@@ -236,8 +235,9 @@ public class BlockType extends ItemType {
      * @param rsManager The RSManager used for tracking.
      * @param blockDir The direction we cannot flow in due to it leading back to our source.
      * @param toDir The direction of redstone flow from this block.
+     * @param isDirect Whether we are applying direct or indirect power.
      */
-    private void traceBlockPowerSolidToRSTorch(GlowBlock srcBlock, RSManager rsManager, BlockFace blockDir, BlockFace toDir) {
+    private void traceBlockPowerSolidToRSTorch(GlowBlock srcBlock, RSManager rsManager, BlockFace blockDir, BlockFace toDir, boolean isDirect) {
         // Get the blockDir check out of the way.
         if(blockDir == toDir) {
             return;
@@ -258,6 +258,17 @@ public class BlockType extends ItemType {
     }
 
     /**
+     * Trace a redstone pulse from a starting solid.
+     * @param srcBlock The block we are flowing from.
+     * @param rsManager The RSManager used for tracking.
+     * @param toDir The direction of redstone flow from this block.
+     * @param isDirect Whether we are applying direct or indirect power.
+     */
+    private void traceBlockPowerStartSolid(GlowBlock srcBlock, RSManager rsManager, BlockFace toDir, boolean isDirect) {
+        // XXX: I really don't know what to do here just yet.
+    }
+
+    /**
      * Prepare for a redstone trace.
      * @param block The block we are operating on.
      * @param rsManager The RSManager used for tracking.
@@ -271,13 +282,15 @@ public class BlockType extends ItemType {
      * @param rsManager The RSManager used for tracking.
      */
     public void traceBlockPowerStart(GlowBlock block, RSManager rsManager) {
-        // Trace in all appropriate directions.
-        rsManager.traceFromBlockIfUnpowered(block, BlockFace.UP, 15, true);
-        rsManager.traceFromBlockIfUnpowered(block, BlockFace.DOWN, 15, true);
-        rsManager.traceFromBlockIfUnpowered(block, BlockFace.NORTH, 15, true);
-        rsManager.traceFromBlockIfUnpowered(block, BlockFace.SOUTH, 15, true);
-        rsManager.traceFromBlockIfUnpowered(block, BlockFace.WEST, 15, true);
-        rsManager.traceFromBlockIfUnpowered(block, BlockFace.EAST, 15, true);
+        // TODO: Make note of this block's "charge" level
+        // (will be necessary once we get onto implementing repeaters)
+
+        traceBlockPowerStartSolid(block, rsManager, BlockFace.UP, false);
+        traceBlockPowerStartSolid(block, rsManager, BlockFace.DOWN, false);
+        traceBlockPowerStartSolid(block, rsManager, BlockFace.NORTH, false);
+        traceBlockPowerStartSolid(block, rsManager, BlockFace.SOUTH, false);
+        traceBlockPowerStartSolid(block, rsManager, BlockFace.WEST, false);
+        traceBlockPowerStartSolid(block, rsManager, BlockFace.EAST, false);
     }
 
     /**
@@ -292,17 +305,19 @@ public class BlockType extends ItemType {
     public void traceBlockPower(GlowBlock block, RSManager rsManager, Material srcMat, BlockFace flowDir, int inPower, boolean isDirect) {
         // Ensure directness
         if(!isDirect) {
-            return;
+            if(srcMat != Material.REDSTONE_WIRE) {
+                return;
+            }
         }
 
         // Spread to neighbours
         BlockFace oppDir = flowDir.getOppositeFace();
-        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.UP);
-        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.DOWN);
-        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.NORTH);
-        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.SOUTH);
-        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.WEST);
-        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.EAST);
+        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.UP, isDirect);
+        //traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.DOWN, isDirect);
+        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.NORTH, isDirect);
+        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.SOUTH, isDirect);
+        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.WEST, isDirect);
+        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.EAST, isDirect);
     }
 
     ////////////////////////////////////////////////////////////////////////////

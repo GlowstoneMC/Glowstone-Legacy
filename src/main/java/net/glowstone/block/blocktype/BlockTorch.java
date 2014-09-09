@@ -49,13 +49,18 @@ public class BlockTorch extends BlockType {
     }
 
     @Override
-    public int getBlockPower(GlowBlock block, BlockFace face, boolean isDirect) {
-        if(block.getType() == Material.REDSTONE_TORCH_ON) {
-            if(face != getOwnFacing(block).getOppositeFace()) {
-                return 15;
-            }
+    public boolean isBlockEmittingPower(GlowBlock block, BlockFace face, boolean isDirect) {
+        // Torches do not emit behind themselves
+        if (face == getOwnFacing(block).getOppositeFace()) {
+            return false;
         }
-        return 0;
+
+        // Direct emissions ONLY go up
+        if (face != BlockFace.UP && !isDirect) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -103,10 +108,10 @@ public class BlockTorch extends BlockType {
     public void traceBlockPowerInit(GlowBlock block, RSManager rsManager) {
         Material thisMat = getMaterial();
         if(thisMat == Material.REDSTONE_TORCH_ON) {
-            rsManager.setBlockCharge(block, 15, false);
+            rsManager.setBlockPower(block, 15, false);
         } else if(thisMat == Material.REDSTONE_TORCH_OFF) {
             // Set the charge so it can be restored on the next tick
-            rsManager.setBlockCharge(block, 15, false);
+            rsManager.setBlockPower(block, 15, false);
         }
     }
 
@@ -138,7 +143,7 @@ public class BlockTorch extends BlockType {
         boolean isSource = (getOwnFacing(block) == flowDir);
         if(isSource) {
             // Discharge this torch.
-            rsManager.setBlockCharge(block, 0, false);
+            rsManager.setBlockPower(block, 0, false);
         } else {
             // Disregard this.
         }
