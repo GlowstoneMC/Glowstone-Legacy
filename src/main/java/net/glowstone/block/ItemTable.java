@@ -37,6 +37,10 @@ public final class ItemTable {
     // Registration
 
     private void registerBuiltins() {
+        reg(Material.ANVIL, new BlockAnvil());
+        reg(Material.BREWING_STAND, new BlockBrewingStand());
+        reg(Material.BEACON, new BlockBeacon());
+        reg(Material.ENCHANTMENT_TABLE, new BlockEnchantmentTable());
         reg(Material.NOTE_BLOCK, new BlockNote());
         reg(Material.MOB_SPAWNER, new BlockMobSpawner());
         reg(Material.SIGN_POST, new BlockSign());

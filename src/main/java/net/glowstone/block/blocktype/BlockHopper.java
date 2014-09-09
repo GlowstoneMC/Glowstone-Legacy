@@ -2,12 +2,14 @@ package net.glowstone.block.blocktype;
 
 import net.glowstone.GlowChunk;
 import net.glowstone.block.GlowBlockState;
+import net.glowstone.block.GlowBlock;
 import net.glowstone.block.entity.TEHopper;
 import net.glowstone.block.entity.TileEntity;
 import net.glowstone.entity.GlowPlayer;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -52,6 +54,11 @@ public class BlockHopper extends BlockContainer {
     public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {
         super.placeBlock(player, state, face, holding, clickedLoc);
         setFacingDirection(state, face.getOppositeFace());
+    }
+
+    @Override
+    public boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
+        return player.openBlockWindow(block.getLocation(), false, Material.HOPPER, InventoryType.HOPPER) != null;
     }
 
 }
