@@ -3,6 +3,7 @@ package net.glowstone.block.blocktype;
 import net.glowstone.EventFactory;
 import net.glowstone.GlowChunk;
 import net.glowstone.GlowServer;
+import net.glowstone.RSManager;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.ItemTable;
@@ -190,6 +191,118 @@ public class BlockType extends ItemType {
         if (player.getGameMode() != GameMode.CREATIVE) {
             holding.setAmount(holding.getAmount() - 1);
         }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Redstone
+
+    /**
+     * Get this block's power level.
+     * @param block The block we are operating on.
+     * @param face The face of the block that is being touched, or SELF for internal charge.
+     * @param isDirect Whether we are looking for direct or indirect power.
+     */
+    public int getBlockPower(GlowBlock block, BlockFace face, boolean isDirect) {
+        // TODO.
+        return 0;
+    }
+
+    /**
+     * Checks if this block is a suitable source to add to an RSManager.
+     * This function is called on chunk loads.
+     * @param block The block we are querying.
+     */
+    public boolean isRedSource(GlowBlock block) {
+        return false;
+    }
+
+    /**
+     * Update redstone state at the end of a redstone pulse.
+     * @param block The block we are modifying.
+     * @param rsManager The RSManager used for tracking.
+     * @param power The final power level.
+     */
+    public void traceBlockPowerEnd(GlowBlock block, RSManager rsManager, int power) {
+        if(power > 0) {
+            rsManager.addSource(block);
+        }
+        // TODO: Charge solids properly
+    }
+
+    /**
+     * Trace a redstone pulse from a solid to a redstone torch.
+     * NOTE: This function can be extended to cater for inPower and isDirect, need-permitting.
+     * @param srcBlock The block we are flowing from.
+     * @param rsManager The RSManager used for tracking.
+     * @param blockDir The direction we cannot flow in due to it leading back to our source.
+     * @param toDir The direction of redstone flow from this block.
+     */
+    private void traceBlockPowerSolidToRSTorch(GlowBlock srcBlock, RSManager rsManager, BlockFace blockDir, BlockFace toDir) {
+        // Get the blockDir check out of the way.
+        if(blockDir == toDir) {
+            return;
+        }
+
+        // Get the destination block and ensure that it is a redstone torch.
+        GlowBlock destBlock = srcBlock.getRelative(toDir);
+        if(destBlock == null) {
+            return;
+        }
+        Material destMat = destBlock.getType();
+        if(destMat != Material.REDSTONE_TORCH_ON && destMat != Material.REDSTONE_TORCH_OFF) {
+            return;
+        }
+
+        // Trace to torch.
+        rsManager.traceFromBlock(srcBlock, toDir, 1, true);
+    }
+
+    /**
+     * Prepare for a redstone trace.
+     * @param block The block we are operating on.
+     * @param rsManager The RSManager used for tracking.
+     */
+    public void traceBlockPowerInit(GlowBlock block, RSManager rsManager) {
+    }
+
+    /**
+     * Begin tracing a redstone pulse as a source.
+     * @param block The block we are operating on.
+     * @param rsManager The RSManager used for tracking.
+     */
+    public void traceBlockPowerStart(GlowBlock block, RSManager rsManager) {
+        // Trace in all appropriate directions.
+        rsManager.traceFromBlockIfUnpowered(block, BlockFace.UP, 15, true);
+        rsManager.traceFromBlockIfUnpowered(block, BlockFace.DOWN, 15, true);
+        rsManager.traceFromBlockIfUnpowered(block, BlockFace.NORTH, 15, true);
+        rsManager.traceFromBlockIfUnpowered(block, BlockFace.SOUTH, 15, true);
+        rsManager.traceFromBlockIfUnpowered(block, BlockFace.WEST, 15, true);
+        rsManager.traceFromBlockIfUnpowered(block, BlockFace.EAST, 15, true);
+    }
+
+    /**
+     * Trace a redstone pulse from an external source.
+     * @param block The block we are operating on.
+     * @param rsManager The RSManager used for tracking.
+     * @param srcMat The material this pulse is coming from.
+     * @param flowDir The direction of redstone flow towards this block.
+     * @param inPower The input power level.
+     * @param isDirect Whether we are applying direct or indirect power.
+     */
+    public void traceBlockPower(GlowBlock block, RSManager rsManager, Material srcMat, BlockFace flowDir, int inPower, boolean isDirect) {
+        // Ensure directness
+        if(!isDirect) {
+            return;
+        }
+
+        // Spread to neighbours
+        BlockFace oppDir = flowDir.getOppositeFace();
+        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.UP);
+        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.DOWN);
+        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.NORTH);
+        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.SOUTH);
+        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.WEST);
+        traceBlockPowerSolidToRSTorch(block, rsManager, oppDir, BlockFace.EAST);
     }
 
     ////////////////////////////////////////////////////////////////////////////

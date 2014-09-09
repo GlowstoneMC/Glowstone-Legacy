@@ -477,8 +477,8 @@ public final class GlowChunk implements Chunk {
         // create a new tile entity if we need
         createEntity(x, y, z, type);
 
-        // tell the redstone manager that this chunk is dirty
-        world.getRSManager().dirtyRedChunk(this.x, this.z);
+        // tell the redstone manager that this block has changed
+        world.getRSManager().dirtyRedBlock((this.x<<4)+x, y, (this.z<<4)+z);
     }
 
     /**
@@ -509,7 +509,7 @@ public final class GlowChunk implements Chunk {
         int type = section.types[index];
         if (type == 0) return;  // can't set metadata on air
         section.types[index] = (char) ((type & 0xfff0) | metaData);
-        world.getRSManager().dirtyRedChunk(this.x, this.z);
+        world.getRSManager().dirtyRedBlock((this.x<<4)+x, y, (this.z<<4)+z);
     }
 
     /**
