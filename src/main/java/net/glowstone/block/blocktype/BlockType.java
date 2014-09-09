@@ -112,20 +112,33 @@ public class BlockType extends ItemType {
     public boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
         return false;
     }
+    
+    /**
+     * Called when a player attemps to place a block on an existing block of this type
+     * @param block the block to absorb
+     * @param face the face we are trying to absorb on
+     * @param item the item we are trying to get absorbed
+     * @param ignoreFace Wether we ignore the face argument, used for slabs for second check
+     * @return Whether the item be can absorbed by block
+     */
+    public boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack item, boolean ignoreFace) {
+        return false;
+    }
 
     @Override
     public final void rightClickBlock(GlowPlayer player, GlowBlock against, BlockFace face, ItemStack holding, Vector clickedLoc) {
         GlowBlock target = against.getRelative(face);
         GlowBlockState newState = target.getState();
-        BlockSlab.SlabPlaceable slabplaceable = BlockSlab.isSlabPlaceable(player, target, against, face, holding);
 
-        // only allow placement inside tall-grass, air, or liquid
-        if (against.getType() == Material.LONG_GRASS || slabplaceable == BlockSlab.SlabPlaceable.AGAINSTBLOCK) {
+        // only allow placement inside absorbable blocks, air, or liquid
+        if (canAbsorb(against, face, holding, false)) {
             target = against;
             newState = target.getState();
-        } else if (!target.isEmpty() && !target.isLiquid() && slabplaceable == BlockSlab.SlabPlaceable.NO) {
-            //revert(player, target);
-            return;
+        } else if (!target.isEmpty() && !target.isLiquid()) {
+            if (!canAbsorb(target, face.getOppositeFace(), holding, true)) {
+                //revert(player, target);
+                return;
+            }
         }
 
         // call canBuild event

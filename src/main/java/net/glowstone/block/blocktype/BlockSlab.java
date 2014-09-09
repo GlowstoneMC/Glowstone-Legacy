@@ -28,31 +28,25 @@ public class BlockSlab extends BlockType {
 
         if ((face == BlockFace.DOWN) || ((face != BlockFace.UP) && (clickedLoc.getY() >= 8.0D))) {
             MaterialData data = state.getData();
-            if ((data instanceof Step))
+            if ((data instanceof Step)) {
                 ((Step) data).setInverted(true);
-            else if ((data instanceof WoodenStep)) {
+            } else if ((data instanceof WoodenStep)) {
                 ((WoodenStep) data).setInverted(true);
             }
             state.setData(data);
         }
     }
+    
+    public boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack item, boolean ignoreFace) {
+        if ((item.getType() == Material.STEP) || (item.getType() == Material.WOOD_STEP)) {
+            byte blockData = block.getData();
+            byte holdingData = (byte) item.getDurability();
 
-    public static SlabPlaceable isSlabPlaceable(GlowPlayer player, GlowBlock target, GlowBlock against, BlockFace face, ItemStack holding) {
-        if ((holding.getType() == Material.STEP) || (holding.getType() == Material.WOOD_STEP)) {
-            byte againstData = against.getData();
-            byte holdingData = (byte) holding.getDurability();
-
-            if ((against.getType() == holding.getType()) && (((face == BlockFace.UP) && (againstData == holdingData)) || ((face == BlockFace.DOWN) && (againstData - 8 == holdingData)))) {
-                return SlabPlaceable.AGAINSTBLOCK;
-            }
-            if ((target.getType() == holding.getType()) && (target.getData() % 8 == holdingData)) {
-                return SlabPlaceable.TARGETBLOCK;
+            if ((block.getType() == item.getType() && (face == BlockFace.UP && blockData == holdingData || face == BlockFace.DOWN && blockData - 8 == holdingData)) ||
+                (ignoreFace && block.getType() == item.getType() && blockData % 8 == holdingData)) {
+                return true;
             }
         }
-        return SlabPlaceable.NO;
-    }
-
-    public static enum SlabPlaceable {
-        NO, TARGETBLOCK, AGAINSTBLOCK;
+        return false;
     }
 }
