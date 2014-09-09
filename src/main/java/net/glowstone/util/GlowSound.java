@@ -4,6 +4,7 @@ import java.util.Random;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 
 /**
  * A class that encapsulates relevant data for playing sounds (volume and pitch).
@@ -36,11 +37,23 @@ public class GlowSound {
     }
 
     /**
-     * Plays the sound at the given location with a slight variation in volume.
-     * @param location Location of the block producing this sound
+     * Plays the sound to all players at the given location with a slight variation in pitch.
+     * @param location Location at which to play the sound
      */
     public void play(Location location) {
-        // Sound pitch has a random deviation of +/- 0.25.
-        location.getWorld().playSound(location, sound, volume, pitch + random.nextFloat() * 0.5F - 0.25F);
+        location.getWorld().playSound(location, sound, volume, randomPitch());
+    }
+    
+    /**
+     * Plays the sound to the given player at the given location with a slight variation in pitch.
+     * @param player Player to which to play the sound
+     * @param location Location at which to play the sound
+     */
+    public void playTo(Player player, Location location) {
+        player.playSound(location, sound, volume, randomPitch());
+    }
+    
+    private float randomPitch() {
+        return pitch + random.nextFloat() * 0.5F - 0.25F;
     }
 }

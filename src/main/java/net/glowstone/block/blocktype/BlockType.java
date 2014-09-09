@@ -29,6 +29,9 @@ import java.util.List;
 public class BlockType extends ItemType {
 
     protected List<ItemStack> drops = null;
+    
+    protected GlowSound placeSound = new GlowSound(Sound.DIG_WOOD);
+    protected GlowSound breakSound = new GlowSound(Sound.DIG_WOOD);
 
     ////////////////////////////////////////////////////////////////////////////
     // Setters for subclass use
@@ -59,7 +62,7 @@ public class BlockType extends ItemType {
      * @return The sound to be played
      */
     public GlowSound getPlaceSound() {
-        return new GlowSound(Sound.DIG_WOOD); // default place sound
+        return placeSound;
     }
     
     /**
@@ -67,7 +70,7 @@ public class BlockType extends ItemType {
      * @return The sound to be played
      */
     public GlowSound getBreakSound() {
-        return new GlowSound(Sound.DIG_WOOD); // default break sound
+        return breakSound;
     }
 
     ////////////////////////////////////////////////////////////////////////////
