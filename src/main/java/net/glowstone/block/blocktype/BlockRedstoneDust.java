@@ -5,8 +5,11 @@ import net.glowstone.block.GlowBlock;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 public class BlockRedstoneDust extends BlockType {
     // TODO: handle properly
@@ -32,7 +35,37 @@ public class BlockRedstoneDust extends BlockType {
     }
 
     private void traceBlockPowerRSWire(GlowBlock block, RSManager rsManager, BlockFace blockDir, BlockFace outDir, int inPower, boolean isDirect) {
-        // TODO!
+        // Bail out early if we're flowing backwards
+        if(outDir == blockDir) {
+            return;
+        }
+
+        // Get the relevant blocks + materials
+        GlowBlock blockMid  = block.getRelative(outDir.getModX(), outDir.getModY() + 0, outDir.getModZ());
+        GlowBlock blockUp   = block.getRelative(outDir.getModX(), outDir.getModY() + 1, outDir.getModZ());
+        GlowBlock blockDown = block.getRelative(outDir.getModX(), outDir.getModY() - 1, outDir.getModZ());
+
+        // Get some flags
+        boolean wireMid  = (blockMid  != null && blockMid .getType() == Material.REDSTONE_WIRE);
+        boolean wireUp   = (blockUp   != null && blockUp  .getType() == Material.REDSTONE_WIRE);
+        boolean wireDown = (blockDown != null && blockDown.getType() == Material.REDSTONE_WIRE);
+
+        boolean solidMid  = (blockMid  != null && blockMid .getType().isSolid());
+        boolean solidUp   = (blockUp   != null && blockUp  .getType().isSolid());
+        boolean solidDown = (blockDown != null && blockDown.getType().isSolid());
+
+        // Determine which one we use
+        if(wireDown && !solidMid) {
+            // Down
+            // (Mid is nonsolid so Up cannot be RS dust)
+            rsManager.traceFromBlockToBlock(block, blockDown, outDir, inPower, isDirect);
+        } else if(solidMid && wireUp) {
+            // Up
+            rsManager.traceFromBlockToBlock(block, blockUp  , outDir, inPower, isDirect);
+        } else if(wireMid) {
+            // Mid
+            rsManager.traceFromBlockToBlock(block, blockMid , outDir, inPower, isDirect);
+        }
     }
 
     @Override
@@ -57,6 +90,9 @@ public class BlockRedstoneDust extends BlockType {
         traceBlockPowerRSWire(block, rsManager, blockDir, BlockFace.SOUTH, outPower, false);
         traceBlockPowerRSWire(block, rsManager, blockDir, BlockFace.EAST , outPower, false);
         traceBlockPowerRSWire(block, rsManager, blockDir, BlockFace.WEST , outPower, false);
+
+        // Move to floor
+        rsManager.traceFromBlockIfUnpowered(block, BlockFace.DOWN, outPower, false);
     }
 
     @Override
