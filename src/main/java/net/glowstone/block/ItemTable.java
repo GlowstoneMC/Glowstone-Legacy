@@ -103,6 +103,10 @@ public final class ItemTable {
         reg(Material.WOOD_STAIRS, new BlockStairs());
         reg(Material.STEP, new BlockSlab());
         reg(Material.WOOD_STEP, new BlockSlab());
+        reg(Material.HAY_BLOCK, new BlockHay());
+        reg(Material.QUARTZ_BLOCK, new BlockQuartz());
+        reg(Material.LOG, new BlockLog());
+        reg(Material.LOG_2, new BlockLog2());
 
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
