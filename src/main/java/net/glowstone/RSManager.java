@@ -177,21 +177,18 @@ public class RSManager {
 
 
     /**
-     * Trace from a block to another block.
+     * Trace to a block from another block.
      * @param srcBlock The block we are sourcing from.
-     * @param flowDir The direction of redstone flow from this block.
+     * @param destBlock The block we are targeting.
+     * @param flowDir The direction of redstone flow from the source block.
      * @param inPower The input power level.
      * @param isDirect Whether we are applying direct or indirect power.
      */
-    public void traceFromBlock(GlowBlock srcBlock, BlockFace flowDir, int inPower, boolean isDirect) {
+    public void traceFromBlockToBlock(GlowBlock srcBlock, GlowBlock destBlock, BlockFace flowDir, int inPower, boolean isDirect) {
         // Get source material
         Material srcMat = srcBlock.getType();
 
-        // Get destination block
-        GlowBlock destBlock = srcBlock.getRelative(flowDir);
-        if(destBlock == null) {
-            return;
-        }
+        // Get destination block data
         Material destMat = destBlock.getType();
         BlockType destType = ItemTable.instance().getBlock(destMat);
         if(destType == null) {
@@ -203,6 +200,24 @@ public class RSManager {
             System.out.println(String.format("trace to %s", destBlock));
         }
         destType.traceBlockPower(destBlock, this, srcMat, flowDir, inPower, isDirect);
+    }
+
+    /**
+     * Trace from a block to another block.
+     * @param srcBlock The block we are sourcing from.
+     * @param flowDir The direction of redstone flow from this block.
+     * @param inPower The input power level.
+     * @param isDirect Whether we are applying direct or indirect power.
+     */
+    public void traceFromBlock(GlowBlock srcBlock, BlockFace flowDir, int inPower, boolean isDirect) {
+        // Get destination block
+        GlowBlock destBlock = srcBlock.getRelative(flowDir);
+        if(destBlock == null) {
+            return;
+        }
+
+        // Move to block
+        traceFromBlockToBlock(srcBlock, destBlock, flowDir, inPower, isDirect);
     }
 
     /**
