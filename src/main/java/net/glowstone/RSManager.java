@@ -77,8 +77,10 @@ public class RSManager {
     /**
      * Various redstone-related sets, maps and lists.
      */ 
-    private Map<RSPos,Integer> redChargeNew = new HashMap<RSPos,Integer>();
-    private Map<RSPos,Integer> redChargeOld = new HashMap<RSPos,Integer>();
+    private Map<RSPos,Integer> redPowerNew = new HashMap<RSPos,Integer>();
+    private Map<RSPos,Integer> redPowerOld = new HashMap<RSPos,Integer>();
+    private Map<RSPos,Integer> redPowerRead = redPowerNew;
+    private Set<RSPos> redPowerFlush = new HashSet<RSPos>();
     private Set<RSPos> redSourceNew = new HashSet<RSPos>();
     private Set<RSPos> redSourceOld = new HashSet<RSPos>();
     private Set<RSPos> chunksDirtyNew = new HashSet<RSPos>();
@@ -103,10 +105,10 @@ public class RSManager {
      * @param charge The charge level to set this block to.
      * @param oneTick Flag to indicate if we must discharge this block in the next tick.
      */
-    public void setBlockCharge(int x, int y, int z, int charge, boolean oneTick) {
+    public synchronized void setBlockPower(int x, int y, int z, int charge, boolean oneTick) {
         assert(charge >= 0 && charge <= 15);
         RSPos p = new RSPos(x, y, z);
-        redChargeNew.put(p, (Integer)((charge&15) | (oneTick?0x20:0x00)));
+        redPowerNew.put(p, (Integer)((charge&15) | (oneTick?0x20:0x00)));
     }
 
     /**
@@ -115,8 +117,8 @@ public class RSManager {
      * @param charge The charge level to set this block to.
      * @param oneTick Flag to indicate if we must discharge this block in the next tick.
      */
-    public void setBlockCharge(Block block, int charge, boolean oneTick) {
-        setBlockCharge(block.getX(), block.getY(), block.getZ(), charge, oneTick);
+    public void setBlockPower(Block block, int charge, boolean oneTick) {
+        setBlockPower(block.getX(), block.getY(), block.getZ(), charge, oneTick);
     }
 
     /**
@@ -125,9 +127,54 @@ public class RSManager {
      * @param charge The charge level to set this block to.
      * @param oneTick Flag to indicate if we must discharge this block in the next tick.
      */
-    public void setBlockCharge(RSPos p, int charge, boolean oneTick) {
-        setBlockCharge(p.x, p.y, p.z, charge, oneTick);
+    public void setBlockPower(RSPos p, int charge, boolean oneTick) {
+        setBlockPower(p.x, p.y, p.z, charge, oneTick);
     }
+
+    /**
+     * Gets the charge of a given block.
+     * @param x
+     * @param y
+     * @param z
+     * @return Power level in the range [0, 15].
+     */
+    public synchronized int getBlockPower(int x, int y, int z) {
+        RSPos p = new RSPos(x, y, z);
+        Integer charge = redPowerRead.get(p);
+        return (charge == null ? 0 : ((int)charge) & 15);
+    }
+
+    /**
+     * Gets the charge of a given block.
+     * @param block The block to get the charge of.
+     * @return Power level in the range [0, 15].
+     */
+    public int getBlockPower(Block block) {
+        return getBlockPower(block.getX(), block.getY(), block.getZ());
+    }
+
+    /**
+     * Gets the to-be-applied charge of a given block.
+     * @param x
+     * @param y
+     * @param z
+     * @return Power level in the range [0, 15].
+     */
+    public synchronized int getNewBlockPower(int x, int y, int z) {
+        RSPos p = new RSPos(x, y, z);
+        Integer charge = redPowerNew.get(p);
+        return (charge == null ? 0 : ((int)charge) & 15);
+    }
+
+    /**
+     * Gets the to-be-applied charge of a given block.
+     * @param block The block to get the charge of.
+     * @return Power level in the range [0, 15].
+     */
+    public int getNewBlockPower(Block block) {
+        return getNewBlockPower(block.getX(), block.getY(), block.getZ());
+    }
+
 
     /**
      * Trace from a block to another block.
@@ -175,7 +222,7 @@ public class RSManager {
      * Adds a source for tracing updates.
      * @param block The block we use as a source.
      */
-    public void addSource(Block block) {
+    public synchronized void addSource(Block block) {
         RSPos p = new RSPos(block);
         redSourceNew.add(p);
         if(DEBUG_REDSTONE) {
@@ -207,7 +254,7 @@ public class RSManager {
             RSPos p = new RSPos(rx, ry, rz);
 
             // Remove this from all appropriate sets
-            redChargeNew.remove(p);
+            redPowerNew.remove(p);
             redSourceNew.remove(p);
         }
     }
@@ -346,10 +393,10 @@ public class RSManager {
         redSourceNew.clear();
 
         // Swap charges and clear new
-        Map<RSPos,Integer> redChargeTemp = redChargeNew;
-        redChargeNew = redChargeOld;
-        redChargeOld = redChargeTemp;
-        redChargeNew.clear();
+        Map<RSPos,Integer> redPowerTemp = redPowerNew;
+        redPowerNew = redPowerOld;
+        redPowerOld = redPowerTemp;
+        redPowerNew.clear();
 
         // Initialise sources
         for(RSPos p : redSourceOld) {
@@ -377,47 +424,62 @@ public class RSManager {
             type.traceBlockPowerStart(block, this);
         }
 
+        // Change read query to point to new charge
+        redPowerRead = redPowerNew;
+
         // Handle old wire charges
-        for(RSPos p : redChargeOld.keySet()) {
-            if(!redChargeNew.containsKey(p)) {
+        for(RSPos p : redPowerOld.keySet()) {
+            if(!redPowerNew.containsKey(p)) {
                 GlowBlock block = world.getBlockAt(p.x, p.y, p.z);
                 if(block == null) {
                     continue;
                 }
 
-                int charge = redChargeOld.get(p);
+                int charge = redPowerOld.get(p);
                 boolean oneTick = ((charge & 0x20) != 0);
                 charge &= 0x0F;
-                BlockType type = ItemTable.instance().getBlock(block.getType());
-                if(type == null) {
-                    continue;
-                }
 
                 // Determine whether we discharge now or let it be
                 if(oneTick) {
                     if(charge > 0) {
+                        BlockType type = ItemTable.instance().getBlock(block.getType());
+                        if(type == null) {
+                            continue;
+                        }
                         type.traceBlockPowerEnd(block, this, 0);
                     }
                 } else {
-                    redChargeNew.put(p, charge);
+                    redPowerNew.put(p, charge);
                 }
             }
         }
 
-        // Charge new wires
-        for(RSPos p : redChargeNew.keySet()) {
+        // Clear flush list
+        redPowerFlush.clear();
+
+        // Power new wires
+        for(RSPos p : redPowerNew.keySet()) {
             GlowBlock block = world.getBlockAt(p.x, p.y, p.z);
             if(block == null) {
+                // Destroy to prevent latent charges
+                redPowerFlush.add(p);
                 continue;
             }
 
-            int charge = redChargeNew.get(p);
+            int charge = redPowerNew.get(p);
             BlockType type = ItemTable.instance().getBlock(block.getType());
             if(type == null) {
+                // Destroy to prevent latent charges
+                redPowerFlush.add(p);
                 continue;
             }
 
             type.traceBlockPowerEnd(block, this, charge & 0x0F);
+        }
+
+        // Flush latent charges
+        for(RSPos p : redPowerFlush) {
+            redPowerNew.remove(p);
         }
     }
 }
