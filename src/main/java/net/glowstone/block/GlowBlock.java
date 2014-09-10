@@ -168,7 +168,8 @@ public final class GlowBlock implements Block {
 
     @Override
     public Material getType() {
-        return Material.getMaterial(getTypeId());
+        Material mat = Material.getMaterial(getTypeId());
+        return (mat == null ? Material.AIR : mat);
     }
 
     @Override
