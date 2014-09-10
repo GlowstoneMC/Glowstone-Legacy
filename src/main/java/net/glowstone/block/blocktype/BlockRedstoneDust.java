@@ -135,15 +135,24 @@ public class BlockRedstoneDust extends BlockType {
         if(ne) { bsum++; }
         if(nw) { bsum++; }
 
-        // If there is exactly one wire (the one we came from!), "inject"
-        if(bsum == 0) {
-            if(flowDir == BlockFace.UP || flowDir == BlockFace.DOWN) {
-                // Special case
+        // Flow behaves differently from top and bottom
+        if(flowDir == BlockFace.UP || flowDir == BlockFace.DOWN) {
+            if(bsum == 0) {
+                // If there are no wires, "inject" in a spread
                 traceBlockPowerInject(block, rsManager, BlockFace.NORTH, outPower);
                 traceBlockPowerInject(block, rsManager, BlockFace.SOUTH, outPower);
                 traceBlockPowerInject(block, rsManager, BlockFace.WEST, outPower);
                 traceBlockPowerInject(block, rsManager, BlockFace.EAST, outPower);
-            } else {
+            } else if(bsum == 1) {
+                // If there is exactly one wire, "inject" in the OPPOSITE direction
+                if(ns) traceBlockPowerInject(block, rsManager, BlockFace.NORTH, outPower);
+                if(nn) traceBlockPowerInject(block, rsManager, BlockFace.SOUTH, outPower);
+                if(ne) traceBlockPowerInject(block, rsManager, BlockFace.WEST , outPower);
+                if(nw) traceBlockPowerInject(block, rsManager, BlockFace.EAST , outPower);
+            }
+        } else {
+            // If there is exactly one wire (the one we came from!), "inject"
+            if(bsum == 0) {
                 traceBlockPowerInject(block, rsManager, flowDir, outPower);
             }
         }
