@@ -9,10 +9,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import java.util.Arrays;
-import java.util.Collection;
+public class BlockSnow extends BlockNeedsAttached {
 
-public class BlockSnow extends BlockType {
     @Override
     public boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack holding) {
         // can absorb snow layers if non-full, or all blocks if single layer
