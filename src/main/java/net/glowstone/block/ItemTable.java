@@ -107,6 +107,7 @@ public final class ItemTable {
         reg(Material.QUARTZ_BLOCK, new BlockQuartz());
         reg(Material.LOG, new BlockLog());
         reg(Material.LOG_2, new BlockLog2());
+        reg(Material.BED_BLOCK, new BlockBed());
 
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
@@ -117,6 +118,7 @@ public final class ItemTable {
         reg(Material.FLOWER_POT_ITEM, new ItemPlaceAs(Material.FLOWER_POT));
         reg(Material.SKULL_ITEM, new ItemPlaceAs(Material.SKULL));
         reg(Material.REDSTONE_COMPARATOR, new ItemPlaceAs(Material.REDSTONE_COMPARATOR_OFF));
+        reg(Material.BED, new ItemPlaceAs(Material.BED_BLOCK));
     }
 
     private void reg(Material material, ItemType type) {
