@@ -1,13 +1,12 @@
 package net.glowstone.block;
 
+import java.util.HashMap;
+import java.util.Map;
 import net.glowstone.block.blocktype.*;
 import net.glowstone.block.itemtype.ItemPlaceAs;
 import net.glowstone.block.itemtype.ItemSign;
 import net.glowstone.block.itemtype.ItemType;
 import org.bukkit.Material;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The lookup table for block and item types.
@@ -44,6 +43,8 @@ public final class ItemTable {
         reg(Material.WORKBENCH, new BlockWorkbench());
         reg(Material.ENDER_CHEST, new BlockEnderchest());
         reg(Material.CHEST, new BlockChest());
+        reg(Material.DISPENSER, new BlockDispenser());
+        reg(Material.DROPPER, new BlockDropper());
         reg(Material.BOOKSHELF, new BlockDirectDrops(Material.BOOK, 3));
         reg(Material.CLAY, new BlockDirectDrops(Material.CLAY_BALL, 4));
         reg(Material.DOUBLE_STEP, new BlockDoubleSlab());
@@ -84,6 +85,11 @@ public final class ItemTable {
         reg(Material.WEB, new BlockDirectDrops(Material.STRING));
         reg(Material.FIRE, new BlockDropless());
         reg(Material.MONSTER_EGGS, new BlockDropless());
+        reg(Material.STONE_BUTTON, new BlockButton(Material.STONE_BUTTON));
+        reg(Material.WOOD_BUTTON, new BlockButton(Material.WOOD_BUTTON));
+        reg(Material.FURNACE, new BlockFurnace());
+        reg(Material.LEVER, new BlockLever());
+        reg(Material.HOPPER, new BlockHopper());
         reg(Material.STONE_BUTTON, new BlockButton(Material.STONE_BUTTON));
         reg(Material.WOOD_BUTTON, new BlockButton(Material.WOOD_BUTTON));
 
