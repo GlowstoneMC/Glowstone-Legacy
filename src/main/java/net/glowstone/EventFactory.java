@@ -5,7 +5,6 @@ import net.glowstone.block.GlowBlock;
 import net.glowstone.block.ItemTable;
 import net.glowstone.block.blocktype.BlockType;
 import net.glowstone.entity.GlowPlayer;
-import net.glowstone.net.GlowSession;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -138,12 +137,10 @@ public final class EventFactory {
         callEvent(asyncEvent);
 
         if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length > 0) {
-
             final PlayerPreLoginEvent event = new PlayerPreLoginEvent(name, address.getAddress(), uuid);
             if (asyncEvent.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
                 event.disallow(asyncEvent.getResult(), asyncEvent.getKickMessage());
             }
-
             callEvent(event);
             asyncEvent.disallow(event.getResult(), event.getKickMessage());
         }

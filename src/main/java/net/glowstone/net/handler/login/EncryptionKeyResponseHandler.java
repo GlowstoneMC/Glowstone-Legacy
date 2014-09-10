@@ -1,20 +1,6 @@
 package net.glowstone.net.handler.login;
 
 import com.flowpowered.networking.MessageHandler;
-import net.glowstone.GlowServer;
-import net.glowstone.entity.meta.PlayerProfile;
-import net.glowstone.entity.meta.PlayerProperty;
-import net.glowstone.net.GlowSession;
-import net.glowstone.net.message.login.EncryptionKeyResponseMessage;
-import net.glowstone.util.UuidUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
@@ -29,10 +15,23 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import net.glowstone.EventFactory;
+import net.glowstone.GlowServer;
+import net.glowstone.entity.meta.PlayerProfile;
+import net.glowstone.entity.meta.PlayerProperty;
+import net.glowstone.net.GlowSession;
+import net.glowstone.net.message.login.EncryptionKeyResponseMessage;
+import net.glowstone.util.UuidUtils;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSession, EncryptionKeyResponseMessage> {
 
@@ -120,7 +119,7 @@ public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSe
         @Override
         public void run() {
             try {
-                // cuthenticate
+                // authenticate
                 URLConnection connection = new URL(postURL).openConnection();
                 JSONObject json;
                 try (InputStream is = connection.getInputStream()) {
