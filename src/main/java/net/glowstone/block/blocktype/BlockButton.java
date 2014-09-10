@@ -1,6 +1,5 @@
 package net.glowstone.block.blocktype;
 
-import net.glowstone.GlowServer;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.entity.GlowPlayer;
@@ -22,8 +21,9 @@ public class BlockButton extends BlockAttachable {
     public boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
         final GlowBlockState state = block.getState();
         final MaterialData data = state.getData();
+        
         if (!(data instanceof Button)) {
-            GlowServer.logger.warning("Interacting " + getMaterial().name() + ": MaterialData was of wrong type (" + data.getClass().getName() + ")");
+            warnMaterialData(Button.class, data);
             return false;
         }
 
@@ -54,7 +54,7 @@ public class BlockButton extends BlockAttachable {
         MaterialData data = state.getData();
 
         if (!(data instanceof Button)) {
-            GlowServer.logger.warning("Placing " + getMaterial().name() + ": MaterialData was of wrong type (" + data.getClass().getName() + ")");
+            warnMaterialData(Button.class, data);
             return;
         }
 
