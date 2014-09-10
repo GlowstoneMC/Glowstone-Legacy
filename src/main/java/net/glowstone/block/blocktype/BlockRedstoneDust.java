@@ -162,7 +162,16 @@ public class BlockRedstoneDust extends BlockType {
     @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
         GlowBlock floor = block.getRelative(BlockFace.DOWN);
-        return floor != null && floor.getType().isOccluding();
+        if(floor != null) {
+            Material mat = floor.getType();
+            if(mat.isOccluding()) {
+                return true;
+            }
+            if(mat == Material.GLOWSTONE) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
