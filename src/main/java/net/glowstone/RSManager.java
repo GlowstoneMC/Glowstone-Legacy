@@ -185,11 +185,21 @@ public class RSManager {
      * @param isDirect Whether we are applying direct or indirect power.
      */
     public void traceFromBlockToBlock(GlowBlock srcBlock, GlowBlock destBlock, BlockFace flowDir, int inPower, boolean isDirect) {
+        if(srcBlock == null) {
+            return;
+        }
+        if(destBlock == null) {
+            return;
+        }
+
         // Get source material
         Material srcMat = srcBlock.getType();
 
         // Get destination block data
         Material destMat = destBlock.getType();
+        if(destMat == null) {
+            return;
+        }
         BlockType destType = ItemTable.instance().getBlock(destMat);
         if(destType == null) {
             return;
