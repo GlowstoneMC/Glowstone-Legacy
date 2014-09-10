@@ -34,10 +34,14 @@ public class BlockRedstoneDust extends BlockType {
         // This does not trace from the "start".
     }
 
-    private void traceBlockPowerRSWire(GlowBlock block, RSManager rsManager, BlockFace blockDir, BlockFace outDir, int inPower, boolean isDirect) {
-        // Bail out early if we're flowing backwards
-        if(outDir == blockDir) {
-            return;
+    private void traceBlockPowerInject(GlowBlock block, RSManager rsManager, BlockFace outDir, int outPower) {
+        rsManager.traceFromBlock(block, outDir, outPower, false);
+    }
+
+    private boolean traceBlockPowerRSWire(GlowBlock block, RSManager rsManager, BlockFace blockDir, BlockFace outDir, int outPower, boolean isDirect) {
+        // Bail out early
+        if(blockDir == outDir) {
+            return false;
         }
 
         // Get the relevant blocks + materials
@@ -57,17 +61,26 @@ public class BlockRedstoneDust extends BlockType {
         boolean solidDown = (blockDown != null && blockDown.getType().isSolid());
 
         // Determine which one we use
+        GlowBlock useBlock = null;
         if(wireDown && !solidMid) {
             // Down
             // (Mid is nonsolid so Up cannot be RS dust)
-            rsManager.traceFromBlockToBlock(block, blockDown, outDir, inPower, isDirect);
+            useBlock = blockDown;
         } else if(solidMid && wireUp && !solidOn) {
             // Up
-            rsManager.traceFromBlockToBlock(block, blockUp  , outDir, inPower, isDirect);
+            useBlock = blockUp;
         } else if(wireMid) {
             // Mid
-            rsManager.traceFromBlockToBlock(block, blockMid , outDir, inPower, isDirect);
+            useBlock = blockMid;
         }
+
+        // Use a block if we have one
+        if(useBlock != null) {
+            rsManager.traceFromBlockToBlock(block, useBlock, outDir, outPower, isDirect);
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -88,10 +101,22 @@ public class BlockRedstoneDust extends BlockType {
         // Spread out
         BlockFace blockDir = flowDir.getOppositeFace();
         int outPower = inPower - 1;
-        traceBlockPowerRSWire(block, rsManager, blockDir, BlockFace.NORTH, outPower, false);
-        traceBlockPowerRSWire(block, rsManager, blockDir, BlockFace.SOUTH, outPower, false);
-        traceBlockPowerRSWire(block, rsManager, blockDir, BlockFace.EAST , outPower, false);
-        traceBlockPowerRSWire(block, rsManager, blockDir, BlockFace.WEST , outPower, false);
+        boolean nn = traceBlockPowerRSWire(block, rsManager, blockDir, BlockFace.NORTH, outPower, false);
+        boolean ns = traceBlockPowerRSWire(block, rsManager, blockDir, BlockFace.SOUTH, outPower, false);
+        boolean ne = traceBlockPowerRSWire(block, rsManager, blockDir, BlockFace.EAST , outPower, false);
+        boolean nw = traceBlockPowerRSWire(block, rsManager, blockDir, BlockFace.WEST , outPower, false);
+
+        // Sum the numbers
+        int bsum = 0;
+        if(nn) { bsum++; }
+        if(ns) { bsum++; }
+        if(ne) { bsum++; }
+        if(nw) { bsum++; }
+
+        // If there is exactly one wire (the one we came from!), "inject"
+        if(bsum == 0) {
+            traceBlockPowerInject(block, rsManager, flowDir, outPower);
+        }
 
         // Move to floor
         rsManager.traceFromBlockIfUnpowered(block, BlockFace.DOWN, outPower, false);
