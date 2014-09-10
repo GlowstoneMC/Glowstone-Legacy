@@ -41,6 +41,7 @@ public class BlockRedstoneDust extends BlockType {
         }
 
         // Get the relevant blocks + materials
+        GlowBlock blockOn   = block.getRelative(BlockFace.UP);
         GlowBlock blockMid  = block.getRelative(outDir.getModX(), outDir.getModY() + 0, outDir.getModZ());
         GlowBlock blockUp   = block.getRelative(outDir.getModX(), outDir.getModY() + 1, outDir.getModZ());
         GlowBlock blockDown = block.getRelative(outDir.getModX(), outDir.getModY() - 1, outDir.getModZ());
@@ -50,6 +51,7 @@ public class BlockRedstoneDust extends BlockType {
         boolean wireUp   = (blockUp   != null && blockUp  .getType() == Material.REDSTONE_WIRE);
         boolean wireDown = (blockDown != null && blockDown.getType() == Material.REDSTONE_WIRE);
 
+        boolean solidOn   = (blockOn   != null && blockOn  .getType().isSolid());
         boolean solidMid  = (blockMid  != null && blockMid .getType().isSolid());
         boolean solidUp   = (blockUp   != null && blockUp  .getType().isSolid());
         boolean solidDown = (blockDown != null && blockDown.getType().isSolid());
@@ -59,7 +61,7 @@ public class BlockRedstoneDust extends BlockType {
             // Down
             // (Mid is nonsolid so Up cannot be RS dust)
             rsManager.traceFromBlockToBlock(block, blockDown, outDir, inPower, isDirect);
-        } else if(solidMid && wireUp) {
+        } else if(solidMid && wireUp && !solidOn) {
             // Up
             rsManager.traceFromBlockToBlock(block, blockUp  , outDir, inPower, isDirect);
         } else if(wireMid) {
