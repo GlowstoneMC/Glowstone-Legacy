@@ -43,6 +43,9 @@ public class BlockRedstoneDust extends BlockType {
         if(blockDir == outDir) {
             return false;
         }
+        if(outPower <= 0) {
+            return false;
+        }
 
         // Get the relevant blocks + materials
         GlowBlock blockOn   = block.getRelative(BlockFace.UP);
@@ -60,27 +63,41 @@ public class BlockRedstoneDust extends BlockType {
         boolean solidUp   = (blockUp   != null && blockUp  .getType().isSolid());
         boolean solidDown = (blockDown != null && blockDown.getType().isSolid());
 
+        // Check if glowstone 
+        boolean glowOn    = (blockOn   != null && blockOn  .getType() == Material.GLOWSTONE);
+        if(glowOn) {
+            solidOn = false;
+        }
+
         // Determine which one we use
         GlowBlock useBlock = null;
         if(wireDown && !solidMid) {
             // Down
-            // (Mid is nonsolid so Up cannot be RS dust)
             useBlock = blockDown;
-        } else if(solidMid && wireUp && !solidOn) {
+            rsManager.traceFromBlockToBlock(block, useBlock, outDir, outPower, isDirect);
+        }
+        if(wireUp && !(solidOn && solidMid)) {
             // Up
             useBlock = blockUp;
-        } else if(wireMid) {
+            rsManager.traceFromBlockToBlock(block, useBlock, outDir, outPower, isDirect);
+            if(glowOn) {
+                // Trace upwards, too
+                GlowBlock blockOn2  = blockOn.getRelative(BlockFace.UP);
+                boolean wireOn2  = (blockOn2  != null && blockOn2 .getType() == Material.REDSTONE_WIRE);
+                if(wireOn2) {
+                    // Trace backwards
+                    traceBlockPowerRSWire(blockUp, rsManager, BlockFace.SELF, outDir.getOppositeFace(), outPower-1, isDirect);
+                }
+            }
+        }
+        if(wireMid) {
             // Mid
             useBlock = blockMid;
-        }
-
-        // Use a block if we have one
-        if(useBlock != null) {
             rsManager.traceFromBlockToBlock(block, useBlock, outDir, outPower, isDirect);
-            return true;
         }
 
-        return false;
+        // Return if we had a block
+        return (useBlock != null);
     }
 
     @Override

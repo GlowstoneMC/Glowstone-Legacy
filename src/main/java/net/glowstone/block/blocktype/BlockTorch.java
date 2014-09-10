@@ -126,7 +126,7 @@ public class BlockTorch extends BlockType {
         // Trace in all directions except self.
         BlockFace selfDir = getOwnFacing(block).getOppositeFace();
         traceBlockPowerFromRSTorch(block, rsManager, selfDir, BlockFace.UP, true);
-        traceBlockPowerFromRSTorch(block, rsManager, selfDir, BlockFace.DOWN, true);
+        traceBlockPowerFromRSTorch(block, rsManager, selfDir, BlockFace.DOWN, false);
         traceBlockPowerFromRSTorch(block, rsManager, selfDir, BlockFace.NORTH, false);
         traceBlockPowerFromRSTorch(block, rsManager, selfDir, BlockFace.SOUTH, false);
         traceBlockPowerFromRSTorch(block, rsManager, selfDir, BlockFace.WEST, false);
