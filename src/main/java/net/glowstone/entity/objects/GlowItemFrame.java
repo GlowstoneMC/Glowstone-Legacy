@@ -37,6 +37,9 @@ public final class GlowItemFrame extends GlowEntity implements ItemFrame {
     public GlowItemFrame(Location location, BlockFace clickedface) {
         super(location);
         this.face = clickedface;
+        ((ItemFrame)this).setFacingDirection(clickedface);
+        metadata.set(MetadataIndex.ITEM_FRAME_ITEM, new ItemStack(Material.APPLE, 1));
+        metadata.set(MetadataIndex.ITEM_FRAME_ROTATION, (byte)0);
     }
 
     ////////////////////////////////////////////////////////////////////////////
