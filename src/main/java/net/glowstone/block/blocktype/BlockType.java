@@ -2,18 +2,20 @@ package net.glowstone.block.blocktype;
 
 import net.glowstone.EventFactory;
 import net.glowstone.GlowChunk;
+import net.glowstone.GlowServer;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
+import net.glowstone.block.ItemTable;
 import net.glowstone.block.entity.TileEntity;
 import net.glowstone.block.itemtype.ItemType;
 import net.glowstone.entity.GlowPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import java.util.Arrays;
@@ -113,18 +115,49 @@ public class BlockType extends ItemType {
         return false;
     }
 
+    /**
+     * Called when a player attempts to place a block on an existing block of
+     * this type. Used to determine if the placement should occur into the air
+     * adjacent to the block (normal behavior), or absorbed into the block
+     * clicked on.
+     * @param block The block the player right-clicked
+     * @param face The face on which the click occurred
+     * @param holding The ItemStack the player was holding
+     * @return Whether the place should occur into the block given.
+     */
+    public boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack holding) {
+        return false;
+    }
+
+    /**
+     * Called to check if this block can be overridden by a block place
+     * which would occur inside it.
+     * @param block The block being targeted by the placement
+     * @param face The face on which the click occurred
+     * @param holding The ItemStack the player was holding
+     * @return Whether this block can be overridden.
+     */
+    public boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
+        return block.isLiquid();
+    }
+
     @Override
     public final void rightClickBlock(GlowPlayer player, GlowBlock against, BlockFace face, ItemStack holding, Vector clickedLoc) {
         GlowBlock target = against.getRelative(face);
-        GlowBlockState newState = target.getState();
 
-        // only allow placement inside tall-grass, air, or liquid
-        if (against.getType() == Material.LONG_GRASS) {
+        // check whether the block clicked against should absorb the placement
+        BlockType againstType = ItemTable.instance().getBlock(against.getTypeId());
+        if (againstType.canAbsorb(against, face, holding)) {
             target = against;
-        } else if (!target.isEmpty() && !target.isLiquid()) {
-            //revert(player, target);
-            return;
+        } else if (!target.isEmpty()) {
+            // air can always be overridden
+            BlockType targetType = ItemTable.instance().getBlock(target.getTypeId());
+            if (!targetType.canOverride(target, face, holding)) {
+                return;
+            }
         }
+
+        GlowBlockState newState = target.getState();
 
         // call canBuild event
         if (!EventFactory.onBlockCanBuild(target, getId(), face).isBuildable()) {
@@ -162,9 +195,17 @@ public class BlockType extends ItemType {
     // Helper methods
 
     /**
-     * Gets the BlockFace opposite of the direction the location is facing. Usually used to set the way container blocks
-     * face when being placed.
-     *
+     * Display the warning for finding the wrong MaterialData subclass.
+     * @param clazz The expected subclass of MaterialData.
+     * @param data The actual MaterialData found.
+     */
+    protected void warnMaterialData(Class<? extends MaterialData> clazz, MaterialData data) {
+        GlowServer.logger.warning("Wrong MaterialData for " + getMaterial() + " (" + getClass().getSimpleName() + "): expected " + clazz.getSimpleName() + ", got " + data);
+    }
+
+    /**
+     * Gets the BlockFace opposite of the direction the location is facing.
+     * Usually used to set the way container blocks face when being placed.
      * @param location Location to get opposite of
      * @param inverted If up/down should be used
      * @return Opposite BlockFace or EAST if pitch is invalid
