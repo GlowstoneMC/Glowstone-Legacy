@@ -19,8 +19,6 @@ public class BlockBed extends BlockType {
 
     @Override
     public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {
-        //super.placeBlock(player, state, face, holding, clickedLoc);
-
         BlockFace direction;
         double rot = player.getLocation().getYaw() % 360;
         if (rot < 0) {
@@ -54,23 +52,7 @@ public class BlockBed extends BlockType {
     @Override
     public void afterPlace(GlowPlayer player, GlowBlock block, ItemStack holding) {
         BlockFace direction;
-        double rot = player.getLocation().getYaw() % 360;
-        if (rot < 0) {
-            rot += 360.0;
-        }
-        if (0 <= rot && rot < 45) {
-            direction = BlockFace.SOUTH;
-        } else if (45 <= rot && rot < 135) {
-            direction = BlockFace.WEST;
-        } else if (135 <= rot && rot < 225) {
-            direction = BlockFace.NORTH;
-        } else if (225 <= rot && rot < 315) {
-            direction = BlockFace.EAST;
-        } else if (315 <= rot && rot < 360.0) {
-            direction = BlockFace.SOUTH;
-        } else {
-            direction = BlockFace.EAST;
-        }
+        direction = ((Bed)block.getState().getData()).getFacing();
         GlowBlock headBlock;
         headBlock = block.getRelative(direction);
         if (headBlock.getType() == Material.AIR && headBlock.getRelative(BlockFace.DOWN).getType().isSolid()) {
