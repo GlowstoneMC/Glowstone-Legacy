@@ -38,6 +38,7 @@ For those who wish to contribute, we encourage you to fork the repository and su
 * Avoid nested code structures.
 * Use 4 spaces instead of tabs.
 * Changes must be future-proof. For example, changes that target only a specific Minecraft version are unlikely to be accepted.
+* Large changes should be documented by the appropriate javadocs if applicable.
 
 ## Committing your changes ##
 * Check for unnecessary whitespace with `git diff --check` before committing.
