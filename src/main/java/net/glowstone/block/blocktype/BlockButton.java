@@ -6,31 +6,16 @@ import net.glowstone.block.GlowBlockState;
 import net.glowstone.entity.GlowPlayer;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import static org.bukkit.block.BlockFace.DOWN;
-import static org.bukkit.block.BlockFace.UP;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Button;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class BlockButton extends BlockType {
+public class BlockButton extends BlockAttachable {
 
     public BlockButton(Material material) {
         setDrops(new ItemStack(material));
-    }
-
-    private void setAttachedFace(Button button, BlockFace attachedFace) {
-        byte data = button.getData();
-        switch (attachedFace) {
-            case UP: data |= 0; break;
-            case WEST: data |= 1; break;
-            case EAST: data |= 2; break;
-            case NORTH: data |= 3; break;
-            case SOUTH: data |= 4; break;
-            case DOWN: data |= 5; break;
-        }
-        button.setData(data);
     }
 
     @Override
@@ -73,6 +58,6 @@ public class BlockButton extends BlockType {
             return;
         }
 
-        setAttachedFace((Button) data, face.getOppositeFace());
+        setAttachedFace(state, face.getOppositeFace());
     }
 }

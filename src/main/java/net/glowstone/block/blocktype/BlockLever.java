@@ -11,35 +11,10 @@ import org.bukkit.material.Lever;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
-public class BlockLever extends BlockType {
+public class BlockLever extends BlockAttachable {
 
     public BlockLever() {
         setDrops(new ItemStack(Material.LEVER));
-    }
-
-    public void setAttachedFace(final Lever lever, final BlockFace attachedFace) {
-        byte data = lever.getData();
-        switch (attachedFace) {
-            case WEST:
-                data |= 1;
-                break;
-            case EAST:
-                data |= 2;
-                break;
-            case NORTH:
-                data |= 3;
-                break;
-            case SOUTH:
-                data |= 4;
-                break;
-            case DOWN:
-                data |= 5; // or 6
-                break;
-            case UP:
-                data |= 7; // or 0
-                break;
-        }
-        lever.setData(data);
     }
 
     @Override
@@ -64,10 +39,10 @@ public class BlockLever extends BlockType {
 
         final MaterialData data = state.getData();
         if (data instanceof Lever) {
-            final Lever l = (Lever) data;
-            setAttachedFace(l, face.getOppositeFace());
-            l.setFacingDirection(face == BlockFace.UP || face == BlockFace.DOWN ? player.getDirection() : face);
-            state.setData(l);
+            final Lever lever = (Lever) data;
+            setAttachedFace(state, face.getOppositeFace());
+            lever.setFacingDirection(face == BlockFace.UP || face == BlockFace.DOWN ? player.getDirection() : face);
+            state.setData(lever);
         } else {
             GlowServer.logger.warning("Placing " + getMaterial().name() + ": MaterialData was of wrong type (" + data.getClass().getName() + ")");
         }
