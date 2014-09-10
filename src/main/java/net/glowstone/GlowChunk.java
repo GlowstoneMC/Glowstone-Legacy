@@ -656,7 +656,7 @@ public final class GlowChunk implements Chunk {
             }
             byteSize += sectionCount * sectionSize;
         }
-        
+
         if (entireChunk) {
             byteSize += 256;  // + biomes
         }
