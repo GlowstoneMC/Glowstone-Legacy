@@ -385,6 +385,7 @@ public abstract class GlowEntity implements Entity {
         // send changed metadata
         List<MetadataMap.Entry> changes = metadata.getChanges();
         if (changes.size() > 0) {
+        	GlowServer.logger.info("Updated MetaData Send packet");
             result.add(new EntityMetadataMessage(id, changes));
         }
 
