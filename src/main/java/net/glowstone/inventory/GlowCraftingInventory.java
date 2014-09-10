@@ -20,8 +20,8 @@ public class GlowCraftingInventory extends GlowInventory implements CraftingInve
 
     public GlowCraftingInventory(InventoryHolder owner, InventoryType type) {
         super(owner, type);
-        if (type != InventoryType.CRAFTING && type != InventoryType.WORKBENCH) {
-            throw new IllegalArgumentException("GlowCraftingInventory cannot be " + type + ", only CRAFTING or WORKBENCH.");
+        if (type != InventoryType.CRAFTING && type != InventoryType.WORKBENCH && type != InventoryType.ENCHANTING && type != InventoryType.ANVIL && type != InventoryType.BREWING && type != InventoryType.BEACON && type != InventoryType.FURNACE  && type != InventoryType.DISPENSER && type != InventoryType.DROPPER  && type != InventoryType.HOPPER) {
+            throw new IllegalArgumentException("GlowCraftingInventory cannot be " + type + ", only CRAFTING or WORKBENCH or ENCHANTING or ANVIL or BREWING or Beacon or Furnace or Dispenser or Dropper or Hopper.");
         }
 
         slotTypes[RESULT_SLOT] = InventoryType.SlotType.RESULT;

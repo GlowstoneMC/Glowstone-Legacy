@@ -3,12 +3,14 @@ package net.glowstone.block.blocktype;
 import net.glowstone.GlowChunk;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.entity.TEFurnace;
+import net.glowstone.block.GlowBlock;
 import net.glowstone.block.entity.TileEntity;
 import net.glowstone.entity.GlowPlayer;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Furnace;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
@@ -33,6 +35,11 @@ public class BlockFurnace extends BlockContainer {
         } else {
             warnMaterialData(Furnace.class, data);
         }
+    }
+
+    @Override
+    public boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
+        return player.openBlockWindow(block.getLocation(), false, Material.FURNACE, InventoryType.FURNACE) != null;
     }
 
 }
