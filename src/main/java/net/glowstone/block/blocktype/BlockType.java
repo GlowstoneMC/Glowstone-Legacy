@@ -30,8 +30,8 @@ public class BlockType extends ItemType {
 
     protected List<ItemStack> drops = null;
     
-    protected GlowSound placeSound = new GlowSound(Sound.DIG_WOOD);
-    protected GlowSound breakSound = new GlowSound(Sound.DIG_WOOD);
+    protected GlowSound placeSound = new GlowSound(Sound.DIG_WOOD, 1F, 0.75F);
+    protected GlowSound breakSound = new GlowSound(Sound.DIG_WOOD, 1F, 0.75F);
 
     ////////////////////////////////////////////////////////////////////////////
     // Setters for subclass use

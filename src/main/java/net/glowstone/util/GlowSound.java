@@ -1,7 +1,5 @@
 package net.glowstone.util;
 
-import java.util.Random;
-
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -10,8 +8,6 @@ import org.bukkit.entity.Player;
  * A class that encapsulates relevant data for playing sounds (volume and pitch).
  */
 public class GlowSound {
-    private static final Random random = new Random();
-
     private final Sound sound;
     private final float volume;
     private final float pitch;
@@ -37,23 +33,19 @@ public class GlowSound {
     }
 
     /**
-     * Plays the sound to all players at the given location with a slight variation in pitch.
+     * Plays the sound to all players at the given location.
      * @param location Location at which to play the sound
      */
     public void play(Location location) {
-        location.getWorld().playSound(location, sound, volume, randomPitch());
+        location.getWorld().playSound(location, sound, volume, pitch);
     }
     
     /**
-     * Plays the sound to the given player at the given location with a slight variation in pitch.
+     * Plays the sound to the given player at the given location.
      * @param player Player to which to play the sound
      * @param location Location at which to play the sound
      */
     public void playTo(Player player, Location location) {
-        player.playSound(location, sound, volume, randomPitch());
-    }
-    
-    private float randomPitch() {
-        return pitch + random.nextFloat() * 0.5F - 0.25F;
+        player.playSound(location, sound, volume, pitch);
     }
 }
