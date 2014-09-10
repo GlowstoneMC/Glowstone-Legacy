@@ -7,7 +7,7 @@ import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.entity.TileEntity;
 import net.glowstone.block.itemtype.ItemType;
 import net.glowstone.entity.GlowPlayer;
-import net.glowstone.util.GlowSound;
+import net.glowstone.util.SoundInfo;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -30,8 +30,8 @@ public class BlockType extends ItemType {
 
     protected List<ItemStack> drops = null;
     
-    protected GlowSound placeSound = new GlowSound(Sound.DIG_WOOD, 1F, 0.75F);
-    protected GlowSound breakSound = new GlowSound(Sound.DIG_WOOD, 1F, 0.75F);
+    protected SoundInfo placeSound = new SoundInfo(Sound.DIG_WOOD, 1F, 0.75F);
+    protected SoundInfo breakSound = new SoundInfo(Sound.DIG_WOOD, 1F, 0.75F);
 
     ////////////////////////////////////////////////////////////////////////////
     // Setters for subclass use
@@ -61,7 +61,7 @@ public class BlockType extends ItemType {
      * Gets the sound that will be played when a player places the block.
      * @return The sound to be played
      */
-    public GlowSound getPlaceSound() {
+    public SoundInfo getPlaceSound() {
         return placeSound;
     }
     
@@ -69,7 +69,7 @@ public class BlockType extends ItemType {
      * Gets the sound that will be played when a player breaks the block.
      * @return The sound to be played
      */
-    public GlowSound getBreakSound() {
+    public SoundInfo getBreakSound() {
         return breakSound;
     }
 

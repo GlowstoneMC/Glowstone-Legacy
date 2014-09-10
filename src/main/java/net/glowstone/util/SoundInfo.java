@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 /**
  * A class that encapsulates relevant data for playing sounds (volume and pitch).
  */
-public class GlowSound {
+public class SoundInfo {
     private final Sound sound;
     private final float volume;
     private final float pitch;
@@ -16,7 +16,7 @@ public class GlowSound {
      * Constructs a new GlowSound with the given sound and a volume and pitch of 1
      * @param sound The Bukkit sound enum constant
      */
-    public GlowSound(Sound sound) {
+    public SoundInfo(Sound sound) {
         this(sound, 1F, 1F);
     }
 
@@ -26,7 +26,7 @@ public class GlowSound {
      * @param volume Volume of sound
      * @param pitch Pitch of sound
      */
-    public GlowSound(Sound sound, float volume, float pitch) {
+    public SoundInfo(Sound sound, float volume, float pitch) {
         this.sound = sound;
         this.volume = volume;
         this.pitch = pitch;
