@@ -132,7 +132,15 @@ public class BlockRedstoneDust extends BlockType {
 
         // If there is exactly one wire (the one we came from!), "inject"
         if(bsum == 0) {
-            traceBlockPowerInject(block, rsManager, flowDir, outPower);
+            if(flowDir == BlockFace.UP || flowDir == BlockFace.DOWN) {
+                // Special case
+                traceBlockPowerInject(block, rsManager, BlockFace.NORTH, outPower);
+                traceBlockPowerInject(block, rsManager, BlockFace.SOUTH, outPower);
+                traceBlockPowerInject(block, rsManager, BlockFace.WEST, outPower);
+                traceBlockPowerInject(block, rsManager, BlockFace.EAST, outPower);
+            } else {
+                traceBlockPowerInject(block, rsManager, flowDir, outPower);
+            }
         }
 
         // Move to floor

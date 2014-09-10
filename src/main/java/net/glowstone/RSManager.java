@@ -349,7 +349,11 @@ public class RSManager {
             if(block == null) {
                 continue;
             }
-            BlockType type = ItemTable.instance().getBlock(block.getType());
+            Material mat = block.getType();
+            if(mat == null) {
+                continue;
+            }
+            BlockType type = ItemTable.instance().getBlock(mat);
 
             // Check if we can add this as a source
             if(type != null && type.isRedSource(block)) {
