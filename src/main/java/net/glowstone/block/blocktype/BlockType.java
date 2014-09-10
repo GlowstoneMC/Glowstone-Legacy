@@ -295,8 +295,8 @@ public class BlockType extends ItemType {
         // TODO: Make note of this block's "charge" level
         // (will be necessary once we get onto implementing repeaters)
 
-        // Check if glass
-        if(block.getType() == Material.GLASS) {
+        // Check if solid
+        if(block.getType() == null || !block.getType().isOccluding()) {
             return;
         }
 
@@ -318,8 +318,8 @@ public class BlockType extends ItemType {
      * @param isDirect Whether we are applying direct or indirect power.
      */
     public void traceBlockPower(GlowBlock block, RSManager rsManager, Material srcMat, BlockFace flowDir, int inPower, boolean isDirect) {
-        // Check if glass
-        if(block.getType() == Material.GLASS) {
+        // Check if solid
+        if(block.getType() == null || !block.getType().isOccluding()) {
             return;
         }
 

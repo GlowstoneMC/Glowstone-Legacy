@@ -52,21 +52,26 @@ public class BlockRedstoneDust extends BlockType {
         GlowBlock blockMid  = block.getRelative(outDir.getModX(), outDir.getModY() + 0, outDir.getModZ());
         GlowBlock blockUp   = block.getRelative(outDir.getModX(), outDir.getModY() + 1, outDir.getModZ());
         GlowBlock blockDown = block.getRelative(outDir.getModX(), outDir.getModY() - 1, outDir.getModZ());
+        GlowBlock blockSeat = block.getRelative(BlockFace.DOWN);
 
         // Get some flags
         boolean wireMid  = (blockMid  != null && blockMid .getType() == Material.REDSTONE_WIRE);
         boolean wireUp   = (blockUp   != null && blockUp  .getType() == Material.REDSTONE_WIRE);
         boolean wireDown = (blockDown != null && blockDown.getType() == Material.REDSTONE_WIRE);
 
-        boolean solidOn   = (blockOn   != null && blockOn  .getType().isSolid());
-        boolean solidMid  = (blockMid  != null && blockMid .getType().isSolid());
-        boolean solidUp   = (blockUp   != null && blockUp  .getType().isSolid());
-        boolean solidDown = (blockDown != null && blockDown.getType().isSolid());
+        boolean solidOn   = (blockOn   != null && blockOn  .getType().isOccluding());
+        boolean solidMid  = (blockMid  != null && blockMid .getType().isOccluding());
+        boolean solidUp   = (blockUp   != null && blockUp  .getType().isOccluding());
+        boolean solidDown = (blockDown != null && blockDown.getType().isOccluding());
 
         // Check if glowstone 
         boolean glowOn    = (blockOn   != null && blockOn  .getType() == Material.GLOWSTONE);
         if(glowOn) {
             solidOn = false;
+        }
+        boolean glowSeat  = (blockSeat != null && blockSeat.getType() == Material.GLOWSTONE);
+        if(glowSeat) {
+            wireDown = false;
         }
 
         // Determine which one we use
@@ -157,7 +162,7 @@ public class BlockRedstoneDust extends BlockType {
     @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
         GlowBlock floor = block.getRelative(BlockFace.DOWN);
-        return floor != null && floor.getType().isSolid();
+        return floor != null && floor.getType().isOccluding();
     }
 
     @Override
