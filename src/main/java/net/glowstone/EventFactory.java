@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -66,6 +67,10 @@ public final class EventFactory {
     ////////////////////////////////////////////////////////////////////////////
     // Player Events
 
+    public static PlayerItemBreakEvent onPlayerItemBreakEvent(GlowPlayer player, ItemStack itemStack) {
+        return callEvent(new PlayerItemBreakEvent(player, itemStack));
+    }
+    
     public static AsyncPlayerPreLoginEvent onPlayerPreLogin(String name, InetSocketAddress address, UUID uuid) {
         // call async event
         final AsyncPlayerPreLoginEvent event = new AsyncPlayerPreLoginEvent(name, address.getAddress(), uuid);
