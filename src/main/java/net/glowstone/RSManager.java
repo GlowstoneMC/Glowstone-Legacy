@@ -249,8 +249,6 @@ public class RSManager {
      * @param chunkZ
      */
     public synchronized void dropChunk(int chunkX, int chunkZ) {
-        // We could prevent double-removals of a chunk,
-        //
         RSPos cp = new RSPos(chunkX, 0, chunkZ);
 
         if(DEBUG_REDSTONE) {
