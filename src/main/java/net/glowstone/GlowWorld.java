@@ -869,7 +869,9 @@ public final class GlowWorld implements World {
     @Override
     public boolean unloadChunk(int x, int z, boolean save, boolean safe) {
         boolean success = (!isChunkLoaded(x, z) || getChunkAt(x, z).unload(save, safe));
-        if(success) { getRSManager().dropRedChunk(x, z); }
+        if(success) {
+            getRSManager().dropChunk(x, z);
+        }
         return success;
     }
 
@@ -915,7 +917,7 @@ public final class GlowWorld implements World {
             }
         }
 
-        getRSManager().dirtyRedChunk(x, z);
+        getRSManager().dirtyChunk(x, z);
 
         return result;
     }
