@@ -51,11 +51,11 @@ public class BlockBed extends BlockType {
 
     @Override
     public void afterPlace(GlowPlayer player, GlowBlock block, ItemStack holding) {
-        BlockFace direction;
-        direction = ((Bed)block.getState().getData()).getFacing();
-        GlowBlock headBlock;
-        headBlock = block.getRelative(direction);
-        if (headBlock.getType() == Material.AIR && headBlock.getRelative(BlockFace.DOWN).getType().isSolid()) {
+        if (block.getType() == Material.BED_BLOCK) {
+            BlockFace direction;
+            direction = ((Bed)block.getState().getData()).getFacing();
+            GlowBlock headBlock;
+            headBlock = block.getRelative(direction);
             headBlock.setType(Material.BED_BLOCK);
             GlowBlockState headBlockState;
             headBlockState = headBlock.getState();
