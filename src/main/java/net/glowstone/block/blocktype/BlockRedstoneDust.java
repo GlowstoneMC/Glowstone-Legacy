@@ -50,19 +50,25 @@ public class BlockRedstoneDust extends BlockType {
         GlowBlock blockFwDn = block.getRelative(outDir.getModX(), outDir.getModY() - 1, outDir.getModZ());
         GlowBlock blockDn   = block.getRelative(BlockFace.DOWN);
 
-        // Get some flags
-        boolean wireMid  = (blockMid  != null && blockMid .getType() == Material.REDSTONE_WIRE);
-        boolean wireFwUp = (blockFwUp != null && blockFwUp.getType() == Material.REDSTONE_WIRE);
-        boolean wireFwDn = (blockFwDn != null && blockFwDn.getType() == Material.REDSTONE_WIRE);
+        Material matUp   = (blockUp   != null ? blockUp  .getType() : null);
+        Material matMid  = (blockMid  != null ? blockMid .getType() : null);
+        Material matFwUp = (blockFwUp != null ? blockFwUp.getType() : null);
+        Material matFwDn = (blockFwDn != null ? blockFwDn.getType() : null);
+        Material matDn   = (blockDn   != null ? blockDn  .getType() : null);
 
-        boolean solidUp   = (blockUp   != null && blockUp  .getType().isOccluding());
-        boolean solidMid  = (blockMid  != null && blockMid .getType().isOccluding());
-        boolean solidFwUp = (blockFwUp != null && blockFwUp.getType().isOccluding());
-        boolean solidFwDn = (blockFwDn != null && blockFwDn.getType().isOccluding());
+        // Get some flags
+        boolean wireMid  = (matMid  == Material.REDSTONE_WIRE);
+        boolean wireFwUp = (matFwUp == Material.REDSTONE_WIRE);
+        boolean wireFwDn = (matFwDn == Material.REDSTONE_WIRE);
+
+        boolean solidUp   = (matUp   != null && matUp  .isOccluding());
+        boolean solidMid  = (matMid  != null && matMid .isOccluding());
+        boolean solidFwUp = (matFwUp != null && matFwUp.isOccluding());
+        boolean solidFwDn = (matFwDn != null && matFwDn.isOccluding());
 
         // Check if glowstone 
-        boolean glowUp    = (blockUp   != null && blockUp  .getType() == Material.GLOWSTONE);
-        boolean glowDn    = (blockDn   != null && blockDn  .getType() == Material.GLOWSTONE);
+        boolean glowUp    = (matUp   == Material.GLOWSTONE);
+        boolean glowDn    = (matDn   == Material.GLOWSTONE);
         if(glowUp) {
             solidFwUp = false;
         }
@@ -84,7 +90,8 @@ public class BlockRedstoneDust extends BlockType {
             if(glowUp) {
                 // Is there a wire 2 steps above us?
                 GlowBlock blockUp2 = blockUp.getRelative(BlockFace.UP);
-                boolean wireUp2 = (blockUp2 != null && blockUp2.getType() == Material.REDSTONE_WIRE);
+                Material matUp2 = (blockUp2 != null ? blockUp2.getType() : null);
+                boolean wireUp2 = (matUp2 == Material.REDSTONE_WIRE);
                 if(wireUp2) {
                     // Yes - trace from FwUp pointing in the direction of that wire.
                     traceBlockPowerRSWire(blockFwUp, rsManager, BlockFace.SELF, outDir.getOppositeFace(), outPower-1, isDirect);
