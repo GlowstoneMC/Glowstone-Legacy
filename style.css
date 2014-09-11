@@ -18,7 +18,7 @@ a img {
 body {
 	/*background: #efd1ab url(/images/background.jpg) repeat scroll;*/
 	background: white;
-	margin: 0px;
+	margin: auto;
 	padding: 20px;
 	
 	font-family: Verdana, Helvetica, Arial, sans-serif;
