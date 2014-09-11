@@ -5,7 +5,8 @@ defaultTasks 'clean', 'build', 'shadowJar'
 apply plugin: 'java' // Specifies a java project, allows for javadoc generation etc.
 apply plugin: 'application' // Adds the 'gradle run' task
 apply plugin: 'project-report' // Adds project report tasks
-apply plugin: 'shadow' // Allows for dependency shading
+apply plugin: 'com.github.johnrengelman.shadow' // Allows for dependency shading
+apply plugin: 'maven-publish' //Allows for publishing to a maven repo
 
 // Methods to determine detailed version string
 def gitDescribe() {
@@ -50,7 +51,7 @@ description = "Glowstone"
 mainClassName = "net.glowstone.GlowServer"
 
 // Extended project information
-ext.url = 'https://github.com/SpaceManiac/Glowstone'
+ext.url = 'https://github.com/GlowstoneMC/Glowstone'
 ext.bukkitVersion = '1.7.9-R0.1'
 ext.gitDescribe = getVersionName()
 
@@ -66,10 +67,10 @@ compileJava {
 // Simple build script information
 buildscript {
     repositories {
-        maven { url "http://jcenter.bintray.com" }
+         jcenter()
     }
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.1.1'
     }
 }
 
@@ -84,6 +85,7 @@ repositories {
     mavenCentral()
     maven { url "http://repo.bukkit.org/content/groups/public/" }
     maven { url "https://oss.sonatype.org/content/repositories/public/" }
+    maven { url "http://repo.glowstone.net/content/groups/public/" }
 }
 
 // Dependencies used by our project
@@ -115,7 +117,58 @@ jar.manifest.mainAttributes(
 )
 
 // Exclude jar signatures
-shadow {
-    exclude 'META-INF/*.DSA'
-    exclude 'META-INF/*.RSA'
+shadowJar {
+    mergeServiceFiles {
+        exclude 'META-INF/*.DSA'
+        exclude 'META-INF/*.RSA'
+    }
+    baseName = 'glowstone'
+    classifier = ''
+}
+
+//Allows to build the javadoc on java 8 even if the javadoc isn't complete
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+// Source JAR generation
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.java.srcDirs
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.shadow
+            artifact sourcesJar
+            artifact javadocJar
+
+            repositories {
+                maven {
+                    credentials {
+                        username System.getenv("sonatypeUsername")
+                        password System.getenv("sonatypePassword")
+                    }
+                    // Tasks and variables based on if release or snapshot
+                    if (version.endsWith('-SNAPSHOT')) {
+                        // Set variable to snapshots repository URL
+                        url = 'http://repo.glowstone.net/content/repositories/snapshots/'
+                    } else {
+                        // Set variable to releases repository URL
+                        url = 'http://repo.glowstone.net/content/repositories/releases/'
+                    }
+                }
+            }
+        }
+    }
 }
