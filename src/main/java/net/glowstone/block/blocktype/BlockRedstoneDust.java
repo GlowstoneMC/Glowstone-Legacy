@@ -12,10 +12,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class BlockRedstoneDust extends BlockType {
-    // TODO: handle properly
-
     @Override
-    public boolean isBlockEmittingPower(GlowBlock block, BlockFace face, boolean isDirect) {
+    public boolean canBlockEmitPower(GlowBlock block, BlockFace face, boolean isDirect) {
         // RS wire does not emit directly
         if(isDirect) {
             return false;
@@ -26,21 +24,19 @@ public class BlockRedstoneDust extends BlockType {
 
     @Override
     public void traceBlockPowerInit(GlowBlock block, RSManager rsManager) {
-        // XXX: Do we discharge here, or rely on rsManager?
     }
 
     @Override
     public void traceBlockPowerStart(GlowBlock block, RSManager rsManager) {
-        // This does not trace from the "start".
     }
 
     private void traceBlockPowerInject(GlowBlock block, RSManager rsManager, BlockFace outDir, int outPower) {
         rsManager.traceFromBlock(block, outDir, outPower, false);
     }
 
-    private boolean traceBlockPowerRSWire(GlowBlock block, RSManager rsManager, BlockFace blockDir, BlockFace outDir, int outPower, boolean isDirect) {
+    private boolean traceBlockPowerRSWire(GlowBlock block, RSManager rsManager, BlockFace forbidDir, BlockFace outDir, int outPower, boolean isDirect) {
         // Bail out early
-        if(blockDir == outDir) {
+        if(forbidDir == outDir) {
             return false;
         }
         if(outPower <= 0) {
@@ -48,50 +44,50 @@ public class BlockRedstoneDust extends BlockType {
         }
 
         // Get the relevant blocks + materials
-        GlowBlock blockOn   = block.getRelative(BlockFace.UP);
+        GlowBlock blockUp   = block.getRelative(BlockFace.UP);
         GlowBlock blockMid  = block.getRelative(outDir.getModX(), outDir.getModY() + 0, outDir.getModZ());
-        GlowBlock blockUp   = block.getRelative(outDir.getModX(), outDir.getModY() + 1, outDir.getModZ());
-        GlowBlock blockDown = block.getRelative(outDir.getModX(), outDir.getModY() - 1, outDir.getModZ());
-        GlowBlock blockSeat = block.getRelative(BlockFace.DOWN);
+        GlowBlock blockFwUp = block.getRelative(outDir.getModX(), outDir.getModY() + 1, outDir.getModZ());
+        GlowBlock blockFwDn = block.getRelative(outDir.getModX(), outDir.getModY() - 1, outDir.getModZ());
+        GlowBlock blockDn   = block.getRelative(BlockFace.DOWN);
 
         // Get some flags
         boolean wireMid  = (blockMid  != null && blockMid .getType() == Material.REDSTONE_WIRE);
-        boolean wireUp   = (blockUp   != null && blockUp  .getType() == Material.REDSTONE_WIRE);
-        boolean wireDown = (blockDown != null && blockDown.getType() == Material.REDSTONE_WIRE);
+        boolean wireFwUp = (blockFwUp != null && blockFwUp.getType() == Material.REDSTONE_WIRE);
+        boolean wireFwDn = (blockFwDn != null && blockFwDn.getType() == Material.REDSTONE_WIRE);
 
-        boolean solidOn   = (blockOn   != null && blockOn  .getType().isOccluding());
-        boolean solidMid  = (blockMid  != null && blockMid .getType().isOccluding());
         boolean solidUp   = (blockUp   != null && blockUp  .getType().isOccluding());
-        boolean solidDown = (blockDown != null && blockDown.getType().isOccluding());
+        boolean solidMid  = (blockMid  != null && blockMid .getType().isOccluding());
+        boolean solidFwUp = (blockFwUp != null && blockFwUp.getType().isOccluding());
+        boolean solidFwDn = (blockFwDn != null && blockFwDn.getType().isOccluding());
 
         // Check if glowstone 
-        boolean glowOn    = (blockOn   != null && blockOn  .getType() == Material.GLOWSTONE);
-        if(glowOn) {
-            solidOn = false;
+        boolean glowUp    = (blockUp   != null && blockUp  .getType() == Material.GLOWSTONE);
+        boolean glowDn    = (blockDn   != null && blockDn  .getType() == Material.GLOWSTONE);
+        if(glowUp) {
+            solidFwUp = false;
         }
-        boolean glowSeat  = (blockSeat != null && blockSeat.getType() == Material.GLOWSTONE);
-        if(glowSeat) {
-            wireDown = false;
+        if(glowDn) {
+            wireFwDn = false;
         }
 
         // Determine which one we use
         GlowBlock useBlock = null;
-        if(wireDown && !solidMid) {
-            // Down
-            useBlock = blockDown;
+        if(wireFwDn && !solidMid) {
+            // Downwards
+            useBlock = blockFwDn;
             rsManager.traceFromBlockToBlock(block, useBlock, outDir, outPower, isDirect);
         }
-        if(wireUp && !(solidOn && solidMid)) {
-            // Up
-            useBlock = blockUp;
+        if(wireFwUp && !(solidUp && solidMid)) {
+            // Upwards
+            useBlock = blockFwUp;
             rsManager.traceFromBlockToBlock(block, useBlock, outDir, outPower, isDirect);
-            if(glowOn) {
-                // Trace upwards, too
-                GlowBlock blockOn2  = blockOn.getRelative(BlockFace.UP);
-                boolean wireOn2  = (blockOn2  != null && blockOn2 .getType() == Material.REDSTONE_WIRE);
-                if(wireOn2) {
-                    // Trace backwards
-                    traceBlockPowerRSWire(blockUp, rsManager, BlockFace.SELF, outDir.getOppositeFace(), outPower-1, isDirect);
+            if(glowUp) {
+                // Is there a wire 2 steps above us?
+                GlowBlock blockUp2 = blockUp.getRelative(BlockFace.UP);
+                boolean wireUp2 = (blockUp2 != null && blockUp2.getType() == Material.REDSTONE_WIRE);
+                if(wireUp2) {
+                    // Yes - trace from FwUp pointing in the direction of that wire.
+                    traceBlockPowerRSWire(blockFwUp, rsManager, BlockFace.SELF, outDir.getOppositeFace(), outPower-1, isDirect);
                 }
             }
         }
@@ -121,12 +117,12 @@ public class BlockRedstoneDust extends BlockType {
         }
 
         // Spread out
-        BlockFace blockDir = flowDir.getOppositeFace();
+        BlockFace forbidDir = flowDir.getOppositeFace();
         int outPower = inPower - 1;
-        boolean nn = traceBlockPowerRSWire(block, rsManager, blockDir, BlockFace.NORTH, outPower, false);
-        boolean ns = traceBlockPowerRSWire(block, rsManager, blockDir, BlockFace.SOUTH, outPower, false);
-        boolean ne = traceBlockPowerRSWire(block, rsManager, blockDir, BlockFace.EAST , outPower, false);
-        boolean nw = traceBlockPowerRSWire(block, rsManager, blockDir, BlockFace.WEST , outPower, false);
+        boolean nn = traceBlockPowerRSWire(block, rsManager, forbidDir, BlockFace.NORTH, outPower, false);
+        boolean ns = traceBlockPowerRSWire(block, rsManager, forbidDir, BlockFace.SOUTH, outPower, false);
+        boolean ne = traceBlockPowerRSWire(block, rsManager, forbidDir, BlockFace.EAST , outPower, false);
+        boolean nw = traceBlockPowerRSWire(block, rsManager, forbidDir, BlockFace.WEST , outPower, false);
 
         // Sum the numbers
         int bsum = 0;
@@ -158,7 +154,7 @@ public class BlockRedstoneDust extends BlockType {
         }
 
         // Move to floor
-        rsManager.traceFromBlockIfUnpowered(block, BlockFace.DOWN, outPower, false);
+        rsManager.traceFromBlock(block, BlockFace.DOWN, outPower, false);
     }
 
     @Override

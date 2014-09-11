@@ -197,13 +197,14 @@ public class BlockType extends ItemType {
     // Redstone
 
     /**
-     * Determines whether redstone is emitted from this face or not.
+     * Determines whether redstone can be emitted from this face or not.
      * @param block The block we are operating on.
      * @param face The face of the block that is being touched, or SELF for internal charge.
      * @param isDirect Whether we are looking for direct or indirect power.
      */
-    public boolean isBlockEmittingPower(GlowBlock block, BlockFace face, boolean isDirect) {
-        return true;
+    public boolean canBlockEmitPower(GlowBlock block, BlockFace face, boolean isDirect) {
+        Material mat = getMaterial();
+        return (mat != null && mat.isOccluding());
     }
 
     /**
@@ -252,13 +253,13 @@ public class BlockType extends ItemType {
      * NOTE: This function can be extended to cater for inPower and isDirect, need-permitting.
      * @param srcBlock The block we are flowing from.
      * @param rsManager The RSManager used for tracking.
-     * @param blockDir The direction we cannot flow in due to it leading back to our source.
+     * @param forbidDir The direction we cannot flow in due to it leading back to our source.
      * @param toDir The direction of redstone flow from this block.
      * @param isDirect Whether we are applying direct or indirect power.
      */
-    private void traceBlockPowerSolidToBlock(GlowBlock srcBlock, RSManager rsManager, BlockFace blockDir, BlockFace toDir, boolean isDirect) {
-        // Get the blockDir check out of the way.
-        if(blockDir == toDir) {
+    private void traceBlockPowerSolidToBlock(GlowBlock srcBlock, RSManager rsManager, BlockFace forbidDir, BlockFace toDir, boolean isDirect) {
+        // Get the forbidDir check out of the way.
+        if(forbidDir == toDir) {
             return;
         }
 
@@ -292,9 +293,6 @@ public class BlockType extends ItemType {
      * @param rsManager The RSManager used for tracking.
      */
     public void traceBlockPowerStart(GlowBlock block, RSManager rsManager) {
-        // TODO: Make note of this block's "charge" level
-        // (will be necessary once we get onto implementing repeaters)
-
         // Check if solid
         if(block.getType() == null || !block.getType().isOccluding()) {
             return;

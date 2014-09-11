@@ -94,7 +94,6 @@ public class RSManager {
      */
     public RSManager(GlowWorld world) {
         this.world = world;
-        // TODO: Get a list of chunks and mark the loaded ones as dirty
     }
 
     /**
@@ -175,9 +174,8 @@ public class RSManager {
         return getNewBlockPower(block.getX(), block.getY(), block.getZ());
     }
 
-
     /**
-     * Trace to a block from another block.
+     * Trace redstone current to a block from another block.
      * @param srcBlock The block we are sourcing from.
      * @param destBlock The block we are targeting.
      * @param flowDir The direction of redstone flow from the source block.
@@ -194,6 +192,9 @@ public class RSManager {
 
         // Get source material
         Material srcMat = srcBlock.getType();
+        if(srcMat == null) {
+            return;
+        }
 
         // Get destination block data
         Material destMat = destBlock.getType();
@@ -213,7 +214,7 @@ public class RSManager {
     }
 
     /**
-     * Trace from a block to another block.
+     * Trace redstone current from a block to another block given a direction.
      * @param srcBlock The block we are sourcing from.
      * @param flowDir The direction of redstone flow from this block.
      * @param inPower The input power level.
@@ -231,20 +232,7 @@ public class RSManager {
     }
 
     /**
-     * Trace from a block, provided there is no power coming from the given direction.
-     * @param srcBlock The block we are sourcing from.
-     * @param flowDir The direction of redstone flow from this block.
-     * @param inPower The input power level.
-     * @param isDirect Whether we are applying direct or indirect power.
-     */
-    public void traceFromBlockIfUnpowered(GlowBlock srcBlock, BlockFace flowDir, int inPower, boolean isDirect) {
-        // TODO: Check if destination is powered.
-        // Perform trace.
-        traceFromBlock(srcBlock, flowDir, inPower, isDirect);
-    }
-
-    /**
-     * Adds a source for tracing updates.
+     * Adds a source for redstone tracing updates.
      * @param block The block we use as a source.
      */
     public synchronized void addSource(Block block) {
@@ -260,8 +248,9 @@ public class RSManager {
      * @param chunkX
      * @param chunkZ
      */
-    public synchronized void dropRedChunk(int chunkX, int chunkZ) {
-        // TODO: Check if we need to prevent double-removals of a chunk
+    public synchronized void dropChunk(int chunkX, int chunkZ) {
+        // We could prevent double-removals of a chunk,
+        //
         RSPos cp = new RSPos(chunkX, 0, chunkZ);
 
         if(DEBUG_REDSTONE) {
@@ -269,18 +258,20 @@ public class RSManager {
         }
 
         // Loop
-        for(int y = 0; y < 256; y++)
-        for(int z = 0; z < 16; z++)
-        for(int x = 0; x < 16; x++) {
-            // Get position
-            int rx = x + (chunkX << 4);
-            int ry = y;
-            int rz = z + (chunkZ << 4);
-            RSPos p = new RSPos(rx, ry, rz);
+        for(int y = 0; y < 256; y++) {
+            for(int z = 0; z < 16; z++) {
+                for(int x = 0; x < 16; x++) {
+                    // Get position
+                    int rx = x + (chunkX << 4);
+                    int ry = y;
+                    int rz = z + (chunkZ << 4);
+                    RSPos p = new RSPos(rx, ry, rz);
 
-            // Remove this from all appropriate sets
-            redPowerNew.remove(p);
-            redSourceNew.remove(p);
+                    // Remove this from all appropriate sets
+                    redPowerNew.remove(p);
+                    redSourceNew.remove(p);
+                }
+            }
         }
     }
 
@@ -290,7 +281,7 @@ public class RSManager {
      * @param y
      * @param z
      */
-    public synchronized void dirtyRedBlock(int x, int y, int z) {
+    public synchronized void dirtyBlock(int x, int y, int z) {
         blocksDirtyNew.add(new RSPos(x, y, z));
     }
 
@@ -299,7 +290,7 @@ public class RSManager {
      * @param chunkX
      * @param chunkZ
      */
-    public synchronized void dirtyRedChunk(int chunkX, int chunkZ) {
+    public synchronized void dirtyChunk(int chunkX, int chunkZ) {
         chunksDirtyNew.add(new RSPos(chunkX, 0, chunkZ));
     }
 
@@ -309,7 +300,7 @@ public class RSManager {
      * @param y
      * @param z
      */
-    private synchronized void updateRedBlock(int x, int y, int z) {
+    private synchronized void updateBlock(int x, int y, int z) {
         if(DEBUG_REDSTONE) {
             System.out.println(String.format("red block update %d %d %d", x, y, z));
         }
@@ -319,7 +310,11 @@ public class RSManager {
         if(block == null) {
             return;
         }
-        BlockType type = ItemTable.instance().getBlock(block.getType());
+        Material mat = block.getType();
+        if(mat == null) {
+            return;
+        }
+        BlockType type = ItemTable.instance().getBlock(mat);
 
         // Check if we can add this as a source
         if(type != null && type.isRedSource(block)) {
@@ -332,7 +327,7 @@ public class RSManager {
      * @param chunkX
      * @param chunkZ
      */
-    private synchronized void updateRedChunk(int chunkX, int chunkZ) {
+    private synchronized void updateChunk(int chunkX, int chunkZ) {
         if(DEBUG_REDSTONE) {
             //System.out.println(String.format("red chunk update %d %d", chunkX, chunkZ));
         }
@@ -341,23 +336,25 @@ public class RSManager {
         GlowChunk chunk = world.getChunkAt(chunkX, chunkZ);
 
         // Loop
-        for(int pos = 0, y = 0; y < 256; y++)
-        for(int z = 0; z < 16; z++)
-        for(int x = 0; x < 16; x++, pos++) {
-            // Get block
-            GlowBlock block = chunk.getBlock(x, y, z);
-            if(block == null) {
-                continue;
-            }
-            Material mat = block.getType();
-            if(mat == null) {
-                continue;
-            }
-            BlockType type = ItemTable.instance().getBlock(mat);
+        for(int pos = 0, y = 0; y < 256; y++) {
+            for(int z = 0; z < 16; z++) {
+                for(int x = 0; x < 16; x++, pos++) {
+                    // Get block
+                    GlowBlock block = chunk.getBlock(x, y, z);
+                    if(block == null) {
+                        continue;
+                    }
+                    Material mat = block.getType();
+                    if(mat == null) {
+                        continue;
+                    }
+                    BlockType type = ItemTable.instance().getBlock(mat);
 
-            // Check if we can add this as a source
-            if(type != null && type.isRedSource(block)) {
-                addSource(block);
+                    // Check if we can add this as a source
+                    if(type != null && type.isRedSource(block)) {
+                        addSource(block);
+                    }
+                }
             }
         }
     }
@@ -393,7 +390,7 @@ public class RSManager {
             }
 
             // Update RS chunk
-            updateRedChunk(p.x, p.z);
+            updateChunk(p.x, p.z);
         }
 
         // Swap blocksDirty buffers
@@ -412,7 +409,7 @@ public class RSManager {
             }
 
             // Update RS block
-            updateRedBlock(p.x, p.y, p.z);
+            updateBlock(p.x, p.y, p.z);
         }
 
         // Swap sources and clear new
@@ -433,7 +430,11 @@ public class RSManager {
             if(block == null) {
                 continue;
             }
-            BlockType type = ItemTable.instance().getBlock(block.getType());
+            Material mat = block.getType();
+            if(mat == null) {
+                continue;
+            }
+            BlockType type = ItemTable.instance().getBlock(mat);
             if(type == null) {
                 continue;
             }
@@ -446,7 +447,11 @@ public class RSManager {
             if(block == null) {
                 continue;
             }
-            BlockType type = ItemTable.instance().getBlock(block.getType());
+            Material mat = block.getType();
+            if(mat == null) {
+                continue;
+            }
+            BlockType type = ItemTable.instance().getBlock(mat);
             if(type == null) {
                 continue;
             }
@@ -471,7 +476,11 @@ public class RSManager {
                 // Determine whether we discharge now or let it be
                 if(oneTick) {
                     if(charge > 0) {
-                        BlockType type = ItemTable.instance().getBlock(block.getType());
+                        Material mat = block.getType();
+                        if(mat == null) {
+                            continue;
+                        }
+                        BlockType type = ItemTable.instance().getBlock(mat);
                         if(type == null) {
                             continue;
                         }
@@ -495,14 +504,20 @@ public class RSManager {
                 continue;
             }
 
-            int charge = redPowerNew.get(p);
-            BlockType type = ItemTable.instance().getBlock(block.getType());
+            Material mat = block.getType();
+            if(mat == null) {
+                // Destroy to prevent latent charges
+                redPowerFlush.add(p);
+                continue;
+            }
+            BlockType type = ItemTable.instance().getBlock(mat);
             if(type == null) {
                 // Destroy to prevent latent charges
                 redPowerFlush.add(p);
                 continue;
             }
 
+            int charge = redPowerNew.get(p);
             type.traceBlockPowerEnd(block, this, charge & 0x0F);
         }
 
