@@ -20,7 +20,7 @@ public class BlockBed extends BlockType {
     @Override
     public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {
         BlockFace direction;
-        double rot = player.getLocation().getYaw() % 360;
+        double rot = player.getLocation().getYaw();
         if (rot < 0) {
             rot += 360.0;
         }
