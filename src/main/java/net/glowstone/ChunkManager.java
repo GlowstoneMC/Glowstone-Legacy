@@ -122,7 +122,7 @@ public final class ChunkManager {
         try {
             if (service.read(chunk)) {
                 EventFactory.callEvent(new ChunkLoadEvent(chunk, false));
-                world.getRSManager().dirtyRedChunk(x, z);
+                world.getRSManager().dirtyChunk(x, z);
                 return true;
             }
         } catch (Exception e) {

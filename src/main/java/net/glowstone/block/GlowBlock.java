@@ -168,8 +168,7 @@ public final class GlowBlock implements Block {
 
     @Override
     public Material getType() {
-        Material mat = Material.getMaterial(getTypeId());
-        return (mat == null ? Material.AIR : mat);
+        return Material.getMaterial(getTypeId());
     }
 
     @Override
@@ -277,7 +276,7 @@ public final class GlowBlock implements Block {
         if(type == null) {
             return false;
         }
-        return type.isBlockEmittingPower(this, face, true) &&
+        return type.canBlockEmitPower(this, face, true) &&
             getWorld().getRSManager().getBlockPower(this) > 0;
     }
 
@@ -287,7 +286,7 @@ public final class GlowBlock implements Block {
         if(type == null) {
             return false;
         }
-        return type.isBlockEmittingPower(this, face, false) &&
+        return type.canBlockEmitPower(this, face, false) &&
             getWorld().getRSManager().getBlockPower(this) > 0;
     }
 
@@ -297,7 +296,7 @@ public final class GlowBlock implements Block {
         if(type == null) {
             return 0;
         }
-        return (type.isBlockEmittingPower(this, face, false) 
+        return (type.canBlockEmitPower(this, face, false) 
             ? getWorld().getRSManager().getBlockPower(this)
             : 0);
     }

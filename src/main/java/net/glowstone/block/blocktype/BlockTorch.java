@@ -49,7 +49,7 @@ public class BlockTorch extends BlockType {
     }
 
     @Override
-    public boolean isBlockEmittingPower(GlowBlock block, BlockFace face, boolean isDirect) {
+    public boolean canBlockEmitPower(GlowBlock block, BlockFace face, boolean isDirect) {
         // Torches do not emit behind themselves
         if (face == getOwnFacing(block).getOppositeFace()) {
             return false;
@@ -72,8 +72,7 @@ public class BlockTorch extends BlockType {
     @Override
     public void traceBlockPowerEnd(GlowBlock block, RSManager rsManager, int power) {
         // Handle power change.
-        // TODO: make this actually work
-        Material mat = block.getType();
+        Material mat = getMaterial();
         if(mat == Material.REDSTONE_TORCH_ON && power == 0) {
             mat = Material.REDSTONE_TORCH_OFF;
             block.setTypeIdAndData(mat.getId(), (byte)block.getData(), false);
@@ -90,13 +89,13 @@ public class BlockTorch extends BlockType {
      * NOTE: This function can be extended to cater for inPower and isDirect, need-permitting.
      * @param srcBlock The block we are flowing from.
      * @param rsManager The RSManager used for tracking.
-     * @param blockDir The direction we cannot flow in due to it leading back to our source.
+     * @param forbidDir The direction we cannot flow in due to it leading back to our source.
      * @param toDir The direction of redstone flow from this block.
      * @param isDirect Whether the flow is direct or not.
      */
-    private void traceBlockPowerFromRSTorch(GlowBlock srcBlock, RSManager rsManager, BlockFace blockDir, BlockFace toDir, boolean isDirect) {
-        // Get the blockDir check out of the way.
-        if(blockDir == toDir) {
+    private void traceBlockPowerFromRSTorch(GlowBlock srcBlock, RSManager rsManager, BlockFace forbidDir, BlockFace toDir, boolean isDirect) {
+        // Get the forbidDir check out of the way.
+        if(forbidDir == toDir) {
             return;
         }
 
@@ -108,9 +107,11 @@ public class BlockTorch extends BlockType {
     public void traceBlockPowerInit(GlowBlock block, RSManager rsManager) {
         Material thisMat = getMaterial();
         if(thisMat == Material.REDSTONE_TORCH_ON) {
+            // Set the charge to ensure that this is handled next tick.
             rsManager.setBlockPower(block, 15, false);
         } else if(thisMat == Material.REDSTONE_TORCH_OFF) {
-            // Set the charge so it can be restored on the next tick
+            // Set the charge now.
+            // If it needs to stay discharged, it will be discharged by other blocks.
             rsManager.setBlockPower(block, 15, false);
         }
     }
