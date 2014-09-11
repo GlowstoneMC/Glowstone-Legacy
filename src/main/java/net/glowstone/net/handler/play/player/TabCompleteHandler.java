@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class TabCompleteHandler implements MessageHandler<GlowSession, TabCompleteMessage> {
+    @Override
     public void handle(GlowSession session, TabCompleteMessage message) {
         final Player sender = session.getPlayer();
         final String buffer = message.getText();
@@ -20,7 +21,10 @@ public final class TabCompleteHandler implements MessageHandler<GlowSession, Tab
 
         // complete command or username
         if (buffer.startsWith("/")) {
-            completions.addAll(session.getServer().getCommandMap().tabComplete(sender, buffer.substring(1)));
+            List<String> items = session.getServer().getCommandMap().tabComplete(sender, buffer.substring(1));
+            if (items != null) {
+                completions.addAll(items);
+            }
         } else {
             int space = buffer.lastIndexOf(' ');
             String lastWord;

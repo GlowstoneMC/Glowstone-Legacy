@@ -2,17 +2,17 @@ package net.glowstone.io.nbt;
 
 import net.glowstone.GlowServer;
 import net.glowstone.GlowWorld;
-import net.glowstone.entity.GlowPlayer;
 import net.glowstone.io.WorldMetadataService;
-import net.glowstone.io.entity.EntityStoreLookupService;
-import net.glowstone.util.nbt.*;
+import net.glowstone.util.nbt.CompoundTag;
+import net.glowstone.util.nbt.NBTInputStream;
+import net.glowstone.util.nbt.NBTOutputStream;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.io.*;
-import java.util.*;
+import java.util.Calendar;
+import java.util.UUID;
 import java.util.logging.Level;
-
 
 public class NbtWorldMetadataService implements WorldMetadataService {
     private final GlowWorld world;
@@ -31,6 +31,7 @@ public class NbtWorldMetadataService implements WorldMetadataService {
         }
     }
 
+    @Override
     public WorldFinalValues readWorldData() throws IOException {
         // determine UUID of world
         UUID uid = null;
@@ -122,9 +123,6 @@ public class NbtWorldMetadataService implements WorldMetadataService {
 
         // save unknown tags for later
         unknownTags = level;
-        for (Map.Entry<String, Tag> entry : unknownTags.getValue().entrySet()) {
-            server.getLogger().info("Unknown world tag: " + entry.getKey() + " = " + entry.getValue());
-        }
 
         return new WorldFinalValues(seed, uid);
     }
@@ -134,6 +132,7 @@ public class NbtWorldMetadataService implements WorldMetadataService {
         server.getLogger().log(Level.SEVERE, "Unable to access " + file + " for world " + world.getName(), e);
     }
 
+    @Override
     public void writeWorldData() throws IOException {
         File uuidFile = new File(dir, "uid.dat");
         try (DataOutputStream out = new DataOutputStream(new FileOutputStream(uuidFile))) {
@@ -185,41 +184,6 @@ public class NbtWorldMetadataService implements WorldMetadataService {
             nbtOut.writeTag(root);
         } catch (IOException e) {
             handleWorldException("level.dat", e);
-        }
-    }
-
-    private File playerFile(GlowPlayer player) {
-        File playerDir = new File(dir, "playerdata");
-        if (!playerDir.isDirectory() && !playerDir.mkdirs()) {
-            server.getLogger().warning("Failed to create directory: " + playerDir);
-        }
-        return new File(playerDir, player.getUniqueId() + ".dat");
-    }
-
-    public void readPlayerData(GlowPlayer player) {
-        File playerFile = playerFile(player);
-        CompoundTag playerTag = new CompoundTag();
-        if (playerFile.exists()) {
-            try (NBTInputStream in = new NBTInputStream(new FileInputStream(playerFile))) {
-                playerTag = in.readCompound();
-            } catch (IOException e) {
-                player.kickPlayer("Failed to read player data!");
-                server.getLogger().log(Level.SEVERE, "Failed to read data for " + player.getName() + ": " + playerFile, e);
-            }
-        }
-
-        EntityStoreLookupService.find(GlowPlayer.class).load(player, playerTag);
-    }
-
-    public void writePlayerData(GlowPlayer player) {
-        File playerFile = playerFile(player);
-        CompoundTag tag = new CompoundTag();
-        EntityStoreLookupService.find(GlowPlayer.class).save(player, tag);
-        try (NBTOutputStream out = new NBTOutputStream(new FileOutputStream(playerFile))) {
-            out.writeTag(tag);
-        } catch (IOException e) {
-            player.getSession().disconnect("Failed to save player data!");
-            server.getLogger().log(Level.SEVERE, "Failed to write data for " + player.getName() + ": " + playerFile, e);
         }
     }
 }

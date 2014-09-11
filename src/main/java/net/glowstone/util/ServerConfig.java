@@ -1,6 +1,7 @@
 package net.glowstone.util;
 
 import net.glowstone.GlowServer;
+import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -40,20 +41,24 @@ public final class ServerConfig {
     private final Map<String, YamlConfiguration> extraConfig = new HashMap<>();
 
     /**
+     * Parameters with which the server is ran.
+     */
+    private final Map<Key, Object> parameters;
+
+    /**
      * Initialize a new ServerConfig and associated settings.
      * @param configDir The config directory, or null for default.
      * @param configFile The config file, or null for default.
+     * @param parameters The command-line parameters used as overrides.
      */
-    public ServerConfig(File configDir, File configFile) {
-        if (configDir == null) {
-            configDir = new File("config");
-        }
-        if (configFile == null) {
-            configFile = new File(configDir, "glowstone.yml");
-        }
+    public ServerConfig(File configDir, File configFile, Map<Key, Object> parameters) {
+        Validate.notNull(configDir);
+        Validate.notNull(configFile);
+        Validate.notNull(parameters);
 
         this.configDir = configDir;
         this.configFile = configFile;
+        this.parameters = parameters;
 
         config.options().indent(4);
     }
@@ -62,14 +67,26 @@ public final class ServerConfig {
     // Value getters
 
     public String getString(Key key) {
+        if (parameters.containsKey(key)) {
+            return parameters.get(key).toString();
+        }
+
         return config.getString(key.path, key.def.toString());
     }
 
     public int getInt(Key key) {
+        if (parameters.containsKey(key)) {
+            return (Integer) parameters.get(key);
+        }
+
         return config.getInt(key.path, (Integer) key.def);
     }
 
     public boolean getBoolean(Key key) {
+        if (parameters.containsKey(key)) {
+            return (Boolean) parameters.get(key);
+        }
+
         return config.getBoolean(key.path, (Boolean) key.def);
     }
 
@@ -82,8 +99,8 @@ public final class ServerConfig {
             return extraConfig.get(filename);
         }
 
-        YamlConfiguration conf = new YamlConfiguration();
-        File file = getFile(filename), migrateFrom = new File(key.def.toString());
+        final YamlConfiguration conf = new YamlConfiguration();
+        final File file = getFile(filename), migrateFrom = new File(key.def.toString());
 
         // create file if it doesn't exist
         if (!file.exists()) {
@@ -127,7 +144,7 @@ public final class ServerConfig {
         extraConfig.clear();
 
         // create default file if needed
-        boolean exists = configFile.exists();
+        final boolean exists = configFile.exists();
         if (!exists) {
             // create config directory
             if (!configDir.isDirectory() && !configDir.mkdirs()) {
@@ -162,15 +179,15 @@ public final class ServerConfig {
     }
 
     private void copyDefaults(String source, File dest) {
-        URL resource = getClass().getClassLoader().getResource("defaults/" + source);
+        final URL resource = getClass().getClassLoader().getResource("defaults/" + source);
         if (resource == null) {
             GlowServer.logger.warning("Could not find default " + source + " on classpath");
             return;
         }
 
-        try (InputStream in = resource.openStream();
-             OutputStream out = new FileOutputStream(dest)) {
-            byte[] buf = new byte[2048];
+        try (final InputStream in = resource.openStream();
+             final OutputStream out = new FileOutputStream(dest)) {
+            final byte[] buf = new byte[2048];
             int len;
             while ((len = in.read(buf)) > 0) {
                 out.write(buf, 0, len);
@@ -196,7 +213,7 @@ public final class ServerConfig {
     private boolean migrate() {
         boolean migrateStatus = false;
 
-        File bukkitYml = new File("bukkit.yml");
+        final File bukkitYml = new File("bukkit.yml");
         if (bukkitYml.exists()) {
             YamlConfiguration bukkit = new YamlConfiguration();
             try {
@@ -217,7 +234,7 @@ public final class ServerConfig {
             config.set("worlds", bukkit.get("worlds"));
         }
 
-        File serverProps = new File("server.properties");
+        final File serverProps = new File("server.properties");
         if (serverProps.exists()) {
             Properties props = new Properties();
             try {
@@ -249,7 +266,7 @@ public final class ServerConfig {
         MAX_PLAYERS("server.max-players", 20, Migrate.PROPS, "max-players"),
         WHITELIST("server.whitelisted", false, Migrate.PROPS, "white-list"),
         MOTD("server.motd", "Glowstone Server", Migrate.PROPS, "motd"),
-        SHUTDOWN_MESSAGE("server.shutdown-message", "Server shutting down", Migrate.BUKKIT, "settings.shutdown-message"),
+        SHUTDOWN_MESSAGE("server.shutdown-message", "Server shutting down.", Migrate.BUKKIT, "settings.shutdown-message"),
         USE_JLINE("server.use-jline", true),
 
         // folders
@@ -270,6 +287,7 @@ public final class ServerConfig {
         EXACT_LOGIN_LOCATION("advanced.exact-login-location", false, Migrate.BUKKIT, "settings.use-exact-login-location"),
         PLUGIN_PROFILING("advanced.plugin-profiling", false, Migrate.BUKKIT, "settings.plugin-profiling"),
         WARNING_STATE("advanced.deprecated-verbose", "false", Migrate.BUKKIT, "settings.deprecated-verbose"),
+        COMPRESSION_THRESHOLD("advanced.compression-threshold", 256, Migrate.PROPS, "network-compression-threshold"),
 
         // query rcon etc
         QUERY_ENABLED("extras.query-enabled", false, Migrate.PROPS, "enable-query"),
@@ -322,9 +340,7 @@ public final class ServerConfig {
         DB_URL("database.url", "jdbc:sqlite:config/database.db", Migrate.BUKKIT, "database.url"),
         DB_USERNAME("database.username", "glowstone", Migrate.BUKKIT, "database.username"),
         DB_PASSWORD("database.password", "nether", Migrate.BUKKIT, "database.password"),
-        DB_ISOLATION("database.isolation", "SERIALIZABLE", Migrate.BUKKIT, "database.isolation"),
-
-        ;
+        DB_ISOLATION("database.isolation", "SERIALIZABLE", Migrate.BUKKIT, "database.isolation");
 
         private final String path;
         private final Object def;

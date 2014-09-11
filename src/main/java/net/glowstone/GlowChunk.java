@@ -5,6 +5,7 @@ import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.ItemTable;
 import net.glowstone.block.blocktype.BlockType;
 import net.glowstone.block.entity.TileEntity;
+import net.glowstone.entity.GlowEntity;
 import net.glowstone.net.message.play.game.ChunkDataMessage;
 import net.glowstone.util.NibbleArray;
 import org.bukkit.Chunk;
@@ -81,7 +82,7 @@ public final class GlowChunk implements Chunk {
     /**
      * The dimensions of a chunk (width: x, height: z, depth: y).
      */
-    public static final int WIDTH = 16, HEIGHT = 16, DEPTH = 128;
+    public static final int WIDTH = 16, HEIGHT = 16, DEPTH = 256;
 
     /**
      * The Y depth of a single chunk section.
@@ -95,17 +96,16 @@ public final class GlowChunk implements Chunk {
         private static final int ARRAY_SIZE = WIDTH * HEIGHT * SEC_DEPTH;
 
         // these probably should be made non-public
-        public final byte[] types;
-        public final NibbleArray metaData;
+        public final char[] types;
         public final NibbleArray skyLight;
         public final NibbleArray blockLight;
+        public int count; // amount of non-air blocks
 
         /**
          * Create a new, empty ChunkSection.
          */
         public ChunkSection() {
-            types = new byte[ARRAY_SIZE];
-            metaData = new NibbleArray(ARRAY_SIZE);
+            types = new char[ARRAY_SIZE];
             skyLight = new NibbleArray(ARRAY_SIZE);
             blockLight = new NibbleArray(ARRAY_SIZE);
             skyLight.fill((byte) 0xf);
@@ -116,14 +116,14 @@ public final class GlowChunk implements Chunk {
          * ChunkSection assumes ownership of the arrays passed in, and they
          * should not be further modified.
          */
-        public ChunkSection(byte[] types, NibbleArray metaData, NibbleArray skyLight, NibbleArray blockLight) {
-            if (types.length != ARRAY_SIZE || metaData.size() != ARRAY_SIZE || skyLight.size() != ARRAY_SIZE || blockLight.size() != ARRAY_SIZE) {
-                throw new IllegalArgumentException("An array length was not " + ARRAY_SIZE + ": " + types.length + " " + metaData.size() + " " + skyLight.size() + " " + blockLight.size());
+        public ChunkSection(char[] types, NibbleArray skyLight, NibbleArray blockLight) {
+            if (types.length != ARRAY_SIZE || skyLight.size() != ARRAY_SIZE || blockLight.size() != ARRAY_SIZE) {
+                throw new IllegalArgumentException("An array length was not " + ARRAY_SIZE + ": " + types.length + " " + skyLight.size() + " " + blockLight.size());
             }
             this.types = types;
-            this.metaData = metaData;
             this.skyLight = skyLight;
             this.blockLight = blockLight;
+            recount();
         }
 
         /**
@@ -137,23 +137,25 @@ public final class GlowChunk implements Chunk {
         }
 
         /**
-         * Check whether the section is empty (all blocks are air).
+         * Recount the amount of non-air blocks in the chunk section.
          */
-        public boolean isEmpty() {
-            for (byte type : types) {
-                if (type != 0) return false;
+        public void recount() {
+            count = 0;
+            for (char type : types) {
+                if (type != 0) {
+                    count++;
+                }
             }
-            return true;
         }
 
         /**
          * Take a snapshot of this section which will not reflect future changes.
          */
         public ChunkSection snapshot() {
-            return new ChunkSection(types.clone(), metaData.snapshot(), skyLight.snapshot(), blockLight.snapshot());
+            return new ChunkSection(types.clone(), skyLight.snapshot(), blockLight.snapshot());
         }
     }
-    
+
     /**
      * The world of this chunk.
      */
@@ -173,12 +175,17 @@ public final class GlowChunk implements Chunk {
      * The array of biomes this chunk contains, or null if it is unloaded.
      */
     private byte[] biomes;
-    
+
     /**
      * The tile entities that reside in this chunk.
      */
     private final HashMap<Integer, TileEntity> tileEntities = new HashMap<>();
-    
+
+    /**
+     * The entities that reside in this chunk.
+     */
+    private final Set<GlowEntity> entities = new HashSet<>(4);
+
     /**
      * Whether the chunk has been populated by special features.
      * Used in map generation.
@@ -203,26 +210,36 @@ public final class GlowChunk implements Chunk {
 
     // ======== Basic stuff ========
 
+    @Override
     public GlowWorld getWorld() {
         return world;
     }
 
+    @Override
     public int getX() {
         return x;
     }
 
+    @Override
     public int getZ() {
         return z;
     }
 
+    @Override
     public GlowBlock getBlock(int x, int y, int z) {
         return new GlowBlock(this, (this.x << 4) | (x & 0xf), y & 0xff, (this.z << 4) | (z & 0xf));
     }
 
+    @Override
     public Entity[] getEntities() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return entities.toArray(new Entity[entities.size()]);
     }
 
+    public Collection<GlowEntity> getRawEntities() {
+        return entities;
+    }
+
+    @Override
     public GlowBlockState[] getTileEntities() {
         List<GlowBlockState> states = new ArrayList<>(tileEntities.size());
         for (TileEntity tileEntity : tileEntities.values()) {
@@ -239,14 +256,16 @@ public final class GlowChunk implements Chunk {
         return Collections.unmodifiableCollection(tileEntities.values());
     }
 
+    @Override
     public GlowChunkSnapshot getChunkSnapshot() {
         return getChunkSnapshot(true, false, false);
     }
 
+    @Override
     public GlowChunkSnapshot getChunkSnapshot(boolean includeMaxblocky, boolean includeBiome, boolean includeBiomeTempRain) {
         return new GlowChunkSnapshot(x, z, world, sections, includeMaxblocky, includeBiome ? biomes.clone() : null, includeBiomeTempRain);
     }
-    
+
     /**
      * Gets whether this chunk has been populated by special features.
      * @return Population status.
@@ -254,7 +273,7 @@ public final class GlowChunk implements Chunk {
     public boolean isPopulated() {
         return populated;
     }
-    
+
     /**
      * Sets the population status of this chunk.
      * @param populated Population status.
@@ -262,29 +281,35 @@ public final class GlowChunk implements Chunk {
     public void setPopulated(boolean populated) {
         this.populated = populated;
     }
-    
+
     // ======== Helper Functions ========
 
+    @Override
     public boolean isLoaded() {
         return sections != null;
     }
 
+    @Override
     public boolean load() {
         return load(true);
     }
 
+    @Override
     public boolean load(boolean generate) {
         return isLoaded() || world.getChunkManager().loadChunk(x, z, generate);
     }
 
+    @Override
     public boolean unload() {
         return unload(true, true);
     }
 
+    @Override
     public boolean unload(boolean save) {
         return unload(save, true);
     }
 
+    @Override
     public boolean unload(boolean save, boolean safe) {
         if (!isLoaded()) {
             return true;
@@ -293,7 +318,7 @@ public final class GlowChunk implements Chunk {
         if (safe && world.isChunkInUse(x, z)) {
             return false;
         }
-        
+
         if (save && !world.getChunkManager().performSave(this)) {
             return false;
         }
@@ -365,7 +390,7 @@ public final class GlowChunk implements Chunk {
         }
         return sections[idx];
     }
-    
+
     /**
      * Attempt to get the tile entity located at the given coordinates.
      * @param x The X coordinate.
@@ -374,7 +399,7 @@ public final class GlowChunk implements Chunk {
      * @return A GlowBlockState if the entity exists, or null otherwise.
      */
     public TileEntity getEntity(int x, int y, int z) {
-        if (y >= world.getMaxHeight() || y < 0) return null;
+        if (y >= DEPTH || y < 0) return null;
         load();
         return tileEntities.get(coordToIndex(x, z, y));
     }
@@ -388,7 +413,7 @@ public final class GlowChunk implements Chunk {
      */
     public int getType(int x, int z, int y) {
         ChunkSection section = getSection(y);
-        return section == null ? 0 : (section.types[section.index(x, y, z)] & 0xff);
+        return section == null ? 0 : (section.types[section.index(x, y, z)] >> 4);
     }
 
     /**
@@ -424,10 +449,21 @@ public final class GlowChunk implements Chunk {
             tileEntities.remove(tileEntityIndex).destroy();
         }
 
-        // update the type
-        section.types[section.index(x, y, z)] = (byte) type;
+        // update the air count
+        int index = section.index(x, y, z);
+        if (type == 0) {
+            if (section.types[index] != 0) {
+                section.count--;
+            }
+        } else {
+            if (section.types[index] == 0) {
+                section.count++;
+            }
+        }
+        // update the type - also sets metadata to 0
+        section.types[index] = (char) (type << 4);
 
-        if (type == 0 && section.isEmpty()) {
+        if (type == 0 && section.count == 0) {
             // destroy the empty section
             sections[y / SEC_DEPTH] = null;
             return;
@@ -446,7 +482,7 @@ public final class GlowChunk implements Chunk {
      */
     public int getMetaData(int x, int z, int y) {
         ChunkSection section = getSection(y);
-        return section == null ? 0 : section.metaData.get(section.index(x, y, z));
+        return section == null ? 0 : section.types[section.index(x, y, z)] & 0xF;
     }
 
     /**
@@ -461,7 +497,10 @@ public final class GlowChunk implements Chunk {
             throw new IllegalArgumentException("Metadata out of range: " + metaData);
         ChunkSection section = getSection(y);
         if (section == null) return;  // can't set metadata on an empty section
-        section.metaData.set(section.index(x, y, z), (byte) metaData);
+        int index = section.index(x, y, z);
+        int type = section.types[index];
+        if (type == 0) return;  // can't set metadata on air
+        section.types[index] = (char) ((type & 0xfff0) | metaData);
     }
 
     /**
@@ -561,7 +600,7 @@ public final class GlowChunk implements Chunk {
      * @return The index within the arrays.
      */
     private int coordToIndex(int x, int z, int y) {
-        if (x < 0 || z < 0 || y < 0 || x >= WIDTH || z >= HEIGHT || y >= world.getMaxHeight())
+        if (x < 0 || z < 0 || y < 0 || x >= WIDTH || z >= HEIGHT || y >= DEPTH)
             throw new IndexOutOfBoundsException("Coords (x=" + x + ",y=" + y + ",z=" + z + ") invalid");
 
         return (y * HEIGHT + z) * WIDTH + x;
@@ -612,7 +651,7 @@ public final class GlowChunk implements Chunk {
             }
 
             for (int i = 0; i < sections.length; ++i) {
-                if (sections[i] == null) {
+                if (sections[i] == null || sections[i].count == 0) {
                     // remove empty sections from bitmask
                     sectionBitmask &= ~(1 << i);
                     sectionCount--;
@@ -625,16 +664,13 @@ public final class GlowChunk implements Chunk {
             return ChunkDataMessage.empty(x, z);
         }
 
-        // in future, take care of additional data
-        int additionalBitmask = 0, additionalCount = 0;
-
         // calculate how big the data will need to be
-        int numBlocks = WIDTH * HEIGHT * SEC_DEPTH;
-        int sectionSize = numBlocks * 2;  // data + metaData/2 + blockLight/2
+        final int numBlocks = WIDTH * HEIGHT * SEC_DEPTH;
+        int sectionSize = numBlocks * 5 / 2;  // (data and metadata combo) * 2 + blockLight/2
         if (skylight) {
             sectionSize += numBlocks / 2;  // + skyLight/2
         }
-        int byteSize = sectionCount * sectionSize + additionalCount * (numBlocks / 2);  // + additional/2
+        int byteSize = sectionCount * sectionSize;
         if (entireChunk) {
             byteSize += 256;  // + biomes
         }
@@ -642,8 +678,8 @@ public final class GlowChunk implements Chunk {
         // get the list of sections
         ChunkSection[] sendSections = new ChunkSection[sectionCount];
         int pos = 0;
-        for (int i = 0; i < sections.length; ++i) {
-            if ((sectionBitmask & (1 << i)) != 0) {
+        for (int i = 0, mask = 1; i < sections.length; ++i, mask <<= 1) {
+            if ((sectionBitmask & mask) != 0) {
                 sendSections[pos++] = sections[i];
             }
         }
@@ -653,14 +689,10 @@ public final class GlowChunk implements Chunk {
         pos = 0;
 
         for (ChunkSection sec : sendSections) {
-            System.arraycopy(sec.types, 0, tileData, pos, sec.types.length);
-            pos += sec.types.length;
-        }
-
-        for (ChunkSection sec : sendSections) {
-            byte[] metaData = sec.metaData.getRawData();
-            System.arraycopy(metaData, 0, tileData, pos, metaData.length);
-            pos += metaData.length;
+            for (char t : sec.types) {
+                tileData[pos++] = (byte) (t & 0xff);
+                tileData[pos++] = (byte) (t >> 8);
+            }
         }
 
         for (ChunkSection sec : sendSections) {
@@ -669,14 +701,13 @@ public final class GlowChunk implements Chunk {
             pos += blockLight.length;
         }
 
-        for (ChunkSection sec : sendSections) {
-            if (!skylight) break;
-            byte[] skyLight = sec.skyLight.getRawData();
-            System.arraycopy(skyLight, 0, tileData, pos, skyLight.length);
-            pos += skyLight.length;
+        if (skylight) {
+            for (ChunkSection sec : sendSections) {
+                byte[] skyLight = sec.skyLight.getRawData();
+                System.arraycopy(skyLight, 0, tileData, pos, skyLight.length);
+                pos += skyLight.length;
+            }
         }
-
-        // additional data goes here using additionalBitmask
 
         // biomes
         if (entireChunk) {
@@ -689,7 +720,7 @@ public final class GlowChunk implements Chunk {
             throw new IllegalStateException("only wrote " + pos + " out of expected " + byteSize + " bytes");
         }
 
-        return new ChunkDataMessage(x, z, entireChunk, sectionBitmask, additionalBitmask, tileData);
+        return new ChunkDataMessage(x, z, entireChunk, sectionBitmask, tileData);
     }
 
     private int countBits(int v) {

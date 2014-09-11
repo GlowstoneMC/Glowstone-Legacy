@@ -1,10 +1,16 @@
 package net.glowstone.entity.objects;
 
 import com.flowpowered.networking.Message;
-import net.glowstone.GlowServer;
-import net.glowstone.GlowWorld;
 import net.glowstone.entity.GlowEntity;
+import net.glowstone.entity.meta.MetadataIndex;
+import net.glowstone.net.message.play.entity.EntityMetadataMessage;
+import net.glowstone.net.message.play.entity.EntityTeleportMessage;
+import net.glowstone.net.message.play.entity.EntityVelocityMessage;
+import net.glowstone.net.message.play.entity.SpawnObjectMessage;
 import net.glowstone.util.Position;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
@@ -18,10 +24,10 @@ import java.util.List;
 public final class GlowItem extends GlowEntity implements Item {
 
     /**
-     * The item.
+     * The number of ticks (equal to 5 minutes) that item entities should live for.
      */
-    private ItemStack item;
-    
+    private static final int LIFETIME = 5 * 60 * 20;
+
     /**
      * The remaining delay until this item may be picked up.
      */
@@ -29,29 +35,36 @@ public final class GlowItem extends GlowEntity implements Item {
 
     /**
      * Creates a new item entity.
-     * @param world The world.
-     * @param item The item.
+     * @param location The location of the entity.
+     * @param item The item stack the entity is carrying.
      */
-    public GlowItem(GlowServer server, GlowWorld world, ItemStack item) {
-        super(server, world);
-        this.item = item;
+    public GlowItem(Location location, ItemStack item) {
+        super(location);
+        setItemStack(item);
         pickupDelay = 20;
     }
 
-    /**
-     * Gets the item that this GlowItem represents.
-     * @return The item.
-     */
-    public ItemStack getItemStack() {
-        return item;
+    ////////////////////////////////////////////////////////////////////////////
+    // Overrides
+
+    @Override
+    public EntityType getType() {
+        return EntityType.DROPPED_ITEM;
     }
 
-    /**
-     * Sets the item that this item represents.
-     * @param stack The new ItemStack to use.
-     */
-    public void setItemStack(ItemStack stack) {
-        item = stack.clone();
+    @Override
+    public void pulse() {
+        super.pulse();
+
+        // decrement pickupDelay if it's less than the NBT maximum
+        if (pickupDelay > 0) {
+            --pickupDelay;
+        }
+
+        // disappear if we've lived too long
+        if (getTicksLived() >= LIFETIME) {
+            // todo: remove();
+        }
     }
 
     @Override
@@ -63,16 +76,37 @@ public final class GlowItem extends GlowEntity implements Item {
         int yaw = Position.getIntYaw(location);
         int pitch = Position.getIntPitch(location);
 
-        //return new SpawnItemMessage(id, item, x, y, z, yaw, pitch, 0);
-        return Arrays.asList();
+        return Arrays.asList(
+                new SpawnObjectMessage(id, 2, x, y, z, pitch, yaw),
+                new EntityMetadataMessage(id, metadata.getEntryList()),
+                // these keep the client from assigning a random velocity
+                new EntityTeleportMessage(id, x, y, z, yaw, pitch),
+                new EntityVelocityMessage(id, getVelocity())
+        );
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Item stuff
+
+    @Override
     public int getPickupDelay() {
         return pickupDelay;
     }
 
+    @Override
     public void setPickupDelay(int delay) {
         pickupDelay = delay;
+    }
+
+    @Override
+    public ItemStack getItemStack() {
+        return metadata.getItem(MetadataIndex.ITEM_ITEM);
+    }
+
+    @Override
+    public void setItemStack(ItemStack stack) {
+        // stone is the "default state" for the item stack according to the client
+        metadata.set(MetadataIndex.ITEM_ITEM, stack == null ? new ItemStack(Material.STONE) : stack.clone());
     }
 
 }

@@ -3,33 +3,37 @@ package net.glowstone.net;
 import com.flowpowered.networking.AsyncableMessage;
 import com.flowpowered.networking.Message;
 import com.flowpowered.networking.MessageHandler;
-import com.flowpowered.networking.exception.UnknownPacketException;
-import com.flowpowered.networking.processor.MessageProcessor;
 import com.flowpowered.networking.session.BasicSession;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.handler.codec.DecoderException;
+import io.netty.channel.ChannelHandler;
+import io.netty.handler.codec.CodecException;
 import net.glowstone.EventFactory;
 import net.glowstone.GlowServer;
 import net.glowstone.entity.GlowPlayer;
+import net.glowstone.entity.meta.PlayerProfile;
+import net.glowstone.io.PlayerDataService;
 import net.glowstone.net.message.KickMessage;
+import net.glowstone.net.message.SetCompressionMessage;
 import net.glowstone.net.message.play.game.PingMessage;
 import net.glowstone.net.message.play.game.UserListItemMessage;
 import net.glowstone.net.message.play.player.BlockPlacementMessage;
+import net.glowstone.net.pipeline.CodecsHandler;
+import net.glowstone.net.pipeline.CompressionHandler;
+import net.glowstone.net.pipeline.EncryptionHandler;
+import net.glowstone.net.pipeline.NoopHandler;
 import net.glowstone.net.protocol.GlowProtocol;
-import net.glowstone.net.protocol.HandshakeProtocol;
 import net.glowstone.net.protocol.LoginProtocol;
 import net.glowstone.net.protocol.PlayProtocol;
+import net.glowstone.net.protocol.ProtocolType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
-import java.io.IOException;
+import javax.crypto.SecretKey;
 import java.net.InetSocketAddress;
-import java.util.ArrayDeque;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -76,6 +80,11 @@ public final class GlowSession extends BasicSession {
     private String verifyUsername;
 
     /**
+     * A message describing under what circumstances the connection ended.
+     */
+    private String quitReason;
+
+    /**
      * A timeout counter. This is increment once every tick and if it goes above
      * a certain value the session is disconnected.
      */
@@ -107,17 +116,12 @@ public final class GlowSession extends BasicSession {
     private int previousPlacementTicks;
 
     /**
-     * The MessageProcessor used for encryption, if it has been enabled.
-     */
-    private MessageProcessor processor;
-
-    /**
      * Creates a new session.
-     * @param server  The server this session belongs to.
+     * @param server The server this session belongs to.
      * @param channel The channel associated with this session.
      */
     public GlowSession(GlowServer server, Channel channel) {
-        super(channel, new HandshakeProtocol(server));
+        super(channel, ProtocolType.HANDSHAKE.getProtocol());
         this.server = server;
         address = super.getAddress();
     }
@@ -130,13 +134,8 @@ public final class GlowSession extends BasicSession {
         return server;
     }
 
-    /**
-     * Sets the verify token of this session.
-     * @param verifyToken The verify token.
-     */
-    public void setVerifyToken(byte[] verifyToken) {
-        this.verifyToken = verifyToken;
-    }
+    ////////////////////////////////////////////////////////////////////////////
+    // Auxiliary state
 
     /**
      * Get the randomly-generated verify token for this session.
@@ -147,11 +146,11 @@ public final class GlowSession extends BasicSession {
     }
 
     /**
-     * Sets the verify username for this session.
-     * @param verifyUsername The verify username.
+     * Sets the verify token of this session.
+     * @param verifyToken The verify token.
      */
-    public void setVerifyUsername(String verifyUsername) {
-        this.verifyUsername = verifyUsername;
+    public void setVerifyToken(byte[] verifyToken) {
+        this.verifyToken = verifyToken;
     }
 
     /**
@@ -160,6 +159,14 @@ public final class GlowSession extends BasicSession {
      */
     public String getVerifyUsername() {
         return verifyUsername;
+    }
+
+    /**
+     * Sets the verify username for this session.
+     * @param verifyUsername The verify username.
+     */
+    public void setVerifyUsername(String verifyUsername) {
+        this.verifyUsername = verifyUsername;
     }
 
     /**
@@ -195,6 +202,9 @@ public final class GlowSession extends BasicSession {
         return address;
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Player and state management
+
     /**
      * Gets the player associated with this session.
      * @return The player, or {@code null} if no player is associated with it.
@@ -205,16 +215,25 @@ public final class GlowSession extends BasicSession {
 
     /**
      * Sets the player associated with this session.
-     * @param player The new player.
+     * @param profile The player's profile with name and UUID information.
      * @throws IllegalStateException if there is already a player associated
-     *                               with this session.
+     * with this session.
      */
-    public void setPlayer(GlowPlayer player) {
-        if (this.player != null)
-            throw new IllegalStateException();
+    public void setPlayer(PlayerProfile profile) {
+        if (this.player != null) {
+            throw new IllegalStateException("Cannot set player twice");
+        }
 
-        // login event
-        this.player = player;
+        // isActive check here in case player disconnected during authentication
+        if (!isActive()) {
+            // no need to call onDisconnect() since it only does anything if there's a player set
+            return;
+        }
+
+        // initialize the player
+        PlayerDataService.PlayerReader reader = server.getPlayerDataService().beginReadingData(profile.getUniqueId());
+        player = new GlowPlayer(this, profile, reader);
+
         // isActive check here in case player disconnected after authentication,
         // but before the GlowPlayer initialization was completed
         if (!isActive()) {
@@ -224,6 +243,7 @@ public final class GlowSession extends BasicSession {
             return;
         }
 
+        // login event
         PlayerLoginEvent event = EventFactory.onPlayerLogin(player);
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             disconnect(event.getKickMessage(), true);
@@ -239,20 +259,20 @@ public final class GlowSession extends BasicSession {
             server.broadcastMessage(message);
         }
 
-        // todo: in the future, make actual ping measurements?
-        Message userListMessage = new UserListItemMessage(player.getPlayerListName(), true, 0);
-        for (Player sendPlayer : server.getOnlinePlayers()) {
-            ((GlowPlayer) sendPlayer).getSession().send(userListMessage);
-            if (sendPlayer != player) {
-                send(new UserListItemMessage(sendPlayer.getPlayerListName(), true, 0));
+        // todo: display names are included in the outgoing messages here, but
+        // don't show up on the client. A workaround or proper fix is needed.
+        Message addMessage = new UserListItemMessage(UserListItemMessage.Action.ADD_PLAYER, player.getUserListEntry());
+        List<UserListItemMessage.Entry> entries = new ArrayList<>();
+        for (Player rawPlayer : server.getOnlinePlayers()) {
+            GlowPlayer sendPlayer = (GlowPlayer) rawPlayer;
+            if (rawPlayer != player) {
+                sendPlayer.getSession().send(addMessage);
             }
+            entries.add(sendPlayer.getUserListEntry());
         }
+        send(new UserListItemMessage(UserListItemMessage.Action.ADD_PLAYER, entries));
     }
 
-    /**
-     * Sends a message to the client.
-     * @param message The message.
-     */
     @Override
     public ChannelFuture sendWithFuture(Message message) {
         writeTimeoutCounter = 0;
@@ -264,6 +284,7 @@ public final class GlowSession extends BasicSession {
     }
 
     @Override
+    @Deprecated
     public void disconnect() {
         disconnect("No reason specified.");
     }
@@ -301,9 +322,13 @@ public final class GlowSession extends BasicSession {
 
         // log that the player was kicked
         if (player != null) {
-            GlowServer.logger.log(Level.INFO, "Player {0} kicked: {1}", new Object[]{player.getName(), reason});
+            GlowServer.logger.log(Level.INFO, "{0} kicked: {1}", new Object[]{player.getName(), reason});
         } else {
             GlowServer.logger.log(Level.INFO, "[{0}] kicked: {1}", new Object[]{address, reason});
+        }
+
+        if (quitReason == null) {
+            quitReason = "kicked";
         }
 
         // perform the kick, sending a kick message if possible
@@ -312,25 +337,6 @@ public final class GlowSession extends BasicSession {
             sendWithFuture(new KickMessage(reason)).addListener(ChannelFutureListener.CLOSE);
         } else {
             getChannel().close();
-        }
-    }
-
-    @Override
-    public void onDisconnect() {
-        if (player != null) {
-            player.remove();
-            Message userListMessage = new UserListItemMessage(player.getPlayerListName(), false, 0);
-            for (Player player : server.getOnlinePlayers()) {
-                ((GlowPlayer) player).getSession().send(userListMessage);
-            }
-
-            GlowServer.logger.info(player.getName() + " [" + address + "] lost connection");
-
-            String text = EventFactory.onPlayerQuit(player).getQuitMessage();
-            if (text != null) {
-                server.broadcastMessage(text);
-            }
-            player = null; // in case we are disposed twice
         }
     }
 
@@ -376,10 +382,62 @@ public final class GlowSession extends BasicSession {
         }
     }
 
-    /**
-     * Adds a message to the unprocessed queue.
-     * @param message The message.
-     */
+    ////////////////////////////////////////////////////////////////////////////
+    // Pipeline management
+
+    public void setProtocol(ProtocolType protocol) {
+        getChannel().flush();
+
+        GlowProtocol proto = protocol.getProtocol();
+        updatePipeline("codecs", new CodecsHandler(proto));
+        super.setProtocol(proto);
+    }
+
+    public void enableEncryption(SecretKey sharedSecret) {
+        updatePipeline("encryption", new EncryptionHandler(sharedSecret));
+    }
+
+    public void enableCompression(int threshold) {
+        send(new SetCompressionMessage(threshold));
+        updatePipeline("compression", new CompressionHandler(threshold));
+    }
+
+    public void disableCompression() {
+        send(new SetCompressionMessage(-1));
+        updatePipeline("compression", NoopHandler.INSTANCE);
+    }
+
+    private void updatePipeline(String key, ChannelHandler handler) {
+        getChannel().pipeline().replace(key, key, handler);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Handler overrides
+
+    @Override
+    public void onDisconnect() {
+        if (player != null) {
+            player.remove();
+            Message userListMessage = UserListItemMessage.removeOne(player.getUniqueId());
+            for (Player player : server.getOnlinePlayers()) {
+                ((GlowPlayer) player).getSession().send(userListMessage);
+            }
+
+            String message = player.getName() + " [" + address + "] disconnected";
+            if (quitReason != null) {
+                message += ": " + quitReason;
+            }
+            GlowServer.logger.info(message);
+
+            String text = EventFactory.onPlayerQuit(player).getQuitMessage();
+            if (text != null) {
+                server.broadcastMessage(text);
+            }
+            player = null; // in case we are disposed twice
+        }
+    }
+
+    @Override
     public void messageReceived(Message message) {
         if (message instanceof AsyncableMessage && ((AsyncableMessage) message).isAsync()) {
             // async messages get their handlers called immediately
@@ -389,45 +447,38 @@ public final class GlowSession extends BasicSession {
         }
     }
 
-    public void setProtocol(GlowProtocol protocol) {
-        getChannel().flush();
-        super.setProtocol(protocol);
-    }
-
     @Override
     public void onInboundThrowable(Throwable t) {
-        if (t instanceof DecoderException) {
-            Throwable cause = t.getCause();
-            if (cause instanceof UnknownPacketException) {
-                UnknownPacketException ex = (UnknownPacketException) cause;
-                GlowServer.logger.info("Skipped unknown " + getProtocol().getName() + " opcode: " + ex.getOpcode() + ", length: " + ex.getLength());
-                return;
+        if (t instanceof CodecException) {
+            // generated by the pipeline, not a network error
+            GlowServer.logger.log(Level.SEVERE, "Error in network input", t);
+        } else {
+            // probably a network-level error - consider the client gone
+            if (quitReason == null) {
+                quitReason = "read error: " + t;
             }
+            getChannel().close();
         }
-        GlowServer.logger.log(Level.SEVERE, "Error in network input", t);
     }
 
     @Override
     public void onOutboundThrowable(Throwable t) {
-        if (t instanceof IOException && !isActive()) {
-            GlowServer.logger.log(Level.WARNING, "Error in output for inactive session: " + t);
-        } else {
+        if (t instanceof CodecException) {
+            // generated by the pipeline, not a network error
             GlowServer.logger.log(Level.SEVERE, "Error in network output", t);
+        } else {
+            // probably a network-level error - consider the client gone
+            if (quitReason == null) {
+                quitReason = "write error: " + t;
+            }
+            getChannel().close();
         }
     }
 
     @Override
     public void onHandlerThrowable(Message message, MessageHandler<?, ?> handle, Throwable t) {
+        // can be safely logged and the connection maintained
         GlowServer.logger.log(Level.SEVERE, "Error while handling " + message + " (handler: " + handle.getClass().getSimpleName() + ")", t);
-    }
-
-    public void setProcessor(MessageProcessor processor) {
-        this.processor = processor;
-    }
-
-    @Override
-    public MessageProcessor getProcessor() {
-        return processor;
     }
 
     @Override

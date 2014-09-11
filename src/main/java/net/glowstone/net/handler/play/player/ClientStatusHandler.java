@@ -8,11 +8,14 @@ import net.glowstone.net.message.play.player.ClientStatusMessage;
 import org.bukkit.Achievement;
 
 public final class ClientStatusHandler implements MessageHandler<GlowSession, ClientStatusMessage> {
+    @Override
     public void handle(GlowSession session, ClientStatusMessage message) {
         final GlowPlayer player = session.getPlayer();
 
         switch (message.getAction()) {
-            // todo: handle RESPAWN
+            case ClientStatusMessage.RESPAWN:
+                player.respawn();
+                break;
 
             case ClientStatusMessage.REQUEST_STATS:
                 player.sendStats();

@@ -4,12 +4,19 @@ import com.flowpowered.networking.Message;
 
 public final class InteractEntityMessage implements Message {
 
-    private final int id;
-    private final int action;
+    private final int id, action;
+    private final float targetX, targetY, targetZ;
 
     public InteractEntityMessage(int id, int action) {
+        this(id, action, 0, 0, 0);
+    }
+
+    public InteractEntityMessage(int id, int action, float targetX, float targetY, float targetZ) {
         this.id = id;
         this.action = action;
+        this.targetX = targetX;
+        this.targetY = targetY;
+        this.targetZ = targetZ;
     }
 
     public int getId() {
@@ -20,12 +27,33 @@ public final class InteractEntityMessage implements Message {
         return action;
     }
 
+    public float getTargetX() {
+        return targetX;
+    }
+
+    public float getTargetY() {
+        return targetY;
+    }
+
+    public float getTargetZ() {
+        return targetZ;
+    }
+
     @Override
     public String toString() {
         return "InteractEntityMessage{" +
                 "id=" + id +
                 ", action=" + action +
+                ", targetX=" + targetX +
+                ", targetY=" + targetY +
+                ", targetZ=" + targetZ +
                 '}';
+    }
+
+    public enum Action {
+        INTERACT,
+        ATTACK,
+        ATTACK_AT
     }
 }
 

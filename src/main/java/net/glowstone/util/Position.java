@@ -18,12 +18,6 @@ public final class Position {
     public static final int GRANULARITY = 32;
 
     /**
-     * A position where all the coordinates are set to zero, and there is no
-     * world associated.
-     */
-    public static final Location ZERO = new Location(null, 0, 0, 0);
-
-    /**
      * Gets the X coordinate multiplied the granularity and rounded to an
      * integer.
      * @return An integer approximation of the X coordinate.
@@ -80,6 +74,25 @@ public final class Position {
      */
     public static boolean hasRotated(Location first, Location second) {
         return first.getPitch() != second.getPitch() || first.getYaw() != second.getYaw();
+    }
+
+    /**
+     * Copy the contents of one Location to another.
+     * @param source The Location to read from.
+     * @param dest The Location to modify. May be null.
+     * @return The dest parameter, modified if not null.
+     */
+    public static Location copyLocation(Location source, Location dest) {
+        if (dest == null) {
+            return null;
+        }
+        dest.setWorld(source.getWorld());
+        dest.setX(source.getX());
+        dest.setY(source.getY());
+        dest.setZ(source.getZ());
+        dest.setPitch(source.getPitch());
+        dest.setYaw(source.getYaw());
+        return dest;
     }
 
 }

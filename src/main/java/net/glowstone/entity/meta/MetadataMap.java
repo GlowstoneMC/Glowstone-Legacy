@@ -1,5 +1,6 @@
 package net.glowstone.entity.meta;
 
+import com.google.common.collect.ImmutableList;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
@@ -11,6 +12,7 @@ import java.util.*;
 public class MetadataMap {
 
     private final Map<MetadataIndex, Object> map = new EnumMap<>(MetadataIndex.class);
+    private final List<Entry> changes = new ArrayList<>(4);
     private final Class<? extends Entity> entityClass;
 
     public MetadataMap(Class<? extends Entity> entityClass) {
@@ -50,7 +52,10 @@ public class MetadataMap {
             throw new IllegalArgumentException("Index " + index + " does not apply to " + entityClass.getSimpleName() + ", only " + index.getAppliesTo().getSimpleName());
         }
 
-        map.put(index, value);
+        Object prev = map.put(index, value);
+        if (!Objects.equals(prev, value)) {
+            changes.add(new Entry(index, value));
+        }
     }
 
     public Object get(MetadataIndex index) {
@@ -61,12 +66,12 @@ public class MetadataMap {
         return (getNumber(index).intValue() & bit) != 0;
     }
 
-    public void setBit(MetadataIndex index, int bit) {
-        set(index, getNumber(index).intValue() | bit);
-    }
-
-    public void clearBit(MetadataIndex index, int bit) {
-        set(index, getNumber(index).intValue() & ~bit);
+    public void setBit(MetadataIndex index, int bit, boolean status) {
+        if (status) {
+            set(index, getNumber(index).intValue() | bit);
+        } else {
+            set(index, getNumber(index).intValue() & ~bit);
+        }
     }
 
     public Number getNumber(MetadataIndex index) {
@@ -123,6 +128,15 @@ public class MetadataMap {
         }
         Collections.sort(result);
         return result;
+    }
+
+    public List<Entry> getChanges() {
+        Collections.sort(changes);
+        return ImmutableList.copyOf(changes);
+    }
+
+    public void resetChanges() {
+        changes.clear();
     }
 
     @Override

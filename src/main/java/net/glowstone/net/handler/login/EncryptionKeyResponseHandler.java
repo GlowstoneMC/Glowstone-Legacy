@@ -2,9 +2,8 @@ package net.glowstone.net.handler.login;
 
 import com.flowpowered.networking.MessageHandler;
 import net.glowstone.GlowServer;
-import net.glowstone.entity.GlowPlayer;
+import net.glowstone.entity.meta.PlayerProfile;
 import net.glowstone.entity.meta.PlayerProperty;
-import net.glowstone.net.EncryptionChannelProcessor;
 import net.glowstone.net.GlowSession;
 import net.glowstone.net.message.login.EncryptionKeyResponseMessage;
 import net.glowstone.util.UuidUtils;
@@ -14,6 +13,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
@@ -46,10 +47,10 @@ public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSe
         }
 
         // decrypt shared secret
-        byte[] sharedSecret;
+        SecretKey sharedSecret;
         try {
             rsaCipher.init(Cipher.DECRYPT_MODE, privateKey);
-            sharedSecret = rsaCipher.doFinal(message.getSharedSecret());
+            sharedSecret = new SecretKeySpec(rsaCipher.doFinal(message.getSharedSecret()), "AES");
         } catch (Exception ex) {
             GlowServer.logger.log(Level.WARNING, "Could not decrypt shared secret", ex);
             session.disconnect("Unable to decrypt shared secret.");
@@ -68,20 +69,20 @@ public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSe
         }
 
         // check verify token
-        if(!Arrays.equals(verifyToken, session.getVerifyToken())) {
+        if (!Arrays.equals(verifyToken, session.getVerifyToken())) {
             session.disconnect("Invalid verify token.");
             return;
         }
 
         // initialize stream encryption
-        session.setProcessor(new EncryptionChannelProcessor(sharedSecret, 32));
+        session.enableEncryption(sharedSecret);
 
         // create hash for auth
         String hash;
         try {
             final MessageDigest digest = MessageDigest.getInstance("SHA-1");
             digest.update(session.getSessionId().getBytes());
-            digest.update(sharedSecret);
+            digest.update(sharedSecret.getEncoded());
             digest.update(session.getServer().getKeyPair().getPublic().getEncoded());
 
             // BigInteger takes care of sign and leading zeroes
@@ -154,11 +155,7 @@ public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSe
                 session.getServer().getScheduler().runTask(null, new Runnable() {
                     @Override
                     public void run() {
-                        // isActive check here to break out early if player has disconnected
-                        // while waiting to be logged in
-                        if (session.isActive()) {
-                            session.setPlayer(new GlowPlayer(session, name, uuid, properties));
-                        }
+                        session.setPlayer(new PlayerProfile(name, uuid, properties));
                     }
                 });
             } catch (Exception e) {

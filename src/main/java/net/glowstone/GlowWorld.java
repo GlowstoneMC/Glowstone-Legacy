@@ -3,7 +3,7 @@ package net.glowstone;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.constants.GlowBiome;
 import net.glowstone.entity.*;
-import net.glowstone.io.WorldMetadataService;
+import net.glowstone.entity.objects.GlowItem;
 import net.glowstone.io.WorldMetadataService.WorldFinalValues;
 import net.glowstone.io.WorldStorageProvider;
 import net.glowstone.io.anvil.AnvilWorldStorageProvider;
@@ -11,6 +11,8 @@ import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
+import org.bukkit.event.weather.ThunderChangeEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
@@ -36,6 +38,7 @@ public final class GlowWorld implements World {
      * The metadata store class for worlds.
      */
     private final static class WorldMetadataStore extends MetadataStoreBase<World> implements MetadataStore<World> {
+        @Override
         protected String disambiguate(World subject, String metadataKey) {
             return subject.getName() + ":" + metadataKey;
         }
@@ -324,6 +327,14 @@ public final class GlowWorld implements World {
     }
 
     /**
+     * Get the world's parent server.
+     * @return The GlowServer for the world.
+     */
+    public GlowServer getServer() {
+        return server;
+    }
+
+    /**
      * Get a new chunk lock object a player or other party can use to keep chunks loaded.
      * @return The ChunkLock.
      */
@@ -335,13 +346,26 @@ public final class GlowWorld implements World {
      * Updates all the entities within this world.
      */
     public void pulse() {
-        ArrayList<GlowEntity> temp = new ArrayList<>(entities.getAll());
+        List<GlowEntity> temp = new ArrayList<>(entities.getAll());
+        List<GlowEntity> players = new LinkedList<>();
 
-        for (GlowEntity entity : temp)
+        // pulse players last so they actually see that other entities have
+        // moved. unfortunately pretty hacky. not a problem for players b/c
+        // their position is modified by session ticking.
+        for (GlowEntity entity : temp) {
+            if (entity instanceof GlowPlayer) {
+                players.add(entity);
+            } else {
+                entity.pulse();
+            }
+        }
+        for (GlowEntity entity : players) {
             entity.pulse();
+        }
 
-        for (GlowEntity entity : temp)
+        for (GlowEntity entity : temp) {
             entity.reset();
+        }
 
         // Tick the world age and time of day
         // Modulus by 24000, the tick length of a day
@@ -404,14 +428,17 @@ public final class GlowWorld implements World {
     ////////////////////////////////////////////////////////////////////////////
     // Entity lists
 
+    @Override
     public List<Player> getPlayers() {
         return new ArrayList<Player>(entities.getAll(GlowPlayer.class));
     }
 
+    @Override
     public List<Entity> getEntities() {
         return new ArrayList<Entity>(entities.getAll());
     }
 
+    @Override
     public List<LivingEntity> getLivingEntities() {
         List<LivingEntity> result = new LinkedList<>();
         for (Entity e : entities.getAll()) {
@@ -420,12 +447,14 @@ public final class GlowWorld implements World {
         return result;
     }
 
+    @Override
     @Deprecated
     @SuppressWarnings("unchecked")
     public <T extends Entity> Collection<T> getEntitiesByClass(Class<T>... classes) {
         return (Collection<T>) getEntitiesByClasses(classes);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T extends Entity> Collection<T> getEntitiesByClass(Class<T> cls) {
         ArrayList<T> result = new ArrayList<>();
@@ -437,6 +466,7 @@ public final class GlowWorld implements World {
         return result;
     }
 
+    @Override
     public Collection<Entity> getEntitiesByClasses(Class<?>... classes) {
         ArrayList<Entity> result = new ArrayList<>();
         for (Entity e : entities.getAll()) {
@@ -453,10 +483,12 @@ public final class GlowWorld implements World {
     ////////////////////////////////////////////////////////////////////////////
     // Various malleable world properties
 
+    @Override
     public Location getSpawnLocation() {
         return spawnLocation.clone();
     }
 
+    @Override
     public boolean setSpawnLocation(int x, int y, int z) {
         Location oldSpawn = spawnLocation;
         spawnLocation = new Location(this, x, y, z);
@@ -464,18 +496,22 @@ public final class GlowWorld implements World {
         return true;
     }
 
+    @Override
     public boolean getPVP() {
         return pvpAllowed;
     }
 
+    @Override
     public void setPVP(boolean pvp) {
         pvpAllowed = pvp;
     }
 
+    @Override
     public boolean getKeepSpawnInMemory() {
         return keepSpawnLoaded;
     }
 
+    @Override
     public void setKeepSpawnInMemory(boolean keepLoaded) {
         keepSpawnLoaded = keepLoaded;
 
@@ -498,18 +534,22 @@ public final class GlowWorld implements World {
         }
     }
 
+    @Override
     public boolean isAutoSave() {
         return autosave;
     }
 
+    @Override
     public void setAutoSave(boolean value) {
         autosave = value;
     }
 
+    @Override
     public Difficulty getDifficulty() {
         return difficulty;
     }
 
+    @Override
     public void setDifficulty(Difficulty difficulty) {
         this.difficulty = difficulty;
     }
@@ -517,63 +557,78 @@ public final class GlowWorld implements World {
     ////////////////////////////////////////////////////////////////////////////
     // Entity spawning properties
 
+    @Override
     public void setSpawnFlags(boolean allowMonsters, boolean allowAnimals) {
         spawnMonsters = allowMonsters;
         spawnAnimals = allowAnimals;
     }
 
+    @Override
     public boolean getAllowAnimals() {
         return spawnAnimals;
     }
 
+    @Override
     public boolean getAllowMonsters() {
         return spawnMonsters;
     }
 
+    @Override
     public long getTicksPerAnimalSpawns() {
         return ticksPerAnimal;
     }
 
+    @Override
     public void setTicksPerAnimalSpawns(int ticksPerAnimalSpawns) {
         ticksPerAnimal = ticksPerAnimalSpawns;
     }
 
+    @Override
     public long getTicksPerMonsterSpawns() {
         return ticksPerMonster;
     }
 
+    @Override
     public void setTicksPerMonsterSpawns(int ticksPerMonsterSpawns) {
         ticksPerMonster = ticksPerMonsterSpawns;
     }
 
+    @Override
     public int getMonsterSpawnLimit() {
         return monsterLimit;
     }
 
+    @Override
     public void setMonsterSpawnLimit(int limit) {
         monsterLimit = limit;
     }
 
+    @Override
     public int getAnimalSpawnLimit() {
         return animalLimit;
     }
 
+    @Override
     public void setAnimalSpawnLimit(int limit) {
         animalLimit = limit;
     }
 
+    @Override
     public int getWaterAnimalSpawnLimit() {
         return waterAnimalLimit;
     }
 
+    @Override
     public void setWaterAnimalSpawnLimit(int limit) {
         waterAnimalLimit = limit;
     }
 
+    @Override
     public int getAmbientSpawnLimit() {
         return ambientLimit;
     }
 
+    @Override
     public void setAmbientSpawnLimit(int limit) {
         ambientLimit = limit;
     }
@@ -581,34 +636,42 @@ public final class GlowWorld implements World {
     ////////////////////////////////////////////////////////////////////////////
     // Various fixed world properties
 
+    @Override
     public Environment getEnvironment() {
         return environment;
     }
 
+    @Override
     public long getSeed() {
         return seed;
     }
 
+    @Override
     public UUID getUID() {
         return uid;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public int getMaxHeight() {
         return GlowChunk.DEPTH;
     }
 
+    @Override
     public int getSeaLevel() {
         return getMaxHeight() / 2;
     }
 
+    @Override
     public WorldType getWorldType() {
         return worldType;
     }
 
+    @Override
     public boolean canGenerateStructures() {
         return generateStructures;
     }
@@ -616,6 +679,7 @@ public final class GlowWorld implements World {
     ////////////////////////////////////////////////////////////////////////////
     // force-save
 
+    @Override
     public void save() {
         save(false);
     }
@@ -628,6 +692,7 @@ public final class GlowWorld implements World {
 
         // save chunks
         maybeAsync(async, new Runnable() {
+            @Override
             public void run() {
                 for (GlowChunk chunk : chunks.getLoadedChunks()) {
                     chunks.performSave(chunk);
@@ -644,18 +709,22 @@ public final class GlowWorld implements World {
     ////////////////////////////////////////////////////////////////////////////
     // map generation
 
+    @Override
     public ChunkGenerator getGenerator() {
         return chunks.getGenerator();
     }
 
+    @Override
     public List<BlockPopulator> getPopulators() {
         return populators;
     }
 
+    @Override
     public boolean generateTree(Location location, TreeType type) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public boolean generateTree(Location loc, TreeType type, BlockChangeDelegate delegate) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -663,14 +732,17 @@ public final class GlowWorld implements World {
     ////////////////////////////////////////////////////////////////////////////
     // get block, chunk, id, highest methods with coords
 
+    @Override
     public GlowBlock getBlockAt(int x, int y, int z) {
         return new GlowBlock(getChunkAt(x >> 4, z >> 4), x, y & 0xff, z);
     }
 
+    @Override
     public int getBlockTypeIdAt(int x, int y, int z) {
         return getChunkAt(x >> 4, z >> 4).getType(x & 0xF, z & 0xF, y);
     }
 
+    @Override
     public int getHighestBlockYAt(int x, int z) {
         for (int y = getMaxHeight() - 1; y >= 0; --y) {
             if (getBlockTypeIdAt(x, y, z) != 0) {
@@ -680,6 +752,7 @@ public final class GlowWorld implements World {
         return 0;
     }
 
+    @Override
     public GlowChunk getChunkAt(int x, int z) {
         return chunks.getChunk(x, z);
     }
@@ -687,30 +760,37 @@ public final class GlowWorld implements World {
     ////////////////////////////////////////////////////////////////////////////
     // get block, chunk, id, highest with locations
 
+    @Override
     public GlowBlock getBlockAt(Location location) {
         return getBlockAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
+    @Override
     public int getBlockTypeIdAt(Location location) {
         return getBlockTypeIdAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
+    @Override
     public int getHighestBlockYAt(Location location) {
         return getHighestBlockYAt(location.getBlockX(), location.getBlockZ());
     }
 
+    @Override
     public Block getHighestBlockAt(int x, int z) {
         return getBlockAt(x, getHighestBlockYAt(x, z), z);
     }
 
+    @Override
     public Block getHighestBlockAt(Location location) {
         return getBlockAt(location.getBlockX(), getHighestBlockYAt(location), location.getBlockZ());
     }
 
+    @Override
     public Chunk getChunkAt(Location location) {
         return getChunkAt(location.getBlockX() >> 4, location.getBlockZ() >> 4);
     }
 
+    @Override
     public Chunk getChunkAt(Block block) {
         return getChunkAt(block.getX() >> 4, block.getZ() >> 4);
     }
@@ -718,58 +798,72 @@ public final class GlowWorld implements World {
     ////////////////////////////////////////////////////////////////////////////
     // Chunk loading and unloading
 
+    @Override
     public boolean isChunkLoaded(Chunk chunk) {
         return chunk.isLoaded();
     }
 
+    @Override
     public boolean isChunkLoaded(int x, int z) {
         return chunks.isChunkLoaded(x, z);
     }
 
+    @Override
     public boolean isChunkInUse(int x, int z) {
         return chunks.isChunkInUse(x, z);
     }
 
+    @Override
     public Chunk[] getLoadedChunks() {
         return chunks.getLoadedChunks();
     }
 
+    @Override
     public void loadChunk(Chunk chunk) {
         chunk.load();
     }
 
+    @Override
     public void loadChunk(int x, int z) {
         getChunkAt(x, z).load();
     }
 
+    @Override
     public boolean loadChunk(int x, int z, boolean generate) {
         return getChunkAt(x, z).load(generate);
     }
 
+    @Override
     public boolean unloadChunk(Chunk chunk) {
         return chunk.unload();
     }
 
+    @Override
     public boolean unloadChunk(int x, int z) {
         return unloadChunk(x, z, true);
     }
 
+    @Override
     public boolean unloadChunk(int x, int z, boolean save) {
         return unloadChunk(x, z, save, true);
     }
 
+    @Override
     public boolean unloadChunk(int x, int z, boolean save, boolean safe) {
         return !isChunkLoaded(x, z) || getChunkAt(x, z).unload(save, safe);
     }
 
+    @Override
     public boolean unloadChunkRequest(int x, int z) {
         return unloadChunkRequest(x, z, true);
     }
 
+    @Override
     public boolean unloadChunkRequest(final int x, final int z, final boolean safe) {
         if (safe && isChunkInUse(x, z)) return false;
 
         server.getScheduler().runTask(null, new Runnable() {
+            @Override
             public void run() {
                 unloadChunk(x, z, safe);
             }
@@ -778,12 +872,14 @@ public final class GlowWorld implements World {
         return true;
     }
 
+    @Override
     public boolean regenerateChunk(int x, int z) {
         if (!chunks.forceRegeneration(x, z)) return false;
         refreshChunk(x, z);
         return true;
     }
 
+    @Override
     public boolean refreshChunk(int x, int z) {
         if (!isChunkLoaded(x, z)) {
             return false;
@@ -802,6 +898,7 @@ public final class GlowWorld implements World {
         return result;
     }
 
+    @Override
     public ChunkSnapshot getEmptyChunkSnapshot(int x, int z, boolean includeBiome, boolean includeBiomeTempRain) {
         return new GlowChunkSnapshot.EmptySnapshot(x, z, this, includeBiome, includeBiomeTempRain);
     }
@@ -809,6 +906,7 @@ public final class GlowWorld implements World {
     ////////////////////////////////////////////////////////////////////////////
     // Biomes
 
+    @Override
     public Biome getBiome(int x, int z) {
         if (environment == Environment.THE_END) {
             return Biome.SKY;
@@ -819,14 +917,17 @@ public final class GlowWorld implements World {
         return GlowBiome.getBiome(getChunkAt(x >> 4, z >> 4).getBiome(x & 0xF, z & 0xF));
     }
 
+    @Override
     public void setBiome(int x, int z, Biome bio) {
         getChunkAt(x >> 4, z >> 4).setBiome(x & 0xF, z & 0xF, GlowBiome.getId(bio));
     }
 
+    @Override
     public double getTemperature(int x, int z) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public double getHumidity(int x, int z) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -834,17 +935,17 @@ public final class GlowWorld implements World {
     ////////////////////////////////////////////////////////////////////////////
     // Entity spawning
 
+    @Override
     public <T extends Entity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public Item dropItem(Location location, ItemStack item) {
-        // TODO: maybe spawn special due to item-ness?
-        Item itemEntity = spawn(location, Item.class);
-        itemEntity.setItemStack(item);
-        return itemEntity;
+        return new GlowItem(location, item);
     }
 
+    @Override
     public Item dropItemNaturally(Location location, ItemStack item) {
         double xs = random.nextFloat() * 0.7F + (1.0F - 0.7F) * 0.5D;
         double ys = random.nextFloat() * 0.7F + (1.0F - 0.7F) * 0.5D;
@@ -853,6 +954,7 @@ public final class GlowWorld implements World {
         return dropItem(location, item);
     }
 
+    @Override
     public Arrow spawnArrow(Location location, Vector velocity, float speed, float spread) {
         Arrow arrow = spawn(location, Arrow.class);
 
@@ -871,47 +973,52 @@ public final class GlowWorld implements World {
         return arrow;
     }
 
+    @Override
     public FallingBlock spawnFallingBlock(Location location, Material material, byte data) throws IllegalArgumentException {
         return null;
     }
 
+    @Override
     public FallingBlock spawnFallingBlock(Location location, int blockId, byte blockData) throws IllegalArgumentException {
         return null;
     }
 
+    @Override
     public Entity spawnEntity(Location loc, EntityType type) {
         return spawn(loc, type.getEntityClass());
     }
 
+    @Override
     @Deprecated
     public LivingEntity spawnCreature(Location loc, EntityType type) {
         return (LivingEntity) spawn(loc, type.getEntityClass());
     }
 
+    @Override
     @Deprecated
     public LivingEntity spawnCreature(Location loc, CreatureType type) {
         return (LivingEntity) spawn(loc, type.getEntityClass());
     }
 
+    @Override
     public GlowLightningStrike strikeLightning(Location loc) {
-        GlowLightningStrike strike = new GlowLightningStrike(server, this, false);
-        strike.teleport(loc);
-        return strike;
+        return new GlowLightningStrike(loc, false);
     }
 
+    @Override
     public GlowLightningStrike strikeLightningEffect(Location loc) {
-        GlowLightningStrike strike = new GlowLightningStrike(server, this, true);
-        strike.teleport(loc);
-        return strike;
+        return new GlowLightningStrike(loc, true);
     }
 
     ////////////////////////////////////////////////////////////////////////////
     // Time
 
+    @Override
     public long getTime() {
         return time;
     }
 
+    @Override
     public void setTime(long time) {
         this.time = (time % DAY_LENGTH + DAY_LENGTH) % DAY_LENGTH;
 
@@ -920,10 +1027,12 @@ public final class GlowWorld implements World {
         }
     }
 
+    @Override
     public long getFullTime() {
         return worldAge;
     }
 
+    @Override
     public void setFullTime(long time) {
         worldAge = time;
     }
@@ -931,11 +1040,20 @@ public final class GlowWorld implements World {
     ////////////////////////////////////////////////////////////////////////////
     // Weather
 
+    @Override
     public boolean hasStorm() {
         return currentlyRaining;
     }
 
+    @Override
     public void setStorm(boolean hasStorm) {
+        // call event
+        WeatherChangeEvent event = new WeatherChangeEvent(this, hasStorm);
+        if (EventFactory.callEvent(event).isCancelled()) {
+            return;
+        }
+
+        // change weather
         currentlyRaining = hasStorm;
 
         // Numbers borrowed from CraftBukkit.
@@ -945,24 +1063,36 @@ public final class GlowWorld implements World {
             setWeatherDuration(random.nextInt(168000) + 12000);
         }
 
+        // update players
         for (GlowPlayer player : getRawPlayers()) {
             player.sendWeather();
         }
     }
 
+    @Override
     public int getWeatherDuration() {
         return rainingTicks;
     }
 
+    @Override
     public void setWeatherDuration(int duration) {
         rainingTicks = duration;
     }
 
+    @Override
     public boolean isThundering() {
         return currentlyThundering;
     }
 
+    @Override
     public void setThundering(boolean thundering) {
+        // call event
+        ThunderChangeEvent event = new ThunderChangeEvent(this, thundering);
+        if (EventFactory.callEvent(event).isCancelled()) {
+            return;
+        }
+
+        // change weather
         currentlyThundering = thundering;
 
         // Numbers borrowed from CraftBukkit.
@@ -973,10 +1103,12 @@ public final class GlowWorld implements World {
         }
     }
 
+    @Override
     public int getThunderDuration() {
         return thunderingTicks;
     }
 
+    @Override
     public void setThunderDuration(int duration) {
         thunderingTicks = duration;
     }
@@ -984,22 +1116,27 @@ public final class GlowWorld implements World {
     ////////////////////////////////////////////////////////////////////////////
     // Explosions
 
+    @Override
     public boolean createExplosion(Location loc, float power) {
         return createExplosion(loc, power, false);
     }
 
+    @Override
     public boolean createExplosion(Location loc, float power, boolean setFire) {
         return createExplosion(loc.getX(), loc.getY(), loc.getZ(), power, setFire, true);
     }
 
+    @Override
     public boolean createExplosion(double x, double y, double z, float power) {
         return createExplosion(x, y, z, power, false, true);
     }
 
+    @Override
     public boolean createExplosion(double x, double y, double z, float power, boolean setFire) {
         return createExplosion(x, y, z, power, setFire, true);
     }
 
+    @Override
     public boolean createExplosion(double x, double y, double z, float power, boolean setFire, boolean breakBlocks) {
         return false;
     }
@@ -1007,10 +1144,12 @@ public final class GlowWorld implements World {
     ////////////////////////////////////////////////////////////////////////////
     // Effects
 
+    @Override
     public void playEffect(Location location, Effect effect, int data) {
         playEffect(location, effect, data, 64);
     }
 
+    @Override
     public void playEffect(Location location, Effect effect, int data, int radius) {
         radius *= radius;
         for (Player player : getRawPlayers()) {
@@ -1020,10 +1159,12 @@ public final class GlowWorld implements World {
         }
     }
 
+    @Override
     public <T> void playEffect(Location location, Effect effect, T data) {
         playEffect(location, effect, data, 64);
     }
 
+    @Override
     public <T> void playEffect(Location location, Effect effect, T data, int radius) {
         int rawData = 0;
         playEffect(location, effect, rawData, radius);
@@ -1038,6 +1179,7 @@ public final class GlowWorld implements World {
         }
     }
 
+    @Override
     public void playSound(Location location, Sound sound, float volume, float pitch) {
         if (location == null || sound == null) return;
 
@@ -1058,6 +1200,7 @@ public final class GlowWorld implements World {
      */
     private void writeWorldData(boolean async) {
         maybeAsync(async, new Runnable() {
+            @Override
             public void run() {
                 try {
                     storageProvider.getMetadataService().writeWorldData();
@@ -1082,10 +1225,6 @@ public final class GlowWorld implements World {
         }
     }
 
-    public WorldMetadataService getMetadataService() {
-        return storageProvider.getMetadataService();
-    }
-
     /**
      * Unloads the world
      * @return true if successful
@@ -1100,9 +1239,18 @@ public final class GlowWorld implements World {
     }
 
     /**
+     * Get the storage provider for the world.
+     * @return The {@link WorldStorageProvider}.
+     */
+    public WorldStorageProvider getStorage() {
+        return storageProvider;
+    }
+
+    /**
      * Get the world folder.
      * @return world folder
      */
+    @Override
     public File getWorldFolder() {
         return storageProvider.getFolder();
     }

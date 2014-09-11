@@ -10,7 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 /**
  * An implementation of {@link ItemFactory} responsible for creating ItemMetas.
  */
-public class GlowItemFactory implements ItemFactory {
+public final class GlowItemFactory implements ItemFactory {
 
     private static final GlowItemFactory instance = new GlowItemFactory();
     private static final Color LEATHER_COLOR = Color.fromRGB(0xA06540);
@@ -18,31 +18,50 @@ public class GlowItemFactory implements ItemFactory {
     private GlowItemFactory() {
     }
 
+    @Override
     public ItemMeta getItemMeta(Material material) {
         return makeMeta(material, null);
     }
 
+    @Override
     public boolean isApplicable(ItemMeta meta, ItemStack stack) throws IllegalArgumentException {
         return isApplicable(meta, stack.getType());
     }
 
+    @Override
     public boolean isApplicable(ItemMeta meta, Material material) throws IllegalArgumentException {
         return meta != null && material != null && toGlowMeta(meta).isApplicable(material);
     }
 
+    @Override
     public boolean equals(ItemMeta meta1, ItemMeta meta2) throws IllegalArgumentException {
-        // in the future, do fancy comparisons
-        return meta1 == meta2;
+        // todo: be nicer about comparisons without involving serialization
+        // and the extra new objects for null arguments
+        GlowMetaItem glow1, glow2;
+        if (meta1 == null) {
+            glow1 = new GlowMetaItem(null);
+        } else {
+            glow1 = toGlowMeta(meta1);
+        }
+        if (meta2 == null) {
+            glow2 = new GlowMetaItem(null);
+        } else {
+            glow2 = toGlowMeta(meta2);
+        }
+        return glow1.serialize().equals(glow2.serialize());
     }
 
+    @Override
     public ItemMeta asMetaFor(ItemMeta meta, ItemStack stack) throws IllegalArgumentException {
-        return asMetaFor(meta, stack.getType());
+        return makeMeta(stack.getType(), toGlowMeta(meta));
     }
 
+    @Override
     public ItemMeta asMetaFor(ItemMeta meta, Material material) throws IllegalArgumentException {
         return makeMeta(material, toGlowMeta(meta));
     }
 
+    @Override
     public Color getDefaultLeatherColor() {
         return LEATHER_COLOR;
     }
@@ -85,10 +104,13 @@ public class GlowItemFactory implements ItemFactory {
      * Get a suitable ItemMeta for the material, reusing the provided meta if non-null and possible.
      */
     private GlowMetaItem makeMeta(Material material, GlowMetaItem meta) {
-        // in the future, more specific metas
+        // todo: more specific metas
         switch (material) {
             case AIR:
                 return null;
+            case BOOK_AND_QUILL:
+            case WRITTEN_BOOK:
+                return new GlowMetaBook(meta);
             default:
                 return new GlowMetaItem(meta);
         }

@@ -17,11 +17,9 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.server.ServerCommandEvent;
-import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.world.*;
 import org.bukkit.inventory.ItemStack;
 
-import java.net.InetAddress;
 import java.util.Collection;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -124,8 +122,8 @@ public final class EventFactory {
             event.disallow(PlayerLoginEvent.Result.KICK_BANNED, "Banned: " + nameBans.getBanEntry(player.getName()).getReason());
         } else if (ipBans.isBanned(address)) {
             event.disallow(PlayerLoginEvent.Result.KICK_BANNED, "Banned: " + ipBans.getBanEntry(address).getReason());
-        } else if (server.hasWhitelist() && server.getWhitelist().contains(player.getName())) {
-            event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, "You are not whitelisted on this server");
+        } else if (server.hasWhitelist() && !player.isWhitelisted()) {
+            event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, "You are not whitelisted on this server.");
         } else if (server.getOnlinePlayers().length >= server.getMaxPlayers()) {
             event.disallow(PlayerLoginEvent.Result.KICK_FULL,
                     "The server is full (" + player.getServer().getMaxPlayers() + " players).");
@@ -138,10 +136,6 @@ public final class EventFactory {
         return callEvent(new PlayerPreLoginEvent(name, session.getAddress().getAddress()));
     }
 
-    public static PlayerChangedWorldEvent onPlayerChangedWorld(GlowPlayer player, GlowWorld fromWorld) {
-        return callEvent(new PlayerChangedWorldEvent(player, fromWorld));
-    }
-
     public static PlayerAnimationEvent onPlayerAnimate(GlowPlayer player) {
         return callEvent(new PlayerAnimationEvent(player));
     }
@@ -150,11 +144,11 @@ public final class EventFactory {
         return callEvent(new PlayerChatTabCompleteEvent(who, message, completions));
     }
 
-    // -- Block Events
-
     public static PlayerToggleSneakEvent onPlayerToggleSneak(Player player, boolean isSneaking) {
         return callEvent(new PlayerToggleSneakEvent(player, isSneaking));
     }
+
+    // -- Block Events
 
     public static BlockBreakEvent onBlockBreak(Block block, Player player) {
         return callEvent(new BlockBreakEvent(block, player));
@@ -187,10 +181,6 @@ public final class EventFactory {
     }
 
     // -- Server Events
-
-    public static ServerListPingEvent onServerListPing(InetAddress address, String message, int online, int max) {
-        return callEvent(new ServerListPingEvent(address, message, online, max));
-    }
 
     public static ServerCommandEvent onServerCommand(ConsoleCommandSender sender, String command) {
         return callEvent(new ServerCommandEvent(sender, command));
