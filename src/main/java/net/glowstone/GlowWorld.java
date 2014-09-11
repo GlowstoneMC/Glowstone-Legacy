@@ -1216,4 +1216,8 @@ public final class GlowWorld implements World {
     public long getWorldAge() {
         return this.worldAge;
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> parent of a845631... Revert "Merge remote-tracking branch 'GlowstoneMain/master'"
