@@ -210,7 +210,8 @@ public final class GlowWorld implements World {
 
     /**
      * Creates a new world from the options in the given WorldCreator.
-     * @param server The server for the world.
+     *
+     * @param server  The server for the world.
      * @param creator The WorldCreator to use.
      */
     public GlowWorld(GlowServer server, WorldCreator creator) {
@@ -319,6 +320,7 @@ public final class GlowWorld implements World {
 
     /**
      * Get the world chunk manager.
+     *
      * @return The ChunkManager for the world.
      */
     public ChunkManager getChunkManager() {
@@ -327,6 +329,7 @@ public final class GlowWorld implements World {
 
     /**
      * Get the world's parent server.
+     *
      * @return The GlowServer for the world.
      */
     public GlowServer getServer() {
@@ -335,6 +338,7 @@ public final class GlowWorld implements World {
 
     /**
      * Get a new chunk lock object a player or other party can use to keep chunks loaded.
+     *
      * @return The ChunkLock.
      */
     public ChunkManager.ChunkLock newChunkLock(String desc) {
@@ -414,6 +418,7 @@ public final class GlowWorld implements World {
 
     /**
      * Gets the entity manager.
+     *
      * @return The entity manager.
      */
     public EntityManager getEntityManager() {
@@ -1085,6 +1090,7 @@ public final class GlowWorld implements World {
 
     /**
      * Save the world data using the metadata service.
+     *
      * @param async Whether to write asynchronously.
      */
     private void writeWorldData(boolean async) {
@@ -1102,7 +1108,8 @@ public final class GlowWorld implements World {
 
     /**
      * Execute a runnable, optionally asynchronously.
-     * @param async Whether to run the runnable in an asynchronous task.
+     *
+     * @param async    Whether to run the runnable in an asynchronous task.
      * @param runnable The runnable to run.
      */
     private void maybeAsync(boolean async, Runnable runnable) {
@@ -1115,6 +1122,7 @@ public final class GlowWorld implements World {
 
     /**
      * Unloads the world
+     *
      * @return true if successful
      */
     public boolean unload() {
@@ -1128,6 +1136,7 @@ public final class GlowWorld implements World {
 
     /**
      * Get the storage provider for the world.
+     *
      * @return The {@link WorldStorageProvider}.
      */
     public WorldStorageProvider getStorage() {
@@ -1136,6 +1145,7 @@ public final class GlowWorld implements World {
 
     /**
      * Get the world folder.
+     *
      * @return world folder
      */
     public File getWorldFolder() {
@@ -1216,8 +1226,4 @@ public final class GlowWorld implements World {
     public long getWorldAge() {
         return this.worldAge;
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> parent of a845631... Revert "Merge remote-tracking branch 'GlowstoneMain/master'"
