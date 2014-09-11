@@ -25,10 +25,13 @@ public abstract class ItemFilledBucket extends ItemPlaceAs {
         BlockType againstBlockType = ItemTable.instance().getBlock(against.getType());
 
         // only allow placement inside replaceable blocks
-        if (againstBlockType != null && againstBlockType.canAbsorb(target, face, holding)) {
+        if (againstBlockType.canAbsorb(target, face, holding)) {
             target = against;
-        } else if (!target.isEmpty() && !target.isLiquid()) {
-            return;
+        } else if (!target.isEmpty()) {
+            BlockType targetType = ItemTable.instance().getBlock(target.getTypeId());
+            if (!targetType.canOverride(target, face, holding)) {
+                return;
+            }
         }
 
         GlowBlockState newState = target.getState();
