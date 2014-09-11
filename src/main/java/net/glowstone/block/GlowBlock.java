@@ -294,9 +294,7 @@ public final class GlowBlock implements Block {
         if(type == null) {
             return 0;
         }
-        return (type.canBlockEmitPower(this, face, false) 
-            ? getWorld().getRSManager().getBlockPower(this)
-            : 0);
+        return type.canBlockEmitPower(this, face, false) ? getWorld().getRSManager().getBlockPower(this) : 0;
     }
 
     @Override
