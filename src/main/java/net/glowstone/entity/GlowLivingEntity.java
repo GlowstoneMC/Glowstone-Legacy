@@ -278,7 +278,10 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     }
 
     public void damage(double amount, Entity source) {
-        // todo: handle noDamageTicks
+        if (noDamageTicks > 0) {
+            return; // Damage cancelled. PROBLEM : the event is still fired by the plugin...
+        }
+
         lastDamage = amount;
         health -= amount;
         // todo: death, events, so on
@@ -409,7 +412,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
                 return;
             }
             this.setLastDamageCause(ev);
-            this.damage(damage);
+            this.damage(ev.getDamage());
         }
         this.setFallDistance(0);
     }
