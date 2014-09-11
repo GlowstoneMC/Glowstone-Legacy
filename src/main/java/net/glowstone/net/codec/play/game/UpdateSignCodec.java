@@ -10,7 +10,6 @@ import org.bukkit.util.BlockVector;
 import java.io.IOException;
 
 public final class UpdateSignCodec implements Codec<UpdateSignMessage> {
-    @Override
     public UpdateSignMessage decode(ByteBuf buf) throws IOException {
         BlockVector pos = GlowBufUtils.readBlockPosition(buf);
         String[] message = new String[4];
@@ -20,7 +19,6 @@ public final class UpdateSignCodec implements Codec<UpdateSignMessage> {
         return new UpdateSignMessage(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), message);
     }
 
-    @Override
     public ByteBuf encode(ByteBuf buf, UpdateSignMessage message) throws IOException {
         GlowBufUtils.writeBlockPosition(buf, message.getX(), message.getY(), message.getZ());
         for (String line : message.getMessage()) {

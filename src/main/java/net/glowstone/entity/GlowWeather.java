@@ -13,7 +13,6 @@ public abstract class GlowWeather extends GlowEntity implements Weather {
         super(location);
     }
 
-    @Override
     public EntityType getType() {
         return EntityType.WEATHER;
     }

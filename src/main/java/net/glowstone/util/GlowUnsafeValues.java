@@ -19,7 +19,6 @@ import java.util.List;
 @Deprecated
 public class GlowUnsafeValues implements UnsafeValues {
 
-    @Override
     public Material getMaterialFromInternalName(String name) {
         try {
             return Material.valueOf(name);
@@ -28,7 +27,6 @@ public class GlowUnsafeValues implements UnsafeValues {
         }
     }
 
-    @Override
     public List<String> tabCompleteInternalMaterialName(String token, List<String> completions) {
         List<String> materialNames = new ArrayList<>(Material.values().length);
         for (Material mat : Material.values()) {
@@ -37,12 +35,10 @@ public class GlowUnsafeValues implements UnsafeValues {
         return StringUtil.copyPartialMatches(token, materialNames, completions);
     }
 
-    @Override
     public ItemStack modifyItemStack(ItemStack stack, String arguments) {
         return stack;
     }
 
-    @Override
     public Statistic getStatisticFromInternalName(String name) {
         try {
             return Statistic.valueOf(name);
@@ -51,7 +47,6 @@ public class GlowUnsafeValues implements UnsafeValues {
         }
     }
 
-    @Override
     public Achievement getAchievementFromInternalName(String name) {
         try {
             return Achievement.valueOf(name);
@@ -60,7 +55,6 @@ public class GlowUnsafeValues implements UnsafeValues {
         }
     }
 
-    @Override
     public List<String> tabCompleteInternalStatisticOrAchievementName(String token, List<String> completions) {
         Statistic[] stats = Statistic.values();
         Achievement[] achievements = Achievement.values();

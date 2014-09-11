@@ -11,7 +11,6 @@ class ItemStore extends EntityStore<GlowItem> {
         super(GlowItem.class, "Item");
     }
 
-    @Override
     public GlowItem createEntity(Location location, CompoundTag compound) {
         // item will be set by loading code below
         return new GlowItem(location, null);

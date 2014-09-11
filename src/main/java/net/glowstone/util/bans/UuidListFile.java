@@ -67,7 +67,6 @@ public final class UuidListFile extends JsonListFile {
             this.fallbackName = fallbackName;
         }
 
-        @Override
         public Map<String, String> write() {
             String name = Bukkit.getOfflinePlayer(uuid).getName();
 

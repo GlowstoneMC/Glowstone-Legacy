@@ -23,22 +23,18 @@ public final class GlowMapCanvas implements MapCanvas {
         this.mapView = mapView;
     }
 
-    @Override
     public GlowMapView getMapView() {
         return mapView;
     }
 
-    @Override
     public MapCursorCollection getCursors() {
         return cursors;
     }
 
-    @Override
     public void setCursors(MapCursorCollection cursors) {
         this.cursors = cursors;
     }
 
-    @Override
     public void setPixel(int x, int y, byte color) {
         if (x < 0 || y < 0 || x >= MAP_SIZE || y >= MAP_SIZE) return;
         if (buffer[y * MAP_SIZE + x] != color) {
@@ -47,13 +43,11 @@ public final class GlowMapCanvas implements MapCanvas {
         }
     }
 
-    @Override
     public byte getPixel(int x, int y) {
         if (x < 0 || y < 0 || x >= MAP_SIZE || y >= MAP_SIZE) return 0;
         return buffer[y * MAP_SIZE + x];
     }
 
-    @Override
     public byte getBasePixel(int x, int y) {
         if (x < 0 || y < 0 || x >= MAP_SIZE || y >= MAP_SIZE) return 0;
         return base[y * MAP_SIZE + x];
@@ -67,12 +61,10 @@ public final class GlowMapCanvas implements MapCanvas {
         return buffer;
     }
 
-    @Override
     public void drawImage(int x, int y, Image image) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
     public void drawText(int x, int y, MapFont font, String text) {
         throw new UnsupportedOperationException("Not supported yet.");
     }

@@ -116,9 +116,8 @@ public final class CompoundTag extends Tag<Map<String, Tag>> {
         return getTag(key, CompoundTag.class);
     }
 
-    @SuppressWarnings("unchecked")
     public List<CompoundTag> getCompoundList(String key) {
-        return (List<CompoundTag>) getTagList(key, TagType.COMPOUND);
+        return getTagList(key, TagType.COMPOUND);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -268,10 +267,11 @@ public final class CompoundTag extends Tag<Map<String, Tag>> {
         return (T) value.get(key);
     }
 
-    private List<? extends Tag> getTagList(String key, TagType type) {
-        ListTag<?> tag = getTag(key, ListTag.class);
-        if (tag.getValue().size() == 0) {
-            // empty lists are allowed to be the wrong type
+    @SuppressWarnings("unchecked")
+    public List<CompoundTag> getTagList(String key, TagType type) {
+        ListTag tag = getTag(key, ListTag.class);
+        if (tag.getChildType() == TagType.END && tag.getValue().size() == 0) {
+            // empty lists are allowed to have "END" tag type
             return Arrays.asList();
         }
         if (tag.getChildType() != type) {

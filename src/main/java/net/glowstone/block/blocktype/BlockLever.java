@@ -1,5 +1,6 @@
 package net.glowstone.block.blocktype;
 
+import net.glowstone.GlowServer;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.entity.GlowPlayer;
@@ -52,7 +53,7 @@ public class BlockLever extends BlockType {
             state.update();
             return true;
         } else {
-            warnMaterialData(Lever.class, data);
+            GlowServer.logger.warning("Interacting " + getMaterial().name() + ": MaterialData was of wrong type (" + data.getClass().getName() + ")");
             return false;
         }
     }
@@ -68,7 +69,7 @@ public class BlockLever extends BlockType {
             l.setFacingDirection(face == BlockFace.UP || face == BlockFace.DOWN ? player.getDirection() : face);
             state.setData(l);
         } else {
-            warnMaterialData(Lever.class, data);
+            GlowServer.logger.warning("Placing " + getMaterial().name() + ": MaterialData was of wrong type (" + data.getClass().getName() + ")");
         }
     }
 }

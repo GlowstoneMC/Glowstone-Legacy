@@ -1,5 +1,6 @@
 package net.glowstone.block.blocktype;
 
+import net.glowstone.GlowServer;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.entity.GlowPlayer;
@@ -11,7 +12,6 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 public class BlockEnderchest extends BlockType {
-
     public BlockEnderchest() {
         setDrops(new ItemStack(Material.OBSIDIAN, 8));
     }
@@ -29,10 +29,12 @@ public class BlockEnderchest extends BlockType {
 
         MaterialData data = state.getData();
         if (data instanceof EnderChest) {
-            ((EnderChest) data).setFacingDirection(getOppositeBlockFace(player.getLocation(), false));
+            // todo: determine facing direction
+            ((EnderChest) data).setFacingDirection(BlockFace.EAST);
             state.setData(data);
         } else {
-            warnMaterialData(EnderChest.class, data);
+            // complain?
+            GlowServer.logger.warning("Placing EnderChest: MaterialData was of wrong type");
         }
     }
 }

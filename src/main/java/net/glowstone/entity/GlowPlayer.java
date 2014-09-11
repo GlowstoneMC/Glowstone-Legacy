@@ -23,6 +23,7 @@ import net.glowstone.net.message.play.game.*;
 import net.glowstone.net.message.play.inv.*;
 import net.glowstone.net.message.play.player.PlayerAbilitiesMessage;
 import net.glowstone.net.protocol.ProtocolType;
+import net.glowstone.util.Position;
 import net.glowstone.util.StatisticMap;
 import net.glowstone.util.TextWrapper;
 import org.apache.commons.lang.Validate;
@@ -30,6 +31,7 @@ import org.bukkit.*;
 import org.bukkit.configuration.serialization.DelegateDeserialization;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.*;
@@ -321,6 +323,25 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         return "GlowPlayer{name=" + getName() + "}";
     }
 
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Damages
+
+    @Override
+    public void damage(double amount) {
+        this.damage(amount, null);
+    }
+
+    @Override
+    public void damage(double amount, Entity cause) {
+        if (this.getGameMode().equals(GameMode.CREATIVE)) {
+            return;
+        }
+        super.damage(amount, cause);
+        sendHealth();
+    }
+
+
     ////////////////////////////////////////////////////////////////////////////
     // Internals
 
@@ -578,7 +599,8 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         // spawn into world
         String type = world.getWorldType().getName().toLowerCase();
         session.send(new RespawnMessage(world.getEnvironment().getId(), world.getDifficulty().getValue(), getGameMode().getValue(), type));
-        setRawLocation(location); // take us to spawn position
+        Position.copyLocation(location, this.previousLocation); // Prevents fall on spawn
+        teleport(location); // take us to spawn position
         streamBlocks(); // stream blocks
         setCompassTarget(world.getSpawnLocation()); // set our compass target
         session.send(new PositionRotationMessage(location, getEyeHeight() + 0.05));

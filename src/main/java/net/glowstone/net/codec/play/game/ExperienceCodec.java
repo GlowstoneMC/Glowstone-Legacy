@@ -8,7 +8,6 @@ import net.glowstone.net.message.play.game.ExperienceMessage;
 import java.io.IOException;
 
 public final class ExperienceCodec implements Codec<ExperienceMessage> {
-    @Override
     public ExperienceMessage decode(ByteBuf buffer) throws IOException {
         float barValue = buffer.readFloat();
         int level = ByteBufUtils.readVarInt(buffer);
@@ -16,7 +15,6 @@ public final class ExperienceCodec implements Codec<ExperienceMessage> {
         return new ExperienceMessage(barValue, level, totalExp);
     }
 
-    @Override
     public ByteBuf encode(ByteBuf buf, ExperienceMessage message) throws IOException {
         buf.writeFloat(message.getBarValue());
         ByteBufUtils.writeVarInt(buf, message.getLevel());

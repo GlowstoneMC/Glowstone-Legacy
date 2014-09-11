@@ -10,7 +10,6 @@ import org.bukkit.util.BlockVector;
 import java.io.IOException;
 
 public final class BlockPlacementCodec implements Codec<BlockPlacementMessage> {
-    @Override
     public BlockPlacementMessage decode(ByteBuf buf) throws IOException {
         BlockVector pos = GlowBufUtils.readBlockPosition(buf);
         int direction = buf.readByte();
@@ -21,7 +20,6 @@ public final class BlockPlacementCodec implements Codec<BlockPlacementMessage> {
         return new BlockPlacementMessage(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), direction, heldItem, cursorX, cursorY, cursorZ);
     }
 
-    @Override
     public ByteBuf encode(ByteBuf buf, BlockPlacementMessage message) throws IOException {
         GlowBufUtils.writeBlockPosition(buf, message.getX(), message.getY(), message.getZ());
         buf.writeByte(message.getDirection());

@@ -54,7 +54,6 @@ public final class AnvilChunkIoService implements ChunkIoService {
      * @return Whether the
      * @throws IOException if an I/O error occurs.
      */
-    @Override
     public boolean read(GlowChunk chunk) throws IOException {
         int x = chunk.getX(), z = chunk.getZ();
         RegionFile region = cache.getRegionFile(dir, x, z);
@@ -77,17 +76,11 @@ public final class AnvilChunkIoService implements ChunkIoService {
         ChunkSection[] sections = new ChunkSection[16];
         for (CompoundTag sectionTag : sectionList) {
             int y = sectionTag.getByte("Y");
-            byte[] rawTypes = sectionTag.getByteArray("Blocks");
-            NibbleArray extTypes = sectionTag.containsKey("Add") ? new NibbleArray(sectionTag.getByteArray("Add")) : null;
+            byte[] types = sectionTag.getByteArray("Blocks");
             NibbleArray data = new NibbleArray(sectionTag.getByteArray("Data"));
             NibbleArray blockLight = new NibbleArray(sectionTag.getByteArray("BlockLight"));
             NibbleArray skyLight = new NibbleArray(sectionTag.getByteArray("SkyLight"));
-
-            char[] types = new char[rawTypes.length];
-            for (int i = 0; i < rawTypes.length; i++) {
-                types[i] = (char) (((extTypes == null ? 0 : extTypes.get(i)) << 12) | ((rawTypes[i] & 0xff) << 4) | data.get(i));
-            }
-            sections[y] = new ChunkSection(types, skyLight, blockLight);
+            sections[y] = new ChunkSection(types, data, skyLight, blockLight);
         }
 
         // initialize the chunk
@@ -139,7 +132,6 @@ public final class AnvilChunkIoService implements ChunkIoService {
      * @param chunk The {@link GlowChunk} to write from.
      * @throws IOException if an I/O error occurs.
      */
-    @Override
     public void write(GlowChunk chunk) throws IOException {
         int x = chunk.getX(), z = chunk.getZ();
         RegionFile region = cache.getRegionFile(dir, x, z);
@@ -164,26 +156,8 @@ public final class AnvilChunkIoService implements ChunkIoService {
 
             CompoundTag sectionTag = new CompoundTag();
             sectionTag.putByte("Y", i);
-
-            byte[] rawTypes = new byte[sec.types.length];
-            NibbleArray extTypes = null;
-            NibbleArray data = new NibbleArray(sec.types.length);
-            for (int j = 0; j < sec.types.length; j++) {
-                rawTypes[j] = (byte) ((sec.types[j] >> 4) & 0xFF);
-                byte extType = (byte) (sec.types[j] >> 12);
-                if (extType > 0) {
-                    if (extTypes == null) {
-                        extTypes = new NibbleArray(sec.types.length);
-                    }
-                    extTypes.set(j, extType);
-                }
-                data.set(j, (byte) (sec.types[j] & 0xF));
-            }
-            sectionTag.putByteArray("Blocks", rawTypes);
-            if (extTypes != null) {
-                sectionTag.putByteArray("Add", extTypes.getRawData());
-            }
-            sectionTag.putByteArray("Data", data.getRawData());
+            sectionTag.putByteArray("Blocks", sec.types);
+            sectionTag.putByteArray("Data", sec.metaData.getRawData());
             sectionTag.putByteArray("BlockLight", sec.blockLight.getRawData());
             sectionTag.putByteArray("SkyLight", sec.skyLight.getRawData());
 
@@ -232,7 +206,6 @@ public final class AnvilChunkIoService implements ChunkIoService {
         }
     }
 
-    @Override
     public void unload() throws IOException {
         cache.clear();
     }

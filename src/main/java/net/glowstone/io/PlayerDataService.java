@@ -106,7 +106,6 @@ public interface PlayerDataService {
         /**
          * Close any resources involved in reading the player data.
          */
-        @Override
         public void close();
     }
 

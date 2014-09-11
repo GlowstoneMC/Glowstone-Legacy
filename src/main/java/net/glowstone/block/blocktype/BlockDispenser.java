@@ -1,6 +1,7 @@
 package net.glowstone.block.blocktype;
 
 import net.glowstone.GlowChunk;
+import net.glowstone.GlowServer;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.entity.TEDispenser;
 import net.glowstone.block.entity.TileEntity;
@@ -31,7 +32,7 @@ public class BlockDispenser extends BlockContainer {
             ((Dispenser) data).setFacingDirection(getOppositeBlockFace(player.getLocation(), true));
             state.setData(data);
         } else {
-            warnMaterialData(Dispenser.class, data);
+            GlowServer.logger.warning("Placing " + getMaterial().name() + ": MaterialData was of wrong type (" + data.getClass().getName() + ")");
         }
     }
 
