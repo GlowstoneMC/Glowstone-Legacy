@@ -1,13 +1,12 @@
 package net.glowstone.block;
 
+import java.util.HashMap;
+import java.util.Map;
 import net.glowstone.block.blocktype.*;
 import net.glowstone.block.itemtype.ItemPlaceAs;
 import net.glowstone.block.itemtype.ItemSign;
 import net.glowstone.block.itemtype.ItemType;
 import org.bukkit.Material;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The lookup table for block and item types.
@@ -119,6 +118,8 @@ public final class ItemTable {
         reg(Material.FLOWER_POT_ITEM, new ItemPlaceAs(Material.FLOWER_POT));
         reg(Material.SKULL_ITEM, new ItemPlaceAs(Material.SKULL));
         reg(Material.REDSTONE_COMPARATOR, new ItemPlaceAs(Material.REDSTONE_COMPARATOR_OFF));
+        reg(Material.STONE_BUTTON, new BlockButton(Material.STONE_BUTTON));
+        reg(Material.WOOD_BUTTON, new BlockButton(Material.WOOD_BUTTON));
     }
 
     private void reg(Material material, ItemType type) {
