@@ -259,7 +259,7 @@ public final class GlowWorld implements World {
         // begin loading spawn area
         spawnChunkLock = newChunkLock("spawn");
         EventFactory.onWorldInit(this);
-        server.getLogger().log(Level.INFO, "Preparing spawn for {0}...", name);
+        server.getLogger().info("Preparing spawn for " + name + "...");
 
         // determine the spawn location if we need to
         if (spawnLocation == null) {
@@ -298,13 +298,13 @@ public final class GlowWorld implements World {
 
                     if (System.currentTimeMillis() >= loadTime + 1000) {
                         int progress = 100 * current / total;
-                        GlowServer.logger.log(Level.INFO, "Preparing spawn for {0}: {1}%", new Object[]{name, progress});
+                        GlowServer.logger.info("Preparing spawn for " + name + ": " + progress + "%");
                         loadTime = System.currentTimeMillis();
                     }
                 }
             }
         }
-        server.getLogger().log(Level.INFO, "Preparing spawn for {0}: done", name);
+        server.getLogger().info("Preparing spawn for " + name + ": done");
         EventFactory.onWorldLoad(this);
     }
 
@@ -1183,7 +1183,7 @@ public final class GlowWorld implements World {
     public void playSound(Location location, Sound sound, float volume, float pitch) {
         if (location == null || sound == null) return;
 
-        final int radiusSquared = 24 * 24; // todo: verify this radius
+        final double radiusSquared = Math.pow(Math.min(volume * 16, 16), 2);
         for (Player player : getRawPlayers()) {
             if (player.getLocation().distanceSquared(location) <= radiusSquared) {
                 player.playSound(location, sound, volume, pitch);
