@@ -16,6 +16,7 @@ import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.*;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
@@ -1218,6 +1219,10 @@ public final class GlowWorld implements World {
 
     @Override
     public boolean createExplosion(double x, double y, double z, float power, boolean setFire, boolean breakBlocks) {
+        return createExplosion(null, x, y, z, power, setFire, breakBlocks);
+    }
+
+    public boolean createExplosion(Entity source, double x, double y, double z, float v, boolean incendiary, boolean breakBlocks) {
         return false;
     }
 

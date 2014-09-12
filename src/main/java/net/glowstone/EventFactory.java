@@ -7,9 +7,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Explosive;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
