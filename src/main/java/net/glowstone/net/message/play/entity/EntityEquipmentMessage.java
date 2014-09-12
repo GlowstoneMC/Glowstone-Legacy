@@ -33,6 +33,28 @@ public final class EntityEquipmentMessage implements Message {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EntityEquipmentMessage that = (EntityEquipmentMessage) o;
+
+        if (id != that.id) return false;
+        if (slot != that.slot) return false;
+        if (stack != null ? !stack.equals(that.stack) : that.stack != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + slot;
+        result = 31 * result + (stack != null ? stack.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "EntityEquipmentMessage{" +
                 "id=" + id +

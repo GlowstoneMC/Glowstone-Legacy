@@ -27,6 +27,28 @@ public final class HealthMessage implements Message {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        HealthMessage that = (HealthMessage) o;
+
+        if (food != that.food) return false;
+        if (Float.compare(that.health, health) != 0) return false;
+        if (Float.compare(that.saturation, saturation) != 0) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (health != +0.0f ? Float.floatToIntBits(health) : 0);
+        result = 31 * result + food;
+        result = 31 * result + (saturation != +0.0f ? Float.floatToIntBits(saturation) : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "HealthMessage{health=" + health + ",food=" + food + ",saturation=" + saturation + "}";
     }

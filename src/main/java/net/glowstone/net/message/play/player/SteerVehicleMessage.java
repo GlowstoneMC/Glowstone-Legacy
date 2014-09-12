@@ -31,6 +31,30 @@ public final class SteerVehicleMessage implements Message {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SteerVehicleMessage that = (SteerVehicleMessage) o;
+
+        if (Float.compare(that.forward, forward) != 0) return false;
+        if (jump != that.jump) return false;
+        if (Float.compare(that.sideways, sideways) != 0) return false;
+        if (unmount != that.unmount) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (sideways != +0.0f ? Float.floatToIntBits(sideways) : 0);
+        result = 31 * result + (forward != +0.0f ? Float.floatToIntBits(forward) : 0);
+        result = 31 * result + (jump ? 1 : 0);
+        result = 31 * result + (unmount ? 1 : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "SteerVehicleMessage{" +
                 "sideways=" + sideways +

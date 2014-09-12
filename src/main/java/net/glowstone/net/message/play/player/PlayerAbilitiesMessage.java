@@ -26,6 +26,28 @@ public final class PlayerAbilitiesMessage implements Message {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PlayerAbilitiesMessage that = (PlayerAbilitiesMessage) o;
+
+        if (flags != that.flags) return false;
+        if (Float.compare(that.flySpeed, flySpeed) != 0) return false;
+        if (Float.compare(that.walkSpeed, walkSpeed) != 0) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = flags;
+        result = 31 * result + (flySpeed != +0.0f ? Float.floatToIntBits(flySpeed) : 0);
+        result = 31 * result + (walkSpeed != +0.0f ? Float.floatToIntBits(walkSpeed) : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "PlayerAbilitiesMessage{" +
                 "flags=" + flags +

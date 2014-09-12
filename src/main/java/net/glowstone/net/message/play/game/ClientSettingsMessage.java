@@ -17,17 +17,6 @@ public final class ClientSettingsMessage implements Message {
         this.skinFlags = skinFlags;
     }
 
-    @Override
-    public String toString() {
-        return "ClientSettingsMessage{" +
-                "locale='" + locale + '\'' +
-                ", viewDistance=" + viewDistance +
-                ", chatFlags=" + chatFlags +
-                ", chatColors=" + chatColors +
-                ", skinFlags=" + skinFlags +
-                '}';
-    }
-
     public String getLocale() {
         return locale;
     }
@@ -48,4 +37,40 @@ public final class ClientSettingsMessage implements Message {
         return skinFlags;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ClientSettingsMessage that = (ClientSettingsMessage) o;
+
+        if (chatColors != that.chatColors) return false;
+        if (chatFlags != that.chatFlags) return false;
+        if (skinFlags != that.skinFlags) return false;
+        if (viewDistance != that.viewDistance) return false;
+        if (locale != null ? !locale.equals(that.locale) : that.locale != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = locale != null ? locale.hashCode() : 0;
+        result = 31 * result + viewDistance;
+        result = 31 * result + chatFlags;
+        result = 31 * result + (chatColors ? 1 : 0);
+        result = 31 * result + skinFlags;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "ClientSettingsMessage{" +
+                "locale='" + locale + '\'' +
+                ", viewDistance=" + viewDistance +
+                ", chatFlags=" + chatFlags +
+                ", chatColors=" + chatColors +
+                ", skinFlags=" + skinFlags +
+                '}';
+    }
 }

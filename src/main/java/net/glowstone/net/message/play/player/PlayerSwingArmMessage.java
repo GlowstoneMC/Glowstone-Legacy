@@ -9,5 +9,13 @@ public final class PlayerSwingArmMessage implements Message {
         return "PlayerSwingArmMessage";
     }
 
+    @Override
+    public boolean equals(Object message) {
+        if (message instanceof PlayerSwingArmMessage) {
+            return true;
+        }
+        return false;
+    }
+
 }
 

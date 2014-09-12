@@ -41,6 +41,34 @@ public final class SpawnPaintingMessage implements Message {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SpawnPaintingMessage that = (SpawnPaintingMessage) o;
+
+        if (facing != that.facing) return false;
+        if (id != that.id) return false;
+        if (x != that.x) return false;
+        if (y != that.y) return false;
+        if (z != that.z) return false;
+        if (title != null ? !title.equals(that.title) : that.title != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + x;
+        result = 31 * result + y;
+        result = 31 * result + z;
+        result = 31 * result + facing;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "SpawnPaintingMessage{id=" + id + ",x=" + x + ",y=" + y + ",z=" + z + ",facing=" + facing + ",title=" + title + "}";
     }

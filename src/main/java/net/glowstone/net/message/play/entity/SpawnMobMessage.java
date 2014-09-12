@@ -74,6 +74,46 @@ public final class SpawnMobMessage implements Message {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SpawnMobMessage that = (SpawnMobMessage) o;
+
+        if (headPitch != that.headPitch) return false;
+        if (id != that.id) return false;
+        if (pitch != that.pitch) return false;
+        if (rotation != that.rotation) return false;
+        if (type != that.type) return false;
+        if (velX != that.velX) return false;
+        if (velY != that.velY) return false;
+        if (velZ != that.velZ) return false;
+        if (x != that.x) return false;
+        if (y != that.y) return false;
+        if (z != that.z) return false;
+        if (metadata != null ? !metadata.equals(that.metadata) : that.metadata != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + type;
+        result = 31 * result + x;
+        result = 31 * result + y;
+        result = 31 * result + z;
+        result = 31 * result + rotation;
+        result = 31 * result + pitch;
+        result = 31 * result + headPitch;
+        result = 31 * result + velX;
+        result = 31 * result + velY;
+        result = 31 * result + velZ;
+        result = 31 * result + (metadata != null ? metadata.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "SpawnMobMessage{" +
                 "id=" + id +

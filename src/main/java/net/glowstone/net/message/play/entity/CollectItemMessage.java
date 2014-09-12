@@ -20,6 +20,26 @@ public final class CollectItemMessage implements Message {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CollectItemMessage that = (CollectItemMessage) o;
+
+        if (collector != that.collector) return false;
+        if (id != that.id) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + collector;
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "CollectItemMessage{id=" + id + ",collector=" + collector + "}";
     }

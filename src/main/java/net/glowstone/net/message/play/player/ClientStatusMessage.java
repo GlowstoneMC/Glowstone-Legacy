@@ -19,6 +19,23 @@ public final class ClientStatusMessage implements Message {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ClientStatusMessage that = (ClientStatusMessage) o;
+
+        if (action != that.action) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return action;
+    }
+
+    @Override
     public String toString() {
         return "ClientStatusMessage{" +
                 "action=" + action +
