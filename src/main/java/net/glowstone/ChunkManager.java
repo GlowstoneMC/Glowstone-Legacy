@@ -242,6 +242,7 @@ public final class ChunkManager {
                     for (int j = 0; j < extSections[i].length; ++j) {
                         sections[i].types[j] = (char) (extSections[i][j] << 4);
                     }
+                    sections[i].recount();
                 }
             }
             chunk.initializeSections(sections);
@@ -259,6 +260,7 @@ public final class ChunkManager {
                     for (int j = 0; j < blockSections[i].length; ++j) {
                         sections[i].types[j] = (char) (blockSections[i][j] << 4);
                     }
+                    sections[i].recount();
                 }
             }
             chunk.initializeSections(sections);
@@ -279,6 +281,7 @@ public final class ChunkManager {
                     }
                 }
             }
+            sec.recount();
             sections[sy] = sec;
         }
         chunk.initializeSections(sections);
@@ -350,10 +353,12 @@ public final class ChunkManager {
             cz = z;
         }
 
+        @Override
         public Biome getBiome(int x, int z) {
             return world.getBiome((cx << 4) | x, (cz << 4) | z);
         }
 
+        @Override
         public void setBiome(int x, int z, Biome bio) {
             world.setBiome((cx << 4) | x, (cz << 4) | z, bio);
         }
@@ -416,6 +421,7 @@ public final class ChunkManager {
             return "ChunkLock{" + desc + "}";
         }
 
+        @Override
         public Iterator<GlowChunk.Key> iterator() {
             return keys.iterator();
         }

@@ -5,6 +5,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import net.glowstone.GlowServer;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitWorker;
@@ -104,6 +105,7 @@ public final class GlowScheduler implements BukkitScheduler {
 
     public void start() {
         executor.scheduleAtFixedRate(new Runnable() {
+            @Override
             public void run() {
                 try {
                     pulse();
@@ -211,35 +213,96 @@ public final class GlowScheduler implements BukkitScheduler {
 
     }
 
+    @Override
     public int scheduleSyncDelayedTask(Plugin plugin, Runnable task, long delay) {
         return scheduleSyncRepeatingTask(plugin, task, delay, -1);
     }
 
+    @Override
     public int scheduleSyncDelayedTask(Plugin plugin, Runnable task) {
         return scheduleSyncDelayedTask(plugin, task, 0);
     }
 
+    @Override
     public int scheduleSyncRepeatingTask(Plugin plugin, Runnable task, long delay, long period) {
         return schedule(new GlowTask(plugin, task, true, delay, period)).getTaskId();
     }
 
+    @Override
     @Deprecated
     @SuppressWarnings("deprecation")
     public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task, long delay) {
         return scheduleAsyncRepeatingTask(plugin, task, delay, -1);
     }
 
+    @Override
     @Deprecated
     @SuppressWarnings("deprecation")
     public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task) {
         return scheduleAsyncRepeatingTask(plugin, task, 0, -1);
     }
 
+    @Override
     @Deprecated
     public int scheduleAsyncRepeatingTask(Plugin plugin, Runnable task, long delay, long period) {
         return schedule(new GlowTask(plugin, task, false, delay, period)).getTaskId();
     }
 
+    @Override
+    @Deprecated
+    public int scheduleSyncDelayedTask(Plugin plugin, BukkitRunnable task, long delay) {
+        return 0;
+    }
+
+    @Override
+    @Deprecated
+    public int scheduleSyncDelayedTask(Plugin plugin, BukkitRunnable task) {
+        return 0;
+    }
+
+    @Override
+    @Deprecated
+    public int scheduleSyncRepeatingTask(Plugin plugin, BukkitRunnable task, long delay, long period) {
+        return 0;
+    }
+
+    @Override
+    @Deprecated
+    public BukkitTask runTask(Plugin plugin, BukkitRunnable task) throws IllegalArgumentException {
+        return task.runTask(plugin);
+    }
+
+    @Override
+    @Deprecated
+    public BukkitTask runTaskAsynchronously(Plugin plugin, BukkitRunnable task) throws IllegalArgumentException {
+        return task.runTaskAsynchronously(plugin);
+    }
+
+    @Override
+    @Deprecated
+    public BukkitTask runTaskLater(Plugin plugin, BukkitRunnable task, long delay) throws IllegalArgumentException {
+        return task.runTaskLater(plugin, delay);
+    }
+
+    @Override
+    @Deprecated
+    public BukkitTask runTaskLaterAsynchronously(Plugin plugin, BukkitRunnable task, long delay) throws IllegalArgumentException {
+        return task.runTaskLater(plugin, delay);
+    }
+
+    @Override
+    @Deprecated
+    public BukkitTask runTaskTimer(Plugin plugin, BukkitRunnable task, long delay, long period) throws IllegalArgumentException {
+        return task.runTaskTimer(plugin, delay, period);
+    }
+
+    @Override
+    @Deprecated
+    public BukkitTask runTaskTimerAsynchronously(Plugin plugin, BukkitRunnable task, long delay, long period) throws IllegalArgumentException {
+        return task.runTaskTimerAsynchronously(plugin, delay, period);
+    }
+
+    @Override
     public <T> Future<T> callSyncMethod(Plugin plugin, Callable<T> task) {
         FutureTask<T> future = new FutureTask<>(task);
         runTask(plugin, future);
@@ -254,34 +317,42 @@ public final class GlowScheduler implements BukkitScheduler {
         }
     }
 
+    @Override
     public BukkitTask runTask(Plugin plugin, Runnable task) throws IllegalArgumentException {
         return runTaskLater(plugin, task, 0);
     }
 
+    @Override
     public BukkitTask runTaskAsynchronously(Plugin plugin, Runnable task) throws IllegalArgumentException {
         return runTaskLaterAsynchronously(plugin, task, 0);
     }
 
+    @Override
     public BukkitTask runTaskLater(Plugin plugin, Runnable task, long delay) throws IllegalArgumentException {
         return runTaskTimer(plugin, task, delay, -1);
     }
 
+    @Override
     public BukkitTask runTaskLaterAsynchronously(Plugin plugin, Runnable task, long delay) throws IllegalArgumentException {
         return runTaskTimerAsynchronously(plugin, task, delay, -1);
     }
 
+    @Override
     public BukkitTask runTaskTimer(Plugin plugin, Runnable task, long delay, long period) throws IllegalArgumentException {
         return schedule(new GlowTask(plugin, task, true, delay, period));
     }
 
+    @Override
     public BukkitTask runTaskTimerAsynchronously(Plugin plugin, Runnable task, long delay, long period) throws IllegalArgumentException {
         return schedule(new GlowTask(plugin, task, false, delay, period));
     }
 
+    @Override
     public void cancelTask(int taskId) {
         tasks.remove(taskId);
     }
 
+    @Override
     public void cancelTasks(Plugin plugin) {
         for (Iterator<GlowTask> it = tasks.values().iterator(); it.hasNext(); ) {
             if (it.next().getOwner() == plugin) {
@@ -290,15 +361,18 @@ public final class GlowScheduler implements BukkitScheduler {
         }
     }
 
+    @Override
     public void cancelAllTasks() {
         tasks.clear();
     }
 
+    @Override
     public boolean isCurrentlyRunning(int taskId) {
         GlowTask task = tasks.get(taskId);
         return task != null && task.getLastExecutionState() == TaskExecutionState.RUN;
     }
 
+    @Override
     public boolean isQueued(int taskId) {
         return tasks.containsKey(taskId);
     }
@@ -307,6 +381,7 @@ public final class GlowScheduler implements BukkitScheduler {
      * Returns active async tasks
      * @return active async tasks
      */
+    @Override
     public List<BukkitWorker> getActiveWorkers() {
         return ImmutableList.<BukkitWorker>copyOf(Collections2.filter(tasks.values(), new Predicate<GlowTask>() {
             @Override
@@ -320,6 +395,7 @@ public final class GlowScheduler implements BukkitScheduler {
      * Returns tasks that still have at least one run remaining
      * @return the tasks to be run
      */
+    @Override
     public List<BukkitTask> getPendingTasks() {
         return new ArrayList<BukkitTask>(tasks.values());
     }

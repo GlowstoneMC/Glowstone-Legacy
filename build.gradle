@@ -1,11 +1,13 @@
 // Tasks to perform when no task is specified
-defaultTasks 'clean', 'build', 'shadowJar'
+defaultTasks 'clean', 'build', 'remap'
 
 // Plugins used
-apply plugin: 'java' // Specifies a java project, allows for javadoc generation etc.
-apply plugin: 'application' // Adds the 'gradle run' task
+apply plugin: 'java' // Specifies a java project
+apply plugin: 'application' // Adds the 'run' task
 apply plugin: 'project-report' // Adds project report tasks
-apply plugin: 'shadow' // Allows for dependency shading
+apply plugin: 'com.github.johnrengelman.shadow' // Provides dependency shading
+apply plugin: 'net.glowstone.remapper' // Provides method remapping
+apply from: 'etc/publish.gradle'
 
 // Methods to determine detailed version string
 def gitDescribe() {
@@ -21,6 +23,7 @@ def gitDescribe() {
         return "unknown"
     }
 }
+
 def getVersionName() {
     try {
         // determine git-describe output
@@ -50,8 +53,8 @@ description = "Glowstone"
 mainClassName = "net.glowstone.GlowServer"
 
 // Extended project information
-ext.url = 'https://github.com/SpaceManiac/Glowstone'
-ext.bukkitVersion = '1.7.9-R0.1'
+ext.url = 'https://github.com/GlowstoneMC/Glowstone'
+ext.bukkitVersion = '1.8-R1-SNAPSHOT'
 ext.gitDescribe = getVersionName()
 
 // Minimum Java version required
@@ -66,10 +69,13 @@ compileJava {
 // Simple build script information
 buildscript {
     repositories {
-        maven { url "http://jcenter.bintray.com" }
+        jcenter()
+        maven { url "http://repo.glowstone.net/content/groups/public/" }
     }
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.1.2'
+        classpath 'net.glowstone:remapper:1.0'
+        classpath 'org.ow2.asm:asm:5.0.3'
     }
 }
 
@@ -82,24 +88,25 @@ configurations.all {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url "http://repo.bukkit.org/content/groups/public/" }
     maven { url "https://oss.sonatype.org/content/repositories/public/" }
+    maven { url "http://repo.glowstone.net/content/groups/public/" }
 }
 
 // Dependencies used by our project
 dependencies {
-    compile group: 'org.bukkit', name: 'bukkit', version: project.ext.bukkitVersion
+    compile group: 'net.glowstone', name: 'glowkit', version: project.ext.bukkitVersion
     compile 'com.flowpowered:flow-networking:1.0.0-SNAPSHOT'
     compile 'jline:jline:2.11'
     //compile 'mysql:mysql-connector-java:5.1.14'
     //compile 'org.xerial:sqlite-jdbc:3.7.2'
-    compile 'org.slf4j:slf4j-jdk14:1.7.5'
+    compile 'org.slf4j:slf4j-jdk14:1.7.7'
     testCompile 'junit:junit:4.8.1'
 }
 
-// Shadow plugin settings
-shadow {
-    artifactAttached = false
+// Remap plugin settings
+remap {
+    mappingFile = file('etc/remapper.txt')
+    inputTask = shadowJar
 }
 
 // Jar manifest information
@@ -107,15 +114,9 @@ jar.manifest.mainAttributes(
         'Main-Class': mainClassName,
         'Implementation-Title': description,
         'Implementation-Version': ext.gitDescribe,
-        'Implementation-Vendor': 'SpaceManiac',
-        'Specification-Title': 'Bukkit',
-        'Specification-Version': project.ext.bukkitVersion,
-        'Specification-Vendor': 'Bukkit Team',
+        'Implementation-Vendor': 'Glowstone Project',
+        'Specification-Title': 'Bukkit/Glowkit',
+        'Specification-Version': ext.bukkitVersion,
+        'Specification-Vendor': 'Glowstone Project',
         'Sealed': true
 )
-
-// Exclude jar signatures
-shadow {
-    exclude 'META-INF/*.DSA'
-    exclude 'META-INF/*.RSA'
-}
