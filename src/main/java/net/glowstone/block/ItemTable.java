@@ -88,7 +88,7 @@ public final class ItemTable {
         reg(Material.MONSTER_EGGS, new BlockDropless());
         reg(Material.FURNACE, new BlockFurnace());
         reg(Material.LEVER, new BlockLever());
-        reg(Material.HOPPER, new BlockHopper());
+        reg(Material.HOPPER, new BlockHopper())
         reg(Material.ACACIA_STAIRS, new BlockStairs());
         reg(Material.BIRCH_WOOD_STAIRS, new BlockStairs());
         reg(Material.BRICK_STAIRS, new BlockStairs());
