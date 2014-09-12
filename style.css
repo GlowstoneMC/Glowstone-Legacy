@@ -25,6 +25,12 @@ body {
 	font-size: 12pt;
 }
 
+@media screen and (min-width: 1400px) {
+	body {
+		width: 60%;
+	}
+}
+
 hr {
 	border: none;
 	border-bottom: 1px solid black;
