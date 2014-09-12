@@ -17,6 +17,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.enchantments.EnchantmentTarget;
 
 public final class DiggingHandler implements MessageHandler<GlowSession, DiggingMessage> {
     @Override
@@ -29,7 +30,7 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
         GlowBlock block = world.getBlockAt(x, y, z);
         BlockFace face = BlockPlacementHandler.convertFace(message.getFace());
         ItemStack holding = player.getItemInHand();
-
+        GameMode gamemode = player.getGameMode();
 
         boolean blockBroken = false;
         boolean revert = false;
@@ -52,6 +53,8 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
                 // emit a damage event to determine if we're going to instabreak
                 BlockDamageEvent damageEvent = EventFactory.onBlockDamage(player, block);
                 if (damageEvent.isCancelled()) {
+                    revert = true;
+                } else if(gamemode == GameMode.CREATIVE && EnchantmentTarget.WEAPON.includes(holding)) {
                     revert = true;
                 } else {
                     blockBroken = damageEvent.getInstaBreak();
