@@ -11,6 +11,7 @@ import net.glowstone.util.Position;
 import org.apache.commons.lang.Validate;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -125,6 +126,11 @@ public abstract class GlowEntity implements Entity {
      * How long the entity has been on fire, or 0 if it is not.
      */
     private int fireTicks = 0;
+
+    /**
+     * Block damage handler
+     */
+    protected GlowEntityBlockDamageHandler blockDamageHandler = new GlowEntityBlockDamageHandler(this);
 
     /**
      * Creates an entity and adds it to the specified world.
@@ -303,6 +309,9 @@ public abstract class GlowEntity implements Entity {
         if (ticksLived % (30 * 20) == 0) {
             teleported = true;
         }
+
+        // checks damages
+        blockDamageHandler.pulse();
     }
 
     /**
@@ -333,6 +342,18 @@ public abstract class GlowEntity implements Entity {
         }
         world.getEntityManager().move(this, location);
         Position.copyLocation(location, this.location);
+
+        if (location.getBlock().getType() != Material.AIR) {
+            // Ladder, vine, water...
+            this.fallDistance = 0;
+            return;
+        }
+
+        if (location.getY() < this.previousLocation.getY()) {
+            this.fallDistance += (previousLocation.getY() - location.getY());
+        } else if (location.getY() > this.previousLocation.getY()) {
+            this.fallDistance = 0;
+        }
     }
 
     /**
