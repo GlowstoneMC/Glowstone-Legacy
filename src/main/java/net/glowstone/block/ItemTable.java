@@ -24,8 +24,7 @@ public final class ItemTable {
         return INSTANCE;
     }
 
-    private ItemTable() {
-    }
+    private ItemTable() {}
 
     ////////////////////////////////////////////////////////////////////////////
     // Data
