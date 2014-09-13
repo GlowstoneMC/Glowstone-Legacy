@@ -43,6 +43,10 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
             }
             PlayerInteractEvent event = EventFactory.onPlayerInteract(player, action, eventBlock, face);
 
+            if (event.isCancelled()) {
+                return;
+            }
+
             // blocks don't get interacted with on left click, so ignore that
             // attempt to use item in hand, that is, dig up the block
             if (!BlockPlacementHandler.selectResult(event.useItemInHand(), true)) {
