@@ -23,10 +23,7 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
     public void handle(GlowSession session, DiggingMessage message) {
         final GlowPlayer player = session.getPlayer();
         GlowWorld world = player.getWorld();
-        int x = message.getX();
-        int y = message.getY();
-        int z = message.getZ();
-        GlowBlock block = world.getBlockAt(x, y, z);
+        GlowBlock block = world.getBlockAt(message.getX(), message.getY(), message.getZ());
         BlockFace face = BlockPlacementHandler.convertFace(message.getFace());
         ItemStack holding = player.getItemInHand();
 
@@ -41,11 +38,11 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
                 action = Action.LEFT_CLICK_AIR;
                 eventBlock = null;
             }
-            PlayerInteractEvent event = EventFactory.onPlayerInteract(player, action, eventBlock, face);
+            PlayerInteractEvent interactEvent = EventFactory.onPlayerInteract(player, action, eventBlock, face);
 
             // blocks don't get interacted with on left click, so ignore that
             // attempt to use item in hand, that is, dig up the block
-            if (!BlockPlacementHandler.selectResult(event.useItemInHand(), true)) {
+            if (!BlockPlacementHandler.selectResult(interactEvent.useItemInHand(), true)) {
                 // the event was cancelled, get out of here
                 revert = true;
             } else {
@@ -57,12 +54,24 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
                     blockBroken = damageEvent.getInstaBreak();
                 }
             }
+
+            if (player.getGameMode() == GameMode.CREATIVE) {
+                // todo: verification against malicious clients
+                // also, if the block dig was denied, this break might still happen
+                // because a player's digging status isn't yet tracked. this is bad.
+                BlockBreakEvent breakEvent = EventFactory.onBlockBreak(block, player);
+                if (breakEvent.isCancelled()) {
+                    revert = true;
+                } else {
+                    blockBroken = true;
+                }
+            }
         } else if (message.getState() == DiggingMessage.STATE_DONE_DIGGING) {
             // todo: verification against malicious clients
             // also, if the block dig was denied, this break might still happen
             // because a player's digging status isn't yet tracked. this is bad.
-            BlockBreakEvent event = EventFactory.onBlockBreak(block, player);
-            if (event.isCancelled()) {
+            BlockBreakEvent breakEvent = EventFactory.onBlockBreak(block, player);
+            if (breakEvent.isCancelled()) {
                 revert = true;
             } else {
                 blockBroken = true;
