@@ -59,7 +59,7 @@ public final class ItemTable {
         reg(Material.GRAVEL, new BlockGravel());
         reg(Material.ICE, new BlockDropless());
         reg(Material.PACKED_ICE, new BlockDropless());
-        reg(Material.SNOW, new BlockDropless());
+        reg(Material.SNOW, new BlockSnow());
         reg(Material.SNOW_BLOCK, new BlockDropless());
         reg(Material.STONE, new BlockDirectDrops(Material.COBBLESTONE));
         reg(Material.COAL_ORE, new BlockDirectDrops(Material.COAL));
@@ -109,7 +109,6 @@ public final class ItemTable {
         reg(Material.LOG_2, new BlockLog2());
         reg(Material.LADDER, new BlockLadder());
         reg(Material.VINE, new BlockVine());
-        reg(Material.SNOW, new BlockSnow());
 
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
