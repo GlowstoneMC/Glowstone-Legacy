@@ -1222,8 +1222,9 @@ public final class GlowWorld implements World {
         return createExplosion(null, x, y, z, power, setFire, breakBlocks);
     }
 
-    public boolean createExplosion(Entity source, double x, double y, double z, float v, boolean incendiary, boolean breakBlocks) {
-        return false;
+    public boolean createExplosion(Entity source, double x, double y, double z, float power, boolean incendiary, boolean breakBlocks) {
+        Explosion explosion = new Explosion(source, this, x, y, z, power, incendiary, breakBlocks);
+        return explosion.explodeWithEvent();
     }
 
     ////////////////////////////////////////////////////////////////////////////
