@@ -14,7 +14,7 @@ public class BlockVine extends BlockClimbable {
     @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
         return super.canPlaceAt(block, against) || 
-                against == BlockFace.UP && isTargetOccluding(block, BlockFace.UP);
+                against == BlockFace.UP && block.getWorld().isBlockSideSolid(block, BlockFace.UP);
     }
     
     @Override

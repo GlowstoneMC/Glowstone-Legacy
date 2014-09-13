@@ -71,4 +71,9 @@ public class BlockLever extends BlockType {
             warnMaterialData(Lever.class, data);
         }
     }
+
+    @Override
+    public boolean canPlaceAt(GlowBlock block, BlockFace against) {
+        return block.getWorld().isBlockSideSolid(block.getRelative(against.getOppositeFace()), against);
+    }
 }

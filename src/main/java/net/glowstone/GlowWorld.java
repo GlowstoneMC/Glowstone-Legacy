@@ -1,6 +1,9 @@
 package net.glowstone;
 
 import net.glowstone.block.GlowBlock;
+import net.glowstone.block.GlowBlockState;
+import net.glowstone.block.ItemTable;
+import net.glowstone.block.blocktype.BlockType;
 import net.glowstone.constants.GlowBiome;
 import net.glowstone.entity.*;
 import net.glowstone.entity.objects.GlowItem;
@@ -10,6 +13,7 @@ import net.glowstone.io.anvil.AnvilWorldStorageProvider;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
@@ -729,6 +733,24 @@ public final class GlowWorld implements World {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+
+    ////////////////////////////////////////////////////////////////////////////
+    // block helpers with GlowBlock
+
+    public boolean isBlockSideSolid(GlowBlock block, BlockFace face) {
+        BlockType type = ItemTable.instance().getBlock(block.getTypeId());
+        return type.isSideSolid(block, face);
+    }
+
+    public boolean isBlockSolid(GlowBlock block) {
+        BlockType type = ItemTable.instance().getBlock(block.getTypeId());
+        return type.isSolid(block);
+    }
+
+    public boolean isBlockSolidOnTop(GlowBlock block) {
+        return isBlockSideSolid(block, BlockFace.UP);
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // get block, chunk, id, highest methods with coords
 
@@ -757,8 +779,33 @@ public final class GlowWorld implements World {
         return chunks.getChunk(x, z);
     }
 
+    public boolean isBlockSideSolid(int x, int y, int z, BlockFace face) {
+        return isBlockSideSolid(getBlockAt(x,y,z), face);
+    }
+
+    public boolean isBlockSolid(int x, int y, int z) {
+        return isBlockSolid(getBlockAt(x,y,z));
+    }
+
+    public boolean isBlockSolidOnTop(int x, int y, int z) {
+        return isBlockSideSolid(getBlockAt(x,y,z), BlockFace.UP);
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // get block, chunk, id, highest with locations
+
+    public boolean isBlockSideSolid(Location location, BlockFace face) {
+        return isBlockSideSolid(getBlockAt(location), face);
+    }
+
+    public boolean isBlockSolid(Location location) {
+        return isBlockSolid(getBlockAt(location));
+    }
+
+    public boolean isBlockSolidOnTop(Location location) {
+        return isBlockSideSolid(getBlockAt(location), BlockFace.UP);
+    }
+
 
     @Override
     public GlowBlock getBlockAt(Location location) {
