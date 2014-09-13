@@ -210,22 +210,27 @@ public final class GlowChunk implements Chunk {
 
     // ======== Basic stuff ========
 
+    @Override
     public GlowWorld getWorld() {
         return world;
     }
 
+    @Override
     public int getX() {
         return x;
     }
 
+    @Override
     public int getZ() {
         return z;
     }
 
+    @Override
     public GlowBlock getBlock(int x, int y, int z) {
         return new GlowBlock(this, (this.x << 4) | (x & 0xf), y & 0xff, (this.z << 4) | (z & 0xf));
     }
 
+    @Override
     public Entity[] getEntities() {
         return entities.toArray(new Entity[entities.size()]);
     }
@@ -234,6 +239,7 @@ public final class GlowChunk implements Chunk {
         return entities;
     }
 
+    @Override
     public GlowBlockState[] getTileEntities() {
         List<GlowBlockState> states = new ArrayList<>(tileEntities.size());
         for (TileEntity tileEntity : tileEntities.values()) {
@@ -250,10 +256,12 @@ public final class GlowChunk implements Chunk {
         return Collections.unmodifiableCollection(tileEntities.values());
     }
 
+    @Override
     public GlowChunkSnapshot getChunkSnapshot() {
         return getChunkSnapshot(true, false, false);
     }
 
+    @Override
     public GlowChunkSnapshot getChunkSnapshot(boolean includeMaxblocky, boolean includeBiome, boolean includeBiomeTempRain) {
         return new GlowChunkSnapshot(x, z, world, sections, includeMaxblocky, includeBiome ? biomes.clone() : null, includeBiomeTempRain);
     }
@@ -276,26 +284,32 @@ public final class GlowChunk implements Chunk {
 
     // ======== Helper Functions ========
 
+    @Override
     public boolean isLoaded() {
         return sections != null;
     }
 
+    @Override
     public boolean load() {
         return load(true);
     }
 
+    @Override
     public boolean load(boolean generate) {
         return isLoaded() || world.getChunkManager().loadChunk(x, z, generate);
     }
 
+    @Override
     public boolean unload() {
         return unload(true, true);
     }
 
+    @Override
     public boolean unload(boolean save) {
         return unload(save, true);
     }
 
+    @Override
     public boolean unload(boolean save, boolean safe) {
         if (!isLoaded()) {
             return true;
@@ -645,53 +659,53 @@ public final class GlowChunk implements Chunk {
             }
         }
 
-        // break out early if there's nothing to send
-        if (sections == null || sectionBitmask == 0) {
-            return ChunkDataMessage.empty(x, z);
+        // calculate how big the data will need to be
+        int byteSize = 0;
+
+        if (sections != null) {
+            final int numBlocks = WIDTH * HEIGHT * SEC_DEPTH;
+            int sectionSize = numBlocks * 5 / 2;  // (data and metadata combo) * 2 + blockLight/2
+            if (skylight) {
+                sectionSize += numBlocks / 2;  // + skyLight/2
+            }
+            byteSize += sectionCount * sectionSize;
         }
 
-        // calculate how big the data will need to be
-        final int numBlocks = WIDTH * HEIGHT * SEC_DEPTH;
-        int sectionSize = numBlocks * 5 / 2;  // (data and metadata combo) * 2 + blockLight/2
-        if (skylight) {
-            sectionSize += numBlocks / 2;  // + skyLight/2
-        }
-        int byteSize = sectionCount * sectionSize;
         if (entireChunk) {
             byteSize += 256;  // + biomes
         }
 
-        // get the list of sections
-        ChunkSection[] sendSections = new ChunkSection[sectionCount];
-        int pos = 0;
-        for (int i = 0, mask = 1; i < sections.length; ++i, mask <<= 1) {
-            if ((sectionBitmask & mask) != 0) {
-                sendSections[pos++] = sections[i];
-            }
-        }
-
-        // fill up the data
         byte[] tileData = new byte[byteSize];
-        pos = 0;
+        int pos = 0;
 
-        for (ChunkSection sec : sendSections) {
-            for (char t : sec.types) {
-                tileData[pos++] = (byte) (t & 0xff);
-                tileData[pos++] = (byte) (t >> 8);
+        if (sections != null) {
+            // get the list of sections
+            ChunkSection[] sendSections = new ChunkSection[sectionCount];
+            for (int i = 0, j = 0, mask = 1; i < sections.length; ++i, mask <<= 1) {
+                if ((sectionBitmask & mask) != 0) {
+                    sendSections[j++] = sections[i];
+                }
             }
-        }
 
-        for (ChunkSection sec : sendSections) {
-            byte[] blockLight = sec.blockLight.getRawData();
-            System.arraycopy(blockLight, 0, tileData, pos, blockLight.length);
-            pos += blockLight.length;
-        }
-
-        if (skylight) {
             for (ChunkSection sec : sendSections) {
-                byte[] skyLight = sec.skyLight.getRawData();
-                System.arraycopy(skyLight, 0, tileData, pos, skyLight.length);
-                pos += skyLight.length;
+                for (char t : sec.types) {
+                    tileData[pos++] = (byte) (t & 0xff);
+                    tileData[pos++] = (byte) (t >> 8);
+                }
+            }
+
+            for (ChunkSection sec : sendSections) {
+                byte[] blockLight = sec.blockLight.getRawData();
+                System.arraycopy(blockLight, 0, tileData, pos, blockLight.length);
+                pos += blockLight.length;
+            }
+
+            if (skylight) {
+                for (ChunkSection sec : sendSections) {
+                    byte[] skyLight = sec.skyLight.getRawData();
+                    System.arraycopy(skyLight, 0, tileData, pos, skyLight.length);
+                    pos += skyLight.length;
+                }
             }
         }
 

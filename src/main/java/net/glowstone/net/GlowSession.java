@@ -274,12 +274,11 @@ public final class GlowSession extends BasicSession {
         // don't show up on the client. A workaround or proper fix is needed.
         Message addMessage = new UserListItemMessage(UserListItemMessage.Action.ADD_PLAYER, player.getUserListEntry());
         List<UserListItemMessage.Entry> entries = new ArrayList<>();
-        for (Player rawPlayer : server.getOnlinePlayers()) {
-            GlowPlayer sendPlayer = (GlowPlayer) rawPlayer;
-            if (rawPlayer != player) {
-                sendPlayer.getSession().send(addMessage);
+        for (GlowPlayer other : server.getOnlinePlayers()) {
+            if (other != player) {
+                other.getSession().send(addMessage);
             }
-            entries.add(sendPlayer.getUserListEntry());
+            entries.add(other.getUserListEntry());
         }
         send(new UserListItemMessage(UserListItemMessage.Action.ADD_PLAYER, entries));
     }
@@ -333,9 +332,9 @@ public final class GlowSession extends BasicSession {
 
         // log that the player was kicked
         if (player != null) {
-            GlowServer.logger.log(Level.INFO, "{0} kicked: {1}", new Object[]{player.getName(), reason});
+            GlowServer.logger.info(player.getName() + " kicked: " + reason);
         } else {
-            GlowServer.logger.log(Level.INFO, "[{0}] kicked: {1}", new Object[]{address, reason});
+            GlowServer.logger.info("[" + address + "] kicked: " + reason);
         }
 
         if (quitReason == null) {
@@ -434,7 +433,7 @@ public final class GlowSession extends BasicSession {
         player.remove();
 
         Message userListMessage = UserListItemMessage.removeOne(player.getUniqueId());
-        for (Player onlinePlayer : server.getOnlinePlayers()) {
+        for (GlowPlayer onlinePlayer : server.getOnlinePlayers()) {
             ((GlowPlayer) onlinePlayer).getSession().send(userListMessage);
         }
 
