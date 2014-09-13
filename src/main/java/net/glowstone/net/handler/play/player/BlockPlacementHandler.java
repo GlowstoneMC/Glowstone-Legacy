@@ -95,6 +95,10 @@ public final class BlockPlacementHandler implements MessageHandler<GlowSession, 
         PlayerInteractEvent event = EventFactory.onPlayerInteract(player, action, clicked, face);
         //GlowServer.logger.info("Interact: " + action + " " + clicked + " " + face);
 
+        if (event.isCancelled()) {
+            return;
+        }
+
         // attempt to use interacted block
         // DEFAULT is treated as ALLOW, and sneaking is always considered
         boolean useInteractedBlock = event.useInteractedBlock() != Event.Result.DENY;
