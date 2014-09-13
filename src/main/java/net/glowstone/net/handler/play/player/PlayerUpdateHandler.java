@@ -27,7 +27,7 @@ public final class PlayerUpdateHandler implements MessageHandler<GlowSession, Pl
         if (event.isCancelled()) {
             // Magic value
             // https://github.com/JeromSar/CraftBukkit/blob/master/src/main/java/net/minecraft/server/PlayerConnection.java#L240
-            session.send(new PositionRotationMessage(originLoc, 1.6200000047683716D)); // Magic value:
+            session.send(new PositionRotationMessage(originLoc, 1.6200000047683716D));
             return;
         }
 
