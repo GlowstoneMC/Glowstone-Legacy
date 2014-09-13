@@ -11,6 +11,7 @@ import net.glowstone.block.itemtype.ItemType;
 import net.glowstone.entity.GlowPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -157,26 +158,28 @@ public class BlockType extends ItemType {
             }
         }
 
-        GlowBlockState newState = target.getState();
-
         // call canBuild event
         if (!EventFactory.onBlockCanBuild(target, getId(), face).isBuildable()) {
             //revert(player, target);
             return;
         }
 
+        GlowBlockState oldState = target.getState();
+        GlowBlockState newState = target.getState();
+
         // calculate new block
         placeBlock(player, newState, face, holding, clickedLoc);
 
-        // call blockPlace event
-        BlockPlaceEvent event = EventFactory.onBlockPlace(target, newState, against, player);
-        if (event.isCancelled() || !event.canBuild()) {
-            //revert(player, target);
-            return;
-        }
-
         // perform the block change
         newState.update(true);
+
+        // call blockPlace event
+        BlockPlaceEvent event = EventFactory.onBlockPlace(target, oldState, against, player);
+
+        if (event.isCancelled() || !event.canBuild()) {
+            oldState.update(true);
+            return;
+        }
 
         // play a sound effect
         // todo: vary sound effect based on block type
