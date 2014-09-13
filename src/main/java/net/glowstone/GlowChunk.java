@@ -319,6 +319,10 @@ public final class GlowChunk implements Chunk {
             return false;
         }
 
+        if (EventFactory.onChunkUnload(this).isCancelled()){
+            return false;
+        }
+
         if (save && !world.getChunkManager().performSave(this)) {
             return false;
         }

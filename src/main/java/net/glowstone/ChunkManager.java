@@ -158,7 +158,7 @@ public final class ChunkManager {
     public void unloadOldChunks() {
         for (Map.Entry<GlowChunk.Key, GlowChunk> entry : chunks.entrySet()) {
             Set<ChunkLock> lockSet = locks.get(entry.getKey());
-            if (lockSet == null || lockSet.size() == 0) {
+            if (lockSet == null || lockSet.isEmpty()) {
                 if (!entry.getValue().unload(true, true)) {
                     GlowServer.logger.warning("Failed to unload chunk " + world.getName() + ":" + entry.getKey());
                 }
