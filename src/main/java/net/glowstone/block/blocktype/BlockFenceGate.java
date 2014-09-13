@@ -7,7 +7,6 @@ import net.glowstone.entity.GlowPlayer;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Directional;
 import org.bukkit.material.Gate;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
@@ -20,11 +19,13 @@ public class BlockFenceGate extends BlockOpenable {
         super.placeBlock(player, state, face, holding, clickedLoc);
 
         MaterialData materialData = state.getData();
-        if (materialData instanceof Directional) {
-            Directional directional = (Directional) materialData;
+        if (materialData instanceof Gate) {
+            Gate gate = (Gate) materialData;
             float yaw = player.getLocation().getYaw();
-            directional.setFacingDirection(blockFaceFromYaw(yaw));
+            gate.setFacingDirection(blockFaceFromYaw(yaw));
             state.update(true);
+        } else {
+            warnMaterialData(Gate.class, materialData);
         }
     }
 
