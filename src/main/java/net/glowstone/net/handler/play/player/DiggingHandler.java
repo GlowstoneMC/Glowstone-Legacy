@@ -12,6 +12,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
@@ -56,6 +57,8 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
             }
 
             if (player.getGameMode() == GameMode.CREATIVE) {
+                if (EnchantmentTarget.WEAPON.includes(player.getItemInHand().getType())) {return;}
+
                 // todo: verification against malicious clients
                 // also, if the block dig was denied, this break might still happen
                 // because a player's digging status isn't yet tracked. this is bad.
@@ -67,6 +70,10 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
                 }
             }
         } else if (message.getState() == DiggingMessage.STATE_DONE_DIGGING) {
+            if (player.getGameMode() == GameMode.CREATIVE) {
+                if (EnchantmentTarget.WEAPON.includes(player.getItemInHand().getType())) {return;}
+            }
+
             // todo: verification against malicious clients
             // also, if the block dig was denied, this break might still happen
             // because a player's digging status isn't yet tracked. this is bad.
