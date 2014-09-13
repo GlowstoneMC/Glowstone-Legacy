@@ -6,18 +6,19 @@ import org.bukkit.Location;
 public final class PositionRotationMessage implements Message {
 
     private final double x, y, z;
-    private final float rotation, pitch;
+    private final float yaw, pitch;
     private final int flags;
 
-    public PositionRotationMessage(double x, double y, double z, float rotation, float pitch) {
-        this(x, y, z, rotation, pitch, 0);
+
+    public PositionRotationMessage(double x, double y, double z, float yaw, float pitch) {
+        this(x, y, z, yaw, pitch, 0);
     }
 
-    public PositionRotationMessage(double x, double y, double z, float rotation, float pitch, int flags) {
+    public PositionRotationMessage(double x, double y, double z, float yaw, float pitch, int flags) {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.rotation = rotation;
+        this.yaw = yaw;
         this.pitch = pitch;
         this.flags = flags;
     }
@@ -38,8 +39,8 @@ public final class PositionRotationMessage implements Message {
         return z;
     }
 
-    public float getRotation() {
-        return rotation;
+    public float getYaw() {
+        return yaw;
     }
 
     public float getPitch() {
@@ -53,7 +54,7 @@ public final class PositionRotationMessage implements Message {
     @Override
     public String toString() {
         return "PositionRotationMessage{x=" + x + ",y=" + y + ",z=" + z +
-                ",rotation=" + rotation + ",pitch=" +
+                ",rotation=" + yaw + ",pitch=" +
                 pitch + ",flags=" + flags + "}";
     }
 }

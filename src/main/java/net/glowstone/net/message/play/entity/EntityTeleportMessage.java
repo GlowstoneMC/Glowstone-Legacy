@@ -51,7 +51,7 @@ public final class EntityTeleportMessage implements Message {
 
     @Override
     public String toString() {
-        return "EntityTeleportMessage{id=" + id + ",x=" + x + ",y=" + y + ",z=" + z + ",rotation=" + rotation + ",pitch=" + pitch + "}";
+        return "EntityTeleportMessage{id=" + id + ",x=" + x + ",y=" + y + ",z=" + z + ",yaw=" + rotation + ",pitch=" + pitch + "}";
     }
 
 }
