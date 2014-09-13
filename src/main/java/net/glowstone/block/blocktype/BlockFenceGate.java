@@ -23,7 +23,7 @@ public class BlockFenceGate extends BlockOpenable {
                 gate.setFacingDirection(getOpenDirection(player, gate.getFacing()));
                 state.update(true);
             } else {
-                GlowServer.logger.warning("Called blockInteract on BlockFenceGate, however block is type of " + data);
+                warnMaterialData(Gate.class, data);
             }
         }
 
