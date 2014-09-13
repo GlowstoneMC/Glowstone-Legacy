@@ -61,7 +61,7 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
             }
 
             if (player.getGameMode() == GameMode.CREATIVE) {
-                if (EnchantmentTarget.WEAPON.includes(player.getItemInHand().getType())) {return;}
+                if (player.getItemInHand() != null && EnchantmentTarget.WEAPON.includes(player.getItemInHand().getType())) {return;}
 
                 // todo: verification against malicious clients
                 // also, if the block dig was denied, this break might still happen
@@ -75,7 +75,7 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
             }
         } else if (message.getState() == DiggingMessage.STATE_DONE_DIGGING) {
             if (player.getGameMode() == GameMode.CREATIVE) {
-                if (EnchantmentTarget.WEAPON.includes(player.getItemInHand().getType())) {return;}
+                if (player.getItemInHand() != null && EnchantmentTarget.WEAPON.includes(player.getItemInHand().getType())) {return;}
             }
 
             // todo: verification against malicious clients
