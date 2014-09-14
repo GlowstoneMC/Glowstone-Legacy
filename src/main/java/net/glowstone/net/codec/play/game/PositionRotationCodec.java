@@ -24,7 +24,7 @@ public final class PositionRotationCodec implements Codec<PositionRotationMessag
         buf.writeDouble(message.getX());
         buf.writeDouble(message.getY());
         buf.writeDouble(message.getZ());
-        buf.writeFloat(message.getRotation());
+        buf.writeFloat(message.getYaw());
         buf.writeFloat(message.getPitch());
         buf.writeByte(message.getFlags());
         return buf;
