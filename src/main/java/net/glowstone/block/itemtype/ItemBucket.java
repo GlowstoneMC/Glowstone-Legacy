@@ -1,7 +1,6 @@
 package net.glowstone.block.itemtype;
 
 import net.glowstone.EventFactory;
-import net.glowstone.GlowServer;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.ItemTable;
 import net.glowstone.block.blocktype.BlockLiquid;
