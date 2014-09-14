@@ -220,7 +220,7 @@ public final class GlowSession extends BasicSession {
      * with this session.
      */
     public void setPlayer(PlayerProfile profile) {
-        if (this.player != null) {
+        if (player != null) {
             throw new IllegalStateException("Cannot set player twice");
         }
 
@@ -237,8 +237,6 @@ public final class GlowSession extends BasicSession {
         // isActive check here in case player disconnected after authentication,
         // but before the GlowPlayer initialization was completed
         if (!isActive()) {
-            // todo: we might be racing with the network thread here,
-            // could cause onDisconnect() logic to happen twice
             onDisconnect();
             return;
         }
@@ -249,13 +247,26 @@ public final class GlowSession extends BasicSession {
             disconnect(event.getKickMessage(), true);
             return;
         }
+
+        // Kick other players with the same UUID
+        for (Player rawPlayer : getServer().getOnlinePlayers()) {
+            if (rawPlayer == player) {
+                continue;
+            }
+
+            if (rawPlayer.getUniqueId().equals(player.getUniqueId())) {
+                ((GlowPlayer) rawPlayer).getSession().disconnect("You logged in from another location.", true);
+                break;
+            }
+        }
+
         player.getWorld().getRawPlayers().add(player);
 
         GlowServer.logger.info(player.getName() + " [" + address + "] connected, UUID: " + player.getUniqueId());
 
         // message and user list
         String message = EventFactory.onPlayerJoin(player).getJoinMessage();
-        if (message != null) {
+        if (message != null && !message.isEmpty()) {
             server.broadcastMessage(message);
         }
 
@@ -305,7 +316,7 @@ public final class GlowSession extends BasicSession {
      * @param reason The reason for disconnection.
      * @param overrideKick Whether to skip the kick event.
      */
-    private void disconnect(String reason, boolean overrideKick) {
+    public void disconnect(String reason, boolean overrideKick) {
         if (player != null && !overrideKick) {
             PlayerKickEvent event = EventFactory.onPlayerKick(player, reason);
             if (event.isCancelled()) {
@@ -415,25 +426,25 @@ public final class GlowSession extends BasicSession {
 
     @Override
     public void onDisconnect() {
-        if (player != null) {
-            player.remove();
-            Message userListMessage = UserListItemMessage.removeOne(player.getUniqueId());
-            for (GlowPlayer player : server.getOnlinePlayers()) {
-                player.getSession().send(userListMessage);
-            }
-
-            String message = player.getName() + " [" + address + "] disconnected";
-            if (quitReason != null) {
-                message += ": " + quitReason;
-            }
-            GlowServer.logger.info(message);
-
-            String text = EventFactory.onPlayerQuit(player).getQuitMessage();
-            if (text != null) {
-                server.broadcastMessage(text);
-            }
-            player = null; // in case we are disposed twice
+        if (player == null) {
+            return;
         }
+
+        player.remove();
+
+        Message userListMessage = UserListItemMessage.removeOne(player.getUniqueId());
+        for (GlowPlayer onlinePlayer : server.getOnlinePlayers()) {
+            ((GlowPlayer) onlinePlayer).getSession().send(userListMessage);
+        }
+
+        GlowServer.logger.info(player.getName() + " [" + address + "] disconnected" + (quitReason == null ? "" : ": " + quitReason));
+
+        String text = EventFactory.onPlayerQuit(player).getQuitMessage();
+        if (text != null && !text.isEmpty()) {
+            server.broadcastMessage(text);
+        }
+
+        player = null; // in case we are disposed twice
     }
 
     @Override
