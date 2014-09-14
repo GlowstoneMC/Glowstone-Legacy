@@ -1244,7 +1244,7 @@ public final class GlowServer implements Server {
     public boolean getAllowFlight() {
         return config.getBoolean(ServerConfig.Key.ALLOW_FLIGHT);
     }
-    
+
     public Difficulty getDifficulty() {
         return Difficulty.getByValue(config.getInt(ServerConfig.Key.DIFFICULTY));
     }

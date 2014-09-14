@@ -194,7 +194,7 @@ public final class GlowWorld implements World {
     private boolean autosave = true;
 
     /**
-     * The world's gameplay difficulty. PEACEFUL (0), EASY (1), NORMAL (2), HARD (3)
+     * The world's gameplay difficulty.
      */
     private Difficulty difficulty = Difficulty.PEACEFUL;
 
@@ -236,7 +236,7 @@ public final class GlowWorld implements World {
         waterAnimalLimit = server.getWaterAnimalSpawnLimit();
         ambientLimit = server.getAmbientSpawnLimit();
         difficulty = server.getDifficulty();
-        
+
         // read in world data
         WorldFinalValues values = null;
         try {
