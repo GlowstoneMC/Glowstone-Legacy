@@ -2,8 +2,10 @@ package net.glowstone.net.codec.play.entity;
 
 import com.flowpowered.networking.Codec;
 import com.flowpowered.networking.util.ByteBufUtils;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.DecoderException;
+import net.glowstone.net.GlowBufUtils;
 import net.glowstone.net.message.play.entity.SpawnObjectMessage;
 
 import java.io.IOException;
