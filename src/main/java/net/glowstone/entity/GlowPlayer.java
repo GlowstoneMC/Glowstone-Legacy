@@ -1231,14 +1231,36 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
     @Override
     public void playNote(Location loc, byte instrument, byte note) {
-        session.send(new BlockActionMessage(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), instrument, note, Material.NOTE_BLOCK.getId()));
+        String name;
+        switch (instrument) {
+            case 0:
+                name = "harp";
+                break;
+            case 1:
+                name = "bd";
+                break;
+            case 2:
+                name = "snare";
+                break;
+            case 3:
+                name = "hat";
+                break;
+            case 4:
+                name = "bassattack";
+                break;
+            default:
+                return;
+        }
+
+        playSound(location, "note." + name, 3.0f, note);
+        //session.send(new BlockActionMessage(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), instrument, note, Material.NOTE_BLOCK.getId()));
     }
 
     @Override
     public void playEffect(Location loc, Effect effect, int data) {
-        int id = effect.getId();
-        boolean ignoreDistance = id == 1013; // mob.wither.spawn, not in Bukkit yet
-        session.send(new PlayEffectMessage(id, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), data, ignoreDistance));
+        int effectId = effect.getId();
+        boolean ignoreDistance = effectId == 1013; // mob.wither.spawn, not in Bukkit yet
+        session.send(new PlayEffectMessage(effectId, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), data, ignoreDistance));
     }
 
     @Override

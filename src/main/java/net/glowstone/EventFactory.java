@@ -179,6 +179,10 @@ public final class EventFactory {
         return callEvent(new BlockCanBuildEvent(block, newId, canBuild));
     }
 
+    public static NotePlayEvent onNotePlay(Block block, Instrument instrument, Note note) {
+        return callEvent(new NotePlayEvent(block, instrument, note));
+    }
+
     // -- Server Events
 
     public static ServerCommandEvent onServerCommand(ConsoleCommandSender sender, String command) {

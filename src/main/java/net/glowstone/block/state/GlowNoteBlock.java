@@ -1,5 +1,6 @@
 package net.glowstone.block.state;
 
+import net.glowstone.EventFactory;
 import net.glowstone.GlowChunk;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
@@ -12,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.Note;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.NoteBlock;
+import org.bukkit.event.block.NotePlayEvent;
 
 public class GlowNoteBlock extends GlowBlockState implements NoteBlock {
 
@@ -74,6 +76,14 @@ public class GlowNoteBlock extends GlowBlockState implements NoteBlock {
             return false;
         }
 
+        final NotePlayEvent event = EventFactory.onNotePlay(getBlock(), Instrument.getByType(instrument), new Note(note));
+        if (event.isCancelled()) {
+            return false;
+        }
+
+        instrument = event.getInstrument().getType();
+        note = event.getNote().getId();
+
         Location location = getBlock().getLocation();
 
         GlowChunk.Key key = new GlowChunk.Key(getX() >> 4, getZ() >> 4);
@@ -101,12 +111,14 @@ public class GlowNoteBlock extends GlowBlockState implements NoteBlock {
             case NOTE_BLOCK:
             case WORKBENCH:
             case LOG:
+            case LOG_2:
                 return Instrument.BASS_GUITAR;
             case SAND:
             case GRAVEL:
             case SOUL_SAND:
                 return Instrument.SNARE_DRUM;
             case GLASS:
+            case GLOWSTONE:
                 return Instrument.STICKS;
             case STONE:
             case OBSIDIAN:
@@ -119,5 +131,7 @@ public class GlowNoteBlock extends GlowBlockState implements NoteBlock {
                 return Instrument.PIANO;
         }
     }
+
+
 
 }
