@@ -73,6 +73,14 @@ public final class EventFactory {
         return callEvent(new PlayerChatEvent(player, message));
     }
 
+    public static PlayerBucketEmptyEvent onPlayerBucketEmpty(Player player, Block blockClicked, BlockFace blockFace, Material bucket, ItemStack itemInHand) {
+        return callEvent(new PlayerBucketEmptyEvent(player, blockClicked, blockFace, bucket, itemInHand));
+    }
+
+    public static PlayerBucketFillEvent onPlayerBucketFill(Player player, Block blockClicked, BlockFace blockFace, Material bucket, ItemStack itemInHand) {
+        return callEvent(new PlayerBucketFillEvent(player, blockClicked, blockFace, bucket, itemInHand));
+    }
+
     public static PlayerCommandPreprocessEvent onPlayerCommand(Player player, String message) {
         return callEvent(new PlayerCommandPreprocessEvent(player, message));
     }

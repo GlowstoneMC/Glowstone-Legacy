@@ -100,6 +100,14 @@ public class ItemType {
         return maxStackSize;
     }
 
+    /**
+     * Get the block the item acts like when placed
+     * @return The BlockType to be placed as
+     */
+    public BlockType getPlaceAs() {
+        return this.placeAs;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Actions
 
