@@ -22,17 +22,14 @@ public class GlowSign extends GlowBlockState implements Sign {
         return (TESign) getBlock().getTileEntity();
     }
 
-    @Override
     public String[] getLines() {
         return lines;
     }
 
-    @Override
     public String getLine(int index) throws IndexOutOfBoundsException {
         return lines[index];
     }
 
-    @Override
     public void setLine(int index, String line) throws IndexOutOfBoundsException {
         lines[index] = line;
     }

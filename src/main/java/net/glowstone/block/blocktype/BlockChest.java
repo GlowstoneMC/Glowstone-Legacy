@@ -1,6 +1,7 @@
 package net.glowstone.block.blocktype;
 
 import net.glowstone.GlowChunk;
+import net.glowstone.GlowServer;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.entity.TEChest;
 import net.glowstone.block.entity.TileEntity;
@@ -24,10 +25,12 @@ public class BlockChest extends BlockContainer {
 
         MaterialData data = state.getData();
         if (data instanceof Chest) {
-            ((Chest) data).setFacingDirection(getOppositeBlockFace(player.getLocation(), false));
+            // todo: determine facing direction
+            ((Chest) data).setFacingDirection(BlockFace.EAST);
             state.setData(data);
         } else {
-            warnMaterialData(Chest.class, data);
+            // complain?
+            GlowServer.logger.warning("Placing Chest: MaterialData was of wrong type");
         }
     }
 }

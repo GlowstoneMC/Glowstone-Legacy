@@ -8,8 +8,6 @@ import org.bukkit.entity.EntityType;
 
 public class TEMobSpawner extends TileEntity {
 
-    private static final EntityType DEFAULT = EntityType.PIG;
-
     private EntityType spawning;
     private int delay;
 
@@ -22,20 +20,8 @@ public class TEMobSpawner extends TileEntity {
     public void loadNbt(CompoundTag tag) {
         super.loadNbt(tag);
 
-        if (tag.isString("EntityId")) {
-            spawning = EntityType.fromName(tag.getString("EntityId"));
-            if (spawning == null) {
-                spawning = DEFAULT;
-            }
-        } else {
-            spawning = DEFAULT;
-        }
-
-        if (tag.isInt("Delay")) {
-            delay = tag.getInt("Delay");
-        } else {
-            delay = 0;
-        }
+        spawning = EntityType.fromName(tag.getString("EntityId"));
+        delay = tag.getInt("Delay");
     }
 
     @Override

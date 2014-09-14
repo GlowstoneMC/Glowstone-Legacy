@@ -36,12 +36,10 @@ public class GlowCreatureSpawner extends GlowBlockState implements CreatureSpawn
         return result;
     }
 
-    @Override
     public int getDelay() {
         return delay;
     }
 
-    @Override
     public void setDelay(int i) {
         if (i < 0) i = 0;
         delay = i;
@@ -50,17 +48,14 @@ public class GlowCreatureSpawner extends GlowBlockState implements CreatureSpawn
     ////////////////////////////////////////////////////////////////////////////
     // Spawned Type
 
-    @Override
     public EntityType getSpawnedType() {
         return spawned;
     }
 
-    @Override
     public void setSpawnedType(EntityType creatureType) {
         spawned = creatureType;
     }
 
-    @Override
     public void setCreatureTypeByName(String creatureType) {
         EntityType type = EntityType.fromName(creatureType);
         if (type != null) {
@@ -68,7 +63,6 @@ public class GlowCreatureSpawner extends GlowBlockState implements CreatureSpawn
         }
     }
 
-    @Override
     public String getCreatureTypeName() {
         return spawned.getName();
     }
@@ -76,25 +70,21 @@ public class GlowCreatureSpawner extends GlowBlockState implements CreatureSpawn
     ////////////////////////////////////////////////////////////////////////////
     // Deprecated CreatureType
 
-    @Override
     @Deprecated
     public CreatureType getCreatureType() {
         return CreatureType.fromEntityType(spawned);
     }
 
-    @Override
     @Deprecated
     public void setCreatureType(CreatureType creatureType) {
         spawned = creatureType.toEntityType();
     }
 
-    @Override
     @Deprecated
     public String getCreatureTypeId() {
         return spawned.getName();
     }
 
-    @Override
     @Deprecated
     public void setCreatureTypeId(String s) {
         CreatureType type = CreatureType.fromName(s);

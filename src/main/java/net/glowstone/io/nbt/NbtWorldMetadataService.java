@@ -6,11 +6,13 @@ import net.glowstone.io.WorldMetadataService;
 import net.glowstone.util.nbt.CompoundTag;
 import net.glowstone.util.nbt.NBTInputStream;
 import net.glowstone.util.nbt.NBTOutputStream;
+import net.glowstone.util.nbt.Tag;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.io.*;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -31,7 +33,6 @@ public class NbtWorldMetadataService implements WorldMetadataService {
         }
     }
 
-    @Override
     public WorldFinalValues readWorldData() throws IOException {
         // determine UUID of world
         UUID uid = null;
@@ -123,6 +124,9 @@ public class NbtWorldMetadataService implements WorldMetadataService {
 
         // save unknown tags for later
         unknownTags = level;
+        for (Map.Entry<String, Tag> entry : unknownTags.getValue().entrySet()) {
+            server.getLogger().info("Unknown world tag: " + entry.getKey() + " = " + entry.getValue());
+        }
 
         return new WorldFinalValues(seed, uid);
     }
@@ -132,7 +136,6 @@ public class NbtWorldMetadataService implements WorldMetadataService {
         server.getLogger().log(Level.SEVERE, "Unable to access " + file + " for world " + world.getName(), e);
     }
 
-    @Override
     public void writeWorldData() throws IOException {
         File uuidFile = new File(dir, "uid.dat");
         try (DataOutputStream out = new DataOutputStream(new FileOutputStream(uuidFile))) {

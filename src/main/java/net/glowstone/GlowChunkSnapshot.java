@@ -1,16 +1,17 @@
 package net.glowstone;
 
-import net.glowstone.GlowChunk.ChunkSection;
 import net.glowstone.constants.GlowBiome;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 
+import net.glowstone.GlowChunk.ChunkSection;
+
 /**
  * Class representing a snapshot of a chunk.
  */
 public class GlowChunkSnapshot implements ChunkSnapshot {
-
+    
     private final int x, z;
     private final String world;
     private final long time;
@@ -87,71 +88,58 @@ public class GlowChunkSnapshot implements ChunkSnapshot {
         return biomes;
     }
 
-    @Override
     public int getX() {
         return x;
     }
 
-    @Override
     public int getZ() {
         return z;
     }
 
-    @Override
     public String getWorldName() {
         return world;
     }
 
-    @Override
     public long getCaptureFullTime() {
         return time;
     }
 
-    @Override
     public boolean isSectionEmpty(int sy) {
-        return sy < 0 || sy >= sections.length || (sections[sy] == null);
+        return sy >= 0 && sy < sections.length && sections[sy] != null;
     }
 
-    @Override
     public int getBlockTypeId(int x, int y, int z) {
         ChunkSection section = getSection(y);
-        return section == null ? 0 : section.types[section.index(x, y, z)] >> 4;
+        return section == null ? 0 : (section.types[section.index(x, y, z)] & 0xff);
     }
 
-    @Override
     public int getBlockData(int x, int y, int z) {
         ChunkSection section = getSection(y);
-        return section == null ? 0 : section.types[section.index(x, y, z)] & 0xF;
+        return section == null ? 0 : section.metaData.get(section.index(x, y, z));
     }
 
-    @Override
     public int getBlockSkyLight(int x, int y, int z) {
         ChunkSection section = getSection(y);
-        return section == null ? 15 : section.skyLight.get(section.index(x, y, z));
+        return section == null ? 0 : section.skyLight.get(section.index(x, y, z));
     }
 
-    @Override
     public int getBlockEmittedLight(int x, int y, int z) {
         ChunkSection section = getSection(y);
         return section == null ? 0 : section.blockLight.get(section.index(x, y, z));
     }
 
-    @Override
     public int getHighestBlockYAt(int x, int z) {
         return height[coordToIndex(x, z)];
     }
 
-    @Override
     public Biome getBiome(int x, int z) {
         return GlowBiome.getBiome(biomes[coordToIndex(x, z)]);
     }
 
-    @Override
     public double getRawBiomeTemperature(int x, int z) {
         return temp[coordToIndex(x, z)];
     }
 
-    @Override
     public double getRawBiomeRainfall(int x, int z) {
         return humid[coordToIndex(x, z)];
     }
@@ -164,7 +152,7 @@ public class GlowChunkSnapshot implements ChunkSnapshot {
     }
 
     public static class EmptySnapshot extends GlowChunkSnapshot {
-
+        
         public EmptySnapshot(int x, int z, World world, boolean svBiome, boolean svTemp) {
             super(x, z, world, null, false, svBiome ? new byte[256] : null, svTemp);
         }
@@ -181,7 +169,7 @@ public class GlowChunkSnapshot implements ChunkSnapshot {
 
         @Override
         public int getBlockSkyLight(int x, int y, int z) {
-            return 15;
+            return 0;
         }
 
         @Override
@@ -193,7 +181,7 @@ public class GlowChunkSnapshot implements ChunkSnapshot {
         public int getHighestBlockYAt(int x, int z) {
             return 0;
         }
-
+        
     }
-
+    
 }

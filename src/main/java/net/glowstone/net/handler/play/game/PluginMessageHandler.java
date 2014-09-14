@@ -18,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 
 public final class PluginMessageHandler implements MessageHandler<GlowSession, PluginMessage> {
-    @Override
     public void handle(GlowSession session, PluginMessage message) {
         final String channel = message.getChannel();
 

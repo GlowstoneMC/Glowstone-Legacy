@@ -9,13 +9,11 @@ import java.io.IOException;
 import java.util.UUID;
 
 public final class SpectateCodec implements Codec<SpectateMessage> {
-    @Override
     public SpectateMessage decode(ByteBuf buf) throws IOException {
         UUID uuid = GlowBufUtils.readUuid(buf);
         return new SpectateMessage(uuid);
     }
 
-    @Override
     public ByteBuf encode(ByteBuf buf, SpectateMessage message) throws IOException {
         GlowBufUtils.writeUuid(buf, message.getTarget());
         return buf;

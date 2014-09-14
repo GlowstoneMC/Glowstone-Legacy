@@ -34,7 +34,6 @@ abstract class LivingEntityStore<T extends GlowLivingEntity> extends EntityStore
     // - compound "Leash"
     // on ActiveEffects, bool "ShowParticles"
 
-    @Override
     public void load(T entity, CompoundTag compound) {
         super.load(entity, compound);
 
@@ -110,7 +109,6 @@ abstract class LivingEntityStore<T extends GlowLivingEntity> extends EntityStore
         }
     }
 
-    @Override
     public void save(T entity, CompoundTag tag) {
         super.save(entity, tag);
 

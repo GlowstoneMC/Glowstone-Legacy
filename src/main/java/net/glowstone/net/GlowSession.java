@@ -263,11 +263,12 @@ public final class GlowSession extends BasicSession {
         // don't show up on the client. A workaround or proper fix is needed.
         Message addMessage = new UserListItemMessage(UserListItemMessage.Action.ADD_PLAYER, player.getUserListEntry());
         List<UserListItemMessage.Entry> entries = new ArrayList<>();
-        for (GlowPlayer other : server.getOnlinePlayers()) {
-            if (other != player) {
-                other.getSession().send(addMessage);
+        for (Player rawPlayer : server.getOnlinePlayers()) {
+            GlowPlayer sendPlayer = (GlowPlayer) rawPlayer;
+            if (rawPlayer != player) {
+                sendPlayer.getSession().send(addMessage);
             }
-            entries.add(other.getUserListEntry());
+            entries.add(sendPlayer.getUserListEntry());
         }
         send(new UserListItemMessage(UserListItemMessage.Action.ADD_PLAYER, entries));
     }
@@ -321,9 +322,9 @@ public final class GlowSession extends BasicSession {
 
         // log that the player was kicked
         if (player != null) {
-            GlowServer.logger.info(player.getName() + " kicked: " + reason);
+            GlowServer.logger.log(Level.INFO, "{0} kicked: {1}", new Object[]{player.getName(), reason});
         } else {
-            GlowServer.logger.info("[" + address + "] kicked: " + reason);
+            GlowServer.logger.log(Level.INFO, "[{0}] kicked: {1}", new Object[]{address, reason});
         }
 
         if (quitReason == null) {
@@ -418,8 +419,8 @@ public final class GlowSession extends BasicSession {
         if (player != null) {
             player.remove();
             Message userListMessage = UserListItemMessage.removeOne(player.getUniqueId());
-            for (GlowPlayer player : server.getOnlinePlayers()) {
-                player.getSession().send(userListMessage);
+            for (Player player : server.getOnlinePlayers()) {
+                ((GlowPlayer) player).getSession().send(userListMessage);
             }
 
             String message = player.getName() + " [" + address + "] disconnected";
