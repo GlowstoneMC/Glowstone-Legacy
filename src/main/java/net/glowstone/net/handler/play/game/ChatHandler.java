@@ -8,6 +8,6 @@ public final class ChatHandler implements MessageHandler<GlowSession, IncomingCh
 
     @Override
     public void handle(GlowSession session, IncomingChatMessage message) {
-        session.getPlayer().chat(message.getText());
+        session.getPlayer().chat(message.getText(), true);
     }
 }

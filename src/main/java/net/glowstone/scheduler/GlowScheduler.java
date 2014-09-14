@@ -317,6 +317,14 @@ public final class GlowScheduler implements BukkitScheduler {
         }
     }
 
+    public Future<?> runTaskImmediateAsynchronously(Runnable task) {
+        return asyncTaskExecutor.submit(task);
+    }
+
+    public <T> Future<T> runAsynchronouslyImmediately(Callable<T> task) {
+        return asyncTaskExecutor.submit(task);
+    }
+
     @Override
     public BukkitTask runTask(Plugin plugin, Runnable task) throws IllegalArgumentException {
         return runTaskLater(plugin, task, 0);

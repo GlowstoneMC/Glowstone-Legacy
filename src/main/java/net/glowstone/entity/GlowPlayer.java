@@ -1157,8 +1157,11 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         return getServer().dispatchCommand(this, command);
     }
 
-    @Override
     public void chat(String text) {
+        chat(text, false);
+    }
+
+    public void chat(final String text, final boolean async) {
         if (text.startsWith("/")) {
             server.getLogger().info(getName() + " issued command: " + text);
             try {
@@ -1172,16 +1175,41 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
                 getServer().getLogger().log(Level.SEVERE, "Exception while executing command: " + text, ex);
             }
         } else {
-            // todo: async this
-            PlayerChatEvent event = EventFactory.onPlayerChat(this, text);
-            if (event.isCancelled()) {
-                return;
-            }
+            Runnable task = new Runnable() {
+                @Override
+                public void run() {
+                    final AsyncPlayerChatEvent event = EventFactory.onAsyncPlayerChat(async, GlowPlayer.this, text);
+                    if (event.isCancelled()) {
+                        return;
+                    }
 
-            String message = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
-            getServer().getLogger().info(message);
-            for (Player recipient : event.getRecipients()) {
-                recipient.sendMessage(message);
+                    if (PlayerChatEvent.getHandlerList().getRegisteredListeners().length > 0) {
+                        // We still have sync chat handlers. Run these as well.
+                        PlayerChatEvent event1 = EventFactory.callEvent(new PlayerChatEvent(GlowPlayer.this, event.getMessage(), event.getFormat(), event.getRecipients()));
+
+                        if (event1.isCancelled()) {
+                            return;
+                        }
+
+                        event.setFormat(event1.getFormat());
+                        event.setMessage(event1.getMessage());
+                        event.getRecipients().clear();
+                        event.getRecipients().addAll(event1.getRecipients());
+                    }
+
+                    String message = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
+                    getServer().getLogger().info(message);
+                    for (Player recipient : event.getRecipients()) {
+                        recipient.sendMessage(message);
+                    }
+                }
+            };
+
+            if (async) {
+
+                server.getScheduler().runTaskImmediateAsynchronously(task);
+            } else {
+                task.run();
             }
         }
     }
