@@ -54,6 +54,7 @@ public final class AnvilChunkIoService implements ChunkIoService {
      * @return Whether the
      * @throws IOException if an I/O error occurs.
      */
+    @Override
     public boolean read(GlowChunk chunk) throws IOException {
         int x = chunk.getX(), z = chunk.getZ();
         RegionFile region = cache.getRegionFile(dir, x, z);
@@ -84,7 +85,7 @@ public final class AnvilChunkIoService implements ChunkIoService {
 
             char[] types = new char[rawTypes.length];
             for (int i = 0; i < rawTypes.length; i++) {
-                types[i] = (char) (((extTypes == null ? 0 : extTypes.get(i)) << 12) | (rawTypes[i] << 4) | data.get(i));
+                types[i] = (char) (((extTypes == null ? 0 : extTypes.get(i)) << 12) | ((rawTypes[i] & 0xff) << 4) | data.get(i));
             }
             sections[y] = new ChunkSection(types, skyLight, blockLight);
         }
@@ -138,6 +139,7 @@ public final class AnvilChunkIoService implements ChunkIoService {
      * @param chunk The {@link GlowChunk} to write from.
      * @throws IOException if an I/O error occurs.
      */
+    @Override
     public void write(GlowChunk chunk) throws IOException {
         int x = chunk.getX(), z = chunk.getZ();
         RegionFile region = cache.getRegionFile(dir, x, z);
@@ -230,6 +232,7 @@ public final class AnvilChunkIoService implements ChunkIoService {
         }
     }
 
+    @Override
     public void unload() throws IOException {
         cache.clear();
     }
