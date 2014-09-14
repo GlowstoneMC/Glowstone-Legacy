@@ -1358,4 +1358,4 @@ public final class GlowWorld implements World {
         }
         return result;
     }
-} 
+}

@@ -10,7 +10,7 @@ import java.util.*;
 public class BlockRedstoneTorch extends BlockTorch {
 
     public BlockRedstoneTorch(Material matType) {
-        super(matType);
+        super(matType, Material.REDSTONE_TORCH_OFF);
     }
 
     @Override

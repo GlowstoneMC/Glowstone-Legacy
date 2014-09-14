@@ -10,12 +10,17 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 
-public class BlockTorch extends BlockType {
+public class BlockTorch extends BlockDirectDrops {
 
     private final Material matType;
 
-    public BlockTorch(Material matType) {
+    protected BlockTorch(Material matType, Material dropMatType) {
+        super(dropMatType, 0, 1);
         this.matType = matType;
+    }
+
+    public BlockTorch(Material matType) {
+        this(matType, matType);
     }
 
     protected BlockFace getOwnFacing(GlowBlock block) {
@@ -52,10 +57,5 @@ public class BlockTorch extends BlockType {
     public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {
         state.setType(matType);
         state.setRawData((byte)getFacing(face));
-    }
-
-    @Override
-    public Collection<ItemStack> getDrops(GlowBlock block) {
-        return Collections.unmodifiableList(Arrays.asList(new ItemStack(matType, 1, (byte)0)));
     }
 } 
