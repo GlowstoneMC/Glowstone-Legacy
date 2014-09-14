@@ -32,9 +32,51 @@ public class OrePopulator extends BlockPopulator {
 
     private static void makeOres(Chunk source, Random random, int originX, int originY, int originZ, int amount, Material type) {
         for (int i = 0; i < amount; i++) {
-            int x = originX + random.nextInt(amount / 2) - amount / 4;
+        	int x = originX + random.nextInt(amount / 2) - amount / 4;
             int y = originY + random.nextInt(amount / 4) - amount / 8;
             int z = originZ + random.nextInt(amount / 2) - amount / 4;
+            
+            /* check for ores on what level they will spawn
+             * TODO: Commonly found on, Rare on
+             * http://minecraft.gamepedia.com/Ore
+             */
+            
+            if(type == Material.COAL_ORE){
+        		if (y > 132 || y < 0) {
+                    continue;
+                }
+        	}
+        	if(type == Material.IRON_ORE){
+        		if (y > 68 || y < 0) {
+                    continue;
+                }
+        	}
+        	if(type == Material.LAPIS_ORE){
+        		if (y > 34 || y < 0) {
+                    continue;
+                }
+        	}
+        	if(type == Material.GOLD_ORE){
+        		if (y > 34 || y < 0) {
+                    continue;
+                }
+        	}
+        	if(type == Material.DIAMOND_ORE){
+        		if (y > 16|| y < 0) {
+                    continue;
+                }
+        	}
+        	if(type == Material.DIAMOND_ORE){
+        		if (y > 16|| y < 0) {
+                    continue;
+                }
+        	}
+        	if(type == Material.REDSTONE){
+        		if (y > 16 || y < 0) {
+                    continue;
+                }
+        	}
+        	
             x &= 0xf;
             z &= 0xf;
             if (y > 127 || y < 0) {
