@@ -1,6 +1,7 @@
 package net.glowstone.block.itemtype;
 
 import net.glowstone.EventFactory;
+import net.glowstone.GlowServer;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.ItemTable;
 import net.glowstone.block.blocktype.BlockLiquid;
@@ -27,11 +28,14 @@ public class ItemBucket extends ItemType {
     public void rightClickAir(GlowPlayer player, ItemStack holding) {
         Iterator<Block> itr = new BlockIterator(player, 5);
         Block target = null;
+        // Used to determine the side the block was clicked on:
+        Block previousTarget = null;
         BlockType targetBlockType = null;
         boolean validTarget = false;
 
         // Find the next available non-air liquid block type which is collectible in a radius of 5 blocks
         while (itr.hasNext()) {
+            previousTarget = target;
             target = itr.next();
             targetBlockType = ItemTable.instance().getBlock(target.getType());
             if (targetBlockType != null && targetBlockType instanceof BlockLiquid) {
@@ -43,8 +47,15 @@ public class ItemBucket extends ItemType {
         }
 
         if (target != null && validTarget == true) {
-            // TODO: Do some math to get the actual block face.
-            BlockFace face = BlockFace.SELF;
+            // Get the direction of the bucket fill
+            BlockFace face;
+            if (previousTarget != null) {
+                face = target.getFace(previousTarget);
+            }
+            else {
+                face = BlockFace.SELF;
+            }
+
             Material replaceWith = ((BlockLiquid) targetBlockType).getBucketType();
 
             PlayerBucketFillEvent bucketFill = EventFactory.onPlayerBucketFill(player, target, face, holding.getType(), holding);
