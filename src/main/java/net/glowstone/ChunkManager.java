@@ -119,6 +119,7 @@ public final class ChunkManager {
         try {
             if (service.read(chunk)) {
                 EventFactory.onChunkLoad(chunk, false);
+                world.getRSManager().dirtyChunk(x, z);
                 return true;
             }
         } catch (Exception e) {
