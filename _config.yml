@@ -1,0 +1,20 @@
+baseurl: /Glowstone
+kramdown:
+  input: GFM
+  auto_ids: true
+  coderay:
+    coderay_bold_every: 10
+    coderay_css: style
+    coderay_line_numbers: inline
+    coderay_line_numbers_start: 1
+    coderay_tab_width: 4
+    coderay_wrap: div
+  entity_output: as_char
+  footnote_nr: 1
+  smart_quotes: "lsquo,rsquo,ldquo,rdquo"
+  toc_levels: "1..6"
+  use_coderay: true
+markdown: kramdown
+markdown_ext: "markdown,mkdown,mkdn,mkd,md"
+name: Glowstone
+pygments: true
