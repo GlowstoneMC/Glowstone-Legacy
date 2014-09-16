@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package org.bukkit.help;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import org.bukkit.command.CommandSender;<a name="line.3"></a>
+<span class="sourceLineNo">004</span>import org.bukkit.entity.Player;<a name="line.4"></a>
+<span class="sourceLineNo">005</span><a name="line.5"></a>
+<span class="sourceLineNo">006</span>/**<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * HelpTopic implementations are displayed to the user when the user uses the<a name="line.7"></a>
+<span class="sourceLineNo">008</span> * /help command.<a name="line.8"></a>
+<span class="sourceLineNo">009</span> * &lt;p&gt;<a name="line.9"></a>
+<span class="sourceLineNo">010</span> * Custom implementations of this class can work at two levels. A simple<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * implementation only needs to set the value of {@code name}, {@code<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * shortText}, and {@code fullText} in the constructor. This base class will<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * take care of the rest.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * &lt;p&gt;<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * Complex implementations can be created by overriding the behavior of all<a name="line.15"></a>
+<span class="sourceLineNo">016</span> * the methods in this class.<a name="line.16"></a>
+<span class="sourceLineNo">017</span> */<a name="line.17"></a>
+<span class="sourceLineNo">018</span>public abstract class HelpTopic {<a name="line.18"></a>
+<span class="sourceLineNo">019</span>    protected String name;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>    protected String shortText;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>    protected String fullText;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>    protected String amendedPermission;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>    <a name="line.23"></a>
+<span class="sourceLineNo">024</span>    /**<a name="line.24"></a>
+<span class="sourceLineNo">025</span>     * Determines if a {@link Player} is allowed to see this help topic.<a name="line.25"></a>
+<span class="sourceLineNo">026</span>     * &lt;p&gt;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>     * HelpTopic implementations should take server administrator wishes into<a name="line.27"></a>
+<span class="sourceLineNo">028</span>     * account as set by the {@link HelpTopic#amendCanSee(String)} function.<a name="line.28"></a>
+<span class="sourceLineNo">029</span>     *<a name="line.29"></a>
+<span class="sourceLineNo">030</span>     * @param player The Player in question.<a name="line.30"></a>
+<span class="sourceLineNo">031</span>     * @return True of the Player can see this help topic, false otherwise.<a name="line.31"></a>
+<span class="sourceLineNo">032</span>     */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>    public abstract boolean canSee(CommandSender player);<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>    /**<a name="line.35"></a>
+<span class="sourceLineNo">036</span>     * Allows the server administrator to override the permission required to<a name="line.36"></a>
+<span class="sourceLineNo">037</span>     * see a help topic.<a name="line.37"></a>
+<span class="sourceLineNo">038</span>     * &lt;p&gt;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>     * HelpTopic implementations should take this into account when<a name="line.39"></a>
+<span class="sourceLineNo">040</span>     * determining topic visibility on the {@link<a name="line.40"></a>
+<span class="sourceLineNo">041</span>     * HelpTopic#canSee(org.bukkit.command.CommandSender)} function.<a name="line.41"></a>
+<span class="sourceLineNo">042</span>     *<a name="line.42"></a>
+<span class="sourceLineNo">043</span>     * @param amendedPermission The permission node the server administrator<a name="line.43"></a>
+<span class="sourceLineNo">044</span>     *     wishes to apply to this topic.<a name="line.44"></a>
+<span class="sourceLineNo">045</span>     */<a name="line.45"></a>
+<span class="sourceLineNo">046</span>    public void amendCanSee(String amendedPermission) {<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        this.amendedPermission = amendedPermission;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>    }<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>    /**<a name="line.50"></a>
+<span class="sourceLineNo">051</span>     * Returns the name of this help topic.<a name="line.51"></a>
+<span class="sourceLineNo">052</span>     *<a name="line.52"></a>
+<span class="sourceLineNo">053</span>     * @return The topic name.<a name="line.53"></a>
+<span class="sourceLineNo">054</span>     */<a name="line.54"></a>
+<span class="sourceLineNo">055</span>    public String getName() {<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        return name;<a name="line.56"></a>
+<span class="sourceLineNo">057</span>    }<a name="line.57"></a>
+<span class="sourceLineNo">058</span><a name="line.58"></a>
+<span class="sourceLineNo">059</span>    /**<a name="line.59"></a>
+<span class="sourceLineNo">060</span>     * Returns a brief description that will be displayed in the topic index.<a name="line.60"></a>
+<span class="sourceLineNo">061</span>     *<a name="line.61"></a>
+<span class="sourceLineNo">062</span>     * @return A brief topic description.<a name="line.62"></a>
+<span class="sourceLineNo">063</span>     */<a name="line.63"></a>
+<span class="sourceLineNo">064</span>    public String getShortText() {<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        return shortText;<a name="line.65"></a>
+<span class="sourceLineNo">066</span>    }<a name="line.66"></a>
+<span class="sourceLineNo">067</span><a name="line.67"></a>
+<span class="sourceLineNo">068</span>    /**<a name="line.68"></a>
+<span class="sourceLineNo">069</span>     * Returns the full description of this help topic that is displayed when<a name="line.69"></a>
+<span class="sourceLineNo">070</span>     * the user requests this topic's details.<a name="line.70"></a>
+<span class="sourceLineNo">071</span>     * &lt;p&gt;<a name="line.71"></a>
+<span class="sourceLineNo">072</span>     * The result will be paginated to properly fit the user's client.<a name="line.72"></a>
+<span class="sourceLineNo">073</span>     *<a name="line.73"></a>
+<span class="sourceLineNo">074</span>     * @param forWho The player or console requesting the full text. Useful<a name="line.74"></a>
+<span class="sourceLineNo">075</span>     *     for further security trimming the command's full text based on<a name="line.75"></a>
+<span class="sourceLineNo">076</span>     *     sub-permissions in custom implementations.<a name="line.76"></a>
+<span class="sourceLineNo">077</span>     *<a name="line.77"></a>
+<span class="sourceLineNo">078</span>     * @return A full topic description.<a name="line.78"></a>
+<span class="sourceLineNo">079</span>     */<a name="line.79"></a>
+<span class="sourceLineNo">080</span>    public String getFullText(CommandSender forWho) {<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        return fullText;<a name="line.81"></a>
+<span class="sourceLineNo">082</span>    }<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>    /**<a name="line.84"></a>
+<span class="sourceLineNo">085</span>     * Allows the server admin (or another plugin) to add or replace the<a name="line.85"></a>
+<span class="sourceLineNo">086</span>     * contents of a help topic.<a name="line.86"></a>
+<span class="sourceLineNo">087</span>     * &lt;p&gt;<a name="line.87"></a>
+<span class="sourceLineNo">088</span>     * A null in either parameter will leave that part of the topic unchanged.<a name="line.88"></a>
+<span class="sourceLineNo">089</span>     * In either amending parameter, the string {@literal &lt;text&gt;} is replaced<a name="line.89"></a>
+<span class="sourceLineNo">090</span>     * with the existing contents in the help topic. Use this to append or<a name="line.90"></a>
+<span class="sourceLineNo">091</span>     * prepend additional content into an automatically generated help topic.<a name="line.91"></a>
+<span class="sourceLineNo">092</span>     *<a name="line.92"></a>
+<span class="sourceLineNo">093</span>     * @param amendedShortText The new topic short text to use, or null to<a name="line.93"></a>
+<span class="sourceLineNo">094</span>     *     leave alone.<a name="line.94"></a>
+<span class="sourceLineNo">095</span>     * @param amendedFullText The new topic full text to use, or null to leave<a name="line.95"></a>
+<span class="sourceLineNo">096</span>     *     alone.<a name="line.96"></a>
+<span class="sourceLineNo">097</span>     */<a name="line.97"></a>
+<span class="sourceLineNo">098</span>    public void amendTopic(String amendedShortText, String amendedFullText) {<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        shortText = applyAmendment(shortText, amendedShortText);<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        fullText = applyAmendment(fullText, amendedFullText);<a name="line.100"></a>
+<span class="sourceLineNo">101</span>    }<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>    /**<a name="line.103"></a>
+<span class="sourceLineNo">104</span>     * Developers implementing their own custom HelpTopic implementations can<a name="line.104"></a>
+<span class="sourceLineNo">105</span>     * use this utility method to ensure their implementations comply with the<a name="line.105"></a>
+<span class="sourceLineNo">106</span>     * expected behavior of the {@link HelpTopic#amendTopic(String, String)}<a name="line.106"></a>
+<span class="sourceLineNo">107</span>     * method.<a name="line.107"></a>
+<span class="sourceLineNo">108</span>     *<a name="line.108"></a>
+<span class="sourceLineNo">109</span>     * @param baseText The existing text of the help topic.<a name="line.109"></a>
+<span class="sourceLineNo">110</span>     * @param amendment The amending text from the amendTopic() method.<a name="line.110"></a>
+<span class="sourceLineNo">111</span>     * @return The application of the amending text to the existing text,<a name="line.111"></a>
+<span class="sourceLineNo">112</span>     *     according to the expected rules of amendTopic().<a name="line.112"></a>
+<span class="sourceLineNo">113</span>     */<a name="line.113"></a>
+<span class="sourceLineNo">114</span>    protected String applyAmendment(String baseText, String amendment) {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>        if (amendment == null) {<a name="line.115"></a>
+<span class="sourceLineNo">116</span>            return baseText;<a name="line.116"></a>
+<span class="sourceLineNo">117</span>        } else {<a name="line.117"></a>
+<span class="sourceLineNo">118</span>            return amendment.replaceAll("&lt;text&gt;", baseText);<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        }<a name="line.119"></a>
+<span class="sourceLineNo">120</span>    }<a name="line.120"></a>
+<span class="sourceLineNo">121</span>}<a name="line.121"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

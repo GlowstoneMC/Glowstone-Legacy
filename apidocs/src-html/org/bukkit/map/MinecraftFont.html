@@ -1,0 +1,400 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package org.bukkit.map;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>/**<a name="line.3"></a>
+<span class="sourceLineNo">004</span> * Represents the built-in Minecraft font.<a name="line.4"></a>
+<span class="sourceLineNo">005</span> */<a name="line.5"></a>
+<span class="sourceLineNo">006</span>public class MinecraftFont extends MapFont {<a name="line.6"></a>
+<span class="sourceLineNo">007</span><a name="line.7"></a>
+<span class="sourceLineNo">008</span>    private static final int spaceSize = 2;<a name="line.8"></a>
+<span class="sourceLineNo">009</span><a name="line.9"></a>
+<span class="sourceLineNo">010</span>    private static final String fontChars =<a name="line.10"></a>
+<span class="sourceLineNo">011</span>        " !\"#$%&amp;'()*+,-./0123456789:;&lt;=&gt;?" +<a name="line.11"></a>
+<span class="sourceLineNo">012</span>        "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_" +<a name="line.12"></a>
+<span class="sourceLineNo">013</span>        "'abcdefghijklmnopqrstuvwxyz{|}~\u007F" +<a name="line.13"></a>
+<span class="sourceLineNo">014</span>        "\u00C7\u00FC\u00E9\u00E2\u00E4\u00E0\u00E5\u00E7" + // Çüéâäàåç<a name="line.14"></a>
+<span class="sourceLineNo">015</span>        "\u00EA\u00EB\u00E8\u00EF\u00EE\u00EC\u00C4\u00C5" + // êëèïîìÄÅ<a name="line.15"></a>
+<span class="sourceLineNo">016</span>        "\u00C9\u00E6\u00C6\u00F4\u00F6\u00F2\u00FB\u00F9" + // ÉæÆôöòûù<a name="line.16"></a>
+<span class="sourceLineNo">017</span>        "\u00FF\u00D6\u00DC\u00F8\u00A3\u00D8\u00D7\u0191" + // ÿÖÜø£Ø×ƒ<a name="line.17"></a>
+<span class="sourceLineNo">018</span>        "\u00E1\u00ED\u00F3\u00FA\u00F1\u00D1\u00AA\u00BA" + // áíóúñÑªº<a name="line.18"></a>
+<span class="sourceLineNo">019</span>        "\u00BF\u00AE\u00AC\u00BD\u00BC\u00A1\u00AB\u00BB";  // ¿®¬½¼¡«»<a name="line.19"></a>
+<span class="sourceLineNo">020</span><a name="line.20"></a>
+<span class="sourceLineNo">021</span>    private static final int[][] fontData = new int[][] {<a name="line.21"></a>
+<span class="sourceLineNo">022</span>        /* null */  {0,0,0,0,0,0,0,0},<a name="line.22"></a>
+<span class="sourceLineNo">023</span>        /* 1 */  {126,129,165,129,189,153,129,126},<a name="line.23"></a>
+<span class="sourceLineNo">024</span>        /* 2 */  {126,255,219,255,195,231,255,126},<a name="line.24"></a>
+<span class="sourceLineNo">025</span>        /* 3 */  {54,127,127,127,62,28,8,0},<a name="line.25"></a>
+<span class="sourceLineNo">026</span>        /* 4 */  {8,28,62,127,62,28,8,0},<a name="line.26"></a>
+<span class="sourceLineNo">027</span>        /* 5 */  {28,62,28,127,127,62,28,62},<a name="line.27"></a>
+<span class="sourceLineNo">028</span>        /* 6 */  {8,8,28,62,127,62,28,62},<a name="line.28"></a>
+<span class="sourceLineNo">029</span>        /* 7 */  {0,0,24,60,60,24,0,0},<a name="line.29"></a>
+<span class="sourceLineNo">030</span>        /* 8 */  {255,255,231,195,195,231,255,255},<a name="line.30"></a>
+<span class="sourceLineNo">031</span>        /* 9 */  {0,60,102,66,66,102,60,0},<a name="line.31"></a>
+<span class="sourceLineNo">032</span>        /* 10 */  {255,195,153,189,189,153,195,255},<a name="line.32"></a>
+<span class="sourceLineNo">033</span>        /* 11 */  {240,224,240,190,51,51,51,30},<a name="line.33"></a>
+<span class="sourceLineNo">034</span>        /* 12 */  {60,102,102,102,60,24,126,24},<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        /* 13 */  {252,204,252,12,12,14,15,7},<a name="line.35"></a>
+<span class="sourceLineNo">036</span>        /* 14 */  {254,198,254,198,198,230,103,3},<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        /* 15 */  {153,90,60,231,231,60,90,153},<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        /* 16 */  {1,7,31,127,31,7,1,0},<a name="line.38"></a>
+<span class="sourceLineNo">039</span>        /* 17 */  {64,112,124,127,124,112,64,0},<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        /* 18 */  {24,60,126,24,24,126,60,24},<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        /* 19 */  {102,102,102,102,102,0,102,0},<a name="line.41"></a>
+<span class="sourceLineNo">042</span>        /* 20 */  {254,219,219,222,216,216,216,0},<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        /* 21 */  {124,198,28,54,54,28,51,30},<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        /* 22 */  {0,0,0,0,126,126,126,0},<a name="line.44"></a>
+<span class="sourceLineNo">045</span>        /* 23 */  {24,60,126,24,126,60,24,255},<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        /* 24 */  {24,60,126,24,24,24,24,0},<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        /* 25 */  {24,24,24,24,126,60,24,0},<a name="line.47"></a>
+<span class="sourceLineNo">048</span>        /* 26 */  {0,24,48,127,48,24,0,0},<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        /* 27 */  {0,12,6,127,6,12,0,0},<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        /* 28 */  {0,0,3,3,3,127,0,0},<a name="line.50"></a>
+<span class="sourceLineNo">051</span>        /* 29 */  {0,36,102,255,102,36,0,0},<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        /* 30 */  {0,24,60,126,255,255,0,0},<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        /* 31 */  {0,255,255,126,60,24,0,0},<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        /*   */  {0,0,0,0,0,0,0,0},<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        /* ! */  {1,1,1,1,1,0,1,0},<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        /* " */  {10,10,5,0,0,0,0,0},<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        /* # */  {10,10,31,10,31,10,10,0},<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        /* $ */  {4,30,1,14,16,15,4,0},<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        /* % */  {17,9,8,4,2,18,17,0},<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        /* &amp; */  {4,10,4,22,13,9,22,0},<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        /* ' */  {2,2,1,0,0,0,0,0},<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        /* ( */  {12,2,1,1,1,2,12,0},<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        /* ) */  {3,4,8,8,8,4,3,0},<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        /* * */  {0,0,9,6,9,0,0,0},<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        /* + */  {0,4,4,31,4,4,0,0},<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        /* , */  {0,0,0,0,0,1,1,1},<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        /* - */  {0,0,0,31,0,0,0,0},<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        /* . */  {0,0,0,0,0,1,1,0},<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        /* / */  {16,8,8,4,2,2,1,0},<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        /* 0 */  {14,17,25,21,19,17,14,0},<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        /* 1 */  {4,6,4,4,4,4,31,0},<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        /* 2 */  {14,17,16,12,2,17,31,0},<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        /* 3 */  {14,17,16,12,16,17,14,0},<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        /* 4 */  {24,20,18,17,31,16,16,0},<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        /* 5 */  {31,1,15,16,16,17,14,0},<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        /* 6 */  {12,2,1,15,17,17,14,0},<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        /* 7 */  {31,17,16,8,4,4,4,0},<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        /* 8 */  {14,17,17,14,17,17,14,0},<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        /* 9 */  {14,17,17,30,16,8,6,0},<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        /* : */  {0,1,1,0,0,1,1,0},<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        /* ; */  {0,1,1,0,0,1,1,1},<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        /* &lt; */  {8,4,2,1,2,4,8,0},<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        /* = */  {0,0,31,0,0,31,0,0},<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        /* &gt; */  {1,2,4,8,4,2,1,0},<a name="line.84"></a>
+<span class="sourceLineNo">085</span>        /* ? */  {14,17,16,8,4,0,4,0},<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        /* @ */  {30,33,45,45,61,1,30,0},<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        /* A */  {14,17,31,17,17,17,17,0},<a name="line.87"></a>
+<span class="sourceLineNo">088</span>        /* B */  {15,17,15,17,17,17,15,0},<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        /* C */  {14,17,1,1,1,17,14,0},<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        /* D */  {15,17,17,17,17,17,15,0},<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        /* E */  {31,1,7,1,1,1,31,0},<a name="line.91"></a>
+<span class="sourceLineNo">092</span>        /* F */  {31,1,7,1,1,1,1,0},<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        /* G */  {30,1,25,17,17,17,14,0},<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        /* H */  {17,17,31,17,17,17,17,0},<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        /* I */  {7,2,2,2,2,2,7,0},<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        /* J */  {16,16,16,16,16,17,14,0},<a name="line.96"></a>
+<span class="sourceLineNo">097</span>        /* K */  {17,9,7,9,17,17,17,0},<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        /* L */  {1,1,1,1,1,1,31,0},<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        /* M */  {17,27,21,17,17,17,17,0},<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        /* N */  {17,19,21,25,17,17,17,0},<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        /* O */  {14,17,17,17,17,17,14,0},<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        /* P */  {15,17,15,1,1,1,1,0},<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        /* Q */  {14,17,17,17,17,9,22,0},<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        /* R */  {15,17,15,17,17,17,17,0},<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        /* S */  {30,1,14,16,16,17,14,0},<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        /* T */  {31,4,4,4,4,4,4,0},<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        /* U */  {17,17,17,17,17,17,14,0},<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        /* V */  {17,17,17,17,10,10,4,0},<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        /* W */  {17,17,17,17,21,27,17,0},<a name="line.109"></a>
+<span class="sourceLineNo">110</span>        /* X */  {17,10,4,10,17,17,17,0},<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        /* Y */  {17,10,4,4,4,4,4,0},<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        /* Z */  {31,16,8,4,2,1,31,0},<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        /* [ */  {7,1,1,1,1,1,7,0},<a name="line.113"></a>
+<span class="sourceLineNo">114</span>        /* \ */  {1,2,2,4,8,8,16,0},<a name="line.114"></a>
+<span class="sourceLineNo">115</span>        /* ] */  {7,4,4,4,4,4,7,0},<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        /* ^ */  {4,10,17,0,0,0,0,0},<a name="line.116"></a>
+<span class="sourceLineNo">117</span>        /* _ */  {0,0,0,0,0,0,0,31},<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        /* ` */  {1,1,2,0,0,0,0,0},<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        /* a */  {0,0,14,16,30,17,30,0},<a name="line.119"></a>
+<span class="sourceLineNo">120</span>        /* b */  {1,1,13,19,17,17,15,0},<a name="line.120"></a>
+<span class="sourceLineNo">121</span>        /* c */  {0,0,14,17,1,17,14,0},<a name="line.121"></a>
+<span class="sourceLineNo">122</span>        /* d */  {16,16,22,25,17,17,30,0},<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        /* e */  {0,0,14,17,31,1,30,0},<a name="line.123"></a>
+<span class="sourceLineNo">124</span>        /* f */  {12,2,15,2,2,2,2,0},<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        /* g */  {0,0,30,17,17,30,16,15},<a name="line.125"></a>
+<span class="sourceLineNo">126</span>        /* h */  {1,1,13,19,17,17,17,0},<a name="line.126"></a>
+<span class="sourceLineNo">127</span>        /* i */  {1,0,1,1,1,1,1,0},<a name="line.127"></a>
+<span class="sourceLineNo">128</span>        /* j */  {16,0,16,16,16,17,17,14},<a name="line.128"></a>
+<span class="sourceLineNo">129</span>        /* k */  {1,1,9,5,3,5,9,0},<a name="line.129"></a>
+<span class="sourceLineNo">130</span>        /* l */  {1,1,1,1,1,1,2,0},<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        /* m */  {0,0,11,21,21,17,17,0},<a name="line.131"></a>
+<span class="sourceLineNo">132</span>        /* n */  {0,0,15,17,17,17,17,0},<a name="line.132"></a>
+<span class="sourceLineNo">133</span>        /* o */  {0,0,14,17,17,17,14,0},<a name="line.133"></a>
+<span class="sourceLineNo">134</span>        /* p */  {0,0,13,19,17,15,1,1},<a name="line.134"></a>
+<span class="sourceLineNo">135</span>        /* q */  {0,0,22,25,17,30,16,16},<a name="line.135"></a>
+<span class="sourceLineNo">136</span>        /* r */  {0,0,13,19,1,1,1,0},<a name="line.136"></a>
+<span class="sourceLineNo">137</span>        /* s */  {0,0,30,1,14,16,15,0},<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        /* t */  {2,2,7,2,2,2,4,0},<a name="line.138"></a>
+<span class="sourceLineNo">139</span>        /* u */  {0,0,17,17,17,17,30,0},<a name="line.139"></a>
+<span class="sourceLineNo">140</span>        /* v */  {0,0,17,17,17,10,4,0},<a name="line.140"></a>
+<span class="sourceLineNo">141</span>        /* w */  {0,0,17,17,21,21,30,0},<a name="line.141"></a>
+<span class="sourceLineNo">142</span>        /* x */  {0,0,17,10,4,10,17,0},<a name="line.142"></a>
+<span class="sourceLineNo">143</span>        /* y */  {0,0,17,17,17,30,16,15},<a name="line.143"></a>
+<span class="sourceLineNo">144</span>        /* z */  {0,0,31,8,4,2,31,0},<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        /* { */  {12,2,2,1,2,2,12,0},<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        /* | */  {1,1,1,0,1,1,1,0},<a name="line.146"></a>
+<span class="sourceLineNo">147</span>        /* } */  {3,4,4,8,4,4,3,0},<a name="line.147"></a>
+<span class="sourceLineNo">148</span>        /* ~ */  {38,25,0,0,0,0,0,0},<a name="line.148"></a>
+<span class="sourceLineNo">149</span>        /* ? */  {0,0,4,10,17,17,31,0},<a name="line.149"></a>
+<span class="sourceLineNo">150</span>        /* Ç */  {14,17,1,1,17,14,16,12},<a name="line.150"></a>
+<span class="sourceLineNo">151</span>        /* ü */  {10,0,17,17,17,17,30,0},<a name="line.151"></a>
+<span class="sourceLineNo">152</span>        /* é */  {24,0,14,17,31,1,30,0},<a name="line.152"></a>
+<span class="sourceLineNo">153</span>        /* â */  {14,17,14,16,30,17,30,0},<a name="line.153"></a>
+<span class="sourceLineNo">154</span>        /* ä */  {10,0,14,16,30,17,30,0},<a name="line.154"></a>
+<span class="sourceLineNo">155</span>        /* à */  {3,0,14,16,30,17,30,0},<a name="line.155"></a>
+<span class="sourceLineNo">156</span>        /* å */  {4,0,14,16,30,17,30,0},<a name="line.156"></a>
+<span class="sourceLineNo">157</span>        /* ç */  {0,14,17,1,17,14,16,12},<a name="line.157"></a>
+<span class="sourceLineNo">158</span>        /* ê */  {14,17,14,17,31,1,30,0},<a name="line.158"></a>
+<span class="sourceLineNo">159</span>        /* ë */  {10,0,14,17,31,1,30,0},<a name="line.159"></a>
+<span class="sourceLineNo">160</span>        /* è */  {3,0,14,17,31,1,30,0},<a name="line.160"></a>
+<span class="sourceLineNo">161</span>        /* ï */  {5,0,2,2,2,2,2,0},<a name="line.161"></a>
+<span class="sourceLineNo">162</span>        /* î */  {14,17,4,4,4,4,4,0},<a name="line.162"></a>
+<span class="sourceLineNo">163</span>        /* ì */  {3,0,2,2,2,2,2,0},<a name="line.163"></a>
+<span class="sourceLineNo">164</span>        /* Ä */  {17,14,17,31,17,17,17,0},<a name="line.164"></a>
+<span class="sourceLineNo">165</span>        /* Å */  {4,0,14,17,31,17,17,0},<a name="line.165"></a>
+<span class="sourceLineNo">166</span>        /* É */  {24,0,31,1,7,1,31,0},<a name="line.166"></a>
+<span class="sourceLineNo">167</span>        /* æ */  {0,0,10,20,30,5,30,0},<a name="line.167"></a>
+<span class="sourceLineNo">168</span>        /* Æ */  {30,5,15,5,5,5,29,0},<a name="line.168"></a>
+<span class="sourceLineNo">169</span>        /* ô */  {14,17,14,17,17,17,14,0},<a name="line.169"></a>
+<span class="sourceLineNo">170</span>        /* ö */  {10,0,14,17,17,17,14,0},<a name="line.170"></a>
+<span class="sourceLineNo">171</span>        /* ò */  {3,0,14,17,17,17,14,0},<a name="line.171"></a>
+<span class="sourceLineNo">172</span>        /* û */  {14,17,0,17,17,17,30,0},<a name="line.172"></a>
+<span class="sourceLineNo">173</span>        /* ù */  {3,0,17,17,17,17,30,0},<a name="line.173"></a>
+<span class="sourceLineNo">174</span>        /* ÿ */  {10,0,17,17,17,30,16,15},<a name="line.174"></a>
+<span class="sourceLineNo">175</span>        /* Ö */  {17,14,17,17,17,17,14,0},<a name="line.175"></a>
+<span class="sourceLineNo">176</span>        /* Ü */  {17,0,17,17,17,17,14,0},<a name="line.176"></a>
+<span class="sourceLineNo">177</span>        /* ø */  {0,0,14,25,21,19,14,4},<a name="line.177"></a>
+<span class="sourceLineNo">178</span>        /* £ */  {12,18,2,15,2,2,31,0},<a name="line.178"></a>
+<span class="sourceLineNo">179</span>        /* Ø */  {14,17,25,21,19,17,14,0},<a name="line.179"></a>
+<span class="sourceLineNo">180</span>        /* × */  {0,0,5,2,5,0,0,0},<a name="line.180"></a>
+<span class="sourceLineNo">181</span>        /* ƒ */  {8,20,4,14,4,4,5,2},<a name="line.181"></a>
+<span class="sourceLineNo">182</span>        /* á */  {24,0,14,16,30,17,30,0},<a name="line.182"></a>
+<span class="sourceLineNo">183</span>        /* í */  {3,0,1,1,1,1,1,0},<a name="line.183"></a>
+<span class="sourceLineNo">184</span>        /* ó */  {24,0,14,17,17,17,14,0},<a name="line.184"></a>
+<span class="sourceLineNo">185</span>        /* ú */  {24,0,17,17,17,17,30,0},<a name="line.185"></a>
+<span class="sourceLineNo">186</span>        /* ñ */  {31,0,15,17,17,17,17,0},<a name="line.186"></a>
+<span class="sourceLineNo">187</span>        /* Ñ */  {31,0,17,19,21,25,17,0},<a name="line.187"></a>
+<span class="sourceLineNo">188</span>        /* ª */  {14,16,31,30,0,31,0,0},<a name="line.188"></a>
+<span class="sourceLineNo">189</span>        /* º */  {14,17,17,14,0,31,0,0},<a name="line.189"></a>
+<span class="sourceLineNo">190</span>        /* ¿ */  {4,0,4,2,1,17,14,0},<a name="line.190"></a>
+<span class="sourceLineNo">191</span>        /* ® */  {0,30,45,37,43,30,0,0},<a name="line.191"></a>
+<span class="sourceLineNo">192</span>        /* ¬ */  {0,0,0,31,16,16,0,0},<a name="line.192"></a>
+<span class="sourceLineNo">193</span>        /* ½ */  {17,9,8,4,18,10,25,0},<a name="line.193"></a>
+<span class="sourceLineNo">194</span>        /* ¼ */  {17,9,8,4,26,26,17,0},<a name="line.194"></a>
+<span class="sourceLineNo">195</span>        /* ¡ */  {0,1,0,1,1,1,1,0},<a name="line.195"></a>
+<span class="sourceLineNo">196</span>        /* « */  {0,20,10,5,10,20,0,0},<a name="line.196"></a>
+<span class="sourceLineNo">197</span>        /* » */  {0,5,10,20,10,5,0,0},<a name="line.197"></a>
+<span class="sourceLineNo">198</span>        /* 176 */  {68,17,68,17,68,17,68,17},<a name="line.198"></a>
+<span class="sourceLineNo">199</span>        /* 177 */  {170,85,170,85,170,85,170,85},<a name="line.199"></a>
+<span class="sourceLineNo">200</span>        /* 178 */  {219,238,219,119,219,238,219,119},<a name="line.200"></a>
+<span class="sourceLineNo">201</span>        /* 179 */  {24,24,24,24,24,24,24,24},<a name="line.201"></a>
+<span class="sourceLineNo">202</span>        /* 180 */  {24,24,24,24,31,24,24,24},<a name="line.202"></a>
+<span class="sourceLineNo">203</span>        /* 181 */  {24,24,31,24,31,24,24,24},<a name="line.203"></a>
+<span class="sourceLineNo">204</span>        /* 182 */  {108,108,108,108,111,108,108,108},<a name="line.204"></a>
+<span class="sourceLineNo">205</span>        /* 183 */  {0,0,0,0,127,108,108,108},<a name="line.205"></a>
+<span class="sourceLineNo">206</span>        /* 184 */  {0,0,31,24,31,24,24,24},<a name="line.206"></a>
+<span class="sourceLineNo">207</span>        /* 185 */  {108,108,111,96,111,108,108,108},<a name="line.207"></a>
+<span class="sourceLineNo">208</span>        /* 186 */  {108,108,108,108,108,108,108,108},<a name="line.208"></a>
+<span class="sourceLineNo">209</span>        /* 187 */  {0,0,127,96,111,108,108,108},<a name="line.209"></a>
+<span class="sourceLineNo">210</span>        /* 188 */  {108,108,111,96,127,0,0,0},<a name="line.210"></a>
+<span class="sourceLineNo">211</span>        /* 189 */  {108,108,108,108,127,0,0,0},<a name="line.211"></a>
+<span class="sourceLineNo">212</span>        /* 190 */  {24,24,31,24,31,0,0,0},<a name="line.212"></a>
+<span class="sourceLineNo">213</span>        /* 191 */  {0,0,0,0,31,24,24,24},<a name="line.213"></a>
+<span class="sourceLineNo">214</span>        /* 192 */  {24,24,24,24,248,0,0,0},<a name="line.214"></a>
+<span class="sourceLineNo">215</span>        /* 193 */  {24,24,24,24,255,0,0,0},<a name="line.215"></a>
+<span class="sourceLineNo">216</span>        /* 194 */  {0,0,0,0,255,24,24,24},<a name="line.216"></a>
+<span class="sourceLineNo">217</span>        /* 195 */  {24,24,24,24,248,24,24,24},<a name="line.217"></a>
+<span class="sourceLineNo">218</span>        /* 196 */  {0,0,0,0,255,0,0,0},<a name="line.218"></a>
+<span class="sourceLineNo">219</span>        /* 197 */  {24,24,24,24,255,24,24,24},<a name="line.219"></a>
+<span class="sourceLineNo">220</span>        /* 198 */  {24,24,248,24,248,24,24,24},<a name="line.220"></a>
+<span class="sourceLineNo">221</span>        /* 199 */  {108,108,108,108,236,108,108,108},<a name="line.221"></a>
+<span class="sourceLineNo">222</span>        /* 200 */  {108,108,236,12,252,0,0,0},<a name="line.222"></a>
+<span class="sourceLineNo">223</span>        /* 201 */  {0,0,252,12,236,108,108,108},<a name="line.223"></a>
+<span class="sourceLineNo">224</span>        /* 202 */  {108,108,239,0,255,0,0,0},<a name="line.224"></a>
+<span class="sourceLineNo">225</span>        /* 203 */  {0,0,255,0,239,108,108,108},<a name="line.225"></a>
+<span class="sourceLineNo">226</span>        /* 204 */  {108,108,236,12,236,108,108,108},<a name="line.226"></a>
+<span class="sourceLineNo">227</span>        /* 205 */  {0,0,255,0,255,0,0,0},<a name="line.227"></a>
+<span class="sourceLineNo">228</span>        /* 206 */  {108,108,239,0,239,108,108,108},<a name="line.228"></a>
+<span class="sourceLineNo">229</span>        /* 207 */  {24,24,255,0,255,0,0,0},<a name="line.229"></a>
+<span class="sourceLineNo">230</span>        /* 208 */  {108,108,108,108,255,0,0,0},<a name="line.230"></a>
+<span class="sourceLineNo">231</span>        /* 209 */  {0,0,255,0,255,24,24,24},<a name="line.231"></a>
+<span class="sourceLineNo">232</span>        /* 210 */  {0,0,0,0,255,108,108,108},<a name="line.232"></a>
+<span class="sourceLineNo">233</span>        /* 211 */  {108,108,108,108,252,0,0,0},<a name="line.233"></a>
+<span class="sourceLineNo">234</span>        /* 212 */  {24,24,248,24,248,0,0,0},<a name="line.234"></a>
+<span class="sourceLineNo">235</span>        /* 213 */  {0,0,248,24,248,24,24,24},<a name="line.235"></a>
+<span class="sourceLineNo">236</span>        /* 214 */  {0,0,0,0,252,108,108,108},<a name="line.236"></a>
+<span class="sourceLineNo">237</span>        /* 215 */  {108,108,108,108,255,108,108,108},<a name="line.237"></a>
+<span class="sourceLineNo">238</span>        /* 216 */  {24,24,255,24,255,24,24,24},<a name="line.238"></a>
+<span class="sourceLineNo">239</span>        /* 217 */  {24,24,24,24,31,0,0,0},<a name="line.239"></a>
+<span class="sourceLineNo">240</span>        /* 218 */  {0,0,0,0,248,24,24,24},<a name="line.240"></a>
+<span class="sourceLineNo">241</span>        /* 219 */  {255,255,255,255,255,255,255,255},<a name="line.241"></a>
+<span class="sourceLineNo">242</span>        /* 220 */  {0,0,0,0,255,255,255,255},<a name="line.242"></a>
+<span class="sourceLineNo">243</span>        /* 221 */  {15,15,15,15,15,15,15,15},<a name="line.243"></a>
+<span class="sourceLineNo">244</span>        /* 222 */  {240,240,240,240,240,240,240,240},<a name="line.244"></a>
+<span class="sourceLineNo">245</span>        /* 223 */  {255,255,255,255,0,0,0,0},<a name="line.245"></a>
+<span class="sourceLineNo">246</span>        /* 224 */  {0,0,110,59,19,59,110,0},<a name="line.246"></a>
+<span class="sourceLineNo">247</span>        /* 225 */  {0,30,51,31,51,31,3,3},<a name="line.247"></a>
+<span class="sourceLineNo">248</span>        /* 226 */  {0,63,51,3,3,3,3,0},<a name="line.248"></a>
+<span class="sourceLineNo">249</span>        /* 227 */  {0,127,54,54,54,54,54,0},<a name="line.249"></a>
+<span class="sourceLineNo">250</span>        /* 228 */  {63,51,6,12,6,51,63,0},<a name="line.250"></a>
+<span class="sourceLineNo">251</span>        /* 229 */  {0,0,126,27,27,27,14,0},<a name="line.251"></a>
+<span class="sourceLineNo">252</span>        /* 230 */  {0,102,102,102,102,62,6,3},<a name="line.252"></a>
+<span class="sourceLineNo">253</span>        /* 231 */  {0,110,59,24,24,24,24,0},<a name="line.253"></a>
+<span class="sourceLineNo">254</span>        /* 232 */  {63,12,30,51,51,30,12,63},<a name="line.254"></a>
+<span class="sourceLineNo">255</span>        /* 233 */  {28,54,99,127,99,54,28,0},<a name="line.255"></a>
+<span class="sourceLineNo">256</span>        /* 234 */  {28,54,99,99,54,54,119,0},<a name="line.256"></a>
+<span class="sourceLineNo">257</span>        /* 235 */  {56,12,24,62,51,51,30,0},<a name="line.257"></a>
+<span class="sourceLineNo">258</span>        /* 236 */  {0,0,126,219,219,126,0,0},<a name="line.258"></a>
+<span class="sourceLineNo">259</span>        /* 237 */  {96,48,126,219,219,126,6,3},<a name="line.259"></a>
+<span class="sourceLineNo">260</span>        /* 238 */  {28,6,3,31,3,6,28,0},<a name="line.260"></a>
+<span class="sourceLineNo">261</span>        /* 239 */  {30,51,51,51,51,51,51,0},<a name="line.261"></a>
+<span class="sourceLineNo">262</span>        /* 240 */  {0,63,0,63,0,63,0,0},<a name="line.262"></a>
+<span class="sourceLineNo">263</span>        /* 241 */  {12,12,63,12,12,0,63,0},<a name="line.263"></a>
+<span class="sourceLineNo">264</span>        /* 242 */  {6,12,24,12,6,0,63,0},<a name="line.264"></a>
+<span class="sourceLineNo">265</span>        /* 243 */  {24,12,6,12,24,0,63,0},<a name="line.265"></a>
+<span class="sourceLineNo">266</span>        /* 244 */  {112,216,216,24,24,24,24,24},<a name="line.266"></a>
+<span class="sourceLineNo">267</span>        /* 245 */  {24,24,24,24,24,27,27,14},<a name="line.267"></a>
+<span class="sourceLineNo">268</span>        /* 246 */  {12,12,0,63,0,12,12,0},<a name="line.268"></a>
+<span class="sourceLineNo">269</span>        /* 247 */  {0,110,59,0,110,59,0,0},<a name="line.269"></a>
+<span class="sourceLineNo">270</span>        /* 248 */  {28,54,54,28,0,0,0,0},<a name="line.270"></a>
+<span class="sourceLineNo">271</span>        /* 249 */  {0,0,0,24,24,0,0,0},<a name="line.271"></a>
+<span class="sourceLineNo">272</span>        /* 250 */  {0,0,0,0,24,0,0,0},<a name="line.272"></a>
+<span class="sourceLineNo">273</span>        /* 251 */  {240,48,48,48,55,54,60,56},<a name="line.273"></a>
+<span class="sourceLineNo">274</span>        /* 252 */  {30,54,54,54,54,0,0,0},<a name="line.274"></a>
+<span class="sourceLineNo">275</span>        /* 253 */  {14,24,12,6,30,0,0,0},<a name="line.275"></a>
+<span class="sourceLineNo">276</span>        /* 254 */  {0,0,60,60,60,60,0,0},<a name="line.276"></a>
+<span class="sourceLineNo">277</span>        /* 255 */  {0,0,0,0,0,0,0,0},<a name="line.277"></a>
+<span class="sourceLineNo">278</span>    };<a name="line.278"></a>
+<span class="sourceLineNo">279</span><a name="line.279"></a>
+<span class="sourceLineNo">280</span>    /**<a name="line.280"></a>
+<span class="sourceLineNo">281</span>     * A static non-malleable MinecraftFont.<a name="line.281"></a>
+<span class="sourceLineNo">282</span>     */<a name="line.282"></a>
+<span class="sourceLineNo">283</span>    public static final MinecraftFont Font = new MinecraftFont(false);<a name="line.283"></a>
+<span class="sourceLineNo">284</span><a name="line.284"></a>
+<span class="sourceLineNo">285</span>    /**<a name="line.285"></a>
+<span class="sourceLineNo">286</span>     * Initialize a new MinecraftFont.<a name="line.286"></a>
+<span class="sourceLineNo">287</span>     */<a name="line.287"></a>
+<span class="sourceLineNo">288</span>    public MinecraftFont() {<a name="line.288"></a>
+<span class="sourceLineNo">289</span>        this(true);<a name="line.289"></a>
+<span class="sourceLineNo">290</span>    }<a name="line.290"></a>
+<span class="sourceLineNo">291</span><a name="line.291"></a>
+<span class="sourceLineNo">292</span>    private MinecraftFont(boolean malleable) {<a name="line.292"></a>
+<span class="sourceLineNo">293</span>        for (int i = 1; i &lt; fontData.length; ++i) {<a name="line.293"></a>
+<span class="sourceLineNo">294</span>            char ch = (char) i;<a name="line.294"></a>
+<span class="sourceLineNo">295</span>            if (i &gt;= 32 &amp;&amp; i &lt; 32 + fontChars.length()) {<a name="line.295"></a>
+<span class="sourceLineNo">296</span>                ch = fontChars.charAt(i - 32);<a name="line.296"></a>
+<span class="sourceLineNo">297</span>            }<a name="line.297"></a>
+<span class="sourceLineNo">298</span><a name="line.298"></a>
+<span class="sourceLineNo">299</span>            if (ch == ' ') {<a name="line.299"></a>
+<span class="sourceLineNo">300</span>                setChar(ch, new CharacterSprite(spaceSize, 8, new boolean[spaceSize * 8]));<a name="line.300"></a>
+<span class="sourceLineNo">301</span>                continue;<a name="line.301"></a>
+<span class="sourceLineNo">302</span>            }<a name="line.302"></a>
+<span class="sourceLineNo">303</span><a name="line.303"></a>
+<span class="sourceLineNo">304</span>            int[] rows = fontData[i];<a name="line.304"></a>
+<span class="sourceLineNo">305</span>            int width = 0;<a name="line.305"></a>
+<span class="sourceLineNo">306</span>            for (int r = 0; r &lt; 8; ++r) {<a name="line.306"></a>
+<span class="sourceLineNo">307</span>                for (int c = 0; c &lt; 8; ++c) {<a name="line.307"></a>
+<span class="sourceLineNo">308</span>                    if ((rows[r] &amp; (1 &lt;&lt; c)) != 0 &amp;&amp; c &gt; width) {<a name="line.308"></a>
+<span class="sourceLineNo">309</span>                        width = c;<a name="line.309"></a>
+<span class="sourceLineNo">310</span>                    }<a name="line.310"></a>
+<span class="sourceLineNo">311</span>                }<a name="line.311"></a>
+<span class="sourceLineNo">312</span>            }<a name="line.312"></a>
+<span class="sourceLineNo">313</span>            ++width;<a name="line.313"></a>
+<span class="sourceLineNo">314</span><a name="line.314"></a>
+<span class="sourceLineNo">315</span>            boolean[] data = new boolean[width * 8];<a name="line.315"></a>
+<span class="sourceLineNo">316</span>            for (int r = 0; r &lt; 8; ++r) {<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                for (int c = 0; c &lt; width; ++c) {<a name="line.317"></a>
+<span class="sourceLineNo">318</span>                    data[r * width + c] = (rows[r] &amp; (1 &lt;&lt; c)) != 0;<a name="line.318"></a>
+<span class="sourceLineNo">319</span>                }<a name="line.319"></a>
+<span class="sourceLineNo">320</span>            }<a name="line.320"></a>
+<span class="sourceLineNo">321</span><a name="line.321"></a>
+<span class="sourceLineNo">322</span>            setChar(ch, new CharacterSprite(width, 8, data));<a name="line.322"></a>
+<span class="sourceLineNo">323</span>        }<a name="line.323"></a>
+<span class="sourceLineNo">324</span><a name="line.324"></a>
+<span class="sourceLineNo">325</span>        this.malleable = malleable;<a name="line.325"></a>
+<span class="sourceLineNo">326</span>    }<a name="line.326"></a>
+<span class="sourceLineNo">327</span><a name="line.327"></a>
+<span class="sourceLineNo">328</span>}<a name="line.328"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

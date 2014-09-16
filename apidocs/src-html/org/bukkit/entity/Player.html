@@ -1,0 +1,1110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package org.bukkit.entity;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import java.net.InetSocketAddress;<a name="line.3"></a>
+<span class="sourceLineNo">004</span><a name="line.4"></a>
+<span class="sourceLineNo">005</span>import org.bukkit.Achievement;<a name="line.5"></a>
+<span class="sourceLineNo">006</span>import org.bukkit.ChatColor;<a name="line.6"></a>
+<span class="sourceLineNo">007</span>import org.bukkit.Effect;<a name="line.7"></a>
+<span class="sourceLineNo">008</span>import org.bukkit.Instrument;<a name="line.8"></a>
+<span class="sourceLineNo">009</span>import org.bukkit.Location;<a name="line.9"></a>
+<span class="sourceLineNo">010</span>import org.bukkit.Material;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import org.bukkit.Note;<a name="line.11"></a>
+<span class="sourceLineNo">012</span>import org.bukkit.OfflinePlayer;<a name="line.12"></a>
+<span class="sourceLineNo">013</span>import org.bukkit.Sound;<a name="line.13"></a>
+<span class="sourceLineNo">014</span>import org.bukkit.Statistic;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>import org.bukkit.WeatherType;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import org.bukkit.command.CommandSender;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import org.bukkit.conversations.Conversable;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import org.bukkit.map.MapView;<a name="line.18"></a>
+<span class="sourceLineNo">019</span>import org.bukkit.plugin.messaging.PluginMessageRecipient;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import org.bukkit.scoreboard.Scoreboard;<a name="line.20"></a>
+<span class="sourceLineNo">021</span><a name="line.21"></a>
+<span class="sourceLineNo">022</span>/**<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * Represents a player, connected or not<a name="line.23"></a>
+<span class="sourceLineNo">024</span> */<a name="line.24"></a>
+<span class="sourceLineNo">025</span>public interface Player extends HumanEntity, Conversable, CommandSender, OfflinePlayer, PluginMessageRecipient {<a name="line.25"></a>
+<span class="sourceLineNo">026</span><a name="line.26"></a>
+<span class="sourceLineNo">027</span>    /**<a name="line.27"></a>
+<span class="sourceLineNo">028</span>     * Gets the "friendly" name to display of this player. This may include<a name="line.28"></a>
+<span class="sourceLineNo">029</span>     * color.<a name="line.29"></a>
+<span class="sourceLineNo">030</span>     * &lt;p&gt;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>     * Note that this name will not be displayed in game, only in chat and<a name="line.31"></a>
+<span class="sourceLineNo">032</span>     * places defined by plugins.<a name="line.32"></a>
+<span class="sourceLineNo">033</span>     *<a name="line.33"></a>
+<span class="sourceLineNo">034</span>     * @return the friendly name<a name="line.34"></a>
+<span class="sourceLineNo">035</span>     */<a name="line.35"></a>
+<span class="sourceLineNo">036</span>    public String getDisplayName();<a name="line.36"></a>
+<span class="sourceLineNo">037</span><a name="line.37"></a>
+<span class="sourceLineNo">038</span>    /**<a name="line.38"></a>
+<span class="sourceLineNo">039</span>     * Sets the "friendly" name to display of this player. This may include<a name="line.39"></a>
+<span class="sourceLineNo">040</span>     * color.<a name="line.40"></a>
+<span class="sourceLineNo">041</span>     * &lt;p&gt;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>     * Note that this name will not be displayed in game, only in chat and<a name="line.42"></a>
+<span class="sourceLineNo">043</span>     * places defined by plugins.<a name="line.43"></a>
+<span class="sourceLineNo">044</span>     *<a name="line.44"></a>
+<span class="sourceLineNo">045</span>     * @param name The new display name.<a name="line.45"></a>
+<span class="sourceLineNo">046</span>     */<a name="line.46"></a>
+<span class="sourceLineNo">047</span>    public void setDisplayName(String name);<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>    /**<a name="line.49"></a>
+<span class="sourceLineNo">050</span>     * Gets the name that is shown on the player list.<a name="line.50"></a>
+<span class="sourceLineNo">051</span>     *<a name="line.51"></a>
+<span class="sourceLineNo">052</span>     * @return the player list name<a name="line.52"></a>
+<span class="sourceLineNo">053</span>     */<a name="line.53"></a>
+<span class="sourceLineNo">054</span>    public String getPlayerListName();<a name="line.54"></a>
+<span class="sourceLineNo">055</span><a name="line.55"></a>
+<span class="sourceLineNo">056</span>    /**<a name="line.56"></a>
+<span class="sourceLineNo">057</span>     * Sets the name that is shown on the in-game player list.<a name="line.57"></a>
+<span class="sourceLineNo">058</span>     * &lt;p&gt;<a name="line.58"></a>
+<span class="sourceLineNo">059</span>     * The name cannot be longer than 16 characters, but {@link ChatColor} is<a name="line.59"></a>
+<span class="sourceLineNo">060</span>     * supported.<a name="line.60"></a>
+<span class="sourceLineNo">061</span>     * &lt;p&gt;<a name="line.61"></a>
+<span class="sourceLineNo">062</span>     * If the value is null, the name will be identical to {@link #getName()}.<a name="line.62"></a>
+<span class="sourceLineNo">063</span>     * &lt;p&gt;<a name="line.63"></a>
+<span class="sourceLineNo">064</span>     * This name is case sensitive and unique, two names with different casing<a name="line.64"></a>
+<span class="sourceLineNo">065</span>     * will appear as two different people. If a player joins afterwards with<a name="line.65"></a>
+<span class="sourceLineNo">066</span>     * a name that conflicts with a player's custom list name, the joining<a name="line.66"></a>
+<span class="sourceLineNo">067</span>     * player's player list name will have a random number appended to it (1-2<a name="line.67"></a>
+<span class="sourceLineNo">068</span>     * characters long in the default implementation). If the joining player's<a name="line.68"></a>
+<span class="sourceLineNo">069</span>     * name is 15 or 16 characters long, part of the name will be truncated at<a name="line.69"></a>
+<span class="sourceLineNo">070</span>     * the end to allow the addition of the two digits.<a name="line.70"></a>
+<span class="sourceLineNo">071</span>     *<a name="line.71"></a>
+<span class="sourceLineNo">072</span>     * @param name new player list name<a name="line.72"></a>
+<span class="sourceLineNo">073</span>     * @throws IllegalArgumentException if the name is already used by someone<a name="line.73"></a>
+<span class="sourceLineNo">074</span>     *     else<a name="line.74"></a>
+<span class="sourceLineNo">075</span>     * @throws IllegalArgumentException if the length of the name is too long<a name="line.75"></a>
+<span class="sourceLineNo">076</span>     */<a name="line.76"></a>
+<span class="sourceLineNo">077</span>    public void setPlayerListName(String name);<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>    /**<a name="line.79"></a>
+<span class="sourceLineNo">080</span>     * Set the target of the player's compass.<a name="line.80"></a>
+<span class="sourceLineNo">081</span>     *<a name="line.81"></a>
+<span class="sourceLineNo">082</span>     * @param loc Location to point to<a name="line.82"></a>
+<span class="sourceLineNo">083</span>     */<a name="line.83"></a>
+<span class="sourceLineNo">084</span>    public void setCompassTarget(Location loc);<a name="line.84"></a>
+<span class="sourceLineNo">085</span><a name="line.85"></a>
+<span class="sourceLineNo">086</span>    /**<a name="line.86"></a>
+<span class="sourceLineNo">087</span>     * Get the previously set compass target.<a name="line.87"></a>
+<span class="sourceLineNo">088</span>     *<a name="line.88"></a>
+<span class="sourceLineNo">089</span>     * @return location of the target<a name="line.89"></a>
+<span class="sourceLineNo">090</span>     */<a name="line.90"></a>
+<span class="sourceLineNo">091</span>    public Location getCompassTarget();<a name="line.91"></a>
+<span class="sourceLineNo">092</span><a name="line.92"></a>
+<span class="sourceLineNo">093</span>    /**<a name="line.93"></a>
+<span class="sourceLineNo">094</span>     * Gets the socket address of this player<a name="line.94"></a>
+<span class="sourceLineNo">095</span>     *<a name="line.95"></a>
+<span class="sourceLineNo">096</span>     * @return the player's address<a name="line.96"></a>
+<span class="sourceLineNo">097</span>     */<a name="line.97"></a>
+<span class="sourceLineNo">098</span>    public InetSocketAddress getAddress();<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>    /**<a name="line.100"></a>
+<span class="sourceLineNo">101</span>     * Sends this sender a message raw<a name="line.101"></a>
+<span class="sourceLineNo">102</span>     *<a name="line.102"></a>
+<span class="sourceLineNo">103</span>     * @param message Message to be displayed<a name="line.103"></a>
+<span class="sourceLineNo">104</span>     */<a name="line.104"></a>
+<span class="sourceLineNo">105</span>    public void sendRawMessage(String message);<a name="line.105"></a>
+<span class="sourceLineNo">106</span><a name="line.106"></a>
+<span class="sourceLineNo">107</span>    /**<a name="line.107"></a>
+<span class="sourceLineNo">108</span>     * Kicks player with custom kick message.<a name="line.108"></a>
+<span class="sourceLineNo">109</span>     *<a name="line.109"></a>
+<span class="sourceLineNo">110</span>     * @param message kick message<a name="line.110"></a>
+<span class="sourceLineNo">111</span>     */<a name="line.111"></a>
+<span class="sourceLineNo">112</span>    public void kickPlayer(String message);<a name="line.112"></a>
+<span class="sourceLineNo">113</span><a name="line.113"></a>
+<span class="sourceLineNo">114</span>    /**<a name="line.114"></a>
+<span class="sourceLineNo">115</span>     * Says a message (or runs a command).<a name="line.115"></a>
+<span class="sourceLineNo">116</span>     *<a name="line.116"></a>
+<span class="sourceLineNo">117</span>     * @param msg message to print<a name="line.117"></a>
+<span class="sourceLineNo">118</span>     */<a name="line.118"></a>
+<span class="sourceLineNo">119</span>    public void chat(String msg);<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>    /**<a name="line.121"></a>
+<span class="sourceLineNo">122</span>     * Makes the player perform the given command<a name="line.122"></a>
+<span class="sourceLineNo">123</span>     *<a name="line.123"></a>
+<span class="sourceLineNo">124</span>     * @param command Command to perform<a name="line.124"></a>
+<span class="sourceLineNo">125</span>     * @return true if the command was successful, otherwise false<a name="line.125"></a>
+<span class="sourceLineNo">126</span>     */<a name="line.126"></a>
+<span class="sourceLineNo">127</span>    public boolean performCommand(String command);<a name="line.127"></a>
+<span class="sourceLineNo">128</span><a name="line.128"></a>
+<span class="sourceLineNo">129</span>    /**<a name="line.129"></a>
+<span class="sourceLineNo">130</span>     * Returns if the player is in sneak mode<a name="line.130"></a>
+<span class="sourceLineNo">131</span>     *<a name="line.131"></a>
+<span class="sourceLineNo">132</span>     * @return true if player is in sneak mode<a name="line.132"></a>
+<span class="sourceLineNo">133</span>     */<a name="line.133"></a>
+<span class="sourceLineNo">134</span>    public boolean isSneaking();<a name="line.134"></a>
+<span class="sourceLineNo">135</span><a name="line.135"></a>
+<span class="sourceLineNo">136</span>    /**<a name="line.136"></a>
+<span class="sourceLineNo">137</span>     * Sets the sneak mode the player<a name="line.137"></a>
+<span class="sourceLineNo">138</span>     *<a name="line.138"></a>
+<span class="sourceLineNo">139</span>     * @param sneak true if player should appear sneaking<a name="line.139"></a>
+<span class="sourceLineNo">140</span>     */<a name="line.140"></a>
+<span class="sourceLineNo">141</span>    public void setSneaking(boolean sneak);<a name="line.141"></a>
+<span class="sourceLineNo">142</span><a name="line.142"></a>
+<span class="sourceLineNo">143</span>    /**<a name="line.143"></a>
+<span class="sourceLineNo">144</span>     * Gets whether the player is sprinting or not.<a name="line.144"></a>
+<span class="sourceLineNo">145</span>     *<a name="line.145"></a>
+<span class="sourceLineNo">146</span>     * @return true if player is sprinting.<a name="line.146"></a>
+<span class="sourceLineNo">147</span>     */<a name="line.147"></a>
+<span class="sourceLineNo">148</span>    public boolean isSprinting();<a name="line.148"></a>
+<span class="sourceLineNo">149</span><a name="line.149"></a>
+<span class="sourceLineNo">150</span>    /**<a name="line.150"></a>
+<span class="sourceLineNo">151</span>     * Sets whether the player is sprinting or not.<a name="line.151"></a>
+<span class="sourceLineNo">152</span>     *<a name="line.152"></a>
+<span class="sourceLineNo">153</span>     * @param sprinting true if the player should be sprinting<a name="line.153"></a>
+<span class="sourceLineNo">154</span>     */<a name="line.154"></a>
+<span class="sourceLineNo">155</span>    public void setSprinting(boolean sprinting);<a name="line.155"></a>
+<span class="sourceLineNo">156</span><a name="line.156"></a>
+<span class="sourceLineNo">157</span>    /**<a name="line.157"></a>
+<span class="sourceLineNo">158</span>     * Saves the players current location, health, inventory, motion, and<a name="line.158"></a>
+<span class="sourceLineNo">159</span>     * other information into the username.dat file, in the world/player<a name="line.159"></a>
+<span class="sourceLineNo">160</span>     * folder<a name="line.160"></a>
+<span class="sourceLineNo">161</span>     */<a name="line.161"></a>
+<span class="sourceLineNo">162</span>    public void saveData();<a name="line.162"></a>
+<span class="sourceLineNo">163</span><a name="line.163"></a>
+<span class="sourceLineNo">164</span>    /**<a name="line.164"></a>
+<span class="sourceLineNo">165</span>     * Loads the players current location, health, inventory, motion, and<a name="line.165"></a>
+<span class="sourceLineNo">166</span>     * other information from the username.dat file, in the world/player<a name="line.166"></a>
+<span class="sourceLineNo">167</span>     * folder.<a name="line.167"></a>
+<span class="sourceLineNo">168</span>     * &lt;p&gt;<a name="line.168"></a>
+<span class="sourceLineNo">169</span>     * Note: This will overwrite the players current inventory, health,<a name="line.169"></a>
+<span class="sourceLineNo">170</span>     * motion, etc, with the state from the saved dat file.<a name="line.170"></a>
+<span class="sourceLineNo">171</span>     */<a name="line.171"></a>
+<span class="sourceLineNo">172</span>    public void loadData();<a name="line.172"></a>
+<span class="sourceLineNo">173</span><a name="line.173"></a>
+<span class="sourceLineNo">174</span>    /**<a name="line.174"></a>
+<span class="sourceLineNo">175</span>     * Sets whether the player is ignored as not sleeping. If everyone is<a name="line.175"></a>
+<span class="sourceLineNo">176</span>     * either sleeping or has this flag set, then time will advance to the<a name="line.176"></a>
+<span class="sourceLineNo">177</span>     * next day. If everyone has this flag set but no one is actually in bed,<a name="line.177"></a>
+<span class="sourceLineNo">178</span>     * then nothing will happen.<a name="line.178"></a>
+<span class="sourceLineNo">179</span>     *<a name="line.179"></a>
+<span class="sourceLineNo">180</span>     * @param isSleeping Whether to ignore.<a name="line.180"></a>
+<span class="sourceLineNo">181</span>     */<a name="line.181"></a>
+<span class="sourceLineNo">182</span>    public void setSleepingIgnored(boolean isSleeping);<a name="line.182"></a>
+<span class="sourceLineNo">183</span><a name="line.183"></a>
+<span class="sourceLineNo">184</span>    /**<a name="line.184"></a>
+<span class="sourceLineNo">185</span>     * Returns whether the player is sleeping ignored.<a name="line.185"></a>
+<span class="sourceLineNo">186</span>     *<a name="line.186"></a>
+<span class="sourceLineNo">187</span>     * @return Whether player is ignoring sleep.<a name="line.187"></a>
+<span class="sourceLineNo">188</span>     */<a name="line.188"></a>
+<span class="sourceLineNo">189</span>    public boolean isSleepingIgnored();<a name="line.189"></a>
+<span class="sourceLineNo">190</span><a name="line.190"></a>
+<span class="sourceLineNo">191</span>    /**<a name="line.191"></a>
+<span class="sourceLineNo">192</span>     * Play a note for a player at a location. This requires a note block<a name="line.192"></a>
+<span class="sourceLineNo">193</span>     * at the particular location (as far as the client is concerned). This<a name="line.193"></a>
+<span class="sourceLineNo">194</span>     * will not work without a note block. This will not work with cake.<a name="line.194"></a>
+<span class="sourceLineNo">195</span>     *<a name="line.195"></a>
+<span class="sourceLineNo">196</span>     * @param loc The location of a note block.<a name="line.196"></a>
+<span class="sourceLineNo">197</span>     * @param instrument The instrument ID.<a name="line.197"></a>
+<span class="sourceLineNo">198</span>     * @param note The note ID.<a name="line.198"></a>
+<span class="sourceLineNo">199</span>     * @deprecated Magic value<a name="line.199"></a>
+<span class="sourceLineNo">200</span>     */<a name="line.200"></a>
+<span class="sourceLineNo">201</span>    @Deprecated<a name="line.201"></a>
+<span class="sourceLineNo">202</span>    public void playNote(Location loc, byte instrument, byte note);<a name="line.202"></a>
+<span class="sourceLineNo">203</span><a name="line.203"></a>
+<span class="sourceLineNo">204</span>    /**<a name="line.204"></a>
+<span class="sourceLineNo">205</span>     * Play a note for a player at a location. This requires a note block<a name="line.205"></a>
+<span class="sourceLineNo">206</span>     * at the particular location (as far as the client is concerned). This<a name="line.206"></a>
+<span class="sourceLineNo">207</span>     * will not work without a note block. This will not work with cake.<a name="line.207"></a>
+<span class="sourceLineNo">208</span>     *<a name="line.208"></a>
+<span class="sourceLineNo">209</span>     * @param loc The location of a note block<a name="line.209"></a>
+<span class="sourceLineNo">210</span>     * @param instrument The instrument<a name="line.210"></a>
+<span class="sourceLineNo">211</span>     * @param note The note<a name="line.211"></a>
+<span class="sourceLineNo">212</span>     */<a name="line.212"></a>
+<span class="sourceLineNo">213</span>    public void playNote(Location loc, Instrument instrument, Note note);<a name="line.213"></a>
+<span class="sourceLineNo">214</span><a name="line.214"></a>
+<span class="sourceLineNo">215</span><a name="line.215"></a>
+<span class="sourceLineNo">216</span>    /**<a name="line.216"></a>
+<span class="sourceLineNo">217</span>     * Play a sound for a player at the location.<a name="line.217"></a>
+<span class="sourceLineNo">218</span>     * &lt;p&gt;<a name="line.218"></a>
+<span class="sourceLineNo">219</span>     * This function will fail silently if Location or Sound are null.<a name="line.219"></a>
+<span class="sourceLineNo">220</span>     *<a name="line.220"></a>
+<span class="sourceLineNo">221</span>     * @param location The location to play the sound<a name="line.221"></a>
+<span class="sourceLineNo">222</span>     * @param sound The sound to play<a name="line.222"></a>
+<span class="sourceLineNo">223</span>     * @param volume The volume of the sound<a name="line.223"></a>
+<span class="sourceLineNo">224</span>     * @param pitch The pitch of the sound<a name="line.224"></a>
+<span class="sourceLineNo">225</span>     */<a name="line.225"></a>
+<span class="sourceLineNo">226</span>    public void playSound(Location location, Sound sound, float volume, float pitch);<a name="line.226"></a>
+<span class="sourceLineNo">227</span><a name="line.227"></a>
+<span class="sourceLineNo">228</span>    /**<a name="line.228"></a>
+<span class="sourceLineNo">229</span>     * Play a sound for a player at the location.<a name="line.229"></a>
+<span class="sourceLineNo">230</span>     * &lt;p&gt;<a name="line.230"></a>
+<span class="sourceLineNo">231</span>     * This function will fail silently if Location or Sound are null. No<a name="line.231"></a>
+<span class="sourceLineNo">232</span>     * sound will be heard by the player if their client does not have the<a name="line.232"></a>
+<span class="sourceLineNo">233</span>     * respective sound for the value passed.<a name="line.233"></a>
+<span class="sourceLineNo">234</span>     *<a name="line.234"></a>
+<span class="sourceLineNo">235</span>     * @param location the location to play the sound<a name="line.235"></a>
+<span class="sourceLineNo">236</span>     * @param sound the internal sound name to play<a name="line.236"></a>
+<span class="sourceLineNo">237</span>     * @param volume the volume of the sound<a name="line.237"></a>
+<span class="sourceLineNo">238</span>     * @param pitch the pitch of the sound<a name="line.238"></a>
+<span class="sourceLineNo">239</span>     * @deprecated Magic value<a name="line.239"></a>
+<span class="sourceLineNo">240</span>     */<a name="line.240"></a>
+<span class="sourceLineNo">241</span>    @Deprecated<a name="line.241"></a>
+<span class="sourceLineNo">242</span>    public void playSound(Location location, String sound, float volume, float pitch);<a name="line.242"></a>
+<span class="sourceLineNo">243</span><a name="line.243"></a>
+<span class="sourceLineNo">244</span>    /**<a name="line.244"></a>
+<span class="sourceLineNo">245</span>     * Plays an effect to just this player.<a name="line.245"></a>
+<span class="sourceLineNo">246</span>     *<a name="line.246"></a>
+<span class="sourceLineNo">247</span>     * @param loc the location to play the effect at<a name="line.247"></a>
+<span class="sourceLineNo">248</span>     * @param effect the {@link Effect}<a name="line.248"></a>
+<span class="sourceLineNo">249</span>     * @param data a data bit needed for some effects<a name="line.249"></a>
+<span class="sourceLineNo">250</span>     * @deprecated Magic value<a name="line.250"></a>
+<span class="sourceLineNo">251</span>     */<a name="line.251"></a>
+<span class="sourceLineNo">252</span>    @Deprecated<a name="line.252"></a>
+<span class="sourceLineNo">253</span>    public void playEffect(Location loc, Effect effect, int data);<a name="line.253"></a>
+<span class="sourceLineNo">254</span><a name="line.254"></a>
+<span class="sourceLineNo">255</span>    /**<a name="line.255"></a>
+<span class="sourceLineNo">256</span>     * Plays an effect to just this player.<a name="line.256"></a>
+<span class="sourceLineNo">257</span>     *<a name="line.257"></a>
+<span class="sourceLineNo">258</span>     * @param loc the location to play the effect at<a name="line.258"></a>
+<span class="sourceLineNo">259</span>     * @param effect the {@link Effect}<a name="line.259"></a>
+<span class="sourceLineNo">260</span>     * @param data a data bit needed for some effects<a name="line.260"></a>
+<span class="sourceLineNo">261</span>     */<a name="line.261"></a>
+<span class="sourceLineNo">262</span>    public &lt;T&gt; void playEffect(Location loc, Effect effect, T data);<a name="line.262"></a>
+<span class="sourceLineNo">263</span><a name="line.263"></a>
+<span class="sourceLineNo">264</span>    /**<a name="line.264"></a>
+<span class="sourceLineNo">265</span>     * Send a block change. This fakes a block change packet for a user at a<a name="line.265"></a>
+<span class="sourceLineNo">266</span>     * certain location. This will not actually change the world in any way.<a name="line.266"></a>
+<span class="sourceLineNo">267</span>     *<a name="line.267"></a>
+<span class="sourceLineNo">268</span>     * @param loc The location of the changed block<a name="line.268"></a>
+<span class="sourceLineNo">269</span>     * @param material The new block<a name="line.269"></a>
+<span class="sourceLineNo">270</span>     * @param data The block data<a name="line.270"></a>
+<span class="sourceLineNo">271</span>     * @deprecated Magic value<a name="line.271"></a>
+<span class="sourceLineNo">272</span>     */<a name="line.272"></a>
+<span class="sourceLineNo">273</span>    @Deprecated<a name="line.273"></a>
+<span class="sourceLineNo">274</span>    public void sendBlockChange(Location loc, Material material, byte data);<a name="line.274"></a>
+<span class="sourceLineNo">275</span><a name="line.275"></a>
+<span class="sourceLineNo">276</span>    /**<a name="line.276"></a>
+<span class="sourceLineNo">277</span>     * Send a chunk change. This fakes a chunk change packet for a user at a<a name="line.277"></a>
+<span class="sourceLineNo">278</span>     * certain location. The updated cuboid must be entirely within a single<a name="line.278"></a>
+<span class="sourceLineNo">279</span>     * chunk. This will not actually change the world in any way.<a name="line.279"></a>
+<span class="sourceLineNo">280</span>     * &lt;p&gt;<a name="line.280"></a>
+<span class="sourceLineNo">281</span>     * At least one of the dimensions of the cuboid must be even. The size of<a name="line.281"></a>
+<span class="sourceLineNo">282</span>     * the data buffer must be 2.5*sx*sy*sz and formatted in accordance with<a name="line.282"></a>
+<span class="sourceLineNo">283</span>     * the Packet51 format.<a name="line.283"></a>
+<span class="sourceLineNo">284</span>     *<a name="line.284"></a>
+<span class="sourceLineNo">285</span>     * @param loc The location of the cuboid<a name="line.285"></a>
+<span class="sourceLineNo">286</span>     * @param sx The x size of the cuboid<a name="line.286"></a>
+<span class="sourceLineNo">287</span>     * @param sy The y size of the cuboid<a name="line.287"></a>
+<span class="sourceLineNo">288</span>     * @param sz The z size of the cuboid<a name="line.288"></a>
+<span class="sourceLineNo">289</span>     * @param data The data to be sent<a name="line.289"></a>
+<span class="sourceLineNo">290</span>     * @return true if the chunk change packet was sent<a name="line.290"></a>
+<span class="sourceLineNo">291</span>     * @deprecated Magic value<a name="line.291"></a>
+<span class="sourceLineNo">292</span>     */<a name="line.292"></a>
+<span class="sourceLineNo">293</span>    @Deprecated<a name="line.293"></a>
+<span class="sourceLineNo">294</span>    public boolean sendChunkChange(Location loc, int sx, int sy, int sz, byte[] data);<a name="line.294"></a>
+<span class="sourceLineNo">295</span><a name="line.295"></a>
+<span class="sourceLineNo">296</span>    /**<a name="line.296"></a>
+<span class="sourceLineNo">297</span>     * Send a block change. This fakes a block change packet for a user at a<a name="line.297"></a>
+<span class="sourceLineNo">298</span>     * certain location. This will not actually change the world in any way.<a name="line.298"></a>
+<span class="sourceLineNo">299</span>     *<a name="line.299"></a>
+<span class="sourceLineNo">300</span>     * @param loc The location of the changed block<a name="line.300"></a>
+<span class="sourceLineNo">301</span>     * @param material The new block ID<a name="line.301"></a>
+<span class="sourceLineNo">302</span>     * @param data The block data<a name="line.302"></a>
+<span class="sourceLineNo">303</span>     * @deprecated Magic value<a name="line.303"></a>
+<span class="sourceLineNo">304</span>     */<a name="line.304"></a>
+<span class="sourceLineNo">305</span>    @Deprecated<a name="line.305"></a>
+<span class="sourceLineNo">306</span>    public void sendBlockChange(Location loc, int material, byte data);<a name="line.306"></a>
+<span class="sourceLineNo">307</span><a name="line.307"></a>
+<span class="sourceLineNo">308</span>    /**<a name="line.308"></a>
+<span class="sourceLineNo">309</span>     * Send a sign change. This fakes a sign change packet for a user at<a name="line.309"></a>
+<span class="sourceLineNo">310</span>     * a certain location. This will not actually change the world in any way.<a name="line.310"></a>
+<span class="sourceLineNo">311</span>     * This method will use a sign at the location's block or a faked sign<a name="line.311"></a>
+<span class="sourceLineNo">312</span>     * sent via {@link #sendBlockChange(org.bukkit.Location, int, byte)} or<a name="line.312"></a>
+<span class="sourceLineNo">313</span>     * {@link #sendBlockChange(org.bukkit.Location, org.bukkit.Material, byte)}.<a name="line.313"></a>
+<span class="sourceLineNo">314</span>     * &lt;p&gt;<a name="line.314"></a>
+<span class="sourceLineNo">315</span>     * If the client does not have a sign at the given location it will<a name="line.315"></a>
+<span class="sourceLineNo">316</span>     * display an error message to the user.<a name="line.316"></a>
+<span class="sourceLineNo">317</span>     *<a name="line.317"></a>
+<span class="sourceLineNo">318</span>     * @param loc the location of the sign<a name="line.318"></a>
+<span class="sourceLineNo">319</span>     * @param lines the new text on the sign or null to clear it<a name="line.319"></a>
+<span class="sourceLineNo">320</span>     * @throws IllegalArgumentException if location is null<a name="line.320"></a>
+<span class="sourceLineNo">321</span>     * @throws IllegalArgumentException if lines is non-null and has a length less than 4<a name="line.321"></a>
+<span class="sourceLineNo">322</span>     */<a name="line.322"></a>
+<span class="sourceLineNo">323</span>    public void sendSignChange(Location loc, String[] lines) throws IllegalArgumentException;<a name="line.323"></a>
+<span class="sourceLineNo">324</span><a name="line.324"></a>
+<span class="sourceLineNo">325</span>    /**<a name="line.325"></a>
+<span class="sourceLineNo">326</span>     * Render a map and send it to the player in its entirety. This may be<a name="line.326"></a>
+<span class="sourceLineNo">327</span>     * used when streaming the map in the normal manner is not desirable.<a name="line.327"></a>
+<span class="sourceLineNo">328</span>     *<a name="line.328"></a>
+<span class="sourceLineNo">329</span>     * @param map The map to be sent<a name="line.329"></a>
+<span class="sourceLineNo">330</span>     */<a name="line.330"></a>
+<span class="sourceLineNo">331</span>    public void sendMap(MapView map);<a name="line.331"></a>
+<span class="sourceLineNo">332</span><a name="line.332"></a>
+<span class="sourceLineNo">333</span>    /**<a name="line.333"></a>
+<span class="sourceLineNo">334</span>     * Forces an update of the player's entire inventory.<a name="line.334"></a>
+<span class="sourceLineNo">335</span>     *<a name="line.335"></a>
+<span class="sourceLineNo">336</span>     * @deprecated This method should not be relied upon as it is a temporary<a name="line.336"></a>
+<span class="sourceLineNo">337</span>     *     work-around for a larger, more complicated issue.<a name="line.337"></a>
+<span class="sourceLineNo">338</span>     */<a name="line.338"></a>
+<span class="sourceLineNo">339</span>    @Deprecated<a name="line.339"></a>
+<span class="sourceLineNo">340</span>    public void updateInventory();<a name="line.340"></a>
+<span class="sourceLineNo">341</span><a name="line.341"></a>
+<span class="sourceLineNo">342</span>    /**<a name="line.342"></a>
+<span class="sourceLineNo">343</span>     * Awards the given achievement and any parent achievements that the<a name="line.343"></a>
+<span class="sourceLineNo">344</span>     * player does not have.<a name="line.344"></a>
+<span class="sourceLineNo">345</span>     *<a name="line.345"></a>
+<span class="sourceLineNo">346</span>     * @param achievement Achievement to award<a name="line.346"></a>
+<span class="sourceLineNo">347</span>     * @throws IllegalArgumentException if achievement is null<a name="line.347"></a>
+<span class="sourceLineNo">348</span>     */<a name="line.348"></a>
+<span class="sourceLineNo">349</span>    public void awardAchievement(Achievement achievement);<a name="line.349"></a>
+<span class="sourceLineNo">350</span><a name="line.350"></a>
+<span class="sourceLineNo">351</span>    /**<a name="line.351"></a>
+<span class="sourceLineNo">352</span>     * Removes the given achievement and any children achievements that the<a name="line.352"></a>
+<span class="sourceLineNo">353</span>     * player has.<a name="line.353"></a>
+<span class="sourceLineNo">354</span>     *<a name="line.354"></a>
+<span class="sourceLineNo">355</span>     * @param achievement Achievement to remove<a name="line.355"></a>
+<span class="sourceLineNo">356</span>     * @throws IllegalArgumentException if achievement is null<a name="line.356"></a>
+<span class="sourceLineNo">357</span>     */<a name="line.357"></a>
+<span class="sourceLineNo">358</span>    public void removeAchievement(Achievement achievement);<a name="line.358"></a>
+<span class="sourceLineNo">359</span><a name="line.359"></a>
+<span class="sourceLineNo">360</span>    /**<a name="line.360"></a>
+<span class="sourceLineNo">361</span>     * Gets whether this player has the given achievement.<a name="line.361"></a>
+<span class="sourceLineNo">362</span>     *<a name="line.362"></a>
+<span class="sourceLineNo">363</span>     * @return whether the player has the achievement<a name="line.363"></a>
+<span class="sourceLineNo">364</span>     * @throws IllegalArgumentException if achievement is null<a name="line.364"></a>
+<span class="sourceLineNo">365</span>     */<a name="line.365"></a>
+<span class="sourceLineNo">366</span>    public boolean hasAchievement(Achievement achievement);<a name="line.366"></a>
+<span class="sourceLineNo">367</span><a name="line.367"></a>
+<span class="sourceLineNo">368</span>    /**<a name="line.368"></a>
+<span class="sourceLineNo">369</span>     * Increments the given statistic for this player.<a name="line.369"></a>
+<span class="sourceLineNo">370</span>     * &lt;p&gt;<a name="line.370"></a>
+<span class="sourceLineNo">371</span>     * This is equivalent to the following code:<a name="line.371"></a>
+<span class="sourceLineNo">372</span>     * &lt;code&gt;incrementStatistic(Statistic, 1)&lt;/code&gt;<a name="line.372"></a>
+<span class="sourceLineNo">373</span>     *<a name="line.373"></a>
+<span class="sourceLineNo">374</span>     * @param statistic Statistic to increment<a name="line.374"></a>
+<span class="sourceLineNo">375</span>     * @throws IllegalArgumentException if statistic is null<a name="line.375"></a>
+<span class="sourceLineNo">376</span>     * @throws IllegalArgumentException if the statistic requires an<a name="line.376"></a>
+<span class="sourceLineNo">377</span>     *     additional parameter<a name="line.377"></a>
+<span class="sourceLineNo">378</span>     */<a name="line.378"></a>
+<span class="sourceLineNo">379</span>    public void incrementStatistic(Statistic statistic) throws IllegalArgumentException;<a name="line.379"></a>
+<span class="sourceLineNo">380</span><a name="line.380"></a>
+<span class="sourceLineNo">381</span>    /**<a name="line.381"></a>
+<span class="sourceLineNo">382</span>     * Decrements the given statistic for this player.<a name="line.382"></a>
+<span class="sourceLineNo">383</span>     * &lt;p&gt;<a name="line.383"></a>
+<span class="sourceLineNo">384</span>     * This is equivalent to the following code:<a name="line.384"></a>
+<span class="sourceLineNo">385</span>     * &lt;code&gt;decrementStatistic(Statistic, 1)&lt;/code&gt;<a name="line.385"></a>
+<span class="sourceLineNo">386</span>     *<a name="line.386"></a>
+<span class="sourceLineNo">387</span>     * @param statistic Statistic to decrement<a name="line.387"></a>
+<span class="sourceLineNo">388</span>     * @throws IllegalArgumentException if statistic is null<a name="line.388"></a>
+<span class="sourceLineNo">389</span>     * @throws IllegalArgumentException if the statistic requires an<a name="line.389"></a>
+<span class="sourceLineNo">390</span>     *     additional parameter<a name="line.390"></a>
+<span class="sourceLineNo">391</span>     */<a name="line.391"></a>
+<span class="sourceLineNo">392</span>    public void decrementStatistic(Statistic statistic) throws IllegalArgumentException;<a name="line.392"></a>
+<span class="sourceLineNo">393</span><a name="line.393"></a>
+<span class="sourceLineNo">394</span>    /**<a name="line.394"></a>
+<span class="sourceLineNo">395</span>     * Increments the given statistic for this player.<a name="line.395"></a>
+<span class="sourceLineNo">396</span>     *<a name="line.396"></a>
+<span class="sourceLineNo">397</span>     * @param statistic Statistic to increment<a name="line.397"></a>
+<span class="sourceLineNo">398</span>     * @param amount Amount to increment this statistic by<a name="line.398"></a>
+<span class="sourceLineNo">399</span>     * @throws IllegalArgumentException if statistic is null<a name="line.399"></a>
+<span class="sourceLineNo">400</span>     * @throws IllegalArgumentException if amount is negative<a name="line.400"></a>
+<span class="sourceLineNo">401</span>     * @throws IllegalArgumentException if the statistic requires an<a name="line.401"></a>
+<span class="sourceLineNo">402</span>     *     additional parameter<a name="line.402"></a>
+<span class="sourceLineNo">403</span>     */<a name="line.403"></a>
+<span class="sourceLineNo">404</span>    public void incrementStatistic(Statistic statistic, int amount) throws IllegalArgumentException;<a name="line.404"></a>
+<span class="sourceLineNo">405</span><a name="line.405"></a>
+<span class="sourceLineNo">406</span>    /**<a name="line.406"></a>
+<span class="sourceLineNo">407</span>     * Decrements the given statistic for this player.<a name="line.407"></a>
+<span class="sourceLineNo">408</span>     *<a name="line.408"></a>
+<span class="sourceLineNo">409</span>     * @param statistic Statistic to decrement<a name="line.409"></a>
+<span class="sourceLineNo">410</span>     * @param amount Amount to decrement this statistic by<a name="line.410"></a>
+<span class="sourceLineNo">411</span>     * @throws IllegalArgumentException if statistic is null<a name="line.411"></a>
+<span class="sourceLineNo">412</span>     * @throws IllegalArgumentException if amount is negative<a name="line.412"></a>
+<span class="sourceLineNo">413</span>     * @throws IllegalArgumentException if the statistic requires an<a name="line.413"></a>
+<span class="sourceLineNo">414</span>     *     additional parameter<a name="line.414"></a>
+<span class="sourceLineNo">415</span>     */<a name="line.415"></a>
+<span class="sourceLineNo">416</span>    public void decrementStatistic(Statistic statistic, int amount) throws IllegalArgumentException;<a name="line.416"></a>
+<span class="sourceLineNo">417</span><a name="line.417"></a>
+<span class="sourceLineNo">418</span>    /**<a name="line.418"></a>
+<span class="sourceLineNo">419</span>     * Sets the given statistic for this player.<a name="line.419"></a>
+<span class="sourceLineNo">420</span>     *<a name="line.420"></a>
+<span class="sourceLineNo">421</span>     * @param statistic Statistic to set<a name="line.421"></a>
+<span class="sourceLineNo">422</span>     * @param newValue The value to set this statistic to<a name="line.422"></a>
+<span class="sourceLineNo">423</span>     * @throws IllegalArgumentException if statistic is null<a name="line.423"></a>
+<span class="sourceLineNo">424</span>     * @throws IllegalArgumentException if newValue is negative<a name="line.424"></a>
+<span class="sourceLineNo">425</span>     * @throws IllegalArgumentException if the statistic requires an<a name="line.425"></a>
+<span class="sourceLineNo">426</span>     *     additional parameter<a name="line.426"></a>
+<span class="sourceLineNo">427</span>     */<a name="line.427"></a>
+<span class="sourceLineNo">428</span>    public void setStatistic(Statistic statistic, int newValue) throws IllegalArgumentException;<a name="line.428"></a>
+<span class="sourceLineNo">429</span><a name="line.429"></a>
+<span class="sourceLineNo">430</span>    /**<a name="line.430"></a>
+<span class="sourceLineNo">431</span>     * Gets the value of the given statistic for this player.<a name="line.431"></a>
+<span class="sourceLineNo">432</span>     *<a name="line.432"></a>
+<span class="sourceLineNo">433</span>     * @param statistic Statistic to check<a name="line.433"></a>
+<span class="sourceLineNo">434</span>     * @return the value of the given statistic<a name="line.434"></a>
+<span class="sourceLineNo">435</span>     * @throws IllegalArgumentException if statistic is null<a name="line.435"></a>
+<span class="sourceLineNo">436</span>     * @throws IllegalArgumentException if the statistic requires an<a name="line.436"></a>
+<span class="sourceLineNo">437</span>     *     additional parameter<a name="line.437"></a>
+<span class="sourceLineNo">438</span>     */<a name="line.438"></a>
+<span class="sourceLineNo">439</span>    public int getStatistic(Statistic statistic) throws IllegalArgumentException;<a name="line.439"></a>
+<span class="sourceLineNo">440</span><a name="line.440"></a>
+<span class="sourceLineNo">441</span>    /**<a name="line.441"></a>
+<span class="sourceLineNo">442</span>     * Increments the given statistic for this player for the given material.<a name="line.442"></a>
+<span class="sourceLineNo">443</span>     * &lt;p&gt;<a name="line.443"></a>
+<span class="sourceLineNo">444</span>     * This is equivalent to the following code:<a name="line.444"></a>
+<span class="sourceLineNo">445</span>     * &lt;code&gt;incrementStatistic(Statistic, Material, 1)&lt;/code&gt;<a name="line.445"></a>
+<span class="sourceLineNo">446</span>     *<a name="line.446"></a>
+<span class="sourceLineNo">447</span>     * @param statistic Statistic to increment<a name="line.447"></a>
+<span class="sourceLineNo">448</span>     * @param material Material to offset the statistic with<a name="line.448"></a>
+<span class="sourceLineNo">449</span>     * @throws IllegalArgumentException if statistic is null<a name="line.449"></a>
+<span class="sourceLineNo">450</span>     * @throws IllegalArgumentException if material is null<a name="line.450"></a>
+<span class="sourceLineNo">451</span>     * @throws IllegalArgumentException if the given parameter is not valid<a name="line.451"></a>
+<span class="sourceLineNo">452</span>     *     for the statistic<a name="line.452"></a>
+<span class="sourceLineNo">453</span>     */<a name="line.453"></a>
+<span class="sourceLineNo">454</span>    public void incrementStatistic(Statistic statistic, Material material) throws IllegalArgumentException;<a name="line.454"></a>
+<span class="sourceLineNo">455</span><a name="line.455"></a>
+<span class="sourceLineNo">456</span>    /**<a name="line.456"></a>
+<span class="sourceLineNo">457</span>     * Decrements the given statistic for this player for the given material.<a name="line.457"></a>
+<span class="sourceLineNo">458</span>     * &lt;p&gt;<a name="line.458"></a>
+<span class="sourceLineNo">459</span>     * This is equivalent to the following code:<a name="line.459"></a>
+<span class="sourceLineNo">460</span>     * &lt;code&gt;decrementStatistic(Statistic, Material, 1)&lt;/code&gt;<a name="line.460"></a>
+<span class="sourceLineNo">461</span>     *<a name="line.461"></a>
+<span class="sourceLineNo">462</span>     * @param statistic Statistic to decrement<a name="line.462"></a>
+<span class="sourceLineNo">463</span>     * @param material Material to offset the statistic with<a name="line.463"></a>
+<span class="sourceLineNo">464</span>     * @throws IllegalArgumentException if statistic is null<a name="line.464"></a>
+<span class="sourceLineNo">465</span>     * @throws IllegalArgumentException if material is null<a name="line.465"></a>
+<span class="sourceLineNo">466</span>     * @throws IllegalArgumentException if the given parameter is not valid<a name="line.466"></a>
+<span class="sourceLineNo">467</span>     *     for the statistic<a name="line.467"></a>
+<span class="sourceLineNo">468</span>     */<a name="line.468"></a>
+<span class="sourceLineNo">469</span>    public void decrementStatistic(Statistic statistic, Material material) throws IllegalArgumentException;<a name="line.469"></a>
+<span class="sourceLineNo">470</span><a name="line.470"></a>
+<span class="sourceLineNo">471</span>    /**<a name="line.471"></a>
+<span class="sourceLineNo">472</span>     * Gets the value of the given statistic for this player.<a name="line.472"></a>
+<span class="sourceLineNo">473</span>     *<a name="line.473"></a>
+<span class="sourceLineNo">474</span>     * @param statistic Statistic to check<a name="line.474"></a>
+<span class="sourceLineNo">475</span>     * @param material Material offset of the statistic<a name="line.475"></a>
+<span class="sourceLineNo">476</span>     * @return the value of the given statistic<a name="line.476"></a>
+<span class="sourceLineNo">477</span>     * @throws IllegalArgumentException if statistic is null<a name="line.477"></a>
+<span class="sourceLineNo">478</span>     * @throws IllegalArgumentException if material is null<a name="line.478"></a>
+<span class="sourceLineNo">479</span>     * @throws IllegalArgumentException if the given parameter is not valid<a name="line.479"></a>
+<span class="sourceLineNo">480</span>     *     for the statistic<a name="line.480"></a>
+<span class="sourceLineNo">481</span>     */<a name="line.481"></a>
+<span class="sourceLineNo">482</span>    public int getStatistic(Statistic statistic, Material material) throws IllegalArgumentException;<a name="line.482"></a>
+<span class="sourceLineNo">483</span><a name="line.483"></a>
+<span class="sourceLineNo">484</span>    /**<a name="line.484"></a>
+<span class="sourceLineNo">485</span>     * Increments the given statistic for this player for the given material.<a name="line.485"></a>
+<span class="sourceLineNo">486</span>     *<a name="line.486"></a>
+<span class="sourceLineNo">487</span>     * @param statistic Statistic to increment<a name="line.487"></a>
+<span class="sourceLineNo">488</span>     * @param material Material to offset the statistic with<a name="line.488"></a>
+<span class="sourceLineNo">489</span>     * @param amount Amount to increment this statistic by<a name="line.489"></a>
+<span class="sourceLineNo">490</span>     * @throws IllegalArgumentException if statistic is null<a name="line.490"></a>
+<span class="sourceLineNo">491</span>     * @throws IllegalArgumentException if material is null<a name="line.491"></a>
+<span class="sourceLineNo">492</span>     * @throws IllegalArgumentException if amount is negative<a name="line.492"></a>
+<span class="sourceLineNo">493</span>     * @throws IllegalArgumentException if the given parameter is not valid<a name="line.493"></a>
+<span class="sourceLineNo">494</span>     *     for the statistic<a name="line.494"></a>
+<span class="sourceLineNo">495</span>     */<a name="line.495"></a>
+<span class="sourceLineNo">496</span>    public void incrementStatistic(Statistic statistic, Material material, int amount) throws IllegalArgumentException;<a name="line.496"></a>
+<span class="sourceLineNo">497</span><a name="line.497"></a>
+<span class="sourceLineNo">498</span>    /**<a name="line.498"></a>
+<span class="sourceLineNo">499</span>     * Decrements the given statistic for this player for the given material.<a name="line.499"></a>
+<span class="sourceLineNo">500</span>     *<a name="line.500"></a>
+<span class="sourceLineNo">501</span>     * @param statistic Statistic to decrement<a name="line.501"></a>
+<span class="sourceLineNo">502</span>     * @param material Material to offset the statistic with<a name="line.502"></a>
+<span class="sourceLineNo">503</span>     * @param amount Amount to decrement this statistic by<a name="line.503"></a>
+<span class="sourceLineNo">504</span>     * @throws IllegalArgumentException if statistic is null<a name="line.504"></a>
+<span class="sourceLineNo">505</span>     * @throws IllegalArgumentException if material is null<a name="line.505"></a>
+<span class="sourceLineNo">506</span>     * @throws IllegalArgumentException if amount is negative<a name="line.506"></a>
+<span class="sourceLineNo">507</span>     * @throws IllegalArgumentException if the given parameter is not valid<a name="line.507"></a>
+<span class="sourceLineNo">508</span>     *     for the statistic<a name="line.508"></a>
+<span class="sourceLineNo">509</span>     */<a name="line.509"></a>
+<span class="sourceLineNo">510</span>    public void decrementStatistic(Statistic statistic, Material material, int amount) throws IllegalArgumentException;<a name="line.510"></a>
+<span class="sourceLineNo">511</span><a name="line.511"></a>
+<span class="sourceLineNo">512</span>    /**<a name="line.512"></a>
+<span class="sourceLineNo">513</span>     * Sets the given statistic for this player for the given material.<a name="line.513"></a>
+<span class="sourceLineNo">514</span>     *<a name="line.514"></a>
+<span class="sourceLineNo">515</span>     * @param statistic Statistic to set<a name="line.515"></a>
+<span class="sourceLineNo">516</span>     * @param material Material to offset the statistic with<a name="line.516"></a>
+<span class="sourceLineNo">517</span>     * @param newValue The value to set this statistic to<a name="line.517"></a>
+<span class="sourceLineNo">518</span>     * @throws IllegalArgumentException if statistic is null<a name="line.518"></a>
+<span class="sourceLineNo">519</span>     * @throws IllegalArgumentException if material is null<a name="line.519"></a>
+<span class="sourceLineNo">520</span>     * @throws IllegalArgumentException if newValue is negative<a name="line.520"></a>
+<span class="sourceLineNo">521</span>     * @throws IllegalArgumentException if the given parameter is not valid<a name="line.521"></a>
+<span class="sourceLineNo">522</span>     *     for the statistic<a name="line.522"></a>
+<span class="sourceLineNo">523</span>     */<a name="line.523"></a>
+<span class="sourceLineNo">524</span>    public void setStatistic(Statistic statistic, Material material, int newValue) throws IllegalArgumentException;<a name="line.524"></a>
+<span class="sourceLineNo">525</span><a name="line.525"></a>
+<span class="sourceLineNo">526</span>    /**<a name="line.526"></a>
+<span class="sourceLineNo">527</span>     * Increments the given statistic for this player for the given entity.<a name="line.527"></a>
+<span class="sourceLineNo">528</span>     * &lt;p&gt;<a name="line.528"></a>
+<span class="sourceLineNo">529</span>     * This is equivalent to the following code:<a name="line.529"></a>
+<span class="sourceLineNo">530</span>     * &lt;code&gt;incrementStatistic(Statistic, EntityType, 1)&lt;/code&gt;<a name="line.530"></a>
+<span class="sourceLineNo">531</span>     *<a name="line.531"></a>
+<span class="sourceLineNo">532</span>     * @param statistic Statistic to increment<a name="line.532"></a>
+<span class="sourceLineNo">533</span>     * @param entityType EntityType to offset the statistic with<a name="line.533"></a>
+<span class="sourceLineNo">534</span>     * @throws IllegalArgumentException if statistic is null<a name="line.534"></a>
+<span class="sourceLineNo">535</span>     * @throws IllegalArgumentException if entityType is null<a name="line.535"></a>
+<span class="sourceLineNo">536</span>     * @throws IllegalArgumentException if the given parameter is not valid<a name="line.536"></a>
+<span class="sourceLineNo">537</span>     *     for the statistic<a name="line.537"></a>
+<span class="sourceLineNo">538</span>     */<a name="line.538"></a>
+<span class="sourceLineNo">539</span>    public void incrementStatistic(Statistic statistic, EntityType entityType) throws IllegalArgumentException;<a name="line.539"></a>
+<span class="sourceLineNo">540</span><a name="line.540"></a>
+<span class="sourceLineNo">541</span>    /**<a name="line.541"></a>
+<span class="sourceLineNo">542</span>     * Decrements the given statistic for this player for the given entity.<a name="line.542"></a>
+<span class="sourceLineNo">543</span>     * &lt;p&gt;<a name="line.543"></a>
+<span class="sourceLineNo">544</span>     * This is equivalent to the following code:<a name="line.544"></a>
+<span class="sourceLineNo">545</span>     * &lt;code&gt;decrementStatistic(Statistic, EntityType, 1)&lt;/code&gt;<a name="line.545"></a>
+<span class="sourceLineNo">546</span>     *<a name="line.546"></a>
+<span class="sourceLineNo">547</span>     * @param statistic Statistic to decrement<a name="line.547"></a>
+<span class="sourceLineNo">548</span>     * @param entityType EntityType to offset the statistic with<a name="line.548"></a>
+<span class="sourceLineNo">549</span>     * @throws IllegalArgumentException if statistic is null<a name="line.549"></a>
+<span class="sourceLineNo">550</span>     * @throws IllegalArgumentException if entityType is null<a name="line.550"></a>
+<span class="sourceLineNo">551</span>     * @throws IllegalArgumentException if the given parameter is not valid<a name="line.551"></a>
+<span class="sourceLineNo">552</span>     *     for the statistic<a name="line.552"></a>
+<span class="sourceLineNo">553</span>     */<a name="line.553"></a>
+<span class="sourceLineNo">554</span>    public void decrementStatistic(Statistic statistic, EntityType entityType) throws IllegalArgumentException;<a name="line.554"></a>
+<span class="sourceLineNo">555</span><a name="line.555"></a>
+<span class="sourceLineNo">556</span>    /**<a name="line.556"></a>
+<span class="sourceLineNo">557</span>     * Gets the value of the given statistic for this player.<a name="line.557"></a>
+<span class="sourceLineNo">558</span>     *<a name="line.558"></a>
+<span class="sourceLineNo">559</span>     * @param statistic Statistic to check<a name="line.559"></a>
+<span class="sourceLineNo">560</span>     * @param entityType EntityType offset of the statistic<a name="line.560"></a>
+<span class="sourceLineNo">561</span>     * @return the value of the given statistic<a name="line.561"></a>
+<span class="sourceLineNo">562</span>     * @throws IllegalArgumentException if statistic is null<a name="line.562"></a>
+<span class="sourceLineNo">563</span>     * @throws IllegalArgumentException if entityType is null<a name="line.563"></a>
+<span class="sourceLineNo">564</span>     * @throws IllegalArgumentException if the given parameter is not valid<a name="line.564"></a>
+<span class="sourceLineNo">565</span>     *     for the statistic<a name="line.565"></a>
+<span class="sourceLineNo">566</span>     */<a name="line.566"></a>
+<span class="sourceLineNo">567</span>    public int getStatistic(Statistic statistic, EntityType entityType) throws IllegalArgumentException;<a name="line.567"></a>
+<span class="sourceLineNo">568</span><a name="line.568"></a>
+<span class="sourceLineNo">569</span>    /**<a name="line.569"></a>
+<span class="sourceLineNo">570</span>     * Increments the given statistic for this player for the given entity.<a name="line.570"></a>
+<span class="sourceLineNo">571</span>     *<a name="line.571"></a>
+<span class="sourceLineNo">572</span>     * @param statistic Statistic to increment<a name="line.572"></a>
+<span class="sourceLineNo">573</span>     * @param entityType EntityType to offset the statistic with<a name="line.573"></a>
+<span class="sourceLineNo">574</span>     * @param amount Amount to increment this statistic by<a name="line.574"></a>
+<span class="sourceLineNo">575</span>     * @throws IllegalArgumentException if statistic is null<a name="line.575"></a>
+<span class="sourceLineNo">576</span>     * @throws IllegalArgumentException if entityType is null<a name="line.576"></a>
+<span class="sourceLineNo">577</span>     * @throws IllegalArgumentException if amount is negative<a name="line.577"></a>
+<span class="sourceLineNo">578</span>     * @throws IllegalArgumentException if the given parameter is not valid<a name="line.578"></a>
+<span class="sourceLineNo">579</span>     *     for the statistic<a name="line.579"></a>
+<span class="sourceLineNo">580</span>     */<a name="line.580"></a>
+<span class="sourceLineNo">581</span>    public void incrementStatistic(Statistic statistic, EntityType entityType, int amount) throws IllegalArgumentException;<a name="line.581"></a>
+<span class="sourceLineNo">582</span><a name="line.582"></a>
+<span class="sourceLineNo">583</span>    /**<a name="line.583"></a>
+<span class="sourceLineNo">584</span>     * Decrements the given statistic for this player for the given entity.<a name="line.584"></a>
+<span class="sourceLineNo">585</span>     *<a name="line.585"></a>
+<span class="sourceLineNo">586</span>     * @param statistic Statistic to decrement<a name="line.586"></a>
+<span class="sourceLineNo">587</span>     * @param entityType EntityType to offset the statistic with<a name="line.587"></a>
+<span class="sourceLineNo">588</span>     * @param amount Amount to decrement this statistic by<a name="line.588"></a>
+<span class="sourceLineNo">589</span>     * @throws IllegalArgumentException if statistic is null<a name="line.589"></a>
+<span class="sourceLineNo">590</span>     * @throws IllegalArgumentException if entityType is null<a name="line.590"></a>
+<span class="sourceLineNo">591</span>     * @throws IllegalArgumentException if amount is negative<a name="line.591"></a>
+<span class="sourceLineNo">592</span>     * @throws IllegalArgumentException if the given parameter is not valid<a name="line.592"></a>
+<span class="sourceLineNo">593</span>     *     for the statistic<a name="line.593"></a>
+<span class="sourceLineNo">594</span>     */<a name="line.594"></a>
+<span class="sourceLineNo">595</span>    public void decrementStatistic(Statistic statistic, EntityType entityType, int amount);<a name="line.595"></a>
+<span class="sourceLineNo">596</span><a name="line.596"></a>
+<span class="sourceLineNo">597</span>    /**<a name="line.597"></a>
+<span class="sourceLineNo">598</span>     * Sets the given statistic for this player for the given entity.<a name="line.598"></a>
+<span class="sourceLineNo">599</span>     *<a name="line.599"></a>
+<span class="sourceLineNo">600</span>     * @param statistic Statistic to set<a name="line.600"></a>
+<span class="sourceLineNo">601</span>     * @param entityType EntityType to offset the statistic with<a name="line.601"></a>
+<span class="sourceLineNo">602</span>     * @param newValue The value to set this statistic to<a name="line.602"></a>
+<span class="sourceLineNo">603</span>     * @throws IllegalArgumentException if statistic is null<a name="line.603"></a>
+<span class="sourceLineNo">604</span>     * @throws IllegalArgumentException if entityType is null<a name="line.604"></a>
+<span class="sourceLineNo">605</span>     * @throws IllegalArgumentException if newValue is negative<a name="line.605"></a>
+<span class="sourceLineNo">606</span>     * @throws IllegalArgumentException if the given parameter is not valid<a name="line.606"></a>
+<span class="sourceLineNo">607</span>     *     for the statistic<a name="line.607"></a>
+<span class="sourceLineNo">608</span>     */<a name="line.608"></a>
+<span class="sourceLineNo">609</span>    public void setStatistic(Statistic statistic, EntityType entityType, int newValue);<a name="line.609"></a>
+<span class="sourceLineNo">610</span><a name="line.610"></a>
+<span class="sourceLineNo">611</span>    /**<a name="line.611"></a>
+<span class="sourceLineNo">612</span>     * Sets the current time on the player's client. When relative is true the<a name="line.612"></a>
+<span class="sourceLineNo">613</span>     * player's time will be kept synchronized to its world time with the<a name="line.613"></a>
+<span class="sourceLineNo">614</span>     * specified offset.<a name="line.614"></a>
+<span class="sourceLineNo">615</span>     * &lt;p&gt;<a name="line.615"></a>
+<span class="sourceLineNo">616</span>     * When using non relative time the player's time will stay fixed at the<a name="line.616"></a>
+<span class="sourceLineNo">617</span>     * specified time parameter. It's up to the caller to continue updating<a name="line.617"></a>
+<span class="sourceLineNo">618</span>     * the player's time. To restore player time to normal use<a name="line.618"></a>
+<span class="sourceLineNo">619</span>     * resetPlayerTime().<a name="line.619"></a>
+<span class="sourceLineNo">620</span>     *<a name="line.620"></a>
+<span class="sourceLineNo">621</span>     * @param time The current player's perceived time or the player's time<a name="line.621"></a>
+<span class="sourceLineNo">622</span>     *     offset from the server time.<a name="line.622"></a>
+<span class="sourceLineNo">623</span>     * @param relative When true the player time is kept relative to its world<a name="line.623"></a>
+<span class="sourceLineNo">624</span>     *     time.<a name="line.624"></a>
+<span class="sourceLineNo">625</span>     */<a name="line.625"></a>
+<span class="sourceLineNo">626</span>    public void setPlayerTime(long time, boolean relative);<a name="line.626"></a>
+<span class="sourceLineNo">627</span><a name="line.627"></a>
+<span class="sourceLineNo">628</span>    /**<a name="line.628"></a>
+<span class="sourceLineNo">629</span>     * Returns the player's current timestamp.<a name="line.629"></a>
+<span class="sourceLineNo">630</span>     *<a name="line.630"></a>
+<span class="sourceLineNo">631</span>     * @return The player's time<a name="line.631"></a>
+<span class="sourceLineNo">632</span>     */<a name="line.632"></a>
+<span class="sourceLineNo">633</span>    public long getPlayerTime();<a name="line.633"></a>
+<span class="sourceLineNo">634</span><a name="line.634"></a>
+<span class="sourceLineNo">635</span>    /**<a name="line.635"></a>
+<span class="sourceLineNo">636</span>     * Returns the player's current time offset relative to server time, or<a name="line.636"></a>
+<span class="sourceLineNo">637</span>     * the current player's fixed time if the player's time is absolute.<a name="line.637"></a>
+<span class="sourceLineNo">638</span>     *<a name="line.638"></a>
+<span class="sourceLineNo">639</span>     * @return The player's time<a name="line.639"></a>
+<span class="sourceLineNo">640</span>     */<a name="line.640"></a>
+<span class="sourceLineNo">641</span>    public long getPlayerTimeOffset();<a name="line.641"></a>
+<span class="sourceLineNo">642</span><a name="line.642"></a>
+<span class="sourceLineNo">643</span>    /**<a name="line.643"></a>
+<span class="sourceLineNo">644</span>     * Returns true if the player's time is relative to the server time,<a name="line.644"></a>
+<span class="sourceLineNo">645</span>     * otherwise the player's time is absolute and will not change its current<a name="line.645"></a>
+<span class="sourceLineNo">646</span>     * time unless done so with setPlayerTime().<a name="line.646"></a>
+<span class="sourceLineNo">647</span>     *<a name="line.647"></a>
+<span class="sourceLineNo">648</span>     * @return true if the player's time is relative to the server time.<a name="line.648"></a>
+<span class="sourceLineNo">649</span>     */<a name="line.649"></a>
+<span class="sourceLineNo">650</span>    public boolean isPlayerTimeRelative();<a name="line.650"></a>
+<span class="sourceLineNo">651</span><a name="line.651"></a>
+<span class="sourceLineNo">652</span>    /**<a name="line.652"></a>
+<span class="sourceLineNo">653</span>     * Restores the normal condition where the player's time is synchronized<a name="line.653"></a>
+<span class="sourceLineNo">654</span>     * with the server time.<a name="line.654"></a>
+<span class="sourceLineNo">655</span>     * &lt;p&gt;<a name="line.655"></a>
+<span class="sourceLineNo">656</span>     * Equivalent to calling setPlayerTime(0, true).<a name="line.656"></a>
+<span class="sourceLineNo">657</span>     */<a name="line.657"></a>
+<span class="sourceLineNo">658</span>    public void resetPlayerTime();<a name="line.658"></a>
+<span class="sourceLineNo">659</span><a name="line.659"></a>
+<span class="sourceLineNo">660</span>    /**<a name="line.660"></a>
+<span class="sourceLineNo">661</span>     * Sets the type of weather the player will see.  When used, the weather<a name="line.661"></a>
+<span class="sourceLineNo">662</span>     * status of the player is locked until {@link #resetPlayerWeather()} is<a name="line.662"></a>
+<span class="sourceLineNo">663</span>     * used.<a name="line.663"></a>
+<span class="sourceLineNo">664</span>     *<a name="line.664"></a>
+<span class="sourceLineNo">665</span>     * @param type The WeatherType enum type the player should experience<a name="line.665"></a>
+<span class="sourceLineNo">666</span>     */<a name="line.666"></a>
+<span class="sourceLineNo">667</span>    public void setPlayerWeather(WeatherType type);<a name="line.667"></a>
+<span class="sourceLineNo">668</span><a name="line.668"></a>
+<span class="sourceLineNo">669</span>    /**<a name="line.669"></a>
+<span class="sourceLineNo">670</span>     * Returns the type of weather the player is currently experiencing.<a name="line.670"></a>
+<span class="sourceLineNo">671</span>     *<a name="line.671"></a>
+<span class="sourceLineNo">672</span>     * @return The WeatherType that the player is currently experiencing or<a name="line.672"></a>
+<span class="sourceLineNo">673</span>     *     null if player is seeing server weather.<a name="line.673"></a>
+<span class="sourceLineNo">674</span>     */<a name="line.674"></a>
+<span class="sourceLineNo">675</span>    public WeatherType getPlayerWeather();<a name="line.675"></a>
+<span class="sourceLineNo">676</span><a name="line.676"></a>
+<span class="sourceLineNo">677</span>    /**<a name="line.677"></a>
+<span class="sourceLineNo">678</span>     * Restores the normal condition where the player's weather is controlled<a name="line.678"></a>
+<span class="sourceLineNo">679</span>     * by server conditions.<a name="line.679"></a>
+<span class="sourceLineNo">680</span>     */<a name="line.680"></a>
+<span class="sourceLineNo">681</span>    public void resetPlayerWeather();<a name="line.681"></a>
+<span class="sourceLineNo">682</span><a name="line.682"></a>
+<span class="sourceLineNo">683</span>    /**<a name="line.683"></a>
+<span class="sourceLineNo">684</span>     * Gives the player the amount of experience specified.<a name="line.684"></a>
+<span class="sourceLineNo">685</span>     *<a name="line.685"></a>
+<span class="sourceLineNo">686</span>     * @param amount Exp amount to give<a name="line.686"></a>
+<span class="sourceLineNo">687</span>     */<a name="line.687"></a>
+<span class="sourceLineNo">688</span>    public void giveExp(int amount);<a name="line.688"></a>
+<span class="sourceLineNo">689</span><a name="line.689"></a>
+<span class="sourceLineNo">690</span>    /**<a name="line.690"></a>
+<span class="sourceLineNo">691</span>     * Gives the player the amount of experience levels specified. Levels can<a name="line.691"></a>
+<span class="sourceLineNo">692</span>     * be taken by specifying a negative amount.<a name="line.692"></a>
+<span class="sourceLineNo">693</span>     *<a name="line.693"></a>
+<span class="sourceLineNo">694</span>     * @param amount amount of experience levels to give or take<a name="line.694"></a>
+<span class="sourceLineNo">695</span>     */<a name="line.695"></a>
+<span class="sourceLineNo">696</span>    public void giveExpLevels(int amount);<a name="line.696"></a>
+<span class="sourceLineNo">697</span><a name="line.697"></a>
+<span class="sourceLineNo">698</span>    /**<a name="line.698"></a>
+<span class="sourceLineNo">699</span>     * Gets the players current experience points towards the next level.<a name="line.699"></a>
+<span class="sourceLineNo">700</span>     * &lt;p&gt;<a name="line.700"></a>
+<span class="sourceLineNo">701</span>     * This is a percentage value. 0 is "no progress" and 1 is "next level".<a name="line.701"></a>
+<span class="sourceLineNo">702</span>     *<a name="line.702"></a>
+<span class="sourceLineNo">703</span>     * @return Current experience points<a name="line.703"></a>
+<span class="sourceLineNo">704</span>     */<a name="line.704"></a>
+<span class="sourceLineNo">705</span>    public float getExp();<a name="line.705"></a>
+<span class="sourceLineNo">706</span><a name="line.706"></a>
+<span class="sourceLineNo">707</span>    /**<a name="line.707"></a>
+<span class="sourceLineNo">708</span>     * Sets the players current experience points towards the next level<a name="line.708"></a>
+<span class="sourceLineNo">709</span>     * &lt;p&gt;<a name="line.709"></a>
+<span class="sourceLineNo">710</span>     * This is a percentage value. 0 is "no progress" and 1 is "next level".<a name="line.710"></a>
+<span class="sourceLineNo">711</span>     *<a name="line.711"></a>
+<span class="sourceLineNo">712</span>     * @param exp New experience points<a name="line.712"></a>
+<span class="sourceLineNo">713</span>     */<a name="line.713"></a>
+<span class="sourceLineNo">714</span>    public void setExp(float exp);<a name="line.714"></a>
+<span class="sourceLineNo">715</span><a name="line.715"></a>
+<span class="sourceLineNo">716</span>    /**<a name="line.716"></a>
+<span class="sourceLineNo">717</span>     * Gets the players current experience level<a name="line.717"></a>
+<span class="sourceLineNo">718</span>     *<a name="line.718"></a>
+<span class="sourceLineNo">719</span>     * @return Current experience level<a name="line.719"></a>
+<span class="sourceLineNo">720</span>     */<a name="line.720"></a>
+<span class="sourceLineNo">721</span>    public int getLevel();<a name="line.721"></a>
+<span class="sourceLineNo">722</span><a name="line.722"></a>
+<span class="sourceLineNo">723</span>    /**<a name="line.723"></a>
+<span class="sourceLineNo">724</span>     * Sets the players current experience level<a name="line.724"></a>
+<span class="sourceLineNo">725</span>     *<a name="line.725"></a>
+<span class="sourceLineNo">726</span>     * @param level New experience level<a name="line.726"></a>
+<span class="sourceLineNo">727</span>     */<a name="line.727"></a>
+<span class="sourceLineNo">728</span>    public void setLevel(int level);<a name="line.728"></a>
+<span class="sourceLineNo">729</span><a name="line.729"></a>
+<span class="sourceLineNo">730</span>    /**<a name="line.730"></a>
+<span class="sourceLineNo">731</span>     * Gets the players total experience points<a name="line.731"></a>
+<span class="sourceLineNo">732</span>     *<a name="line.732"></a>
+<span class="sourceLineNo">733</span>     * @return Current total experience points<a name="line.733"></a>
+<span class="sourceLineNo">734</span>     */<a name="line.734"></a>
+<span class="sourceLineNo">735</span>    public int getTotalExperience();<a name="line.735"></a>
+<span class="sourceLineNo">736</span><a name="line.736"></a>
+<span class="sourceLineNo">737</span>    /**<a name="line.737"></a>
+<span class="sourceLineNo">738</span>     * Sets the players current experience level<a name="line.738"></a>
+<span class="sourceLineNo">739</span>     *<a name="line.739"></a>
+<span class="sourceLineNo">740</span>     * @param exp New experience level<a name="line.740"></a>
+<span class="sourceLineNo">741</span>     */<a name="line.741"></a>
+<span class="sourceLineNo">742</span>    public void setTotalExperience(int exp);<a name="line.742"></a>
+<span class="sourceLineNo">743</span><a name="line.743"></a>
+<span class="sourceLineNo">744</span>    /**<a name="line.744"></a>
+<span class="sourceLineNo">745</span>     * Gets the players current exhaustion level.<a name="line.745"></a>
+<span class="sourceLineNo">746</span>     * &lt;p&gt;<a name="line.746"></a>
+<span class="sourceLineNo">747</span>     * Exhaustion controls how fast the food level drops. While you have a<a name="line.747"></a>
+<span class="sourceLineNo">748</span>     * certain amount of exhaustion, your saturation will drop to zero, and<a name="line.748"></a>
+<span class="sourceLineNo">749</span>     * then your food will drop to zero.<a name="line.749"></a>
+<span class="sourceLineNo">750</span>     *<a name="line.750"></a>
+<span class="sourceLineNo">751</span>     * @return Exhaustion level<a name="line.751"></a>
+<span class="sourceLineNo">752</span>     */<a name="line.752"></a>
+<span class="sourceLineNo">753</span>    public float getExhaustion();<a name="line.753"></a>
+<span class="sourceLineNo">754</span><a name="line.754"></a>
+<span class="sourceLineNo">755</span>    /**<a name="line.755"></a>
+<span class="sourceLineNo">756</span>     * Sets the players current exhaustion level<a name="line.756"></a>
+<span class="sourceLineNo">757</span>     *<a name="line.757"></a>
+<span class="sourceLineNo">758</span>     * @param value Exhaustion level<a name="line.758"></a>
+<span class="sourceLineNo">759</span>     */<a name="line.759"></a>
+<span class="sourceLineNo">760</span>    public void setExhaustion(float value);<a name="line.760"></a>
+<span class="sourceLineNo">761</span><a name="line.761"></a>
+<span class="sourceLineNo">762</span>    /**<a name="line.762"></a>
+<span class="sourceLineNo">763</span>     * Gets the players current saturation level.<a name="line.763"></a>
+<span class="sourceLineNo">764</span>     * &lt;p&gt;<a name="line.764"></a>
+<span class="sourceLineNo">765</span>     * Saturation is a buffer for food level. Your food level will not drop if<a name="line.765"></a>
+<span class="sourceLineNo">766</span>     * you are saturated &gt; 0.<a name="line.766"></a>
+<span class="sourceLineNo">767</span>     *<a name="line.767"></a>
+<span class="sourceLineNo">768</span>     * @return Saturation level<a name="line.768"></a>
+<span class="sourceLineNo">769</span>     */<a name="line.769"></a>
+<span class="sourceLineNo">770</span>    public float getSaturation();<a name="line.770"></a>
+<span class="sourceLineNo">771</span><a name="line.771"></a>
+<span class="sourceLineNo">772</span>    /**<a name="line.772"></a>
+<span class="sourceLineNo">773</span>     * Sets the players current saturation level<a name="line.773"></a>
+<span class="sourceLineNo">774</span>     *<a name="line.774"></a>
+<span class="sourceLineNo">775</span>     * @param value Saturation level<a name="line.775"></a>
+<span class="sourceLineNo">776</span>     */<a name="line.776"></a>
+<span class="sourceLineNo">777</span>    public void setSaturation(float value);<a name="line.777"></a>
+<span class="sourceLineNo">778</span><a name="line.778"></a>
+<span class="sourceLineNo">779</span>    /**<a name="line.779"></a>
+<span class="sourceLineNo">780</span>     * Gets the players current food level<a name="line.780"></a>
+<span class="sourceLineNo">781</span>     *<a name="line.781"></a>
+<span class="sourceLineNo">782</span>     * @return Food level<a name="line.782"></a>
+<span class="sourceLineNo">783</span>     */<a name="line.783"></a>
+<span class="sourceLineNo">784</span>    public int getFoodLevel();<a name="line.784"></a>
+<span class="sourceLineNo">785</span><a name="line.785"></a>
+<span class="sourceLineNo">786</span>    /**<a name="line.786"></a>
+<span class="sourceLineNo">787</span>     * Sets the players current food level<a name="line.787"></a>
+<span class="sourceLineNo">788</span>     *<a name="line.788"></a>
+<span class="sourceLineNo">789</span>     * @param value New food level<a name="line.789"></a>
+<span class="sourceLineNo">790</span>     */<a name="line.790"></a>
+<span class="sourceLineNo">791</span>    public void setFoodLevel(int value);<a name="line.791"></a>
+<span class="sourceLineNo">792</span><a name="line.792"></a>
+<span class="sourceLineNo">793</span>    /**<a name="line.793"></a>
+<span class="sourceLineNo">794</span>     * Gets the Location where the player will spawn at their bed, null if<a name="line.794"></a>
+<span class="sourceLineNo">795</span>     * they have not slept in one or their current bed spawn is invalid.<a name="line.795"></a>
+<span class="sourceLineNo">796</span>     *<a name="line.796"></a>
+<span class="sourceLineNo">797</span>     * @return Bed Spawn Location if bed exists, otherwise null.<a name="line.797"></a>
+<span class="sourceLineNo">798</span>     */<a name="line.798"></a>
+<span class="sourceLineNo">799</span>    public Location getBedSpawnLocation();<a name="line.799"></a>
+<span class="sourceLineNo">800</span><a name="line.800"></a>
+<span class="sourceLineNo">801</span>    /**<a name="line.801"></a>
+<span class="sourceLineNo">802</span>     * Sets the Location where the player will spawn at their bed.<a name="line.802"></a>
+<span class="sourceLineNo">803</span>     *<a name="line.803"></a>
+<span class="sourceLineNo">804</span>     * @param location where to set the respawn location<a name="line.804"></a>
+<span class="sourceLineNo">805</span>     */<a name="line.805"></a>
+<span class="sourceLineNo">806</span>    public void setBedSpawnLocation(Location location);<a name="line.806"></a>
+<span class="sourceLineNo">807</span><a name="line.807"></a>
+<span class="sourceLineNo">808</span>    /**<a name="line.808"></a>
+<span class="sourceLineNo">809</span>     * Sets the Location where the player will spawn at their bed.<a name="line.809"></a>
+<span class="sourceLineNo">810</span>     *<a name="line.810"></a>
+<span class="sourceLineNo">811</span>     * @param location where to set the respawn location<a name="line.811"></a>
+<span class="sourceLineNo">812</span>     * @param force whether to forcefully set the respawn location even if a<a name="line.812"></a>
+<span class="sourceLineNo">813</span>     *     valid bed is not present<a name="line.813"></a>
+<span class="sourceLineNo">814</span>     */<a name="line.814"></a>
+<span class="sourceLineNo">815</span>    public void setBedSpawnLocation(Location location, boolean force);<a name="line.815"></a>
+<span class="sourceLineNo">816</span><a name="line.816"></a>
+<span class="sourceLineNo">817</span>    /**<a name="line.817"></a>
+<span class="sourceLineNo">818</span>     * Determines if the Player is allowed to fly via jump key double-tap like<a name="line.818"></a>
+<span class="sourceLineNo">819</span>     * in creative mode.<a name="line.819"></a>
+<span class="sourceLineNo">820</span>     *<a name="line.820"></a>
+<span class="sourceLineNo">821</span>     * @return True if the player is allowed to fly.<a name="line.821"></a>
+<span class="sourceLineNo">822</span>     */<a name="line.822"></a>
+<span class="sourceLineNo">823</span>    public boolean getAllowFlight();<a name="line.823"></a>
+<span class="sourceLineNo">824</span><a name="line.824"></a>
+<span class="sourceLineNo">825</span>    /**<a name="line.825"></a>
+<span class="sourceLineNo">826</span>     * Sets if the Player is allowed to fly via jump key double-tap like in<a name="line.826"></a>
+<span class="sourceLineNo">827</span>     * creative mode.<a name="line.827"></a>
+<span class="sourceLineNo">828</span>     *<a name="line.828"></a>
+<span class="sourceLineNo">829</span>     * @param flight If flight should be allowed.<a name="line.829"></a>
+<span class="sourceLineNo">830</span>     */<a name="line.830"></a>
+<span class="sourceLineNo">831</span>    public void setAllowFlight(boolean flight);<a name="line.831"></a>
+<span class="sourceLineNo">832</span><a name="line.832"></a>
+<span class="sourceLineNo">833</span>    /**<a name="line.833"></a>
+<span class="sourceLineNo">834</span>     * Hides a player from this player<a name="line.834"></a>
+<span class="sourceLineNo">835</span>     *<a name="line.835"></a>
+<span class="sourceLineNo">836</span>     * @param player Player to hide<a name="line.836"></a>
+<span class="sourceLineNo">837</span>     */<a name="line.837"></a>
+<span class="sourceLineNo">838</span>    public void hidePlayer(Player player);<a name="line.838"></a>
+<span class="sourceLineNo">839</span><a name="line.839"></a>
+<span class="sourceLineNo">840</span>    /**<a name="line.840"></a>
+<span class="sourceLineNo">841</span>     * Allows this player to see a player that was previously hidden<a name="line.841"></a>
+<span class="sourceLineNo">842</span>     *<a name="line.842"></a>
+<span class="sourceLineNo">843</span>     * @param player Player to show<a name="line.843"></a>
+<span class="sourceLineNo">844</span>     */<a name="line.844"></a>
+<span class="sourceLineNo">845</span>    public void showPlayer(Player player);<a name="line.845"></a>
+<span class="sourceLineNo">846</span><a name="line.846"></a>
+<span class="sourceLineNo">847</span>    /**<a name="line.847"></a>
+<span class="sourceLineNo">848</span>     * Checks to see if a player has been hidden from this player<a name="line.848"></a>
+<span class="sourceLineNo">849</span>     *<a name="line.849"></a>
+<span class="sourceLineNo">850</span>     * @param player Player to check<a name="line.850"></a>
+<span class="sourceLineNo">851</span>     * @return True if the provided player is not being hidden from this<a name="line.851"></a>
+<span class="sourceLineNo">852</span>     *     player<a name="line.852"></a>
+<span class="sourceLineNo">853</span>     */<a name="line.853"></a>
+<span class="sourceLineNo">854</span>    public boolean canSee(Player player);<a name="line.854"></a>
+<span class="sourceLineNo">855</span><a name="line.855"></a>
+<span class="sourceLineNo">856</span>    /**<a name="line.856"></a>
+<span class="sourceLineNo">857</span>     * Checks to see if this player is currently standing on a block. This<a name="line.857"></a>
+<span class="sourceLineNo">858</span>     * information may not be reliable, as it is a state provided by the<a name="line.858"></a>
+<span class="sourceLineNo">859</span>     * client, and may therefore not be accurate.<a name="line.859"></a>
+<span class="sourceLineNo">860</span>     *<a name="line.860"></a>
+<span class="sourceLineNo">861</span>     * @return True if the player standing on a solid block, else false.<a name="line.861"></a>
+<span class="sourceLineNo">862</span>     * @deprecated Inconsistent with {@link<a name="line.862"></a>
+<span class="sourceLineNo">863</span>     *     org.bukkit.entity.Entity#isOnGround()}<a name="line.863"></a>
+<span class="sourceLineNo">864</span>     */<a name="line.864"></a>
+<span class="sourceLineNo">865</span>    @Deprecated<a name="line.865"></a>
+<span class="sourceLineNo">866</span>    public boolean isOnGround();<a name="line.866"></a>
+<span class="sourceLineNo">867</span><a name="line.867"></a>
+<span class="sourceLineNo">868</span>    /**<a name="line.868"></a>
+<span class="sourceLineNo">869</span>     * Checks to see if this player is currently flying or not.<a name="line.869"></a>
+<span class="sourceLineNo">870</span>     *<a name="line.870"></a>
+<span class="sourceLineNo">871</span>     * @return True if the player is flying, else false.<a name="line.871"></a>
+<span class="sourceLineNo">872</span>     */<a name="line.872"></a>
+<span class="sourceLineNo">873</span>    public boolean isFlying();<a name="line.873"></a>
+<span class="sourceLineNo">874</span><a name="line.874"></a>
+<span class="sourceLineNo">875</span>    /**<a name="line.875"></a>
+<span class="sourceLineNo">876</span>     * Makes this player start or stop flying.<a name="line.876"></a>
+<span class="sourceLineNo">877</span>     *<a name="line.877"></a>
+<span class="sourceLineNo">878</span>     * @param value True to fly.<a name="line.878"></a>
+<span class="sourceLineNo">879</span>     */<a name="line.879"></a>
+<span class="sourceLineNo">880</span>    public void setFlying(boolean value);<a name="line.880"></a>
+<span class="sourceLineNo">881</span><a name="line.881"></a>
+<span class="sourceLineNo">882</span>    /**<a name="line.882"></a>
+<span class="sourceLineNo">883</span>     * Sets the speed at which a client will fly. Negative values indicate<a name="line.883"></a>
+<span class="sourceLineNo">884</span>     * reverse directions.<a name="line.884"></a>
+<span class="sourceLineNo">885</span>     *<a name="line.885"></a>
+<span class="sourceLineNo">886</span>     * @param value The new speed, from -1 to 1.<a name="line.886"></a>
+<span class="sourceLineNo">887</span>     * @throws IllegalArgumentException If new speed is less than -1 or<a name="line.887"></a>
+<span class="sourceLineNo">888</span>     *     greater than 1<a name="line.888"></a>
+<span class="sourceLineNo">889</span>     */<a name="line.889"></a>
+<span class="sourceLineNo">890</span>    public void setFlySpeed(float value) throws IllegalArgumentException;<a name="line.890"></a>
+<span class="sourceLineNo">891</span><a name="line.891"></a>
+<span class="sourceLineNo">892</span>    /**<a name="line.892"></a>
+<span class="sourceLineNo">893</span>     * Sets the speed at which a client will walk. Negative values indicate<a name="line.893"></a>
+<span class="sourceLineNo">894</span>     * reverse directions.<a name="line.894"></a>
+<span class="sourceLineNo">895</span>     *<a name="line.895"></a>
+<span class="sourceLineNo">896</span>     * @param value The new speed, from -1 to 1.<a name="line.896"></a>
+<span class="sourceLineNo">897</span>     * @throws IllegalArgumentException If new speed is less than -1 or<a name="line.897"></a>
+<span class="sourceLineNo">898</span>     *     greater than 1<a name="line.898"></a>
+<span class="sourceLineNo">899</span>     */<a name="line.899"></a>
+<span class="sourceLineNo">900</span>    public void setWalkSpeed(float value) throws IllegalArgumentException;<a name="line.900"></a>
+<span class="sourceLineNo">901</span><a name="line.901"></a>
+<span class="sourceLineNo">902</span>    /**<a name="line.902"></a>
+<span class="sourceLineNo">903</span>     * Gets the current allowed speed that a client can fly.<a name="line.903"></a>
+<span class="sourceLineNo">904</span>     *<a name="line.904"></a>
+<span class="sourceLineNo">905</span>     * @return The current allowed speed, from -1 to 1<a name="line.905"></a>
+<span class="sourceLineNo">906</span>     */<a name="line.906"></a>
+<span class="sourceLineNo">907</span>    public float getFlySpeed();<a name="line.907"></a>
+<span class="sourceLineNo">908</span><a name="line.908"></a>
+<span class="sourceLineNo">909</span>    /**<a name="line.909"></a>
+<span class="sourceLineNo">910</span>     * Gets the current allowed speed that a client can walk.<a name="line.910"></a>
+<span class="sourceLineNo">911</span>     *<a name="line.911"></a>
+<span class="sourceLineNo">912</span>     * @return The current allowed speed, from -1 to 1<a name="line.912"></a>
+<span class="sourceLineNo">913</span>     */<a name="line.913"></a>
+<span class="sourceLineNo">914</span>    public float getWalkSpeed();<a name="line.914"></a>
+<span class="sourceLineNo">915</span><a name="line.915"></a>
+<span class="sourceLineNo">916</span>    /**<a name="line.916"></a>
+<span class="sourceLineNo">917</span>     * Request that the player's client download and switch texture packs.<a name="line.917"></a>
+<span class="sourceLineNo">918</span>     * &lt;p&gt;<a name="line.918"></a>
+<span class="sourceLineNo">919</span>     * The player's client will download the new texture pack asynchronously<a name="line.919"></a>
+<span class="sourceLineNo">920</span>     * in the background, and will automatically switch to it once the<a name="line.920"></a>
+<span class="sourceLineNo">921</span>     * download is complete. If the client has downloaded and cached the same<a name="line.921"></a>
+<span class="sourceLineNo">922</span>     * texture pack in the past, it will perform a quick timestamp check over<a name="line.922"></a>
+<span class="sourceLineNo">923</span>     * the network to determine if the texture pack has changed and needs to<a name="line.923"></a>
+<span class="sourceLineNo">924</span>     * be downloaded again. When this request is sent for the very first time<a name="line.924"></a>
+<span class="sourceLineNo">925</span>     * from a given server, the client will first display a confirmation GUI<a name="line.925"></a>
+<span class="sourceLineNo">926</span>     * to the player before proceeding with the download.<a name="line.926"></a>
+<span class="sourceLineNo">927</span>     * &lt;p&gt;<a name="line.927"></a>
+<span class="sourceLineNo">928</span>     * Notes:<a name="line.928"></a>
+<span class="sourceLineNo">929</span>     * &lt;ul&gt;<a name="line.929"></a>
+<span class="sourceLineNo">930</span>     * &lt;li&gt;Players can disable server textures on their client, in which<a name="line.930"></a>
+<span class="sourceLineNo">931</span>     *     case this method will have no affect on them.<a name="line.931"></a>
+<span class="sourceLineNo">932</span>     * &lt;li&gt;There is no concept of resetting texture packs back to default<a name="line.932"></a>
+<span class="sourceLineNo">933</span>     *     within Minecraft, so players will have to relog to do so.<a name="line.933"></a>
+<span class="sourceLineNo">934</span>     * &lt;/ul&gt;<a name="line.934"></a>
+<span class="sourceLineNo">935</span>     *<a name="line.935"></a>
+<span class="sourceLineNo">936</span>     * @param url The URL from which the client will download the texture<a name="line.936"></a>
+<span class="sourceLineNo">937</span>     *     pack. The string must contain only US-ASCII characters and should<a name="line.937"></a>
+<span class="sourceLineNo">938</span>     *     be encoded as per RFC 1738.<a name="line.938"></a>
+<span class="sourceLineNo">939</span>     * @throws IllegalArgumentException Thrown if the URL is null.<a name="line.939"></a>
+<span class="sourceLineNo">940</span>     * @throws IllegalArgumentException Thrown if the URL is too long.<a name="line.940"></a>
+<span class="sourceLineNo">941</span>     * @deprecated Minecraft no longer uses textures packs. Instead you<a name="line.941"></a>
+<span class="sourceLineNo">942</span>     *     should use {@link #setResourcePack(String)}.<a name="line.942"></a>
+<span class="sourceLineNo">943</span>     */<a name="line.943"></a>
+<span class="sourceLineNo">944</span>    @Deprecated<a name="line.944"></a>
+<span class="sourceLineNo">945</span>    public void setTexturePack(String url);<a name="line.945"></a>
+<span class="sourceLineNo">946</span><a name="line.946"></a>
+<span class="sourceLineNo">947</span>    /**<a name="line.947"></a>
+<span class="sourceLineNo">948</span>     * Request that the player's client download and switch resource packs.<a name="line.948"></a>
+<span class="sourceLineNo">949</span>     * &lt;p&gt;<a name="line.949"></a>
+<span class="sourceLineNo">950</span>     * The player's client will download the new resource pack asynchronously<a name="line.950"></a>
+<span class="sourceLineNo">951</span>     * in the background, and will automatically switch to it once the<a name="line.951"></a>
+<span class="sourceLineNo">952</span>     * download is complete. If the client has downloaded and cached the same<a name="line.952"></a>
+<span class="sourceLineNo">953</span>     * resource pack in the past, it will perform a quick timestamp check<a name="line.953"></a>
+<span class="sourceLineNo">954</span>     * over the network to determine if the resource pack has changed and<a name="line.954"></a>
+<span class="sourceLineNo">955</span>     * needs to be downloaded again. When this request is sent for the very<a name="line.955"></a>
+<span class="sourceLineNo">956</span>     * first time from a given server, the client will first display a<a name="line.956"></a>
+<span class="sourceLineNo">957</span>     * confirmation GUI to the player before proceeding with the download.<a name="line.957"></a>
+<span class="sourceLineNo">958</span>     * &lt;p&gt;<a name="line.958"></a>
+<span class="sourceLineNo">959</span>     * Notes:<a name="line.959"></a>
+<span class="sourceLineNo">960</span>     * &lt;ul&gt;<a name="line.960"></a>
+<span class="sourceLineNo">961</span>     * &lt;li&gt;Players can disable server resources on their client, in which<a name="line.961"></a>
+<span class="sourceLineNo">962</span>     *     case this method will have no affect on them.<a name="line.962"></a>
+<span class="sourceLineNo">963</span>     * &lt;li&gt;There is no concept of resetting resource packs back to default<a name="line.963"></a>
+<span class="sourceLineNo">964</span>     *     within Minecraft, so players will have to relog to do so.<a name="line.964"></a>
+<span class="sourceLineNo">965</span>     * &lt;/ul&gt;<a name="line.965"></a>
+<span class="sourceLineNo">966</span>     *<a name="line.966"></a>
+<span class="sourceLineNo">967</span>     * @param url The URL from which the client will download the resource<a name="line.967"></a>
+<span class="sourceLineNo">968</span>     *     pack. The string must contain only US-ASCII characters and should<a name="line.968"></a>
+<span class="sourceLineNo">969</span>     *     be encoded as per RFC 1738.<a name="line.969"></a>
+<span class="sourceLineNo">970</span>     * @throws IllegalArgumentException Thrown if the URL is null.<a name="line.970"></a>
+<span class="sourceLineNo">971</span>     * @throws IllegalArgumentException Thrown if the URL is too long. The<a name="line.971"></a>
+<span class="sourceLineNo">972</span>     *     length restriction is an implementation specific arbitrary value.<a name="line.972"></a>
+<span class="sourceLineNo">973</span>     */<a name="line.973"></a>
+<span class="sourceLineNo">974</span>    public void setResourcePack(String url);<a name="line.974"></a>
+<span class="sourceLineNo">975</span><a name="line.975"></a>
+<span class="sourceLineNo">976</span>    /**<a name="line.976"></a>
+<span class="sourceLineNo">977</span>     * Gets the Scoreboard displayed to this player<a name="line.977"></a>
+<span class="sourceLineNo">978</span>     *<a name="line.978"></a>
+<span class="sourceLineNo">979</span>     * @return The current scoreboard seen by this player<a name="line.979"></a>
+<span class="sourceLineNo">980</span>     */<a name="line.980"></a>
+<span class="sourceLineNo">981</span>    public Scoreboard getScoreboard();<a name="line.981"></a>
+<span class="sourceLineNo">982</span><a name="line.982"></a>
+<span class="sourceLineNo">983</span>    /**<a name="line.983"></a>
+<span class="sourceLineNo">984</span>     * Sets the player's visible Scoreboard.<a name="line.984"></a>
+<span class="sourceLineNo">985</span>     *<a name="line.985"></a>
+<span class="sourceLineNo">986</span>     * @param scoreboard New Scoreboard for the player<a name="line.986"></a>
+<span class="sourceLineNo">987</span>     * @throws IllegalArgumentException if scoreboard is null<a name="line.987"></a>
+<span class="sourceLineNo">988</span>     * @throws IllegalArgumentException if scoreboard was not created by the<a name="line.988"></a>
+<span class="sourceLineNo">989</span>     *     {@link org.bukkit.scoreboard.ScoreboardManager scoreboard manager}<a name="line.989"></a>
+<span class="sourceLineNo">990</span>     * @throws IllegalStateException if this is a player that is not logged<a name="line.990"></a>
+<span class="sourceLineNo">991</span>     *     yet or has logged out<a name="line.991"></a>
+<span class="sourceLineNo">992</span>     */<a name="line.992"></a>
+<span class="sourceLineNo">993</span>    public void setScoreboard(Scoreboard scoreboard) throws IllegalArgumentException, IllegalStateException;<a name="line.993"></a>
+<span class="sourceLineNo">994</span><a name="line.994"></a>
+<span class="sourceLineNo">995</span>    /**<a name="line.995"></a>
+<span class="sourceLineNo">996</span>     * Gets if the client is displayed a 'scaled' health, that is, health on a<a name="line.996"></a>
+<span class="sourceLineNo">997</span>     * scale from 0-{@link #getHealthScale()}.<a name="line.997"></a>
+<span class="sourceLineNo">998</span>     *<a name="line.998"></a>
+<span class="sourceLineNo">999</span>     * @return if client health display is scaled<a name="line.999"></a>
+<span class="sourceLineNo">1000</span>     * @see Player#setHealthScaled(boolean)<a name="line.1000"></a>
+<span class="sourceLineNo">1001</span>     */<a name="line.1001"></a>
+<span class="sourceLineNo">1002</span>    public boolean isHealthScaled();<a name="line.1002"></a>
+<span class="sourceLineNo">1003</span><a name="line.1003"></a>
+<span class="sourceLineNo">1004</span>    /**<a name="line.1004"></a>
+<span class="sourceLineNo">1005</span>     * Sets if the client is displayed a 'scaled' health, that is, health on a<a name="line.1005"></a>
+<span class="sourceLineNo">1006</span>     * scale from 0-{@link #getHealthScale()}.<a name="line.1006"></a>
+<span class="sourceLineNo">1007</span>     * &lt;p&gt;<a name="line.1007"></a>
+<span class="sourceLineNo">1008</span>     * Displayed health follows a simple formula &lt;code&gt;displayedHealth =<a name="line.1008"></a>
+<span class="sourceLineNo">1009</span>     * getHealth() / getMaxHealth() * getHealthScale()&lt;/code&gt;.<a name="line.1009"></a>
+<span class="sourceLineNo">1010</span>     *<a name="line.1010"></a>
+<span class="sourceLineNo">1011</span>     * @param scale if the client health display is scaled<a name="line.1011"></a>
+<span class="sourceLineNo">1012</span>     */<a name="line.1012"></a>
+<span class="sourceLineNo">1013</span>    public void setHealthScaled(boolean scale);<a name="line.1013"></a>
+<span class="sourceLineNo">1014</span><a name="line.1014"></a>
+<span class="sourceLineNo">1015</span>    /**<a name="line.1015"></a>
+<span class="sourceLineNo">1016</span>     * Sets the number to scale health to for the client; this will also<a name="line.1016"></a>
+<span class="sourceLineNo">1017</span>     * {@link #setHealthScaled(boolean) setHealthScaled(true)}.<a name="line.1017"></a>
+<span class="sourceLineNo">1018</span>     * &lt;p&gt;<a name="line.1018"></a>
+<span class="sourceLineNo">1019</span>     * Displayed health follows a simple formula &lt;code&gt;displayedHealth =<a name="line.1019"></a>
+<span class="sourceLineNo">1020</span>     * getHealth() / getMaxHealth() * getHealthScale()&lt;/code&gt;.<a name="line.1020"></a>
+<span class="sourceLineNo">1021</span>     *<a name="line.1021"></a>
+<span class="sourceLineNo">1022</span>     * @param scale the number to scale health to<a name="line.1022"></a>
+<span class="sourceLineNo">1023</span>     * @throws IllegalArgumentException if scale is &amp;lt;0<a name="line.1023"></a>
+<span class="sourceLineNo">1024</span>     * @throws IllegalArgumentException if scale is {@link Double#NaN}<a name="line.1024"></a>
+<span class="sourceLineNo">1025</span>     * @throws IllegalArgumentException if scale is too high<a name="line.1025"></a>
+<span class="sourceLineNo">1026</span>     */<a name="line.1026"></a>
+<span class="sourceLineNo">1027</span>    public void setHealthScale(double scale) throws IllegalArgumentException;<a name="line.1027"></a>
+<span class="sourceLineNo">1028</span><a name="line.1028"></a>
+<span class="sourceLineNo">1029</span>    /**<a name="line.1029"></a>
+<span class="sourceLineNo">1030</span>     * Gets the number that health is scaled to for the client.<a name="line.1030"></a>
+<span class="sourceLineNo">1031</span>     *<a name="line.1031"></a>
+<span class="sourceLineNo">1032</span>     * @return the number that health would be scaled to for the client if<a name="line.1032"></a>
+<span class="sourceLineNo">1033</span>     *     HealthScaling is set to true<a name="line.1033"></a>
+<span class="sourceLineNo">1034</span>     * @see Player#setHealthScale(double)<a name="line.1034"></a>
+<span class="sourceLineNo">1035</span>     * @see Player#setHealthScaled(boolean)<a name="line.1035"></a>
+<span class="sourceLineNo">1036</span>     */<a name="line.1036"></a>
+<span class="sourceLineNo">1037</span>    public double getHealthScale();<a name="line.1037"></a>
+<span class="sourceLineNo">1038</span>}<a name="line.1038"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

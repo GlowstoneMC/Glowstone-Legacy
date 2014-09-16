@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package org.bukkit.command.defaults;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import java.io.File;<a name="line.3"></a>
+<span class="sourceLineNo">004</span>import java.io.IOException;<a name="line.4"></a>
+<span class="sourceLineNo">005</span>import java.io.PrintStream;<a name="line.5"></a>
+<span class="sourceLineNo">006</span>import java.util.ArrayList;<a name="line.6"></a>
+<span class="sourceLineNo">007</span>import java.util.List;<a name="line.7"></a>
+<span class="sourceLineNo">008</span><a name="line.8"></a>
+<span class="sourceLineNo">009</span>import org.apache.commons.lang.Validate;<a name="line.9"></a>
+<span class="sourceLineNo">010</span>import org.bukkit.Bukkit;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import org.bukkit.ChatColor;<a name="line.11"></a>
+<span class="sourceLineNo">012</span>import org.bukkit.command.CommandSender;<a name="line.12"></a>
+<span class="sourceLineNo">013</span>import org.bukkit.event.Event;<a name="line.13"></a>
+<span class="sourceLineNo">014</span>import org.bukkit.event.HandlerList;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>import org.bukkit.plugin.Plugin;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import org.bukkit.plugin.RegisteredListener;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import org.bukkit.plugin.TimedRegisteredListener;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import org.bukkit.util.StringUtil;<a name="line.18"></a>
+<span class="sourceLineNo">019</span><a name="line.19"></a>
+<span class="sourceLineNo">020</span>import com.google.common.collect.ImmutableList;<a name="line.20"></a>
+<span class="sourceLineNo">021</span><a name="line.21"></a>
+<span class="sourceLineNo">022</span>public class TimingsCommand extends BukkitCommand {<a name="line.22"></a>
+<span class="sourceLineNo">023</span>    private static final List&lt;String&gt; TIMINGS_SUBCOMMANDS = ImmutableList.of("merged", "reset", "separate");<a name="line.23"></a>
+<span class="sourceLineNo">024</span><a name="line.24"></a>
+<span class="sourceLineNo">025</span>    public TimingsCommand(String name) {<a name="line.25"></a>
+<span class="sourceLineNo">026</span>        super(name);<a name="line.26"></a>
+<span class="sourceLineNo">027</span>        this.description = "Records timings for all plugin events";<a name="line.27"></a>
+<span class="sourceLineNo">028</span>        this.usageMessage = "/timings &lt;reset|merged|separate&gt;";<a name="line.28"></a>
+<span class="sourceLineNo">029</span>        this.setPermission("bukkit.command.timings");<a name="line.29"></a>
+<span class="sourceLineNo">030</span>    }<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>    @Override<a name="line.32"></a>
+<span class="sourceLineNo">033</span>    public boolean execute(CommandSender sender, String currentAlias, String[] args) {<a name="line.33"></a>
+<span class="sourceLineNo">034</span>        if (!testPermission(sender)) return true;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        if (args.length != 1)  {<a name="line.35"></a>
+<span class="sourceLineNo">036</span>            sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);<a name="line.36"></a>
+<span class="sourceLineNo">037</span>            return false;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        }<a name="line.38"></a>
+<span class="sourceLineNo">039</span>        if (!sender.getServer().getPluginManager().useTimings()) {<a name="line.39"></a>
+<span class="sourceLineNo">040</span>            sender.sendMessage("Please enable timings by setting \"settings.plugin-profiling\" to true in bukkit.yml");<a name="line.40"></a>
+<span class="sourceLineNo">041</span>            return true;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>        }<a name="line.42"></a>
+<span class="sourceLineNo">043</span><a name="line.43"></a>
+<span class="sourceLineNo">044</span>        boolean separate = "separate".equals(args[0]);<a name="line.44"></a>
+<span class="sourceLineNo">045</span>        if ("reset".equals(args[0])) {<a name="line.45"></a>
+<span class="sourceLineNo">046</span>            for (HandlerList handlerList : HandlerList.getHandlerLists()) {<a name="line.46"></a>
+<span class="sourceLineNo">047</span>                for (RegisteredListener listener : handlerList.getRegisteredListeners()) {<a name="line.47"></a>
+<span class="sourceLineNo">048</span>                    if (listener instanceof TimedRegisteredListener) {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                        ((TimedRegisteredListener)listener).reset();<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                    }<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                }<a name="line.51"></a>
+<span class="sourceLineNo">052</span>            }<a name="line.52"></a>
+<span class="sourceLineNo">053</span>            sender.sendMessage("Timings reset");<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        } else if ("merged".equals(args[0]) || separate) {<a name="line.54"></a>
+<span class="sourceLineNo">055</span><a name="line.55"></a>
+<span class="sourceLineNo">056</span>            int index = 0;<a name="line.56"></a>
+<span class="sourceLineNo">057</span>            int pluginIdx = 0;<a name="line.57"></a>
+<span class="sourceLineNo">058</span>            File timingFolder = new File("timings");<a name="line.58"></a>
+<span class="sourceLineNo">059</span>            timingFolder.mkdirs();<a name="line.59"></a>
+<span class="sourceLineNo">060</span>            File timings = new File(timingFolder, "timings.txt");<a name="line.60"></a>
+<span class="sourceLineNo">061</span>            File names = null;<a name="line.61"></a>
+<span class="sourceLineNo">062</span>            while (timings.exists()) timings = new File(timingFolder, "timings" + (++index) + ".txt");<a name="line.62"></a>
+<span class="sourceLineNo">063</span>            PrintStream fileTimings = null;<a name="line.63"></a>
+<span class="sourceLineNo">064</span>            PrintStream fileNames = null;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>            try {<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                fileTimings = new PrintStream(timings);<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                if (separate) {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                    names = new File(timingFolder, "names" + index + ".txt");<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                    fileNames = new PrintStream(names);<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                }<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                    pluginIdx++;<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                    long totalTime = 0;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                    if (separate) {<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        fileNames.println(pluginIdx + " " + plugin.getDescription().getFullName());<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                        fileTimings.println("Plugin " + pluginIdx);<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                    }<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                    else fileTimings.println(plugin.getDescription().getFullName());<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                    for (RegisteredListener listener : HandlerList.getRegisteredListeners(plugin)) {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                        if (listener instanceof TimedRegisteredListener) {<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                            TimedRegisteredListener trl = (TimedRegisteredListener) listener;<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                            long time = trl.getTotalTime();<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                            int count = trl.getCount();<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                            if (count == 0) continue;<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                            long avg = time / count;<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                            totalTime += time;<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                            Class&lt;? extends Event&gt; eventClass = trl.getEventClass();<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                            if (count &gt; 0 &amp;&amp; eventClass != null) {<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                                fileTimings.println("    " + eventClass.getSimpleName() + (trl.hasMultiple() ? " (and sub-classes)" : "") + " Time: " + time + " Count: " + count + " Avg: " + avg);<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                            }<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                        }<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                    }<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                    fileTimings.println("    Total time " + totalTime + " (" + totalTime / 1000000000 + "s)");<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                }<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                sender.sendMessage("Timings written to " + timings.getPath());<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                if (separate) sender.sendMessage("Names written to " + names.getPath());<a name="line.96"></a>
+<span class="sourceLineNo">097</span>            } catch (IOException e) {<a name="line.97"></a>
+<span class="sourceLineNo">098</span>            } finally {<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                if (fileTimings != null) {<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                    fileTimings.close();<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                }<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                if (fileNames != null) {<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                    fileNames.close();<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                }<a name="line.104"></a>
+<span class="sourceLineNo">105</span>            }<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        }<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        return true;<a name="line.107"></a>
+<span class="sourceLineNo">108</span>    }<a name="line.108"></a>
+<span class="sourceLineNo">109</span><a name="line.109"></a>
+<span class="sourceLineNo">110</span>    @Override<a name="line.110"></a>
+<span class="sourceLineNo">111</span>    public List&lt;String&gt; tabComplete(CommandSender sender, String alias, String[] args) {<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        Validate.notNull(sender, "Sender cannot be null");<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        Validate.notNull(args, "Arguments cannot be null");<a name="line.113"></a>
+<span class="sourceLineNo">114</span>        Validate.notNull(alias, "Alias cannot be null");<a name="line.114"></a>
+<span class="sourceLineNo">115</span><a name="line.115"></a>
+<span class="sourceLineNo">116</span>        if (args.length == 1) {<a name="line.116"></a>
+<span class="sourceLineNo">117</span>            return StringUtil.copyPartialMatches(args[0], TIMINGS_SUBCOMMANDS, new ArrayList&lt;String&gt;(TIMINGS_SUBCOMMANDS.size()));<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        }<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        return ImmutableList.of();<a name="line.119"></a>
+<span class="sourceLineNo">120</span>    }<a name="line.120"></a>
+<span class="sourceLineNo">121</span>}<a name="line.121"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>
