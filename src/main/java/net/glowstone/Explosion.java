@@ -10,6 +10,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -74,7 +75,7 @@ public class Explosion {
         if (!breakBlocks || power < 0.1F)
             return new ArrayList<>();
 
-        Set<WorldlessLocation> blocks = new HashSet<>(); //No duplicate blocks
+        Set<BlockVector> blocks = new HashSet<>(); //No duplicate blocks
 
         final int value = 8;
 
@@ -92,7 +93,7 @@ public class Explosion {
         return toBlockList(blocks);
     }
 
-    public void calculateRay(int x, int y, int z, Collection<WorldlessLocation> result) {
+    public void calculateRay(int x, int y, int z, Collection<BlockVector> result) {
         Vector direction = new Vector(x, y, z);
         direction.normalize();
         direction.multiply(0.3f); //0.3 blocks away with each step
@@ -111,7 +112,7 @@ public class Explosion {
                 sub *= 0.3F;
                 currentPower -= sub;
 
-                result.add(new WorldlessLocation(block.getX(), block.getY(), block.getZ()));
+                result.add(new BlockVector(block.getX(), block.getY(), block.getZ()));
             }
 
             current.add(direction);
@@ -148,10 +149,10 @@ public class Explosion {
         return 2.5; //Dirt
     }
 
-    private List<Block> toBlockList(Collection<WorldlessLocation> locs) {
+    private List<Block> toBlockList(Collection<BlockVector> locs) {
         List<Block> blocks = new ArrayList<>(locs.size());
-        for (WorldlessLocation location : locs)
-            blocks.add(world.getBlockAt(location.x, location.y, location.z));
+        for (BlockVector location : locs)
+            blocks.add(world.getBlockAt(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
         return blocks;
     }
 
@@ -192,34 +193,6 @@ public class Explosion {
     }
 
     private void playOutExplodeSmoke(Location location) {
-
-    }
-
-
-    private static final class WorldlessLocation {
-        public int x, y, z;
-
-        public WorldlessLocation(int x, int y, int z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (other == null || !(other instanceof WorldlessLocation))
-                return false;
-            WorldlessLocation o = (WorldlessLocation) other;
-            return x == o.x && y == o.y && z == o.z;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = x;
-            result = 31 * result + y;
-            result = 31 * result + z;
-            return result;
-        }
 
     }
 }
