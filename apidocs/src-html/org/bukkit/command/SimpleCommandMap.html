@@ -1,0 +1,373 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package org.bukkit.command;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import static org.bukkit.util.Java15Compat.Arrays_copyOfRange;<a name="line.3"></a>
+<span class="sourceLineNo">004</span><a name="line.4"></a>
+<span class="sourceLineNo">005</span>import java.util.ArrayList;<a name="line.5"></a>
+<span class="sourceLineNo">006</span>import java.util.Collection;<a name="line.6"></a>
+<span class="sourceLineNo">007</span>import java.util.Collections;<a name="line.7"></a>
+<span class="sourceLineNo">008</span>import java.util.HashMap;<a name="line.8"></a>
+<span class="sourceLineNo">009</span>import java.util.Iterator;<a name="line.9"></a>
+<span class="sourceLineNo">010</span>import java.util.List;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import java.util.Map;<a name="line.11"></a>
+<span class="sourceLineNo">012</span>import java.util.regex.Pattern;<a name="line.12"></a>
+<span class="sourceLineNo">013</span><a name="line.13"></a>
+<span class="sourceLineNo">014</span>import org.apache.commons.lang.Validate;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>import org.bukkit.Server;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import org.bukkit.command.defaults.*;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import org.bukkit.entity.Player;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import org.bukkit.util.StringUtil;<a name="line.18"></a>
+<span class="sourceLineNo">019</span><a name="line.19"></a>
+<span class="sourceLineNo">020</span>public class SimpleCommandMap implements CommandMap {<a name="line.20"></a>
+<span class="sourceLineNo">021</span>    private static final Pattern PATTERN_ON_SPACE = Pattern.compile(" ", Pattern.LITERAL);<a name="line.21"></a>
+<span class="sourceLineNo">022</span>    protected final Map&lt;String, Command&gt; knownCommands = new HashMap&lt;String, Command&gt;();<a name="line.22"></a>
+<span class="sourceLineNo">023</span>    private final Server server;<a name="line.23"></a>
+<span class="sourceLineNo">024</span><a name="line.24"></a>
+<span class="sourceLineNo">025</span>    public SimpleCommandMap(final Server server) {<a name="line.25"></a>
+<span class="sourceLineNo">026</span>        this.server = server;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>        setDefaultCommands();<a name="line.27"></a>
+<span class="sourceLineNo">028</span>    }<a name="line.28"></a>
+<span class="sourceLineNo">029</span><a name="line.29"></a>
+<span class="sourceLineNo">030</span>    private void setDefaultCommands() {<a name="line.30"></a>
+<span class="sourceLineNo">031</span>        register("bukkit", new SaveCommand());<a name="line.31"></a>
+<span class="sourceLineNo">032</span>        register("bukkit", new SaveOnCommand());<a name="line.32"></a>
+<span class="sourceLineNo">033</span>        register("bukkit", new SaveOffCommand());<a name="line.33"></a>
+<span class="sourceLineNo">034</span>        register("bukkit", new StopCommand());<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        register("bukkit", new VersionCommand("version"));<a name="line.35"></a>
+<span class="sourceLineNo">036</span>        register("bukkit", new ReloadCommand("reload"));<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        register("bukkit", new PluginsCommand("plugins"));<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        register("bukkit", new TimingsCommand("timings"));<a name="line.38"></a>
+<span class="sourceLineNo">039</span>    }<a name="line.39"></a>
+<span class="sourceLineNo">040</span><a name="line.40"></a>
+<span class="sourceLineNo">041</span>    public void setFallbackCommands() {<a name="line.41"></a>
+<span class="sourceLineNo">042</span>        register("bukkit", new ListCommand());<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        register("bukkit", new OpCommand());<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        register("bukkit", new DeopCommand());<a name="line.44"></a>
+<span class="sourceLineNo">045</span>        register("bukkit", new BanIpCommand());<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        register("bukkit", new PardonIpCommand());<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        register("bukkit", new BanCommand());<a name="line.47"></a>
+<span class="sourceLineNo">048</span>        register("bukkit", new PardonCommand());<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        register("bukkit", new KickCommand());<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        register("bukkit", new TeleportCommand());<a name="line.50"></a>
+<span class="sourceLineNo">051</span>        register("bukkit", new GiveCommand());<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        register("bukkit", new TimeCommand());<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        register("bukkit", new SayCommand());<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        register("bukkit", new WhitelistCommand());<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        register("bukkit", new TellCommand());<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        register("bukkit", new MeCommand());<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        register("bukkit", new KillCommand());<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        register("bukkit", new GameModeCommand());<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        register("bukkit", new HelpCommand());<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        register("bukkit", new ExpCommand());<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        register("bukkit", new ToggleDownfallCommand());<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        register("bukkit", new BanListCommand());<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        register("bukkit", new DefaultGameModeCommand());<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        register("bukkit", new SeedCommand());<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        register("bukkit", new DifficultyCommand());<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        register("bukkit", new WeatherCommand());<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        register("bukkit", new SpawnpointCommand());<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        register("bukkit", new ClearCommand());<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        register("bukkit", new GameRuleCommand());<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        register("bukkit", new EnchantCommand());<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        register("bukkit", new TestForCommand());<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        register("bukkit", new EffectCommand());<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        register("bukkit", new ScoreboardCommand());<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        register("bukkit", new PlaySoundCommand());<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        register("bukkit", new SpreadPlayersCommand());<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        register("bukkit", new SetWorldSpawnCommand());<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        register("bukkit", new SetIdleTimeoutCommand());<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        register("bukkit", new AchievementCommand());<a name="line.78"></a>
+<span class="sourceLineNo">079</span>    }<a name="line.79"></a>
+<span class="sourceLineNo">080</span><a name="line.80"></a>
+<span class="sourceLineNo">081</span>    /**<a name="line.81"></a>
+<span class="sourceLineNo">082</span>     * {@inheritDoc}<a name="line.82"></a>
+<span class="sourceLineNo">083</span>     */<a name="line.83"></a>
+<span class="sourceLineNo">084</span>    public void registerAll(String fallbackPrefix, List&lt;Command&gt; commands) {<a name="line.84"></a>
+<span class="sourceLineNo">085</span>        if (commands != null) {<a name="line.85"></a>
+<span class="sourceLineNo">086</span>            for (Command c : commands) {<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                register(fallbackPrefix, c);<a name="line.87"></a>
+<span class="sourceLineNo">088</span>            }<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        }<a name="line.89"></a>
+<span class="sourceLineNo">090</span>    }<a name="line.90"></a>
+<span class="sourceLineNo">091</span><a name="line.91"></a>
+<span class="sourceLineNo">092</span>    /**<a name="line.92"></a>
+<span class="sourceLineNo">093</span>     * {@inheritDoc}<a name="line.93"></a>
+<span class="sourceLineNo">094</span>     */<a name="line.94"></a>
+<span class="sourceLineNo">095</span>    public boolean register(String fallbackPrefix, Command command) {<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        return register(command.getName(), fallbackPrefix, command);<a name="line.96"></a>
+<span class="sourceLineNo">097</span>    }<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>    /**<a name="line.99"></a>
+<span class="sourceLineNo">100</span>     * {@inheritDoc}<a name="line.100"></a>
+<span class="sourceLineNo">101</span>     */<a name="line.101"></a>
+<span class="sourceLineNo">102</span>    public boolean register(String label, String fallbackPrefix, Command command) {<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        label = label.toLowerCase().trim();<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        fallbackPrefix = fallbackPrefix.toLowerCase().trim();<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        boolean registered = register(label, command, false, fallbackPrefix);<a name="line.105"></a>
+<span class="sourceLineNo">106</span><a name="line.106"></a>
+<span class="sourceLineNo">107</span>        Iterator&lt;String&gt; iterator = command.getAliases().iterator();<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        while (iterator.hasNext()) {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>            if (!register(iterator.next(), command, true, fallbackPrefix)) {<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                iterator.remove();<a name="line.110"></a>
+<span class="sourceLineNo">111</span>            }<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        }<a name="line.112"></a>
+<span class="sourceLineNo">113</span><a name="line.113"></a>
+<span class="sourceLineNo">114</span>        // If we failed to register under the real name, we need to set the command label to the direct address<a name="line.114"></a>
+<span class="sourceLineNo">115</span>        if (!registered) {<a name="line.115"></a>
+<span class="sourceLineNo">116</span>            command.setLabel(fallbackPrefix + ":" + label);<a name="line.116"></a>
+<span class="sourceLineNo">117</span>        }<a name="line.117"></a>
+<span class="sourceLineNo">118</span><a name="line.118"></a>
+<span class="sourceLineNo">119</span>        // Register to us so further updates of the commands label and aliases are postponed until its reregistered<a name="line.119"></a>
+<span class="sourceLineNo">120</span>        command.register(this);<a name="line.120"></a>
+<span class="sourceLineNo">121</span><a name="line.121"></a>
+<span class="sourceLineNo">122</span>        return registered;<a name="line.122"></a>
+<span class="sourceLineNo">123</span>    }<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>    /**<a name="line.125"></a>
+<span class="sourceLineNo">126</span>     * Registers a command with the given name is possible. Also uses<a name="line.126"></a>
+<span class="sourceLineNo">127</span>     * fallbackPrefix to create a unique name.<a name="line.127"></a>
+<span class="sourceLineNo">128</span>     *<a name="line.128"></a>
+<span class="sourceLineNo">129</span>     * @param label the name of the command, without the '/'-prefix.<a name="line.129"></a>
+<span class="sourceLineNo">130</span>     * @param command the command to register<a name="line.130"></a>
+<span class="sourceLineNo">131</span>     * @param isAlias whether the command is an alias<a name="line.131"></a>
+<span class="sourceLineNo">132</span>     * @param fallbackPrefix a prefix which is prepended to the command for a<a name="line.132"></a>
+<span class="sourceLineNo">133</span>     *     unique address<a name="line.133"></a>
+<span class="sourceLineNo">134</span>     * @return true if command was registered, false otherwise.<a name="line.134"></a>
+<span class="sourceLineNo">135</span>     */<a name="line.135"></a>
+<span class="sourceLineNo">136</span>    private synchronized boolean register(String label, Command command, boolean isAlias, String fallbackPrefix) {<a name="line.136"></a>
+<span class="sourceLineNo">137</span>        knownCommands.put(fallbackPrefix + ":" + label, command);<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        if ((command instanceof VanillaCommand || isAlias) &amp;&amp; knownCommands.containsKey(label)) {<a name="line.138"></a>
+<span class="sourceLineNo">139</span>            // Request is for an alias/fallback command and it conflicts with<a name="line.139"></a>
+<span class="sourceLineNo">140</span>            // a existing command or previous alias ignore it<a name="line.140"></a>
+<span class="sourceLineNo">141</span>            // Note: This will mean it gets removed from the commands list of active aliases<a name="line.141"></a>
+<span class="sourceLineNo">142</span>            return false;<a name="line.142"></a>
+<span class="sourceLineNo">143</span>        }<a name="line.143"></a>
+<span class="sourceLineNo">144</span><a name="line.144"></a>
+<span class="sourceLineNo">145</span>        boolean registered = true;<a name="line.145"></a>
+<span class="sourceLineNo">146</span><a name="line.146"></a>
+<span class="sourceLineNo">147</span>        // If the command exists but is an alias we overwrite it, otherwise we return<a name="line.147"></a>
+<span class="sourceLineNo">148</span>        Command conflict = knownCommands.get(label);<a name="line.148"></a>
+<span class="sourceLineNo">149</span>        if (conflict != null &amp;&amp; conflict.getLabel().equals(label)) {<a name="line.149"></a>
+<span class="sourceLineNo">150</span>            return false;<a name="line.150"></a>
+<span class="sourceLineNo">151</span>        }<a name="line.151"></a>
+<span class="sourceLineNo">152</span><a name="line.152"></a>
+<span class="sourceLineNo">153</span>        if (!isAlias) {<a name="line.153"></a>
+<span class="sourceLineNo">154</span>            command.setLabel(label);<a name="line.154"></a>
+<span class="sourceLineNo">155</span>        }<a name="line.155"></a>
+<span class="sourceLineNo">156</span>        knownCommands.put(label, command);<a name="line.156"></a>
+<span class="sourceLineNo">157</span><a name="line.157"></a>
+<span class="sourceLineNo">158</span>        return registered;<a name="line.158"></a>
+<span class="sourceLineNo">159</span>    }<a name="line.159"></a>
+<span class="sourceLineNo">160</span><a name="line.160"></a>
+<span class="sourceLineNo">161</span>    /**<a name="line.161"></a>
+<span class="sourceLineNo">162</span>     * {@inheritDoc}<a name="line.162"></a>
+<span class="sourceLineNo">163</span>     */<a name="line.163"></a>
+<span class="sourceLineNo">164</span>    public boolean dispatch(CommandSender sender, String commandLine) throws CommandException {<a name="line.164"></a>
+<span class="sourceLineNo">165</span>        String[] args = PATTERN_ON_SPACE.split(commandLine);<a name="line.165"></a>
+<span class="sourceLineNo">166</span><a name="line.166"></a>
+<span class="sourceLineNo">167</span>        if (args.length == 0) {<a name="line.167"></a>
+<span class="sourceLineNo">168</span>            return false;<a name="line.168"></a>
+<span class="sourceLineNo">169</span>        }<a name="line.169"></a>
+<span class="sourceLineNo">170</span><a name="line.170"></a>
+<span class="sourceLineNo">171</span>        String sentCommandLabel = args[0].toLowerCase();<a name="line.171"></a>
+<span class="sourceLineNo">172</span>        Command target = getCommand(sentCommandLabel);<a name="line.172"></a>
+<span class="sourceLineNo">173</span><a name="line.173"></a>
+<span class="sourceLineNo">174</span>        if (target == null) {<a name="line.174"></a>
+<span class="sourceLineNo">175</span>            return false;<a name="line.175"></a>
+<span class="sourceLineNo">176</span>        }<a name="line.176"></a>
+<span class="sourceLineNo">177</span><a name="line.177"></a>
+<span class="sourceLineNo">178</span>        try {<a name="line.178"></a>
+<span class="sourceLineNo">179</span>            // Note: we don't return the result of target.execute as thats success / failure, we return handled (true) or not handled (false)<a name="line.179"></a>
+<span class="sourceLineNo">180</span>            target.execute(sender, sentCommandLabel, Arrays_copyOfRange(args, 1, args.length));<a name="line.180"></a>
+<span class="sourceLineNo">181</span>        } catch (CommandException ex) {<a name="line.181"></a>
+<span class="sourceLineNo">182</span>            throw ex;<a name="line.182"></a>
+<span class="sourceLineNo">183</span>        } catch (Throwable ex) {<a name="line.183"></a>
+<span class="sourceLineNo">184</span>            throw new CommandException("Unhandled exception executing '" + commandLine + "' in " + target, ex);<a name="line.184"></a>
+<span class="sourceLineNo">185</span>        }<a name="line.185"></a>
+<span class="sourceLineNo">186</span><a name="line.186"></a>
+<span class="sourceLineNo">187</span>        // return true as command was handled<a name="line.187"></a>
+<span class="sourceLineNo">188</span>        return true;<a name="line.188"></a>
+<span class="sourceLineNo">189</span>    }<a name="line.189"></a>
+<span class="sourceLineNo">190</span><a name="line.190"></a>
+<span class="sourceLineNo">191</span>    public synchronized void clearCommands() {<a name="line.191"></a>
+<span class="sourceLineNo">192</span>        for (Map.Entry&lt;String, Command&gt; entry : knownCommands.entrySet()) {<a name="line.192"></a>
+<span class="sourceLineNo">193</span>            entry.getValue().unregister(this);<a name="line.193"></a>
+<span class="sourceLineNo">194</span>        }<a name="line.194"></a>
+<span class="sourceLineNo">195</span>        knownCommands.clear();<a name="line.195"></a>
+<span class="sourceLineNo">196</span>        setDefaultCommands();<a name="line.196"></a>
+<span class="sourceLineNo">197</span>    }<a name="line.197"></a>
+<span class="sourceLineNo">198</span><a name="line.198"></a>
+<span class="sourceLineNo">199</span>    public Command getCommand(String name) {<a name="line.199"></a>
+<span class="sourceLineNo">200</span>        Command target = knownCommands.get(name.toLowerCase());<a name="line.200"></a>
+<span class="sourceLineNo">201</span>        return target;<a name="line.201"></a>
+<span class="sourceLineNo">202</span>    }<a name="line.202"></a>
+<span class="sourceLineNo">203</span><a name="line.203"></a>
+<span class="sourceLineNo">204</span>    public List&lt;String&gt; tabComplete(CommandSender sender, String cmdLine) {<a name="line.204"></a>
+<span class="sourceLineNo">205</span>        Validate.notNull(sender, "Sender cannot be null");<a name="line.205"></a>
+<span class="sourceLineNo">206</span>        Validate.notNull(cmdLine, "Command line cannot null");<a name="line.206"></a>
+<span class="sourceLineNo">207</span><a name="line.207"></a>
+<span class="sourceLineNo">208</span>        int spaceIndex = cmdLine.indexOf(' ');<a name="line.208"></a>
+<span class="sourceLineNo">209</span><a name="line.209"></a>
+<span class="sourceLineNo">210</span>        if (spaceIndex == -1) {<a name="line.210"></a>
+<span class="sourceLineNo">211</span>            ArrayList&lt;String&gt; completions = new ArrayList&lt;String&gt;();<a name="line.211"></a>
+<span class="sourceLineNo">212</span>            Map&lt;String, Command&gt; knownCommands = this.knownCommands;<a name="line.212"></a>
+<span class="sourceLineNo">213</span><a name="line.213"></a>
+<span class="sourceLineNo">214</span>            final String prefix = (sender instanceof Player ? "/" : "");<a name="line.214"></a>
+<span class="sourceLineNo">215</span><a name="line.215"></a>
+<span class="sourceLineNo">216</span>            for (Map.Entry&lt;String, Command&gt; commandEntry : knownCommands.entrySet()) {<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                Command command = commandEntry.getValue();<a name="line.217"></a>
+<span class="sourceLineNo">218</span><a name="line.218"></a>
+<span class="sourceLineNo">219</span>                if (!command.testPermissionSilent(sender)) {<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                    continue;<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                }<a name="line.221"></a>
+<span class="sourceLineNo">222</span><a name="line.222"></a>
+<span class="sourceLineNo">223</span>                String name = commandEntry.getKey(); // Use the alias, not command name<a name="line.223"></a>
+<span class="sourceLineNo">224</span><a name="line.224"></a>
+<span class="sourceLineNo">225</span>                if (StringUtil.startsWithIgnoreCase(name, cmdLine)) {<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                    completions.add(prefix + name);<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                }<a name="line.227"></a>
+<span class="sourceLineNo">228</span>            }<a name="line.228"></a>
+<span class="sourceLineNo">229</span><a name="line.229"></a>
+<span class="sourceLineNo">230</span>            Collections.sort(completions, String.CASE_INSENSITIVE_ORDER);<a name="line.230"></a>
+<span class="sourceLineNo">231</span>            return completions;<a name="line.231"></a>
+<span class="sourceLineNo">232</span>        }<a name="line.232"></a>
+<span class="sourceLineNo">233</span><a name="line.233"></a>
+<span class="sourceLineNo">234</span>        String commandName = cmdLine.substring(0, spaceIndex);<a name="line.234"></a>
+<span class="sourceLineNo">235</span>        Command target = getCommand(commandName);<a name="line.235"></a>
+<span class="sourceLineNo">236</span><a name="line.236"></a>
+<span class="sourceLineNo">237</span>        if (target == null) {<a name="line.237"></a>
+<span class="sourceLineNo">238</span>            return null;<a name="line.238"></a>
+<span class="sourceLineNo">239</span>        }<a name="line.239"></a>
+<span class="sourceLineNo">240</span><a name="line.240"></a>
+<span class="sourceLineNo">241</span>        if (!target.testPermissionSilent(sender)) {<a name="line.241"></a>
+<span class="sourceLineNo">242</span>            return null;<a name="line.242"></a>
+<span class="sourceLineNo">243</span>        }<a name="line.243"></a>
+<span class="sourceLineNo">244</span><a name="line.244"></a>
+<span class="sourceLineNo">245</span>        String argLine = cmdLine.substring(spaceIndex + 1, cmdLine.length());<a name="line.245"></a>
+<span class="sourceLineNo">246</span>        String[] args = PATTERN_ON_SPACE.split(argLine, -1);<a name="line.246"></a>
+<span class="sourceLineNo">247</span><a name="line.247"></a>
+<span class="sourceLineNo">248</span>        try {<a name="line.248"></a>
+<span class="sourceLineNo">249</span>            return target.tabComplete(sender, commandName, args);<a name="line.249"></a>
+<span class="sourceLineNo">250</span>        } catch (CommandException ex) {<a name="line.250"></a>
+<span class="sourceLineNo">251</span>            throw ex;<a name="line.251"></a>
+<span class="sourceLineNo">252</span>        } catch (Throwable ex) {<a name="line.252"></a>
+<span class="sourceLineNo">253</span>            throw new CommandException("Unhandled exception executing tab-completer for '" + cmdLine + "' in " + target, ex);<a name="line.253"></a>
+<span class="sourceLineNo">254</span>        }<a name="line.254"></a>
+<span class="sourceLineNo">255</span>    }<a name="line.255"></a>
+<span class="sourceLineNo">256</span><a name="line.256"></a>
+<span class="sourceLineNo">257</span>    public Collection&lt;Command&gt; getCommands() {<a name="line.257"></a>
+<span class="sourceLineNo">258</span>        return Collections.unmodifiableCollection(knownCommands.values());<a name="line.258"></a>
+<span class="sourceLineNo">259</span>    }<a name="line.259"></a>
+<span class="sourceLineNo">260</span><a name="line.260"></a>
+<span class="sourceLineNo">261</span>    public void registerServerAliases() {<a name="line.261"></a>
+<span class="sourceLineNo">262</span>        Map&lt;String, String[]&gt; values = server.getCommandAliases();<a name="line.262"></a>
+<span class="sourceLineNo">263</span><a name="line.263"></a>
+<span class="sourceLineNo">264</span>        for (String alias : values.keySet()) {<a name="line.264"></a>
+<span class="sourceLineNo">265</span>            if (alias.contains(":") || alias.contains(" ")) {<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                server.getLogger().warning("Could not register alias " + alias + " because it contains illegal characters");<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                continue;<a name="line.267"></a>
+<span class="sourceLineNo">268</span>            }<a name="line.268"></a>
+<span class="sourceLineNo">269</span><a name="line.269"></a>
+<span class="sourceLineNo">270</span>            String[] commandStrings = values.get(alias);<a name="line.270"></a>
+<span class="sourceLineNo">271</span>            List&lt;String&gt; targets = new ArrayList&lt;String&gt;();<a name="line.271"></a>
+<span class="sourceLineNo">272</span>            StringBuilder bad = new StringBuilder();<a name="line.272"></a>
+<span class="sourceLineNo">273</span><a name="line.273"></a>
+<span class="sourceLineNo">274</span>            for (String commandString : commandStrings) {<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                String[] commandArgs = commandString.split(" ");<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                Command command = getCommand(commandArgs[0]);<a name="line.276"></a>
+<span class="sourceLineNo">277</span><a name="line.277"></a>
+<span class="sourceLineNo">278</span>                if (command == null) {<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                    if (bad.length() &gt; 0) {<a name="line.279"></a>
+<span class="sourceLineNo">280</span>                        bad.append(", ");<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                    }<a name="line.281"></a>
+<span class="sourceLineNo">282</span>                    bad.append(commandString);<a name="line.282"></a>
+<span class="sourceLineNo">283</span>                } else {<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                    targets.add(commandString);<a name="line.284"></a>
+<span class="sourceLineNo">285</span>                }<a name="line.285"></a>
+<span class="sourceLineNo">286</span>            }<a name="line.286"></a>
+<span class="sourceLineNo">287</span><a name="line.287"></a>
+<span class="sourceLineNo">288</span>            if (bad.length() &gt; 0) {<a name="line.288"></a>
+<span class="sourceLineNo">289</span>                server.getLogger().warning("Could not register alias " + alias + " because it contains commands that do not exist: " + bad);<a name="line.289"></a>
+<span class="sourceLineNo">290</span>                continue;<a name="line.290"></a>
+<span class="sourceLineNo">291</span>            }<a name="line.291"></a>
+<span class="sourceLineNo">292</span><a name="line.292"></a>
+<span class="sourceLineNo">293</span>            // We register these as commands so they have absolute priority.<a name="line.293"></a>
+<span class="sourceLineNo">294</span>            if (targets.size() &gt; 0) {<a name="line.294"></a>
+<span class="sourceLineNo">295</span>                knownCommands.put(alias.toLowerCase(), new FormattedCommandAlias(alias.toLowerCase(), targets.toArray(new String[targets.size()])));<a name="line.295"></a>
+<span class="sourceLineNo">296</span>            } else {<a name="line.296"></a>
+<span class="sourceLineNo">297</span>                knownCommands.remove(alias.toLowerCase());<a name="line.297"></a>
+<span class="sourceLineNo">298</span>            }<a name="line.298"></a>
+<span class="sourceLineNo">299</span>        }<a name="line.299"></a>
+<span class="sourceLineNo">300</span>    }<a name="line.300"></a>
+<span class="sourceLineNo">301</span>}<a name="line.301"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

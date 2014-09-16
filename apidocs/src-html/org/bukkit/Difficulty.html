@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package org.bukkit;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import java.util.Map;<a name="line.3"></a>
+<span class="sourceLineNo">004</span><a name="line.4"></a>
+<span class="sourceLineNo">005</span>import com.google.common.collect.Maps;<a name="line.5"></a>
+<span class="sourceLineNo">006</span><a name="line.6"></a>
+<span class="sourceLineNo">007</span>/**<a name="line.7"></a>
+<span class="sourceLineNo">008</span> * Represents the various difficulty levels that are available.<a name="line.8"></a>
+<span class="sourceLineNo">009</span> */<a name="line.9"></a>
+<span class="sourceLineNo">010</span>public enum Difficulty {<a name="line.10"></a>
+<span class="sourceLineNo">011</span>    /**<a name="line.11"></a>
+<span class="sourceLineNo">012</span>     * Players regain health over time, hostile mobs don't spawn, the hunger<a name="line.12"></a>
+<span class="sourceLineNo">013</span>     * bar does not deplete.<a name="line.13"></a>
+<span class="sourceLineNo">014</span>     */<a name="line.14"></a>
+<span class="sourceLineNo">015</span>    PEACEFUL(0),<a name="line.15"></a>
+<span class="sourceLineNo">016</span><a name="line.16"></a>
+<span class="sourceLineNo">017</span>    /**<a name="line.17"></a>
+<span class="sourceLineNo">018</span>     * Hostile mobs spawn, enemies deal less damage than on normal difficulty,<a name="line.18"></a>
+<span class="sourceLineNo">019</span>     * the hunger bar does deplete and starving deals up to 5 hearts of<a name="line.19"></a>
+<span class="sourceLineNo">020</span>     * damage. (Default value)<a name="line.20"></a>
+<span class="sourceLineNo">021</span>     */<a name="line.21"></a>
+<span class="sourceLineNo">022</span>    EASY(1),<a name="line.22"></a>
+<span class="sourceLineNo">023</span><a name="line.23"></a>
+<span class="sourceLineNo">024</span>    /**<a name="line.24"></a>
+<span class="sourceLineNo">025</span>     * Hostile mobs spawn, enemies deal normal amounts of damage, the hunger<a name="line.25"></a>
+<span class="sourceLineNo">026</span>     * bar does deplete and starving deals up to 9.5 hearts of damage.<a name="line.26"></a>
+<span class="sourceLineNo">027</span>     */<a name="line.27"></a>
+<span class="sourceLineNo">028</span>    NORMAL(2),<a name="line.28"></a>
+<span class="sourceLineNo">029</span><a name="line.29"></a>
+<span class="sourceLineNo">030</span>    /**<a name="line.30"></a>
+<span class="sourceLineNo">031</span>     * Hostile mobs spawn, enemies deal greater damage than on normal<a name="line.31"></a>
+<span class="sourceLineNo">032</span>     * difficulty, the hunger bar does deplete and starving can kill players.<a name="line.32"></a>
+<span class="sourceLineNo">033</span>     */<a name="line.33"></a>
+<span class="sourceLineNo">034</span>    HARD(3);<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>    private final int value;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>    private final static Map&lt;Integer, Difficulty&gt; BY_ID = Maps.newHashMap();<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>    private Difficulty(final int value) {<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        this.value = value;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>    }<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>    /**<a name="line.43"></a>
+<span class="sourceLineNo">044</span>     * Gets the difficulty value associated with this Difficulty.<a name="line.44"></a>
+<span class="sourceLineNo">045</span>     *<a name="line.45"></a>
+<span class="sourceLineNo">046</span>     * @return An integer value of this difficulty<a name="line.46"></a>
+<span class="sourceLineNo">047</span>     * @deprecated Magic value<a name="line.47"></a>
+<span class="sourceLineNo">048</span>     */<a name="line.48"></a>
+<span class="sourceLineNo">049</span>    @Deprecated<a name="line.49"></a>
+<span class="sourceLineNo">050</span>    public int getValue() {<a name="line.50"></a>
+<span class="sourceLineNo">051</span>        return value;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>    }<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>    /**<a name="line.54"></a>
+<span class="sourceLineNo">055</span>     * Gets the Difficulty represented by the specified value<a name="line.55"></a>
+<span class="sourceLineNo">056</span>     *<a name="line.56"></a>
+<span class="sourceLineNo">057</span>     * @param value Value to check<a name="line.57"></a>
+<span class="sourceLineNo">058</span>     * @return Associative {@link Difficulty} with the given value, or null if<a name="line.58"></a>
+<span class="sourceLineNo">059</span>     *     it doesn't exist<a name="line.59"></a>
+<span class="sourceLineNo">060</span>     * @deprecated Magic value<a name="line.60"></a>
+<span class="sourceLineNo">061</span>     */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>    @Deprecated<a name="line.62"></a>
+<span class="sourceLineNo">063</span>    public static Difficulty getByValue(final int value) {<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        return BY_ID.get(value);<a name="line.64"></a>
+<span class="sourceLineNo">065</span>    }<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>    static {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        for (Difficulty diff : values()) {<a name="line.68"></a>
+<span class="sourceLineNo">069</span>            BY_ID.put(diff.value, diff);<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        }<a name="line.70"></a>
+<span class="sourceLineNo">071</span>    }<a name="line.71"></a>
+<span class="sourceLineNo">072</span>}<a name="line.72"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>
