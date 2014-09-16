@@ -1,59 +1,77 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8" />
-	<link rel="stylesheet" type="text/css" href="style.css" />
-	<title>Glowstone Project</title>
-</head>
-<body>
-<div id="navigation">
-	<a href="/"><img src="block.png" alt="Glowstone" /></a>
-	<p id="copyright">&copy; 2014 Tad Hardesty</p>
+---
+title: "Glowstone Project"
+---
+{% include head.html %}
+<div class="jumbotron text-center">
+	<img src="img/block.png">
+	<h1>Glowstone</h1>
+	<p>The lightweight Minecraft server.</p>
 </div>
-<div id="content">
+<div class="container">
+	<div class="row well">
+		<div class="col-lg-4 text-center">
+			<i class="fa fa-code fa-5x" style="color:#ffea00;"></i>
+			<h3>Open Source</h3>
+			<p>
+				Glowstone's code is completely original and licensed under the permissive
+				MIT license. Glowstone does not rely on any decompiled code.
+			</p>
+		</div>
+		<div class="col-lg-4 text-center">
+			<i class="fa fa-leaf fa-5x" style="color:#64dd17;"></i>
+			<h3>Lightweight</h3>
+			<p>
+				Simplicity breeds performance. Glowstone is built with both of these in
+				mind. Making it suited for situations where vanilla game features are not needed.
+			</p>
+		</div>
+		<div class="col-lg-4 text-center">
+			<i class="fa fa-heart fa-5x" style="color:#ff4081;"></i>
+			<h3>Mature API</h3>
+			<p>
+				Use an API you already know and love. Glowstone supports plugins already written
+				for the Bukkit API.
+			</p>
+		</div>
+	</div>
+	<br/><br/>
+	<div class="row">
+		<div class="col-lg-6">
+			<p>
+				Glowstone is a lightweight, from scratch, open source
+				<a href="http://minecraft.net">Minecraft</a> server written in Java that
+				supports plugins written for the <a href="http://bukkit.org">Bukkit</a> API.
 
-<h1>Glowstone</h1>
-Glowstone is a lightweight, from scratch, open source
-<a href="http://minecraft.net">Minecraft</a> server written in Java that
-supports plugins written for the <a href="http://bukkit.org">Bukkit</a> API.
-
-The main goals of the project are to provide a lightweight implementation
-of the Bukkit API and Minecraft server where exact vanilla functionality is
-not needed or higher performance is desired than the official software can
-deliver. Glowstone makes use of a thread-per-world model and performs
-synchronization only when necessitated by the Bukkit API.
-
-<h2>Links</h2>
-<ul>
-<li><a href="https://github.com/SpaceManiac/Glowstone">GitHub repository</a></li>
-<li><a href="http://ci.chrisgward.com/job/Glowstone/">Build downloads</a></li>
-<li><a href="https://github.com/SpaceManiac/Glowstone/issues">Issue tracker</a></li>
-<li><a href="http://jd.bukkit.org">Bukkit API docs</a></li>
-<li><a href="https://travis-ci.org/SpaceManiac/Glowstone">Travis CI</a></li>
-<li>IRC: <code>#glowstone</code> on <a href="http://esper.net">EsperNet</a> (support, development)</li>
-</ul>
-
-<h2>Credits</h2>
-Glowstone is written and maintained by <a href="http://www.platymuus.com">Tad Hardesty</a>, alias SpaceManiac,
-with contributions from <a href="https://github.com/SpaceManiac/Glowstone/graphs/contributors">many others</a>.
-Special thanks go to:
-<ul>
-<li><a href="http://wiki.vg/wiki">The Minecraft Coalition</a> - protocol and file formats
-research.</li>
-<li><a href="http://gleamynode.net">Trustin Lee</a> - author of the
-<a href="http://jboss.org/netty">Netty</a> library.</li>
-<li>Graham Edgecombe - author of the original
-<a href="https://github.com/grahamedgecombe/lightstone">Lightstone</a> - and everyone
-else who has contributed to Lightstone.</li>
-<li>All the people behind <a href="http://gradle.org">Gradle</a> and
-<a href="http://java.oracle.com">Java</a>.</li>
-<li>The <a href="http://bukkit.org">Bukkit</a> team for their outstandingly well-designed
-plugin API.</li>
-<li><a href="http://mojang.com/notch">Notch</a> and all the other people at
-<a href="http://mojang.com">Mojang</a> - for making such an awesome game in the first
-place!</li>
-</ul>
-
+				The main goals of the project are to provide a lightweight implementation
+				of the Bukkit API and Minecraft server where exact vanilla functionality is
+				not needed or higher performance is desired than the official software can
+				deliver. Glowstone makes use of a thread-per-world model and performs
+				synchronization only when necessitated by the Bukkit API.
+			</p>
+		</div>
+		<div class="col-lg-6">
+			<span>Special Thanks to:</span>
+			<ul>
+				<li>
+					<a href="http://wiki.vg/wiki">The Minecraft Coalition</a> for their protocol and file format research.
+				</li>
+				<li>
+					<a href="http://gleamynode.net">Trustin Lee</a>, author of the <a href="http://jboss.org/netty">Netty</a> library.
+				</li>
+				<li>
+					Graham Edgecombe, the original author of <a href="https://github.com/grahamedgecombe/lightstone">Lightstone</a>. As well as Lightstone's contributors.
+				</li>
+				<li>
+					All the people behind <a href="http://gradle.org">Gradle</a> and <a href="http://java.oracle.com">Java</a>.
+				</li>
+				<li>
+					The <a href="http://bukkit.org">Bukkit</a> team for their outstandingly well-designed plugin API.
+				</li>
+				<li>
+					<a href="http://mojang.com/notch">Notch</a> and all the other people at <a href="http://mojang.com">Mojang</a> for making such an awesome game in the first place!
+				</li>
+			</ul>
+		</div>
+	</div>
 </div>
-</body>
-</html>
+{% include foot.html %}
