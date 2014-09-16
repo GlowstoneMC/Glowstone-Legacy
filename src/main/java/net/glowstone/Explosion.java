@@ -2,12 +2,16 @@ package net.glowstone;
 
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.ItemTable;
+import net.glowstone.block.blocktype.BlockTNT;
+import net.glowstone.entity.GlowEntity;
+import net.glowstone.entity.GlowLivingEntity;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.BlockVector;
@@ -16,6 +20,15 @@ import org.bukkit.util.Vector;
 import java.util.*;
 
 public class Explosion {
+    public static final int POWER_TNT = 4;
+    public static final int POWER_BED = 5;
+    public static final int POWER_CREEPER = 3;
+    public static final int POWER_CHARGED_CREEPER = 6;
+    public static final int POWER_GHAST = 1;
+    public static final int POWER_WITHER_SKULL = 1;
+    public static final int POWER_WITHER_CREATION = 7;
+    public static final int POWER_ENDER_CRYSTAL = 6;
+
     private final float power;
     private final Entity source;
     private final Location location;
@@ -34,7 +47,7 @@ public class Explosion {
      * @param x
      * @param y
      * @param z
-     * @param power The power of the explosion (TNT=4, bed=5, creeper=3, charged creeper=6, Ghast/Wither Skull=1, Either on creation=7, Ender Crystal=6)
+     * @param power The power of the explosion
      * @param incendiary true if this explosion should set blocks on fire
      * @param breakBlocks whether blocks should break through this explosion
      */
@@ -51,7 +64,7 @@ public class Explosion {
     public boolean explodeWithEvent() {
         List<Block> droppedBlocks = calculateBlocks();
 
-        EntityExplodeEvent event = EventFactory.onEntityExplode(source, location, droppedBlocks, yield);
+        EntityExplodeEvent event = EventFactory.callEvent(new EntityExplodeEvent(source, location, droppedBlocks, yield));
 
         if (event.isCancelled()) return false;
 
@@ -75,7 +88,7 @@ public class Explosion {
         if (!breakBlocks || power < 0.1F)
             return new ArrayList<>();
 
-        Set<BlockVector> blocks = new HashSet<>(); //No duplicate blocks
+        Set<BlockVector> blocks = new HashSet<>();
 
         final int value = 8;
 
@@ -93,7 +106,7 @@ public class Explosion {
         return toBlockList(blocks);
     }
 
-    public void calculateRay(int x, int y, int z, Collection<BlockVector> result) {
+    private void calculateRay(int x, int y, int z, Collection<BlockVector> result) {
         Vector direction = new Vector(x, y, z);
         direction.normalize();
         direction.multiply(0.3f); //0.3 blocks away with each step
@@ -103,7 +116,7 @@ public class Explosion {
         float currentPower = calculateStartPower();
 
         while (currentPower > 0) {
-            GlowBlock block = (GlowBlock) world.getBlockAt(current);
+            GlowBlock block = world.getBlockAt(current);
 
             if (block.getType() != Material.AIR) {
                 double sub = getBlastDurability(block);
@@ -112,7 +125,9 @@ public class Explosion {
                 sub *= 0.3F;
                 currentPower -= sub;
 
-                result.add(new BlockVector(block.getX(), block.getY(), block.getZ()));
+                if (currentPower > 0) {
+                    result.add(new BlockVector(block.getX(), block.getY(), block.getZ()));
+                }
             }
 
             current.add(direction);
@@ -124,7 +139,7 @@ public class Explosion {
         if (block.getType() == Material.AIR) {
             return;
         } else if (block.getType() == Material.TNT) {
-            //TODO
+            ((BlockTNT) itemTable.getBlock(Material.TNT)).explodeTNTBlock(block);
             return;
         }
 
@@ -167,7 +182,7 @@ public class Explosion {
         Block below = block.getRelative(BlockFace.DOWN);
         //TODO check for flammable blocks
 
-        BlockIgniteEvent event = EventFactory.onBlockIgnite(block, BlockIgniteEvent.IgniteCause.EXPLOSION, source);
+        BlockIgniteEvent event = EventFactory.callEvent(new BlockIgniteEvent(block, BlockIgniteEvent.IgniteCause.EXPLOSION, source));
         if (event.isCancelled())
             return;
 
@@ -176,8 +191,64 @@ public class Explosion {
 
     /////////////////////////////////////////
     // Damage entities
-    private void damageEntities() {
 
+    private void damageEntities() {
+        Collection<GlowLivingEntity> entities = getNearbyEntities();
+        for (GlowLivingEntity entity : entities) {
+            Vector vecDistance = distanceToHead(entity);
+            double distanceDivPower = vecDistance.length() / power;
+            if (distanceDivPower == 0.0) continue;
+
+            vecDistance.normalize();
+
+            double basicDamage = calculateDamage(entity, distanceDivPower);
+            double explosionDamage = (basicDamage * basicDamage + basicDamage) * 4 * power + 1.0D;
+            entity.damage(explosionDamage);
+
+            double enchantedDamage = calculateEnchantedDamage(basicDamage, entity);
+            vecDistance.multiply(enchantedDamage);
+            entity.setVelocity(vecDistance);
+        }
+    }
+
+    private double calculateEnchantedDamage(double basicDamage, GlowLivingEntity entity) {
+        int level = 0; //TODO calculate explosion protection level of entity's equipment
+
+        if (level > 0) {
+            float sub = level * 0.15f;
+            double damage = basicDamage * sub;
+            damage = Math.floor(damage);
+            return basicDamage - damage;
+        }
+
+        return basicDamage;
+    }
+
+    private double calculateDamage(GlowEntity entity, double distanceDivPower) {
+        double damage = world.rayTrace(location, entity);
+        return damage * (1D - distanceDivPower);
+    }
+
+    private Collection<GlowLivingEntity> getNearbyEntities() {
+        //TODO fetch only necessary entities
+        List<LivingEntity> entities = world.getLivingEntities();
+        List<GlowLivingEntity> nearbyEntities = new ArrayList<>();
+
+        for (LivingEntity entity : entities) {
+            if (distanceTo(entity) / (double) power < 1.) {
+                nearbyEntities.add((GlowLivingEntity) entity);
+            }
+        }
+
+        return nearbyEntities;
+    }
+
+    private double distanceTo(LivingEntity entity) {
+        return location.clone().subtract(entity.getLocation()).length();
+    }
+
+    private Vector distanceToHead(LivingEntity entity) {
+        return location.clone().subtract(entity.getLocation().clone().add(0, entity.getEyeHeight(), 0)).toVector();
     }
 
     ///////////////////////////////////////
@@ -193,6 +264,6 @@ public class Explosion {
     }
 
     private void playOutExplodeSmoke(Location location) {
-
+        //TODO: play SMOKE and EXPLOSION particles
     }
 }

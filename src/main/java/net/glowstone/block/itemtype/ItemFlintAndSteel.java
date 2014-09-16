@@ -3,11 +3,11 @@ package net.glowstone.block.itemtype;
 import net.glowstone.EventFactory;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.ItemTable;
+import net.glowstone.block.blocktype.BlockTNT;
 import net.glowstone.entity.GlowPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.EntityType;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -37,9 +37,7 @@ public class ItemFlintAndSteel extends ItemType {
     }
 
     private void fireTnt(GlowBlock tnt) {
-        //TODO Event
-        tnt.setType(Material.AIR);
-        tnt.getWorld().spawnEntity(tnt.getLocation(), EntityType.PRIMED_TNT);
+        ((BlockTNT) ItemTable.instance().getBlock(Material.TNT)).explodeTNTBlock(tnt);
     }
 
     private void setBlockOnFire(GlowPlayer player, GlowBlock clicked, BlockFace face, ItemStack holding, Vector clickedLoc) {

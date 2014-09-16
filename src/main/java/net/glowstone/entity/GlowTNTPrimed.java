@@ -2,6 +2,7 @@ package net.glowstone.entity;
 
 import com.flowpowered.networking.Message;
 import net.glowstone.EventFactory;
+import net.glowstone.Explosion;
 import net.glowstone.net.message.play.entity.SpawnObjectMessage;
 import net.glowstone.util.Position;
 import org.bukkit.Location;
@@ -34,12 +35,12 @@ public class GlowTNTPrimed extends GlowExplosive implements TNTPrimed {
     }
 
     private void explode() {
-        ExplosionPrimeEvent event = EventFactory.onExplosionPrime(this);
+        ExplosionPrimeEvent event = EventFactory.callEvent(new ExplosionPrimeEvent(this));
 
         if (!event.isCancelled()) {
             Location location = getLocation();
             double x = location.getX(), y = location.getY(), z = location.getZ();
-            this.getWorld().createExplosion(this, x, y, z, 4f, isIncendiary(), true);
+            this.getWorld().createExplosion(this, x, y, z, Explosion.POWER_TNT, isIncendiary(), true);
         }
 
         this.remove();
@@ -59,22 +60,22 @@ public class GlowTNTPrimed extends GlowExplosive implements TNTPrimed {
     }
 
     @Override
-    public void setFuseTicks(int i) {
+    public final void setFuseTicks(int i) {
         this.fuseTicks = i;
     }
 
     @Override
-    public int getFuseTicks() {
+    public final int getFuseTicks() {
         return fuseTicks;
     }
 
     @Override
-    public Entity getSource() {
+    public final Entity getSource() {
         return source.isValid() ? source : null;
     }
 
     @Override
-    public EntityType getType() {
+    public final EntityType getType() {
         return EntityType.PRIMED_TNT;
     }
 }
