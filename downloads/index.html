@@ -14,6 +14,15 @@ title: "Glowstone Downloads"
   <div class="text-center" id="loading">
     <i class="fa fa-circle-o-notch fa-spin fa-5x"></i>
   </div>
+  <div class="text-center" id="error" style="display:none;">
+    <i class="fa fa-exclamation fa-5x"></i>
+    <div>
+      There was an error loading the download list.
+    </div>
+    <div>
+      Go to <a href="http://ci.chrisgward.com/job/Glowstone/" target="_blank">Jenkins</a>?
+    </div>
+  </div>
 </div>
 <script>
 $(function() {
@@ -22,7 +31,7 @@ $(function() {
       url      : document.location.protocol + '//ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=10&callback=?&q=' + encodeURIComponent('http://ci.chrisgward.com/job/Glowstone/rssAll'),
       dataType : 'json',
       success  : function (data) {
-        if (data.responseData.feed && data.responseData.feed.entries) {
+        if (data.responseData != null && data.responseData.feed && data.responseData.feed.entries) {
           rows = '';
           $.each(data.responseData.feed.entries, function (i, e) {
             clazz = ((new RegExp('broken')).test(e.title)) ? 'danger' : 'success';
@@ -45,7 +54,14 @@ $(function() {
           rows += '<tr class="text-center"><td colspan="4"><a href="http://ci.chrisgward.com/job/Glowstone/">Older Downloads</a></td></tr>';
           $('#loading').hide();
           $('#builds').append(rows);
+        } else {
+          $('#loading').hide();
+          $('#error').show();
         }
+      },
+      error: function() {
+        $('#loading').hide();
+        $('#error').show();
       }
     });
   }, 500);
