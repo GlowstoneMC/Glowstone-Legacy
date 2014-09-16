@@ -1,0 +1,42 @@
+---
+title: "Glowstone Downloads"
+---
+{% include head.html %}
+<div class="container">
+  <table id="builds" class="table table-striped table-bordered table-hover">
+    <tr>
+      <th>Title</th>
+      <th>Date</th>
+      <th>Download link</th>
+    </tr>
+  </table>
+</div>
+<script>
+$.ajax({
+  url      : document.location.protocol + '//ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=10&callback=?&q=' + encodeURIComponent('http://ci.chrisgward.com/job/Glowstone/rssAll'),
+  dataType : 'json',
+  success  : function (data) {
+    if (data.responseData.feed && data.responseData.feed.entries) {
+      rows = '';
+      $.each(data.responseData.feed.entries, function (i, e) {
+        clazz = ((new RegExp('broken')).test(e.title)) ? 'danger' : 'success';
+        element = '<tr class="' + clazz + '">';
+        element += '<td>';
+        element += e.title;
+        element += '</td>';
+        element += '<td>';
+        element += e.publishedDate;
+        element += '</td>';
+        element += '<td>';
+        element += '<a href="' + e.link + '/artifact/build/libs/glowstone.jar">glowstone.jar</a>';
+        element += '</td>';
+        element += '</tr>';
+        rows += element;
+      });
+      rows += '<tr class="text-center info"><td colspan="3"><a href="http://ci.chrisgward.com/job/Glowstone/">Older Downloads</a></td></tr>';
+      $('#builds').append(rows);
+    }
+  }
+});
+</script>
+{% include foot.html %}
