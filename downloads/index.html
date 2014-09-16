@@ -20,20 +20,20 @@ $.ajax({
       rows = '';
       $.each(data.responseData.feed.entries, function (i, e) {
         clazz = ((new RegExp('broken')).test(e.title)) ? 'danger' : 'success';
-        element = '<tr class="' + clazz + '">';
+        element = '<tr>';
         element += '<td>';
         element += e.title;
         element += '</td>';
         element += '<td>';
         element += e.publishedDate;
         element += '</td>';
-        element += '<td>';
+        element += '<td class="' + clazz + '">';
         element += '<a href="' + e.link + '/artifact/build/libs/glowstone.jar">glowstone.jar</a>';
         element += '</td>';
         element += '</tr>';
         rows += element;
       });
-      rows += '<tr class="text-center info"><td colspan="3"><a href="http://ci.chrisgward.com/job/Glowstone/">Older Downloads</a></td></tr>';
+      rows += '<tr class="text-center"><td colspan="3"><a href="http://ci.chrisgward.com/job/Glowstone/">Older Downloads</a></td></tr>';
       $('#builds').append(rows);
     }
   }
