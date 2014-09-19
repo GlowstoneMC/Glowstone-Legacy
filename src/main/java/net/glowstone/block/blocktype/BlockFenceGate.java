@@ -9,6 +9,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Gate;
 import org.bukkit.material.MaterialData;
+import org.bukkit.material.Openable;
 import org.bukkit.util.Vector;
 
 public class BlockFenceGate extends BlockOpenable {
@@ -37,22 +38,13 @@ public class BlockFenceGate extends BlockOpenable {
     }
 
     @Override
-    public boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
-        boolean changed = super.blockInteract(player, block, face, clickedLoc);
-
-        if (changed) {
-            BlockState state = block.getState();
-            MaterialData data = state.getData();
-            if (data instanceof Gate) {
-                Gate gate = (Gate) data;
-                gate.setFacingDirection(getOpenDirection(player, gate.getFacing()));
-                state.update(true);
-            } else {
-                warnMaterialData(Gate.class, data);
-            }
+    protected void onOpened(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc, GlowBlockState state, MaterialData materialData) {
+        if (materialData instanceof Gate) {
+            Gate gate = (Gate) materialData;
+            gate.setFacingDirection(getOpenDirection(player, gate.getFacing()));
+        } else {
+            warnMaterialData(Gate.class, materialData);
         }
-
-        return changed;
     }
 
     private static BlockFace getOpenDirection(GlowPlayer player, BlockFace oldFacing) {

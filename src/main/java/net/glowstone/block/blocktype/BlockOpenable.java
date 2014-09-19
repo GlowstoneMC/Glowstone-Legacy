@@ -21,12 +21,28 @@ public class BlockOpenable extends BlockType {
         MaterialData materialData = blockState.getData();
         if (materialData instanceof Openable) {
             Openable toOpen = (Openable) materialData;
-            toOpen.setOpen(!toOpen.isOpen());
+            boolean wasOpen = toOpen.isOpen();
+            toOpen.setOpen(!wasOpen);
+
+            if (wasOpen) {
+                onClosed(player, block, face, clickedLoc, blockState, materialData);
+            } else {
+                onOpened(player, block, face, clickedLoc, blockState, materialData);
+            }
+
             blockState.update(true);
             return true;
         } else {
             GlowServer.logger.warning("Interacting " + getMaterial().name() + ", however this blocks seems not to be openable (" + materialData + ")");
             return false;
         }
+    }
+
+    protected void onOpened(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc, GlowBlockState state, MaterialData materialData) {
+        //To override in sub-classes
+    }
+
+    protected void onClosed(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc, GlowBlockState state, MaterialData materialData) {
+        //To override in sub-classes
     }
 }
