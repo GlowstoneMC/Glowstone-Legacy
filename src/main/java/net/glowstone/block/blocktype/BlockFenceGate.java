@@ -5,11 +5,9 @@ import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.entity.GlowPlayer;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Gate;
 import org.bukkit.material.MaterialData;
-import org.bukkit.material.Openable;
 import org.bukkit.util.Vector;
 
 public class BlockFenceGate extends BlockOpenable {
