@@ -1,6 +1,5 @@
 package net.glowstone.block.blocktype;
 
-import net.glowstone.GlowServer;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.entity.GlowPlayer;
@@ -39,22 +38,18 @@ public class BlockFenceGate extends BlockOpenable {
     protected void onOpened(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc, GlowBlockState state, MaterialData materialData) {
         if (materialData instanceof Gate) {
             Gate gate = (Gate) materialData;
-            gate.setFacingDirection(getOpenDirection(player, gate.getFacing()));
+            gate.setFacingDirection(getOpenDirection(player.getLocation().getYaw(), gate.getFacing()));
         } else {
             warnMaterialData(Gate.class, materialData);
         }
     }
 
-    private static BlockFace getOpenDirection(GlowPlayer player, BlockFace oldFacing) {
-        float yaw = (player.getLocation().getYaw() % 360);
-        if (yaw < 0) yaw += 360;
+    private static BlockFace getOpenDirection(float yaw, BlockFace oldFacing) {
+        BlockFace facingDirection = blockFaceFromYaw(yaw);
 
-        if (oldFacing == BlockFace.NORTH || oldFacing == BlockFace.SOUTH) {
-            return yaw < 180 ? BlockFace.SOUTH : BlockFace.NORTH;
-        } else if (oldFacing == BlockFace.EAST || oldFacing == BlockFace.WEST) {
-            return yaw > 90 && yaw < 270 ? BlockFace.WEST : BlockFace.EAST;
+        if (facingDirection == oldFacing.getOppositeFace()) {
+            return facingDirection;
         } else {
-            GlowServer.logger.warning("Calling BlockFenceGate#getOpenDirection() with oldFacing == " + oldFacing + ", only N/E/S/W allowed!");
             return oldFacing;
         }
     }
