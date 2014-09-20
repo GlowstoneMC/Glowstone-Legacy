@@ -1,4 +1,4 @@
-baseurl: /Glowstone
+baseurl: '/'
 kramdown:
   input: GFM
   auto_ids: true
