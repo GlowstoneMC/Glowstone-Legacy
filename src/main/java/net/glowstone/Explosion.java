@@ -29,7 +29,7 @@ public class Explosion {
     public static final int POWER_WITHER_CREATION = 7;
     public static final int POWER_ENDER_CRYSTAL = 6;
 
-    private final float power;
+    private float power;
     private final Entity source;
     private final Location location;
     private final boolean incendiary;
@@ -62,6 +62,9 @@ public class Explosion {
     }
 
     public boolean explodeWithEvent() {
+        if (power < 0.1f)
+            return true;
+
         List<Block> droppedBlocks = calculateBlocks();
 
         EntityExplodeEvent event = EventFactory.callEvent(new EntityExplodeEvent(source, location, droppedBlocks, yield));
@@ -85,7 +88,7 @@ public class Explosion {
     // Calculate all the dropping blocks
 
     private List<Block> calculateBlocks() {
-        if (!breakBlocks || power < 0.1F)
+        if (!breakBlocks)
             return new ArrayList<>();
 
         Set<BlockVector> blocks = new HashSet<>();
@@ -143,10 +146,7 @@ public class Explosion {
             return;
         }
 
-        if (random.nextFloat() < yield)
-            block.breakNaturally();
-        else
-            block.setType(Material.AIR);
+        block.breakNaturally(yield);
 
         setBlockOnFire(block);
 
@@ -193,6 +193,9 @@ public class Explosion {
     // Damage entities
 
     private void damageEntities() {
+        float power = this.power;
+        this.power *= 2f;
+
         Collection<GlowLivingEntity> entities = getNearbyEntities();
         for (GlowLivingEntity entity : entities) {
             Vector vecDistance = distanceToHead(entity);
@@ -209,6 +212,8 @@ public class Explosion {
             vecDistance.multiply(enchantedDamage);
             entity.setVelocity(vecDistance);
         }
+
+        this.power = power;
     }
 
     private double calculateEnchantedDamage(double basicDamage, GlowLivingEntity entity) {

@@ -2,9 +2,9 @@ package net.glowstone.entity;
 
 import com.flowpowered.networking.Message;
 import net.glowstone.EventFactory;
-import net.glowstone.Explosion;
 import net.glowstone.net.message.play.entity.SpawnObjectMessage;
 import net.glowstone.util.Position;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -20,7 +20,8 @@ public class GlowTNTPrimed extends GlowExplosive implements TNTPrimed {
     private Entity source;
 
     public GlowTNTPrimed(Location location, Entity source) {
-        super(location, 80);
+        super(location, 4);
+        this.fuseTicks = 80;
         this.source = source;
     }
 
@@ -31,6 +32,8 @@ public class GlowTNTPrimed extends GlowExplosive implements TNTPrimed {
         fuseTicks--;
         if (fuseTicks <= 0) {
             explode();
+        } else {
+            world.playEffect(location.clone().add(0, 0.5d, 0), Effect.SMOKE, 0);
         }
     }
 
@@ -40,7 +43,7 @@ public class GlowTNTPrimed extends GlowExplosive implements TNTPrimed {
         if (!event.isCancelled()) {
             Location location = getLocation();
             double x = location.getX(), y = location.getY(), z = location.getZ();
-            this.getWorld().createExplosion(this, x, y, z, Explosion.POWER_TNT, isIncendiary(), true);
+            this.getWorld().createExplosion(this, x, y, z, event.getRadius(), event.getFire(), true);
         }
 
         this.remove();

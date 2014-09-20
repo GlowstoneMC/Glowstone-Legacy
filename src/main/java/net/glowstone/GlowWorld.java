@@ -991,6 +991,16 @@ public final class GlowWorld implements World {
 
     @Override
     public <T extends Entity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException {
+        T entity = null;
+
+        if (TNTPrimed.class.isAssignableFrom(clazz)) {
+            entity = (T) new GlowTNTPrimed(location, null);
+        }
+
+        if (entity != null) {
+            return entity;
+        }
+
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -1240,7 +1250,6 @@ public final class GlowWorld implements World {
         Explosion explosion = new Explosion(source, this, x, y, z, power, incendiary, breakBlocks);
         return explosion.explodeWithEvent();
     }
-
     ////////////////////////////////////////////////////////////////////////////
     // Effects
 
