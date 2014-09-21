@@ -14,7 +14,8 @@ Quick Guide
 Getting Started
 ---------------
 * Find an issue to fix or a feature to add.
-* Search the issue tracker for your bug report or feature.
+* Search the issue tracker for your bug report or feature
+* Create a card on [Trello](https://trello.com/b/O4lBmv1l/glowstone)
 * Large changes should always have a separate issue to allow discussion.
   * If your feature or bug incorporates a large change, file a new issue, so the feature and its implementation may be tracked separately. This way, the nature of the issue may be discussed before time is spent addressing the issue. 
 * Fork the repository on GitHub.
