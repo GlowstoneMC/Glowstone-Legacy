@@ -130,6 +130,9 @@ public final class ItemTable {
         reg(Material.STATIONARY_WATER, new BlockWater());
         reg(Material.LAVA, new BlockLava());
         reg(Material.STATIONARY_LAVA, new BlockLava());
+        reg(Material.STANDING_BANNER, new BlockBanner());
+        reg(Material.WALL_BANNER, new BlockBanner());
+
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
         reg(Material.SUGAR_CANE, new ItemPlaceAs(Material.SUGAR_CANE_BLOCK));
@@ -155,6 +158,7 @@ public final class ItemTable {
         reg(Material.CARROT_ITEM, new ItemFoodSeeds(Material.CARROT, Material.SOIL));
         reg(Material.POTATO_ITEM, new ItemFoodSeeds(Material.POTATO, Material.SOIL));
         reg(Material.INK_SACK, new ItemDye());
+        reg(Material.BANNER, new ItemBanner());
     }
 
     private void reg(Material material, ItemType type) {
