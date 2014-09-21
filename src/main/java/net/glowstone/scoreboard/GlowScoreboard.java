@@ -54,7 +54,7 @@ public final class GlowScoreboard implements Scoreboard {
         // send all the setup stuff
         // objectives
         for (GlowObjective objective : objectives.values()) {
-            player.getSession().send(ScoreboardObjectiveMessage.create(objective.getName(), objective.getDisplayName()));
+            player.getSession().send(ScoreboardObjectiveMessage.create(objective.getName(), objective.getDisplayName(), objective.getType().name().toLowerCase()));
         }
         // display slots
         for (DisplaySlot slot : DisplaySlot.values()) {
@@ -101,7 +101,7 @@ public final class GlowScoreboard implements Scoreboard {
         }
         // objectives
         for (GlowObjective objective : objectives.values()) {
-            player.getSession().send(ScoreboardObjectiveMessage.remove(objective.getName(), objective.getDisplayName()));
+            player.getSession().send(ScoreboardObjectiveMessage.remove(objective.getName()));
         }
     }
 
@@ -150,7 +150,7 @@ public final class GlowScoreboard implements Scoreboard {
 
         getForCriteria(objective.getCriteria()).remove(objective);
         objectives.remove(objective.getName());
-        broadcast(ScoreboardObjectiveMessage.remove(objective.getName(), objective.getDisplayName()));
+        broadcast(ScoreboardObjectiveMessage.remove(objective.getName()));
     }
 
     /**
@@ -221,7 +221,7 @@ public final class GlowScoreboard implements Scoreboard {
         objectives.put(name, objective);
         getForCriteria(criteria).add(objective);
 
-        broadcast(ScoreboardObjectiveMessage.create(name, objective.getDisplayName()));
+        broadcast(ScoreboardObjectiveMessage.create(name, objective.getDisplayName(), objective.getType().name().toLowerCase()));
 
         return objective;
     }

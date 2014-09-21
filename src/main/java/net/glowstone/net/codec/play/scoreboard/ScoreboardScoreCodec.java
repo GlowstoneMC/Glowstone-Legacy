@@ -2,7 +2,9 @@ package net.glowstone.net.codec.play.scoreboard;
 
 import com.flowpowered.networking.Codec;
 import com.flowpowered.networking.util.ByteBufUtils;
+
 import io.netty.buffer.ByteBuf;
+
 import net.glowstone.net.message.play.scoreboard.ScoreboardScoreMessage;
 
 import java.io.IOException;
@@ -18,8 +20,9 @@ public final class ScoreboardScoreCodec implements Codec<ScoreboardScoreMessage>
         buf.writeBoolean(remove);
         if (!remove) {
             ByteBufUtils.writeUTF8(buf, message.getObjective());
-            buf.writeInt(message.getValue());
+            ByteBufUtils.writeVarInt(buf, message.getValue());
         }
+
         return buf;
     }
 }

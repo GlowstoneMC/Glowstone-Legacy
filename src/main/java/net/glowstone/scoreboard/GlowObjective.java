@@ -21,6 +21,7 @@ public final class GlowObjective implements Objective {
 
     private String displayName;
     DisplaySlot displaySlot;
+    private RenderType type = RenderType.INTEGER;
 
     public GlowObjective(GlowScoreboard scoreboard, String name, String criteria) {
         this.scoreboard = scoreboard;
@@ -29,10 +30,12 @@ public final class GlowObjective implements Objective {
         displayName = name;
     }
 
+    @Override
     public GlowScoreboard getScoreboard() {
         return scoreboard;
     }
 
+    @Override
     public void unregister() throws IllegalStateException {
         checkValid();
         for (Map.Entry<String, GlowScore> entry : scores.entrySet()) {
@@ -51,35 +54,41 @@ public final class GlowObjective implements Objective {
     ////////////////////////////////////////////////////////////////////////////
     // Properties
 
+    @Override
     public String getName() throws IllegalStateException {
         checkValid();
         return name;
     }
 
+    @Override
     public String getCriteria() throws IllegalStateException {
         checkValid();
         return criteria;
     }
 
+    @Override
     public String getDisplayName() throws IllegalStateException {
         checkValid();
         return displayName;
     }
 
+    @Override
     public void setDisplayName(String displayName) throws IllegalStateException, IllegalArgumentException {
         checkValid();
         Validate.notNull(displayName, "displayName cannot be null");
         Validate.isTrue(displayName.length() <= 32, "displayName cannot be longer than 32 characters");
 
         this.displayName = displayName;
-        scoreboard.broadcast(ScoreboardObjectiveMessage.update(name, displayName));
+        scoreboard.broadcast(ScoreboardObjectiveMessage.update(name, displayName, type.name().toLowerCase()));
     }
 
+    @Override
     public DisplaySlot getDisplaySlot() throws IllegalStateException {
         checkValid();
         return displaySlot;
     }
 
+    @Override
     public void setDisplaySlot(DisplaySlot slot) throws IllegalStateException {
         checkValid();
         if (slot != displaySlot) {
@@ -92,6 +101,21 @@ public final class GlowObjective implements Objective {
         }
     }
 
+    @Override
+    public RenderType getType() {
+        checkValid();
+        return type;
+    }
+
+    @Override
+    public void setType(RenderType type) {
+        checkValid();
+        Validate.notNull(type, "type cannot be null");
+        this.type = type;
+        scoreboard.broadcast(ScoreboardObjectiveMessage.update(name, displayName, type.name().toLowerCase()));
+    }
+
+    @Override
     public boolean isModifiable() throws IllegalStateException {
         checkValid();
         return !criteria.equalsIgnoreCase(Criterias.HEALTH);
@@ -100,6 +124,7 @@ public final class GlowObjective implements Objective {
     ////////////////////////////////////////////////////////////////////////////
     // Score management
 
+    @Override
     public Score getScore(String entry) throws IllegalArgumentException, IllegalStateException {
         Validate.notNull(entry, "Entry cannot be null");
         checkValid();
@@ -122,6 +147,7 @@ public final class GlowObjective implements Objective {
     }
 
     @Deprecated
+    @Override
     public Score getScore(OfflinePlayer player) throws IllegalArgumentException, IllegalStateException {
         Validate.notNull(player, "Player cannot be null");
         return getScore(player.getName());

@@ -14,6 +14,8 @@ public final class ScoreboardTeamMessage implements Message {
     private final String prefix;
     private final String suffix;
     private final int flags;
+    private final String nametagVisibility;
+    private final int color;
 
     // CREATE, ADD_, and REMOVE_PLAYERS only
     private final List<String> entries;
@@ -26,34 +28,36 @@ public final class ScoreboardTeamMessage implements Message {
         REMOVE_PLAYERS
     }
 
-    private ScoreboardTeamMessage(String teamName, Action action, String displayName, String prefix, String suffix, boolean friendlyFire, boolean seeInvisible, List<String> entries) {
+    private ScoreboardTeamMessage(String teamName, Action action, String displayName, String prefix, String suffix, boolean friendlyFire, boolean seeInvisible, String nametagVisibility, int color, List<String> entries) {
         this.teamName = teamName;
         this.action = action;
         this.displayName = displayName;
         this.prefix = prefix;
         this.suffix = suffix;
         this.flags = (friendlyFire ? 1 : 0) | (seeInvisible ? 2 : 0);
+        this.nametagVisibility = nametagVisibility;
+        this.color = color;
         this.entries = entries;
     }
 
-    public static ScoreboardTeamMessage create(String teamName, String displayName, String prefix, String suffix, boolean friendlyFire, boolean seeInvisible, List<String> players) {
-        return new ScoreboardTeamMessage(teamName, Action.CREATE, displayName, prefix, suffix, friendlyFire, seeInvisible, players);
+    public static ScoreboardTeamMessage create(String teamName, String displayName, String prefix, String suffix, boolean friendlyFire, boolean seeInvisible, String nametagVisibility, int color, List<String> players) {
+        return new ScoreboardTeamMessage(teamName, Action.CREATE, displayName, prefix, suffix, friendlyFire, seeInvisible, nametagVisibility, color, players);
     }
 
     public static ScoreboardTeamMessage remove(String teamName) {
-        return new ScoreboardTeamMessage(teamName, Action.REMOVE, null, null, null, false, false, null);
+        return new ScoreboardTeamMessage(teamName, Action.REMOVE, null, null, null, false, false, null, 0, null);
     }
 
-    public static ScoreboardTeamMessage update(String teamName, String displayName, String prefix, String suffix, boolean friendlyFire, boolean seeInvisible) {
-        return new ScoreboardTeamMessage(teamName, Action.UPDATE, displayName, prefix, suffix, friendlyFire, seeInvisible, null);
+    public static ScoreboardTeamMessage update(String teamName, String displayName, String prefix, String suffix, boolean friendlyFire, boolean seeInvisible, String nametagVisibility, int color) {
+        return new ScoreboardTeamMessage(teamName, Action.UPDATE, displayName, prefix, suffix, friendlyFire, seeInvisible, nametagVisibility, color, null);
     }
 
     public static ScoreboardTeamMessage addPlayers(String teamName, List<String> entries) {
-        return new ScoreboardTeamMessage(teamName, Action.ADD_PLAYERS, null, null, null, false, false, entries);
+        return new ScoreboardTeamMessage(teamName, Action.ADD_PLAYERS, null, null, null, false, false, null, 0, entries);
     }
 
     public static ScoreboardTeamMessage removePlayers(String teamName, List<String> entries) {
-        return new ScoreboardTeamMessage(teamName, Action.REMOVE_PLAYERS, null, null, null, false, false, entries);
+        return new ScoreboardTeamMessage(teamName, Action.REMOVE_PLAYERS, null, null, null, false, false, null, 0, entries);
     }
 
     public String getTeamName() {
@@ -80,6 +84,14 @@ public final class ScoreboardTeamMessage implements Message {
         return flags;
     }
 
+    public String getNametagVisibility() {
+        return nametagVisibility;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
     public List<String> getEntries() {
         return entries;
     }
@@ -92,7 +104,9 @@ public final class ScoreboardTeamMessage implements Message {
                 ", displayName='" + displayName + '\'' +
                 ", prefix='" + prefix + '\'' +
                 ", suffix='" + suffix + '\'' +
-                ", flags=" + flags +
+                ", flags=" + flags + '\'' +
+                ", nameTagVisibility='" + nametagVisibility + '\'' +
+                ", color='" + color + '\'' +
                 ", entries=" + entries +
                 '}';
     }
