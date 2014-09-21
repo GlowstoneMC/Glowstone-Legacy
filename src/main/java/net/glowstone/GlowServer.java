@@ -1289,6 +1289,10 @@ public final class GlowServer implements Server {
     public String getWorldType() {
         return config.getString(ServerConfig.Key.LEVEL_TYPE);
     }
+    
+    public boolean keepSpawnChunks() {
+    return config.getBoolean(ServerConfig.Key.PERSIST_SPAWN);
+    }
 
     @Override
     public boolean getGenerateStructures() {
