@@ -39,7 +39,7 @@ Committing your changes
   * For a feature request: "Resolves #_NNN_".
 
 Example commit message:
-> Changed wgen to treat 128 as world height in all cases (fixes #151).
+> Changed when to treat 128 as world height in all cases (fixes #151).
 
 Submitting Your Changes
 -----------------------
