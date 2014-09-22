@@ -6,9 +6,11 @@ import net.glowstone.constants.GlowEffect;
 import net.glowstone.constants.GlowParticle;
 import net.glowstone.entity.*;
 import net.glowstone.entity.objects.GlowItem;
+import net.glowstone.io.ScoreboardIoService;
 import net.glowstone.io.WorldMetadataService.WorldFinalValues;
 import net.glowstone.io.WorldStorageProvider;
 import net.glowstone.io.anvil.AnvilWorldStorageProvider;
+import net.glowstone.io.nbt.NbtScoreboardIoService;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
@@ -88,6 +90,11 @@ public final class GlowWorld implements World {
      * The world metadata service used.
      */
     private final WorldStorageProvider storageProvider;
+
+    /**
+     * The world scoreboard server
+     */
+    //private final ScoreboardIoService scoreboardIoService;
 
     /**
      * The world's UUID
@@ -233,6 +240,7 @@ public final class GlowWorld implements World {
         storageProvider.setWorld(this);
         chunks = new ChunkManager(this, storageProvider.getChunkIoService(), generator);
         populators = generator.getDefaultPopulators(this);
+        //scoreboardIoService = new NbtScoreboardIoService(new File(server.getWorldContainer(), "data"));
 
         // set up values from server defaults
         ticksPerAnimal = server.getTicksPerAnimalSpawns();
@@ -1387,6 +1395,7 @@ public final class GlowWorld implements World {
             public void run() {
                 try {
                     storageProvider.getMetadataService().writeWorldData();
+                    storageProvider.getScoreboardIoService().save();
                 } catch (IOException e) {
                     server.getLogger().severe("Could not save metadata for world: " + getName());
                     e.printStackTrace();
@@ -1416,6 +1425,7 @@ public final class GlowWorld implements World {
         EventFactory.callEvent(new WorldUnloadEvent(this));
         try {
             storageProvider.getChunkIoService().unload();
+            storageProvider.getScoreboardIoService().unload();
         } catch (IOException e) {
             return false;
         }
