@@ -5,6 +5,8 @@ import net.glowstone.block.ItemTable;
 import net.glowstone.block.blocktype.BlockTNT;
 import net.glowstone.entity.GlowEntity;
 import net.glowstone.entity.GlowLivingEntity;
+import net.glowstone.entity.GlowPlayer;
+import net.glowstone.net.message.play.game.ExplosionMessage;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -42,6 +44,7 @@ public class Explosion {
 
     /**
      * Creates a new explosion
+     *
      * @param source The entity causing this explosion
      * @param world The world this explosion is in
      * @param x
@@ -65,9 +68,9 @@ public class Explosion {
         if (power < 0.1f)
             return true;
 
-        List<Block> droppedBlocks = calculateBlocks();
+        Set<BlockVector> droppedBlocks = calculateBlocks();
 
-        EntityExplodeEvent event = EventFactory.callEvent(new EntityExplodeEvent(source, location, droppedBlocks, yield));
+        EntityExplodeEvent event = EventFactory.callEvent(new EntityExplodeEvent(source, location, toBlockList(droppedBlocks), yield));
 
         if (event.isCancelled()) return false;
 
@@ -75,11 +78,14 @@ public class Explosion {
 
         playOutSoundAndParticles();
 
-        for (Block block : droppedBlocks) {
-            handleBlockExplosion((GlowBlock) block);
+        for (BlockVector block : droppedBlocks) {
+            handleBlockExplosion(world.getBlockAt(block.getBlockX(), block.getBlockY(), block.getBlockZ()));
         }
 
-        damageEntities();
+        Collection<GlowPlayer> affectedPlayers = damageEntities();
+        for (GlowPlayer player : affectedPlayers) {
+            playOutExplosion(player, droppedBlocks);
+        }
 
         return true;
     }
@@ -87,9 +93,9 @@ public class Explosion {
     ///////////////////////////////////////////////////
     // Calculate all the dropping blocks
 
-    private List<Block> calculateBlocks() {
+    private Set<BlockVector> calculateBlocks() {
         if (!breakBlocks)
-            return new ArrayList<>();
+            return new HashSet<>();
 
         Set<BlockVector> blocks = new HashSet<>();
 
@@ -106,7 +112,7 @@ public class Explosion {
             }
         }
 
-        return toBlockList(blocks);
+        return blocks;
     }
 
     private void calculateRay(int x, int y, int z, Collection<BlockVector> result) {
@@ -192,9 +198,11 @@ public class Explosion {
     /////////////////////////////////////////
     // Damage entities
 
-    private void damageEntities() {
+    private Collection<GlowPlayer> damageEntities() {
         float power = this.power;
         this.power *= 2f;
+
+        Collection<GlowPlayer> affectedPlayers = new ArrayList<>();
 
         Collection<GlowLivingEntity> entities = getNearbyEntities();
         for (GlowLivingEntity entity : entities) {
@@ -211,9 +219,15 @@ public class Explosion {
             double enchantedDamage = calculateEnchantedDamage(basicDamage, entity);
             vecDistance.multiply(enchantedDamage);
             entity.setVelocity(vecDistance);
+
+            if (entity instanceof GlowPlayer) {
+                affectedPlayers.add((GlowPlayer) entity);
+            }
         }
 
         this.power = power;
+
+        return affectedPlayers;
     }
 
     private double calculateEnchantedDamage(double basicDamage, GlowLivingEntity entity) {
@@ -270,5 +284,24 @@ public class Explosion {
 
     private void playOutExplodeSmoke(Location location) {
         //TODO: play SMOKE and EXPLOSION particles
+    }
+
+    private void playOutExplosion(GlowPlayer player, Iterable<BlockVector> blocks) {
+        Collection<ExplosionMessage.Record> records = new ArrayList<>();
+
+        for (BlockVector block : blocks) {
+            byte x = (byte) (block.getBlockX() - location.getBlockX());
+            byte y = (byte) (block.getBlockY() - location.getBlockY());
+            byte z = (byte) (block.getBlockZ() - location.getBlockZ());
+            records.add(new ExplosionMessage.Record(x, y, z));
+        }
+
+        Vector velocity = player.getVelocity();
+        ExplosionMessage message = new ExplosionMessage((float) location.getX(), (float) location.getY(), (float) location.getZ(),
+                5,
+                (float) velocity.getX(), (float) velocity.getY(), (float) velocity.getZ(),
+                records);
+
+        player.getSession().send(message);
     }
 }
