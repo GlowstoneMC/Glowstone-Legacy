@@ -163,6 +163,11 @@ public final class GlowServer implements Server {
                 parameters.put(ServerConfig.Key.ONLINE_MODE, Boolean.valueOf(args[++i]));
                 continue;
             }
+            
+            if ("--usejline".equals(opt) || "--jline".equals(opt)) {
+                parameters.put(ServerConfig.Key.USE_JLINE, Boolean.valueOf(args[++i]));
+                continue;
+            }
 
             System.err.println("Unknown option: " + opt);
             System.exit(1);
