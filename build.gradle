@@ -8,6 +8,8 @@ apply plugin: 'project-report' // Adds project report tasks
 apply plugin: 'com.github.johnrengelman.shadow' // Provides dependency shading
 apply plugin: 'net.glowstone.remapper' // Provides method remapping
 apply plugin: 'checkstyle' // Checks code style
+apply plugin: 'eclipse' // Provides elipse project tasks
+apply plugin: 'idea' // Provides idea project tasks
 apply from: 'etc/publish.gradle'
 
 // Methods to determine detailed version string
