@@ -7,6 +7,7 @@ import org.bukkit.scoreboard.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Scoreboard objective and associated data.
@@ -20,12 +21,14 @@ public final class GlowObjective implements Objective {
     private final HashMap<String, GlowScore> scores = new HashMap<>();
 
     private String displayName;
+    private RenderType renderType;
     DisplaySlot displaySlot;
 
     public GlowObjective(GlowScoreboard scoreboard, String name, String criteria) {
         this.scoreboard = scoreboard;
         this.name = name;
         this.criteria = criteria;
+        this.renderType = RenderType.INTEGER;
         displayName = name;
     }
 
@@ -72,12 +75,26 @@ public final class GlowObjective implements Objective {
         Validate.isTrue(displayName.length() <= 32, "displayName cannot be longer than 32 characters");
 
         this.displayName = displayName;
-        scoreboard.broadcast(ScoreboardObjectiveMessage.update(name, displayName));
+        scoreboard.broadcast(ScoreboardObjectiveMessage.update(name, displayName, renderType));
     }
 
     public DisplaySlot getDisplaySlot() throws IllegalStateException {
         checkValid();
         return displaySlot;
+    }
+
+    @Override
+    public RenderType getType() throws IllegalStateException {
+        checkValid();
+        return renderType;
+    }
+
+    @Override
+    public void setType(RenderType renderType) throws IllegalStateException {
+        checkValid();
+        Validate.notNull(renderType, "RenderType cannot be null");
+        this.renderType = renderType;
+        scoreboard.broadcast(ScoreboardObjectiveMessage.update(name, displayName, renderType));
     }
 
     public void setDisplaySlot(DisplaySlot slot) throws IllegalStateException {
@@ -94,7 +111,7 @@ public final class GlowObjective implements Objective {
 
     public boolean isModifiable() throws IllegalStateException {
         checkValid();
-        return !criteria.equalsIgnoreCase(Criterias.HEALTH);
+        return !(criteria == Criteria.HEALTH);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -125,5 +142,19 @@ public final class GlowObjective implements Objective {
     public Score getScore(OfflinePlayer player) throws IllegalArgumentException, IllegalStateException {
         Validate.notNull(player, "Player cannot be null");
         return getScore(player.getName());
+    }
+
+    public void setRenderType(String renderType) {
+    }
+
+    public boolean hasScore(String entry) throws IllegalArgumentException, IllegalStateException {
+        Validate.notNull(entry, "Entry cannot be null");
+        checkValid();
+
+        return scores.containsKey(entry);
+    }
+
+    public Set<String> getEntries() throws IllegalStateException {
+        return scores.keySet();
     }
 }

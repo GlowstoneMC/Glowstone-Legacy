@@ -4,7 +4,9 @@ import com.flowpowered.networking.Message;
 import com.google.common.collect.ImmutableSet;
 import net.glowstone.net.message.play.scoreboard.ScoreboardTeamMessage;
 import org.apache.commons.lang.Validate;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.scoreboard.NametagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -27,6 +29,9 @@ public final class GlowTeam implements Team {
     private String displayName;
     private String prefix = "";
     private String suffix = "";
+    private NametagVisibility nameTagVisibility = NametagVisibility.ALWAYS;
+    private NametagVisibility deathMessageVisibility = NametagVisibility.ALWAYS;
+    private ChatColor color = ChatColor.RESET;
     private boolean friendlyFire = false;
     private boolean seeInvisible = true;
 
@@ -57,11 +62,11 @@ public final class GlowTeam implements Team {
         for (OfflinePlayer player : players) {
             playerNames.add(player.getName());
         }
-        return ScoreboardTeamMessage.create(name, displayName, prefix, suffix, friendlyFire, seeInvisible, playerNames);
+        return ScoreboardTeamMessage.create(name, displayName, prefix, suffix, friendlyFire, seeInvisible, nameTagVisibility, color, playerNames);
     }
 
     private void update() {
-        scoreboard.broadcast(ScoreboardTeamMessage.update(name, displayName, prefix, suffix, friendlyFire, seeInvisible));
+        scoreboard.broadcast(ScoreboardTeamMessage.update(name, displayName, prefix, suffix, friendlyFire, seeInvisible, nameTagVisibility, color));
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -130,6 +135,27 @@ public final class GlowTeam implements Team {
         update();
     }
 
+    public NametagVisibility getNametagVisibility() throws IllegalStateException {
+        checkValid();
+        return nameTagVisibility;
+    }
+
+    public void setNametagVisibility(NametagVisibility visibility) throws IllegalStateException {
+        checkValid();
+        nameTagVisibility = visibility;
+        update();
+    }
+
+    public NametagVisibility getDeathMessageVisibility() throws IllegalStateException {
+        return deathMessageVisibility;
+    }
+
+    public void setDeathMessageVisibility(NametagVisibility deathMessageVisibility) throws IllegalStateException, IllegalArgumentException {
+        Validate.notNull(deathMessageVisibility, "NameTagVisibility cannot be null!");
+        checkValid();
+        this.deathMessageVisibility = deathMessageVisibility;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Player management
 
@@ -148,6 +174,14 @@ public final class GlowTeam implements Team {
         checkValid();
         players.add(player);
         scoreboard.setPlayerTeam(player, this);
+    }
+
+    public ChatColor getColor() {
+        return color;
+    }
+
+    public void setColor(ChatColor color) {
+        this.color = color;
     }
 
     public boolean removePlayer(OfflinePlayer player) throws IllegalStateException, IllegalArgumentException {

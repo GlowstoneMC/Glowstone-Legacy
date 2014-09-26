@@ -15,6 +15,7 @@ public final class GlowScore implements Score {
     private final GlowObjective objective;
     private final String entry;
     private int score;
+    private boolean locked;
 
     public GlowScore(GlowObjective objective, String entry) {
         this.objective = objective;
@@ -47,5 +48,13 @@ public final class GlowScore implements Score {
         objective.checkValid();
         this.score = score;
         objective.getScoreboard().broadcast(new ScoreboardScoreMessage(entry, objective.getName(), score));
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
+
+    public boolean getLocked() {
+        return locked;
     }
 }
