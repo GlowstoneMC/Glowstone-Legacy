@@ -1,7 +1,7 @@
 package net.glowstone.entity;
 
 import com.flowpowered.networking.Message;
-import net.glowstone.net.message.play.entity.SpawnLightningStrikeMessage;
+import net.glowstone.network.message.play.entity.SpawnLightningStrikeMessage;
 import net.glowstone.util.Position;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;

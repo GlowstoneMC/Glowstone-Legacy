@@ -1,6 +1,6 @@
 package net.glowstone.entity.meta;
 
-import net.glowstone.net.message.play.game.ClientSettingsMessage;
+import net.glowstone.network.message.play.game.ClientSettingsMessage;
 
 /**
  * Container for settings which the client communicates to the server.

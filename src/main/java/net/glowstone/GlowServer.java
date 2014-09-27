@@ -11,8 +11,8 @@ import net.glowstone.inventory.GlowInventory;
 import net.glowstone.inventory.GlowItemFactory;
 import net.glowstone.io.PlayerDataService;
 import net.glowstone.map.GlowMapView;
-import net.glowstone.net.GlowNetworkServer;
-import net.glowstone.net.SessionRegistry;
+import net.glowstone.network.GlowNetworkServer;
+import net.glowstone.network.SessionRegistry;
 import net.glowstone.scheduler.GlowScheduler;
 import net.glowstone.scheduler.WorldScheduler;
 import net.glowstone.util.*;
@@ -199,7 +199,7 @@ public final class GlowServer implements Server {
     }
 
     /**
-     * A list of all the active {@link net.glowstone.net.GlowSession}s.
+     * A list of all the active {@link net.glowstone.network.GlowSession}s.
      */
     private final SessionRegistry sessions = new SessionRegistry();
 

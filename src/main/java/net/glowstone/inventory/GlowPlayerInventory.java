@@ -2,7 +2,7 @@ package net.glowstone.inventory;
 
 import net.glowstone.entity.GlowHumanEntity;
 import net.glowstone.entity.GlowPlayer;
-import net.glowstone.net.message.play.inv.HeldItemMessage;
+import net.glowstone.network.message.play.inv.HeldItemMessage;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.EntityEquipment;
