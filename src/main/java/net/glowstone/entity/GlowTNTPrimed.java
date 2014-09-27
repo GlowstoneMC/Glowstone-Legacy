@@ -2,6 +2,7 @@ package net.glowstone.entity;
 
 import com.flowpowered.networking.Message;
 import net.glowstone.EventFactory;
+import net.glowstone.Explosion;
 import net.glowstone.net.message.play.entity.SpawnObjectMessage;
 import net.glowstone.util.Position;
 import org.bukkit.Effect;
@@ -20,7 +21,7 @@ public class GlowTNTPrimed extends GlowExplosive implements TNTPrimed {
     private Entity source;
 
     public GlowTNTPrimed(Location location, Entity source) {
-        super(location, 4);
+        super(location, Explosion.POWER_TNT);
         this.fuseTicks = 80;
         this.source = source;
     }
