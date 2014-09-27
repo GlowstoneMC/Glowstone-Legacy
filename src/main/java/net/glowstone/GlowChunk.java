@@ -6,7 +6,7 @@ import net.glowstone.block.ItemTable;
 import net.glowstone.block.blocktype.BlockType;
 import net.glowstone.block.entity.TileEntity;
 import net.glowstone.entity.GlowEntity;
-import net.glowstone.net.message.play.game.ChunkDataMessage;
+import net.glowstone.network.message.play.game.ChunkDataMessage;
 import net.glowstone.util.NibbleArray;
 import org.bukkit.Chunk;
 import org.bukkit.World;

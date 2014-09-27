@@ -1,7 +1,7 @@
 package net.glowstone.command;
 
 import net.glowstone.entity.GlowPlayer;
-import net.glowstone.net.message.play.game.ChatMessage;
+import net.glowstone.network.message.play.game.ChatMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

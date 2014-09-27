@@ -1,8 +1,8 @@
 package net.glowstone.entity;
 
 import com.flowpowered.networking.Message;
-import net.glowstone.net.message.play.entity.EntityHeadRotationMessage;
-import net.glowstone.net.message.play.entity.SpawnMobMessage;
+import net.glowstone.network.message.play.entity.EntityHeadRotationMessage;
+import net.glowstone.network.message.play.entity.SpawnMobMessage;
 import net.glowstone.util.Position;
 import org.bukkit.Location;
 import org.bukkit.entity.Creature;
