@@ -43,7 +43,7 @@ public class GlowTNTPrimed extends GlowExplosive implements TNTPrimed {
 
         if (!event.isCancelled()) {
             Location location = getLocation();
-            double x = location.getX(), y = location.getY(), z = location.getZ();
+            double x = location.getX() + 0.49, y = location.getY() + 0.49, z = location.getZ() + 0.49;
             this.getWorld().createExplosion(this, x, y, z, event.getRadius(), event.getFire(), true);
         }
 

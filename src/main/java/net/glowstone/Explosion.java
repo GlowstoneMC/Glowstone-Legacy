@@ -9,6 +9,7 @@ import net.glowstone.entity.GlowPlayer;
 import net.glowstone.net.message.play.game.ExplosionMessage;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -99,12 +100,12 @@ public class Explosion {
 
         Set<BlockVector> blocks = new HashSet<>();
 
-        final int value = 8;
+        final int value = 16;
 
-        for (int x = -value; x < value; x++) {
-            for (int y = -value; y < value; y++) {
-                for (int z = -value; z < value; z++) {
-                    if (!(x == -value || x == value - 1 || y == -value || y == value - 1 || z == -value || z == value - 1)) {
+        for (int x = 0; x < value; x++) {
+            for (int y = 0; y < value; y++) {
+                for (int z = 0; z < value; z++) {
+                    if (!(x == 0 || x == value - 1 || y == 0 || y == value - 1 || z == 0 || z == value - 1)) {
                         continue;
                     }
                     calculateRay(x, y, z, blocks);
@@ -115,7 +116,10 @@ public class Explosion {
         return blocks;
     }
 
-    private void calculateRay(int x, int y, int z, Collection<BlockVector> result) {
+    private void calculateRay(int ox, int oy, int oz, Collection<BlockVector> result) {
+        double x = ox / 7.5 - 1;
+        double y = oy / 7.5 - 1;
+        double z = oz / 7.5 - 1;
         Vector direction = new Vector(x, y, z);
         direction.normalize();
         direction.multiply(0.3f); //0.3 blocks away with each step
@@ -128,11 +132,10 @@ public class Explosion {
             GlowBlock block = world.getBlockAt(current);
 
             if (block.getType() != Material.AIR) {
-                double sub = getBlastDurability(block);
-                sub /= 5;
-                sub += 0.3F;
-                sub *= 0.3F;
-                currentPower -= sub;
+                double blastDurability = getBlastDurability(block) / 5d;
+                blastDurability += 0.3F;
+                blastDurability *= 0.3F;
+                currentPower -= blastDurability;
 
                 if (currentPower > 0) {
                     result.add(new BlockVector(block.getX(), block.getY(), block.getZ()));
@@ -155,8 +158,6 @@ public class Explosion {
         block.breakNaturally(yield);
 
         setBlockOnFire(block);
-
-        playOutExplodeSmoke(block.getLocation());
     }
 
     private float calculateStartPower() {
@@ -206,19 +207,24 @@ public class Explosion {
 
         Collection<GlowLivingEntity> entities = getNearbyEntities();
         for (GlowLivingEntity entity : entities) {
+            double disDivPower = distanceTo(entity) / (double) this.power;
+            if (disDivPower > 1.0D) continue;
+
             Vector vecDistance = distanceToHead(entity);
-            double distanceDivPower = vecDistance.length() / power;
-            if (distanceDivPower == 0.0) continue;
+            if (vecDistance.length() == 0.0) continue;
 
             vecDistance.normalize();
 
-            double basicDamage = calculateDamage(entity, distanceDivPower);
-            double explosionDamage = (basicDamage * basicDamage + basicDamage) * 4 * power + 1.0D;
+            double basicDamage = calculateDamage(entity, disDivPower);
+            int explosionDamage = (int) ((basicDamage * basicDamage + basicDamage) * 4 * (double) power + 1.0D);
             entity.damage(explosionDamage);
 
             double enchantedDamage = calculateEnchantedDamage(basicDamage, entity);
             vecDistance.multiply(enchantedDamage);
-            entity.setVelocity(vecDistance);
+
+            Vector currentVelocity = entity.getVelocity();
+            currentVelocity.add(vecDistance);
+            entity.setVelocity(currentVelocity);
 
             if (entity instanceof GlowPlayer) {
                 affectedPlayers.add((GlowPlayer) entity);
@@ -243,9 +249,9 @@ public class Explosion {
         return basicDamage;
     }
 
-    private double calculateDamage(GlowEntity entity, double distanceDivPower) {
+    private double calculateDamage(GlowEntity entity, double disDivPower) {
         double damage = world.rayTrace(location, entity);
-        return damage * (1D - distanceDivPower);
+        return (damage * (1D - disDivPower));
     }
 
     private Collection<GlowLivingEntity> getNearbyEntities() {
@@ -267,7 +273,7 @@ public class Explosion {
     }
 
     private Vector distanceToHead(LivingEntity entity) {
-        return location.clone().subtract(entity.getLocation().clone().add(0, entity.getEyeHeight(), 0)).toVector();
+        return entity.getLocation().clone().subtract(location.clone().subtract(0, entity.getEyeHeight(), 0)).toVector();
     }
 
     ///////////////////////////////////////
@@ -277,13 +283,11 @@ public class Explosion {
 
         if (this.power >= 2.0F && this.breakBlocks) {
             //send huge explosion
+            world.showParticle(location, Particle.EXPLOSION_HUGE, 0, 0, 0, 0, 0);
         } else {
             //send large explosion
+            world.showParticle(location, Particle.EXPLOSION_LARGE, 0, 0, 0, 0, 0);
         }
-    }
-
-    private void playOutExplodeSmoke(Location location) {
-        //TODO: play SMOKE and EXPLOSION particles
     }
 
     private void playOutExplosion(GlowPlayer player, Iterable<BlockVector> blocks) {

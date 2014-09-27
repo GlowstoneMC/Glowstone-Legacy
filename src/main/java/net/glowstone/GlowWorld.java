@@ -453,7 +453,7 @@ public final class GlowWorld implements World {
          * To calculate this step through the entity's bounding box and check whether the ray to the point in the bounding box is blocked.
          * Return (unblockedRays / allRays)
          */
-        return 0;
+        return 1;
     }
 
 
