@@ -37,10 +37,12 @@ public final class EntityStorage {
     static {
         bind(new PlayerStore());
         bind(new ItemStore());
+        bind(new TNTPrimedStorage());
     }
 
     /**
      * Binds a store by adding entries for it to the tables.
+     *
      * @param store The store object.
      * @param <T> The type of entity.
      */
@@ -51,6 +53,7 @@ public final class EntityStorage {
 
     /**
      * Load a new entity in the given world from the given data tag.
+     *
      * @param world The target world.
      * @param compound The tag to load from.
      * @return The newly constructed entity.
@@ -113,6 +116,7 @@ public final class EntityStorage {
 
     /**
      * Save an entity's data to the given compound tag.
+     *
      * @param entity The entity to save.
      * @param compound The target tag.
      */
@@ -126,6 +130,7 @@ public final class EntityStorage {
 
     /**
      * Load an entity's data from the given compound tag.
+     *
      * @param entity The target entity.
      * @param compound The tag to load from.
      */
