@@ -34,8 +34,8 @@ public class GlowDoubleChestInventory extends GlowInventory implements DoubleChe
     }
 
     private void fill() {
-        super.replaceContent(0, first.getContents());
-        super.replaceContent(SPLITTER, second.getContents());
+        super.replaceContents(0, first.getContents());
+        super.replaceContents(SPLITTER, second.getContents());
     }
 
     private void update() {
@@ -68,8 +68,8 @@ public class GlowDoubleChestInventory extends GlowInventory implements DoubleChe
     // Override super methods to track modifying of the inventory
 
     @Override
-    public void replaceContent(int beginIndex, ItemStack... content) {
-        super.replaceContent(beginIndex, content);
+    public void replaceContents(int beginIndex, ItemStack... content) {
+        super.replaceContents(beginIndex, content);
         update();
     }
 

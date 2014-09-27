@@ -37,7 +37,7 @@ public class GlowChest extends GlowBlockState implements Chest {
 
         if (result) {
             TEChest tileEntity = getTileEntity();
-            tileEntity.setContent(contents);
+            tileEntity.setContents(contents);
             tileEntity.updateInRange();
         }
 

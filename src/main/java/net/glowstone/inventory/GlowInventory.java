@@ -303,7 +303,7 @@ public class GlowInventory implements Inventory {
      * @param beginIndex The index to begin to replace the contents
      * @param items The ItemStack that will replace the existing ones
      */
-    public void replaceContent(int beginIndex, ItemStack... items) {
+    public void replaceContents(int beginIndex, ItemStack... items) {
         for (int i = beginIndex; i < slots.length; i++) {
             if (i >= items.length + beginIndex) {
                 break;
