@@ -5,13 +5,20 @@ import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.entity.TEBanner;
 import net.glowstone.block.entity.TileEntity;
+import net.glowstone.block.state.GlowBanner;
 import net.glowstone.entity.GlowPlayer;
+import net.glowstone.util.nbt.CompoundTag;
+import org.bukkit.BannerPattern;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BannerMeta;
+import org.bukkit.material.Banner;
+import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
-import java.util.Collection;
+import java.util.*;
 
 public class BlockBanner extends BlockType {
 
@@ -21,8 +28,14 @@ public class BlockBanner extends BlockType {
 
     @Override
     public Collection<ItemStack> getDrops(GlowBlock block) {
-        //TODO: Drops
-        return super.getDrops(block);
+        GlowBanner state = (GlowBanner) block.getState();
+        ItemStack drop = new ItemStack(Material.BANNER, 1);
+        BannerMeta meta = (BannerMeta) drop.getItemMeta();
+        meta.setPattern(state.getPattern());
+        drop.setItemMeta(meta);
+        drop.setDurability(state.getBase().getDyeData());
+
+        return Arrays.asList(drop);
     }
 
     @Override
@@ -32,13 +45,42 @@ public class BlockBanner extends BlockType {
 
     @Override
     public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {
-        //TODO: Place block
         super.placeBlock(player, state, face, holding, clickedLoc);
+        MaterialData data = state.getData();
+        if(!(data instanceof Banner)) {
+            warnMaterialData(Banner.class, data);
+            return;
+        }
+        ((Banner) data).setFacingDirection(face);
     }
 
     @Override
     public void afterPlace(GlowPlayer player, GlowBlock block, ItemStack holding) {
-        //TODO: TileEntity data
-        super.afterPlace(player, block, holding);
+        GlowBanner banner = (GlowBanner) block.getState();
+        banner.setBase(DyeColor.getByDyeData((byte) holding.getDurability()));
+        BannerMeta meta = (BannerMeta) holding.getData();
+        banner.setPattern(meta.getPattern());
     }
+
+    public static List<CompoundTag> toNBT(BannerPattern pattern) {
+        List<CompoundTag> patterns = new ArrayList<>();
+        for(Map.Entry<BannerPattern.Type, DyeColor> layer : pattern.getLayers().entrySet()) {
+            CompoundTag layerTag = new CompoundTag();
+            layerTag.putString("Pattern", layer.getKey().getCode());
+            layerTag.putByte("Color", layer.getValue().getDyeData());
+        }
+        return patterns;
+    }
+
+    public static BannerPattern fromNBT(List<CompoundTag> tag) {
+        BannerPattern.Builder builder = BannerPattern.builder();
+        for(CompoundTag layer : tag) {
+            BannerPattern.Type type = BannerPattern.Type.getByCode(layer.getString("Pattern"));
+            DyeColor color = DyeColor.getByDyeData(layer.getByte("Color"));
+            builder.layer(type, color);
+        }
+        return builder.build();
+    }
+
+
 }
