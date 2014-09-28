@@ -48,7 +48,7 @@ public class GlowBanner extends GlowBlockState implements Banner {
     @Override
     public boolean update(boolean force, boolean applyPhysics) {
         boolean result = super.update(force, applyPhysics);
-        if(result) {
+        if (result) {
             TEBanner banner = getTileEntity();
             banner.setBase(base);
             banner.setPattern(pattern);

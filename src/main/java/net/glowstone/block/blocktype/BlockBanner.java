@@ -47,7 +47,7 @@ public class BlockBanner extends BlockType {
     public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {
         super.placeBlock(player, state, face, holding, clickedLoc);
         MaterialData data = state.getData();
-        if(!(data instanceof Banner)) {
+        if (!(data instanceof Banner)) {
             warnMaterialData(Banner.class, data);
             return;
         }
@@ -64,7 +64,7 @@ public class BlockBanner extends BlockType {
 
     public static List<CompoundTag> toNBT(BannerPattern pattern) {
         List<CompoundTag> patterns = new ArrayList<>();
-        for(Map.Entry<BannerPattern.Type, DyeColor> layer : pattern.getLayers().entrySet()) {
+        for (Map.Entry<BannerPattern.Type, DyeColor> layer : pattern.getLayers().entrySet()) {
             CompoundTag layerTag = new CompoundTag();
             layerTag.putString("Pattern", layer.getKey().getCode());
             layerTag.putByte("Color", layer.getValue().getDyeData());
@@ -74,7 +74,7 @@ public class BlockBanner extends BlockType {
 
     public static BannerPattern fromNBT(List<CompoundTag> tag) {
         BannerPattern.Builder builder = BannerPattern.builder();
-        for(CompoundTag layer : tag) {
+        for (CompoundTag layer : tag) {
             BannerPattern.Type type = BannerPattern.Type.getByCode(layer.getString("Pattern"));
             DyeColor color = DyeColor.getByDyeData(layer.getByte("Color"));
             builder.layer(type, color);

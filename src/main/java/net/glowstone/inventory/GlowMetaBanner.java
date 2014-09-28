@@ -69,7 +69,7 @@ public class GlowMetaBanner extends GlowMetaItem implements BannerMeta {
         Map<String, Object> result = super.serialize();
         result.put("meta-type", "BANNER");
         List<Map<String, String>> patternsList = new ArrayList<>();
-        for(Map.Entry<BannerPattern.Type, DyeColor> layer : pattern.getLayers().entrySet()) {
+        for (Map.Entry<BannerPattern.Type, DyeColor> layer : pattern.getLayers().entrySet()) {
             patternsList.add(ImmutableMap.of(layer.getKey().toString(), layer.getValue().toString()));
         }
         result.put("pattern", patternsList);
