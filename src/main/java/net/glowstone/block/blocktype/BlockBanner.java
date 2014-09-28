@@ -51,15 +51,21 @@ public class BlockBanner extends BlockType {
             warnMaterialData(Banner.class, data);
             return;
         }
-        ((Banner) data).setFacingDirection(face);
+        Banner banner = (Banner) data;
+        if (banner.isWallBanner()) {
+            banner.setFacingDirection(face);
+        } else {
+            banner.setFacingDirection(player.getFacing().getOppositeFace());
+        }
     }
 
     @Override
     public void afterPlace(GlowPlayer player, GlowBlock block, ItemStack holding) {
         GlowBanner banner = (GlowBanner) block.getState();
         banner.setBase(DyeColor.getByDyeData((byte) holding.getDurability()));
-        BannerMeta meta = (BannerMeta) holding.getData();
+        BannerMeta meta = (BannerMeta) holding.getItemMeta();
         banner.setPattern(meta.getPattern());
+        banner.update();
     }
 
     public static List<CompoundTag> toNBT(BannerPattern pattern) {
@@ -68,6 +74,7 @@ public class BlockBanner extends BlockType {
             CompoundTag layerTag = new CompoundTag();
             layerTag.putString("Pattern", layer.getKey().getCode());
             layerTag.putByte("Color", layer.getValue().getDyeData());
+            patterns.add(layerTag);
         }
         return patterns;
     }
