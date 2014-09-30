@@ -15,3 +15,8 @@ target
 !.gitmodules
 !.mailmap
 !.gitattributes
+*.json
+*.yml
+*.txt
+*.dat
+*.mca
