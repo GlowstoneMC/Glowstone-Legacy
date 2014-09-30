@@ -28,6 +28,8 @@ import net.glowstone.util.StatisticMap;
 import net.glowstone.util.TextWrapper;
 import org.apache.commons.lang.Validate;
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.serialization.DelegateDeserialization;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
@@ -608,10 +610,36 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         boolean spawnAtBed = false;
         Location dest = world.getSpawnLocation();
         if (bedSpawn != null) {
-            if (bedSpawn.getBlock().getType() == Material.BED_BLOCK) {
-                // todo: spawn next to the bed instead of inside it
-                dest = bedSpawn.clone();
-                spawnAtBed = true;
+            Block bedBlock = bedSpawn.getBlock();
+            if (bedBlock.getType() == Material.BED_BLOCK) {
+                // Check where we should spawn the player
+                Location newDest = null;
+                // Get the blocks around the bed
+                Block east = bedBlock.getRelative(BlockFace.EAST);
+                Block eastUp = east.getRelative(BlockFace.UP);
+                Block north = bedBlock.getRelative(BlockFace.NORTH);
+                Block northUp = north.getRelative(BlockFace.UP);
+                Block west = bedBlock.getRelative(BlockFace.WEST);
+                Block westUp = west.getRelative(BlockFace.UP);
+                Block south = bedBlock.getRelative(BlockFace.SOUTH);
+                Block southUp = south.getRelative(BlockFace.UP);
+                // Check where the player could stand. Sorry for the ugly if-else blocks, not very beautiful
+                if (east.getType() == Material.AIR && eastUp.getType() == Material.AIR) {
+                    newDest = east.getLocation();
+                } else if (north.getType() == Material.AIR && northUp.getType() == Material.AIR) {
+                    newDest = north.getLocation();
+                }
+                else if(west.getType() == Material.AIR && westUp.getType() == Material.AIR) {
+                    newDest = west.getLocation();
+                }
+                else if(south.getType() == Material.AIR && southUp.getType() == Material.AIR){
+                    newDest = south.getLocation();
+                }
+                //If we found a nice place, spawn the player there
+                if(newDest != null) {
+                    dest = newDest;
+                    spawnAtBed = true;
+                }
             }
         }
 
