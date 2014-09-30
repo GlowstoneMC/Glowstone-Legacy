@@ -295,6 +295,8 @@ public final class GlowSession extends BasicSession {
 
         player.getWorld().getRawPlayers().add(player);
 
+        player.setOnline();
+
         GlowServer.logger.info(player.getName() + " [" + address + "] connected, UUID: " + player.getUniqueId());
 
         // message and user list
@@ -360,7 +362,7 @@ public final class GlowSession extends BasicSession {
 
             reason = event.getReason();
 
-            if (event.getLeaveMessage() != null) {
+            if (player.isOnline() && event.getLeaveMessage() != null) {
                 server.broadcastMessage(event.getLeaveMessage());
             }
         }
@@ -478,9 +480,11 @@ public final class GlowSession extends BasicSession {
 
         GlowServer.logger.info(player.getName() + " [" + address + "] lost connection");
 
-        final String text = EventFactory.onPlayerQuit(player).getQuitMessage();
-        if (text != null && !text.isEmpty()) {
-            server.broadcastMessage(text);
+        if (player.isOnline()) {
+            final String text = EventFactory.onPlayerQuit(player).getQuitMessage();
+            if (text != null && !text.isEmpty()) {
+                server.broadcastMessage(text);
+            }
         }
 
         player = null; // in case we are disposed twice

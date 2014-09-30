@@ -245,6 +245,11 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     private float walkSpeed = 0.2f;
 
     /**
+     * The player's online state.
+     */
+    private boolean online = false;
+
+    /**
      * Creates a new player and adds it to the world.
      * @param session The player's session.
      * @param profile The player's profile with name and UUID information.
@@ -730,7 +735,14 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
     @Override
     public boolean isOnline() {
-        return session.isActive();
+        return online;
+    }
+
+    /**
+     * Sets this player's online state.
+     */
+    public void setOnline() {
+        this.online = true;
     }
 
     @Override
