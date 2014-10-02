@@ -25,7 +25,6 @@ public class GlowEnchantingInventory extends GlowInventory implements Enchanting
     @Override
     public void setItem(ItemStack item) {
         setItem(ITEM_SLOT, item);
-        //TODO: Enchanting stuff
     }
 
     @Override
@@ -35,7 +34,6 @@ public class GlowEnchantingInventory extends GlowInventory implements Enchanting
 
     @Override
     public void setLapis(ItemStack item) {
-        //TODO: Prevent non-lapis items
         setItem(LAPIS_SLOT, item);
     }
 
