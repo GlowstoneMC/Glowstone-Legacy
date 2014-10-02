@@ -9,11 +9,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 
-public class BlockMelonStem extends BlockType {
+public class BlockMelonStem extends BlockGrowable {
     private final Random random = new Random();
 
     @Override
     public Collection<ItemStack> getDrops(GlowBlock block) {
         return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.MELON_SEEDS, random.nextInt(4))));
+    }
+
+    @Override
+    public void fertilize(GlowBlock block) {
+        // TODO
     }
 }

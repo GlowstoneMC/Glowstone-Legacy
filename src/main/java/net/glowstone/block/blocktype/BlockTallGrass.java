@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 
-public class BlockTallGrass extends BlockType {
+public class BlockTallGrass extends BlockGrowable {
     private final Random random = new Random();
 
     @Override
@@ -29,5 +29,10 @@ public class BlockTallGrass extends BlockType {
     @Override
     public boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
         return true;
+    }
+
+    @Override
+    public void fertilize(GlowBlock block) {
+        // TODO
     }
 }
