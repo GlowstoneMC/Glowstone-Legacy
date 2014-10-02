@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 
-public class BlockMelonStem extends BlockGrowable {
+public class BlockMelonStem extends BlockType implements IBlockGrowable {
     private final Random random = new Random();
 
     @Override

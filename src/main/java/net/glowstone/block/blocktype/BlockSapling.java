@@ -8,7 +8,7 @@ import org.bukkit.material.Tree;
 
 import net.glowstone.block.GlowBlock;
 
-public class BlockSapling extends BlockGrowable {
+public class BlockSapling extends BlockType implements IBlockGrowable {
 
     // TODO
     // maybe use GlowWorld random instance instead
