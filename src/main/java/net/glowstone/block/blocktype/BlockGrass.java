@@ -36,7 +36,8 @@ public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
                     if (random.nextInt(8) == 0 && world.getHighestBlockYAt(x, z) == y) {
                         // sometimes grow random flower if highest block
                         // TODO
-                        // choose random flowers and consider the biome
+                        // call a method that choose a random flower depending
+                        // on the biome
                         if (random.nextInt(2) == 0) {
                             world.getBlockAt(x, y, z).setType(Material.RED_ROSE);
                         } else {
@@ -54,11 +55,11 @@ public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
                     z += random.nextInt(3) - 1;
                     if (world.getBlockAt(x, y - 1, z).getType().equals(Material.GRASS)) {
                         j++;
-                        continue;
+                        continue; // FIXME
                     }
                 }
                 i++;
-                break;
+                break; // FIXME
             }
         } while (i < 128);
     }

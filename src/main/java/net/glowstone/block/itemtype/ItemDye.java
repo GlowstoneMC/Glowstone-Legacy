@@ -37,8 +37,6 @@ public class ItemDye extends ItemType {
                     }
                 }
             }
-        } else {
-            //warnMaterialData(Dye.class, data);
         }
     }
 }
