@@ -13,6 +13,8 @@ import java.util.Objects;
  */
 public final class InventoryMonitor {
 
+    private static int nextId = 1;
+
     private final InventoryView view;
     private final ItemStack[] slots;
     private final int size, id;
@@ -32,8 +34,8 @@ public final class InventoryMonitor {
         if (isDefault) {
             id = 0;
         } else {
-            // todo: counting or something
-            id = 1;
+            id = nextId;
+            nextId = (nextId % 100) + 1;
         }
         type = getTypeId(view.getType());
 
@@ -119,12 +121,15 @@ public final class InventoryMonitor {
      */
     private static String getTypeId(InventoryType type) {
         switch (type) {
+            case PLAYER:
+            case CHEST:
+            case ENDER_CHEST:
+            default:
+                return "minecraft:chest";
             case WORKBENCH:
                 return "minecraft:crafting_table";
             case FURNACE:
                 return "minecraft:furnace";
-            case DROPPER:
-                return "minecraft:dropper";
             case DISPENSER:
                 return "minecraft:dispenser";
             case ENCHANTING:
@@ -139,14 +144,8 @@ public final class InventoryMonitor {
                 return "minecraft:anvil";
             case HOPPER:
                 return "minecraft:hopper";
-            case CRAFTING:
-            case CREATIVE:
-                // todo: check whether CRAFTING or CREATIVE are even legal
-            case PLAYER:
-            case CHEST:
-            case ENDER_CHEST:
-            default:
-                return "minecraft:chest";
+            case DROPPER:
+                return "minecraft:dropper";
         }
     }
 }
