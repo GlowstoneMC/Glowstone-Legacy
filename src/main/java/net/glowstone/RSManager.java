@@ -1,7 +1,5 @@
 package net.glowstone;
 
-import net.glowstone.GlowServer;
-import net.glowstone.GlowWorld;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.ItemTable;
 import net.glowstone.block.blocktype.BlockType;
@@ -24,6 +22,7 @@ public class RSManager {
     /**
      * An immutable class for storing 3D world positions.
      */
+    //TODO: Where should this class be moved to?
     public final class RSPos {
         public final int x, y, z;
 
@@ -77,16 +76,16 @@ public class RSManager {
     /**
      * Various redstone-related sets, maps and lists.
      */ 
-    private Map<RSPos,Integer> redPowerNew = new HashMap<RSPos,Integer>();
-    private Map<RSPos,Integer> redPowerOld = new HashMap<RSPos,Integer>();
+    private Map<RSPos,Integer> redPowerNew = new HashMap<>();
+    private Map<RSPos,Integer> redPowerOld = new HashMap<>();
     private Map<RSPos,Integer> redPowerRead = redPowerNew;
-    private Set<RSPos> redPowerFlush = new HashSet<RSPos>();
-    private Set<RSPos> redSourceNew = new HashSet<RSPos>();
-    private Set<RSPos> redSourceOld = new HashSet<RSPos>();
-    private Set<RSPos> chunksDirtyNew = new HashSet<RSPos>();
-    private Set<RSPos> chunksDirtyOld = new HashSet<RSPos>();
-    private Set<RSPos> blocksDirtyNew = new HashSet<RSPos>();
-    private Set<RSPos> blocksDirtyOld = new HashSet<RSPos>();
+    private Set<RSPos> redPowerFlush = new HashSet<>();
+    private Set<RSPos> redSourceNew = new HashSet<>();
+    private Set<RSPos> redSourceOld = new HashSet<>();
+    private Set<RSPos> chunksDirtyNew = new HashSet<>();
+    private Set<RSPos> chunksDirtyOld = new HashSet<>();
+    private Set<RSPos> blocksDirtyNew = new HashSet<>();
+    private Set<RSPos> blocksDirtyOld = new HashSet<>();
 
     /**
      * Create a new RS manager for a world.
@@ -189,7 +188,7 @@ public class RSManager {
         if(destBlock == null) {
             return;
         }
-
+        
         // Get source material
         Material srcMat = srcBlock.getType();
         if(srcMat == null) {

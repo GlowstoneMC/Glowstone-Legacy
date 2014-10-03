@@ -119,6 +119,7 @@ public final class ItemTable {
         reg(Material.REDSTONE_TORCH_ON, new BlockRedstoneTorch(true));
         reg(Material.REDSTONE_TORCH_OFF, new BlockRedstoneTorch(false));
         reg(Material.REDSTONE_WIRE, new BlockRedstoneDust());
+        reg(Material.REDSTONE_BLOCK, new BlockRedstone());
 
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
