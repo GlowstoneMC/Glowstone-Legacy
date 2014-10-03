@@ -39,6 +39,26 @@ public final class PluginMessage implements Message {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PluginMessage that = (PluginMessage) o;
+
+        if (channel != null ? !channel.equals(that.channel) : that.channel != null) return false;
+        if (!Arrays.equals(data, that.data)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = channel != null ? channel.hashCode() : 0;
+        result = 31 * result + (data != null ? Arrays.hashCode(data) : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "PluginMessage{" +
                 "channel='" + channel + '\'' +

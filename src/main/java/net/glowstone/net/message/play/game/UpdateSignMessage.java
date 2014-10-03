@@ -50,6 +50,30 @@ public final class UpdateSignMessage implements Message {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UpdateSignMessage that = (UpdateSignMessage) o;
+
+        if (x != that.x) return false;
+        if (y != that.y) return false;
+        if (z != that.z) return false;
+        if (!Arrays.equals(message, that.message)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = x;
+        result = 31 * result + y;
+        result = 31 * result + z;
+        result = 31 * result + (message != null ? Arrays.hashCode(message) : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "UpdateSignMessage{x=" + x + ",y=" + y + ",z=" + z + ",message=" + Arrays.toString(message) + "}";
     }

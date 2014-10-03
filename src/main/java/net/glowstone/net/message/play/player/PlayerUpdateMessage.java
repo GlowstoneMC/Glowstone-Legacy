@@ -28,4 +28,21 @@ public class PlayerUpdateMessage implements Message {
                 "onGround=" + onGround +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PlayerUpdateMessage that = (PlayerUpdateMessage) o;
+
+        if (onGround != that.onGround) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return (onGround ? 1 : 0);
+    }
 }

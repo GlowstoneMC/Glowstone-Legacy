@@ -41,4 +41,32 @@ public final class PlayerPositionMessage extends PlayerUpdateMessage {
                 ", z=" + z +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        PlayerPositionMessage that = (PlayerPositionMessage) o;
+
+        if (Double.compare(that.x, x) != 0) return false;
+        if (Double.compare(that.y, y) != 0) return false;
+        if (Double.compare(that.z, z) != 0) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        long temp;
+        temp = Double.doubleToLongBits(x);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(y);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(z);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 }

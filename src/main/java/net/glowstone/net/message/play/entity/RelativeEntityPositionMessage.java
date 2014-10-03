@@ -40,6 +40,32 @@ public final class RelativeEntityPositionMessage implements Message {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RelativeEntityPositionMessage that = (RelativeEntityPositionMessage) o;
+
+        if (deltaX != that.deltaX) return false;
+        if (deltaY != that.deltaY) return false;
+        if (deltaZ != that.deltaZ) return false;
+        if (id != that.id) return false;
+        if (onGround != that.onGround) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + deltaX;
+        result = 31 * result + deltaY;
+        result = 31 * result + deltaZ;
+        result = 31 * result + (onGround ? 1 : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "RelativeEntityPositionMessage{" +
                 "id=" + id +

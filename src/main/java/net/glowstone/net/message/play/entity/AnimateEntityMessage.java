@@ -28,6 +28,26 @@ public final class AnimateEntityMessage implements Message {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AnimateEntityMessage that = (AnimateEntityMessage) o;
+
+        if (animation != that.animation) return false;
+        if (id != that.id) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + animation;
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "AnimateEntityMessage{id=" + id + ",animation=" + animation + "}";
     }

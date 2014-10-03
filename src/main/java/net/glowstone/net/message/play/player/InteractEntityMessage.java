@@ -50,6 +50,33 @@ public final class InteractEntityMessage implements Message {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        InteractEntityMessage that = (InteractEntityMessage) o;
+
+        if (action != that.action) return false;
+        if (id != that.id) return false;
+        if (Float.compare(that.targetX, targetX) != 0) return false;
+        if (Float.compare(that.targetY, targetY) != 0) return false;
+        if (Float.compare(that.targetZ, targetZ) != 0) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + action;
+        result = 31 * result + (targetX != +0.0f ? Float.floatToIntBits(targetX) : 0);
+        result = 31 * result + (targetY != +0.0f ? Float.floatToIntBits(targetY) : 0);
+        result = 31 * result + (targetZ != +0.0f ? Float.floatToIntBits(targetZ) : 0);
+        return result;
+    }
+
+
     public enum Action {
         INTERACT,
         ATTACK,

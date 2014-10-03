@@ -28,4 +28,24 @@ public final class CreativeItemMessage implements Message {
                 ", item=" + item +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CreativeItemMessage that = (CreativeItemMessage) o;
+
+        if (slot != that.slot) return false;
+        if (item != null ? !item.equals(that.item) : that.item != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = slot;
+        result = 31 * result + (item != null ? item.hashCode() : 0);
+        return result;
+    }
 }

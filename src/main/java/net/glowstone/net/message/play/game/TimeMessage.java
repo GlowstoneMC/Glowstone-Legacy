@@ -20,6 +20,26 @@ public final class TimeMessage implements Message {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TimeMessage that = (TimeMessage) o;
+
+        if (time != that.time) return false;
+        if (worldAge != that.worldAge) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (worldAge ^ (worldAge >>> 32));
+        result = 31 * result + (int) (time ^ (time >>> 32));
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "TimeMessage{worldAge=" + worldAge + ",time=" + time + "}";
     }

@@ -73,6 +73,44 @@ public final class SpawnObjectMessage implements Message {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SpawnObjectMessage that = (SpawnObjectMessage) o;
+
+        if (data != that.data) return false;
+        if (id != that.id) return false;
+        if (pitch != that.pitch) return false;
+        if (type != that.type) return false;
+        if (velX != that.velX) return false;
+        if (velY != that.velY) return false;
+        if (velZ != that.velZ) return false;
+        if (x != that.x) return false;
+        if (y != that.y) return false;
+        if (yaw != that.yaw) return false;
+        if (z != that.z) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + type;
+        result = 31 * result + x;
+        result = 31 * result + y;
+        result = 31 * result + z;
+        result = 31 * result + pitch;
+        result = 31 * result + yaw;
+        result = 31 * result + data;
+        result = 31 * result + velX;
+        result = 31 * result + velY;
+        result = 31 * result + velZ;
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "SpawnObjectMessage{" +
                 "id=" + id +

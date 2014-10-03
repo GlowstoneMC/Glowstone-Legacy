@@ -63,6 +63,40 @@ public final class SpawnPlayerMessage implements Message {
         return metadata;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SpawnPlayerMessage that = (SpawnPlayerMessage) o;
+
+        if (id != that.id) return false;
+        if (item != that.item) return false;
+        if (pitch != that.pitch) return false;
+        if (rotation != that.rotation) return false;
+        if (x != that.x) return false;
+        if (y != that.y) return false;
+        if (z != that.z) return false;
+        if (metadata != null ? !metadata.equals(that.metadata) : that.metadata != null) return false;
+        if (uuid != null ? !uuid.equals(that.uuid) : that.uuid != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (uuid != null ? uuid.hashCode() : 0);
+        result = 31 * result + x;
+        result = 31 * result + y;
+        result = 31 * result + z;
+        result = 31 * result + rotation;
+        result = 31 * result + pitch;
+        result = 31 * result + item;
+        result = 31 * result + (metadata != null ? metadata.hashCode() : 0);
+        return result;
+    }
+
     public String toString() {
         return "SpawnPlayerMessage{" +
                 "id=" + id +

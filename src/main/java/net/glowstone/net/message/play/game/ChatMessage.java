@@ -29,4 +29,24 @@ public final class ChatMessage implements Message {
     public int getMode() {
         return mode;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ChatMessage that = (ChatMessage) o;
+
+        if (mode != that.mode) return false;
+        if (text != null ? !text.equals(that.text) : that.text != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = text != null ? text.hashCode() : 0;
+        result = 31 * result + mode;
+        return result;
+    }
 }

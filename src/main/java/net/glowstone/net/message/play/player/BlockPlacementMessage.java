@@ -65,4 +65,36 @@ public final class BlockPlacementMessage implements Message {
                 ", cursorZ=" + cursorZ +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BlockPlacementMessage that = (BlockPlacementMessage) o;
+
+        if (cursorX != that.cursorX) return false;
+        if (cursorY != that.cursorY) return false;
+        if (cursorZ != that.cursorZ) return false;
+        if (direction != that.direction) return false;
+        if (x != that.x) return false;
+        if (y != that.y) return false;
+        if (z != that.z) return false;
+        if (heldItem != null ? !heldItem.equals(that.heldItem) : that.heldItem != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = x;
+        result = 31 * result + y;
+        result = 31 * result + z;
+        result = 31 * result + direction;
+        result = 31 * result + (heldItem != null ? heldItem.hashCode() : 0);
+        result = 31 * result + cursorX;
+        result = 31 * result + cursorY;
+        result = 31 * result + cursorZ;
+        return result;
+    }
 }

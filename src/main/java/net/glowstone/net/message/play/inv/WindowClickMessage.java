@@ -52,4 +52,32 @@ public final class WindowClickMessage implements Message {
                 ", item=" + item +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        WindowClickMessage that = (WindowClickMessage) o;
+
+        if (button != that.button) return false;
+        if (id != that.id) return false;
+        if (mode != that.mode) return false;
+        if (slot != that.slot) return false;
+        if (transaction != that.transaction) return false;
+        if (item != null ? !item.equals(that.item) : that.item != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + slot;
+        result = 31 * result + button;
+        result = 31 * result + transaction;
+        result = 31 * result + mode;
+        result = 31 * result + (item != null ? item.hashCode() : 0);
+        return result;
+    }
 }
