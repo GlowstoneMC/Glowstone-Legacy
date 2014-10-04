@@ -1,15 +1,16 @@
 package net.glowstone.block.blocktype;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import net.glowstone.RSManager;
 import net.glowstone.block.GlowBlock;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Stairs;
+import org.bukkit.material.Step;
 
 public class BlockRedstoneDust extends BlockType {
     @Override
@@ -181,6 +182,16 @@ public class BlockRedstoneDust extends BlockType {
             }
             if(mat == Material.GLOWSTONE) {
                 return true;
+            }
+            MaterialData md = floor.getState().getData();
+            if (md instanceof Step) {
+                if(((Step)md).isInverted()) { //You can place redstone on upper slabs
+                    return true;
+                }
+            } else if (md instanceof Stairs) {
+                if(((Stairs)md).isInverted()) {
+                    return true;
+                }
             }
         }
         return false;
