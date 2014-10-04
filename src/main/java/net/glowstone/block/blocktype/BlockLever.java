@@ -32,7 +32,7 @@ public class BlockLever extends BlockAttachable {
             } else if (isDirect) { //All other faces aren't powered direct
                 return false;
             }
-            return true; //Emits power to all directions, but not directs
+            return true; //Emits power to all directions, but not direct
         }
         return false;
     }
@@ -58,13 +58,10 @@ public class BlockLever extends BlockAttachable {
     
     @Override
     public void traceBlockPowerStart(GlowBlock block, RSManager rsManager) {
-        Material thisMat = getMaterial();
-        if(thisMat != Material.LEVER) {
-            return;
-        }
         final MaterialData data = block.getState().getData();
         if (data instanceof Lever) {
             final Lever l = (Lever) data;
+            if(!l.isPowered()) return;
             // Trace in all directions.
             traceBlockPowerFromLever(block, rsManager, l.getAttachedFace(), BlockFace.UP);
             traceBlockPowerFromLever(block, rsManager, l.getAttachedFace(), BlockFace.DOWN);
