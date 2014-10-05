@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import java.util.*;
+import org.bukkit.util.BlockVector;
 
 /**
  * A class to manage redstone logic for a world.
@@ -20,55 +21,6 @@ public class RSManager {
     public static final boolean DEBUG_REDSTONE = false;
 
     /**
-     * An immutable class for storing 3D world positions.
-     */
-    //TODO: Where should this class be moved to?
-    public final class RSPos {
-        public final int x, y, z;
-
-        public RSPos(Block block) {
-            this(block.getX(), block.getY(), block.getZ());
-        }
-
-        public RSPos(int x, int y, int z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 1;
-
-            hash = hash * 31 + this.y;
-            hash = hash * 53 + this.x;
-            hash = hash * 19 + this.z;
-
-            return hash;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if(o instanceof RSPos) {
-                RSPos op = (RSPos)o;
-
-                return true
-                    && op.x == this.x
-                    && op.y == this.y
-                    && op.z == this.z;
-
-            }
-
-            return false;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("RSPos(%d, %d, %d)", x, y, z);
-        }
-    }
-
-    /**
      * The world this manager is assigned to.
      */
     private GlowWorld world;
@@ -76,16 +28,16 @@ public class RSManager {
     /**
      * Various redstone-related sets, maps and lists.
      */ 
-    private Map<RSPos,Integer> redPowerNew = new HashMap<>();
-    private Map<RSPos,Integer> redPowerOld = new HashMap<>();
-    private Map<RSPos,Integer> redPowerRead = redPowerNew;
-    private Set<RSPos> redPowerFlush = new HashSet<>();
-    private Set<RSPos> redSourceNew = new HashSet<>();
-    private Set<RSPos> redSourceOld = new HashSet<>();
-    private Set<RSPos> chunksDirtyNew = new HashSet<>();
-    private Set<RSPos> chunksDirtyOld = new HashSet<>();
-    private Set<RSPos> blocksDirtyNew = new HashSet<>();
-    private Set<RSPos> blocksDirtyOld = new HashSet<>();
+    private Map<BlockVector,Integer> redPowerNew = new HashMap<>();
+    private Map<BlockVector,Integer> redPowerOld = new HashMap<>();
+    private Map<BlockVector,Integer> redPowerRead = redPowerNew;
+    private Set<BlockVector> redPowerFlush = new HashSet<>();
+    private Set<BlockVector> redSourceNew = new HashSet<>();
+    private Set<BlockVector> redSourceOld = new HashSet<>();
+    private Set<BlockVector> chunksDirtyNew = new HashSet<>();
+    private Set<BlockVector> chunksDirtyOld = new HashSet<>();
+    private Set<BlockVector> blocksDirtyNew = new HashSet<>();
+    private Set<BlockVector> blocksDirtyOld = new HashSet<>();
 
     /**
      * Create a new RS manager for a world.
@@ -105,7 +57,7 @@ public class RSManager {
      */
     public synchronized void setBlockPower(int x, int y, int z, int charge, boolean oneTick) {
         assert(charge >= 0 && charge <= 15);
-        RSPos p = new RSPos(x, y, z);
+        BlockVector p = new BlockVector(x, y, z);
         redPowerNew.put(p, (Integer)((charge&15) | (oneTick?0x20:0x00)));
     }
 
@@ -125,8 +77,8 @@ public class RSManager {
      * @param charge The charge level to set this block to.
      * @param oneTick Flag to indicate if we must discharge this block in the next tick.
      */
-    public void setBlockPower(RSPos p, int charge, boolean oneTick) {
-        setBlockPower(p.x, p.y, p.z, charge, oneTick);
+    public void setBlockPower(BlockVector p, int charge, boolean oneTick) {
+        setBlockPower(p.getBlockX(), p.getBlockY(), p.getBlockZ(), charge, oneTick);
     }
 
     /**
@@ -137,7 +89,7 @@ public class RSManager {
      * @return Power level in the range [0, 15].
      */
     public synchronized int getBlockPower(int x, int y, int z) {
-        RSPos p = new RSPos(x, y, z);
+        BlockVector p = new BlockVector(x, y, z);
         Integer charge = redPowerRead.get(p);
         return (charge == null ? 0 : ((int)charge) & 15);
     }
@@ -159,7 +111,7 @@ public class RSManager {
      * @return Power level in the range [0, 15].
      */
     public synchronized int getNewBlockPower(int x, int y, int z) {
-        RSPos p = new RSPos(x, y, z);
+        BlockVector p = new BlockVector(x, y, z);
         Integer charge = redPowerNew.get(p);
         return (charge == null ? 0 : ((int)charge) & 15);
     }
@@ -235,7 +187,7 @@ public class RSManager {
      * @param block The block we use as a source.
      */
     public synchronized void addSource(Block block) {
-        RSPos p = new RSPos(block);
+        BlockVector p = new BlockVector(block.getX(), block.getY(), block.getZ());
         redSourceNew.add(p);
         if(DEBUG_REDSTONE) {
             System.out.println(String.format("adding source %s", block));
@@ -248,7 +200,7 @@ public class RSManager {
      * @param chunkZ
      */
     public synchronized void dropChunk(int chunkX, int chunkZ) {
-        RSPos cp = new RSPos(chunkX, 0, chunkZ);
+        BlockVector cp = new BlockVector(chunkX, 0, chunkZ);
 
         if(DEBUG_REDSTONE) {
             System.out.println(String.format("red chunk !DROP! %d %d", chunkX, chunkZ));
@@ -262,7 +214,7 @@ public class RSManager {
                     int rx = x + (chunkX << 4);
                     int ry = y;
                     int rz = z + (chunkZ << 4);
-                    RSPos p = new RSPos(rx, ry, rz);
+                    BlockVector p = new BlockVector(rx, ry, rz);
 
                     // Remove this from all appropriate sets
                     redPowerNew.remove(p);
@@ -279,7 +231,7 @@ public class RSManager {
      * @param z
      */
     public synchronized void dirtyBlock(int x, int y, int z) {
-        blocksDirtyNew.add(new RSPos(x, y, z));
+        blocksDirtyNew.add(new BlockVector(x, y, z));
     }
 
     /**
@@ -288,7 +240,7 @@ public class RSManager {
      * @param chunkZ
      */
     public synchronized void dirtyChunk(int chunkX, int chunkZ) {
-        chunksDirtyNew.add(new RSPos(chunkX, 0, chunkZ));
+        chunksDirtyNew.add(new BlockVector(chunkX, 0, chunkZ));
     }
 
     /**
@@ -372,7 +324,7 @@ public class RSManager {
         }
 
         // Swap chunksDirty buffers
-        Set<RSPos> chunksDirtyTemp = chunksDirtyNew;
+        Set<BlockVector> chunksDirtyTemp = chunksDirtyNew;
         chunksDirtyNew = chunksDirtyOld;
         chunksDirtyOld = chunksDirtyTemp;
 
@@ -380,18 +332,18 @@ public class RSManager {
         chunksDirtyNew.clear();
 
         // Update all dirty chunks
-        for(RSPos p : chunksDirtyOld) {
+        for(BlockVector p : chunksDirtyOld) {
             // Skip unloaded chunks
-            if(!isChunkLoaded(p.x, p.z)) {
+            if(!isChunkLoaded(p.getBlockX(), p.getBlockZ())) {
                 continue;
             }
 
             // Update RS chunk
-            updateChunk(p.x, p.z);
+            updateChunk(p.getBlockX(), p.getBlockZ());
         }
 
         // Swap blocksDirty buffers
-        Set<RSPos> blocksDirtyTemp = blocksDirtyNew;
+        Set<BlockVector> blocksDirtyTemp = blocksDirtyNew;
         blocksDirtyNew = blocksDirtyOld;
         blocksDirtyOld = blocksDirtyTemp;
 
@@ -399,31 +351,31 @@ public class RSManager {
         blocksDirtyNew.clear();
 
         // Update all dirty blocks
-        for(RSPos p : blocksDirtyOld) {
+        for(BlockVector p : blocksDirtyOld) {
             // Skip unloaded chunks
-            if(!isChunkLoaded(p.x>>4, p.z>>4)) {
+            if(!isChunkLoaded(p.getBlockX()>>4, p.getBlockZ()>>4)) {
                 continue;
             }
 
             // Update RS block
-            updateBlock(p.x, p.y, p.z);
+            updateBlock(p.getBlockX(), p.getBlockY(), p.getBlockZ());
         }
 
         // Swap sources and clear new
-        Set<RSPos> redSourceTemp = redSourceNew;
+        Set<BlockVector> redSourceTemp = redSourceNew;
         redSourceNew = redSourceOld;
         redSourceOld = redSourceTemp;
         redSourceNew.clear();
 
         // Swap charges and clear new
-        Map<RSPos,Integer> redPowerTemp = redPowerNew;
+        Map<BlockVector,Integer> redPowerTemp = redPowerNew;
         redPowerNew = redPowerOld;
         redPowerOld = redPowerTemp;
         redPowerNew.clear();
 
         // Initialise sources
-        for(RSPos p : redSourceOld) {
-            GlowBlock block = world.getBlockAt(p.x, p.y, p.z);
+        for(BlockVector p : redSourceOld) {
+            GlowBlock block = world.getBlockAt(p.getBlockX(), p.getBlockY(), p.getBlockZ());
             if(block == null) {
                 continue;
             }
@@ -439,8 +391,8 @@ public class RSManager {
         }
 
         // Trace from sources
-        for(RSPos p : redSourceOld) {
-            GlowBlock block = world.getBlockAt(p.x, p.y, p.z);
+        for(BlockVector p : redSourceOld) {
+            GlowBlock block = world.getBlockAt(p.getBlockX(), p.getBlockY(), p.getBlockZ());
             if(block == null) {
                 continue;
             }
@@ -459,9 +411,9 @@ public class RSManager {
         redPowerRead = redPowerNew;
 
         // Handle old wire charges
-        for(RSPos p : redPowerOld.keySet()) {
+        for(BlockVector p : redPowerOld.keySet()) {
             if(!redPowerNew.containsKey(p)) {
-                GlowBlock block = world.getBlockAt(p.x, p.y, p.z);
+                GlowBlock block = world.getBlockAt(p.getBlockX(), p.getBlockY(), p.getBlockZ());
                 if(block == null) {
                     continue;
                 }
@@ -493,8 +445,8 @@ public class RSManager {
         redPowerFlush.clear();
 
         // Power new wires
-        for(RSPos p : redPowerNew.keySet()) {
-            GlowBlock block = world.getBlockAt(p.x, p.y, p.z);
+        for(BlockVector p : redPowerNew.keySet()) {
+            GlowBlock block = world.getBlockAt(p.getBlockX(), p.getBlockY(), p.getBlockZ());
             if(block == null) {
                 // Destroy to prevent latent charges
                 redPowerFlush.add(p);
@@ -519,7 +471,7 @@ public class RSManager {
         }
 
         // Flush latent charges
-        for(RSPos p : redPowerFlush) {
+        for(BlockVector p : redPowerFlush) {
             redPowerNew.remove(p);
         }
     }
