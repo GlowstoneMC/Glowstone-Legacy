@@ -51,5 +51,42 @@ public class BlockStem extends BlockPlant implements IBlockGrowable {
             state = CropState.RIPE.ordinal();
         }
         block.setData((byte) state);
+        // TODO
+        // the method below should be called from tick
+        // and not in the fertilize method
+        ripe(block); // FIXME
+    }
+
+    private void ripe(GlowBlock block) {
+        if (block.getData() == CropState.RIPE.ordinal()) {
+            int n = random.nextInt(4);
+            int x = block.getX();
+            int z = block.getZ();
+            switch (n) {
+                case 1:
+                    x++;
+                    break;
+                case 2:
+                    z = block.getZ() - 1;
+                    break;
+                case 3:
+                    z++;
+                    break;
+                default:
+                    x = block.getX() - 1;
+            }
+            final GlowBlock targetBlock = block.getWorld().getBlockAt(x, block.getY(), z);
+            final GlowBlock belowTargetBlock = targetBlock.getRelative(BlockFace.DOWN);
+            if (targetBlock.getType().equals(Material.AIR)
+                    && (belowTargetBlock.getType().equals(Material.SOIL)
+                    || belowTargetBlock.getType().equals(Material.DIRT)
+                    || belowTargetBlock.getType().equals(Material.GRASS))) {
+                if (plantType.equals(Material.MELON_STEM)) {
+                    targetBlock.setType(Material.MELON_BLOCK);
+                } else if (plantType.equals(Material.PUMPKIN_STEM)) {
+                    targetBlock.setType(Material.PUMPKIN);
+                }
+            }
+        }
     }
 }
