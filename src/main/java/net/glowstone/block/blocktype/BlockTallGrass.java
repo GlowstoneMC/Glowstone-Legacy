@@ -14,7 +14,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 
-public class BlockTallGrass extends BlockType implements IBlockGrowable {
+public class BlockTallGrass extends BlockPlant implements IBlockGrowable {
+    // TODO
+    // maybe use GlowWorld random instance instead
     private final Random random = new Random();
 
     @Override
@@ -37,26 +39,44 @@ public class BlockTallGrass extends BlockType implements IBlockGrowable {
 
     @Override
     public void fertilize(GlowBlock block) {
-        // TODO
-        // have GlowKit implement DoublePlants MaterialData:
-        // 0 = sunflower
-        // 1 = lilac
-        // 2 = grass (is 1 in GrassSpecies)
-        // 3 = fern (is 2 in GrassSpecies)
-        // 4 = rose
-        // 5 = peony
         final MaterialData data = block.getState().getData();
         if (data instanceof LongGrass) {
-            final LongGrass tallGrass = (LongGrass) data;
-            final GrassSpecies species = tallGrass.getSpecies();
+            final GrassSpecies species = ((LongGrass) data).getSpecies();
             if (species.equals(GrassSpecies.NORMAL) || species.equals(GrassSpecies.FERN_LIKE)) {
                 block.setType(Material.DOUBLE_PLANT);
-                block.setData((byte) (species.ordinal() + 1)); // FIXME
+                block.setData((byte) (species.ordinal() + 1));
                 block.getRelative(BlockFace.UP).setType(Material.DOUBLE_PLANT);
-                block.getRelative(BlockFace.UP).setData((byte) 8); // FIXME
+                block.getRelative(BlockFace.UP).setData((byte) 0x8);
             }
         } else {
             warnMaterialData(LongGrass.class, data);
         }
+        // TODO
+        // wait PR #27 (https://github.com/GlowstoneMC/Glowkit/pull/27) is
+        // merged into Glowkit and uncomment below
+        //final MaterialData data = block.getState().getData();
+        //if (data instanceof LongGrass) {
+        //    final GrassSpecies species = ((LongGrass) data).getSpecies();
+        //    final DoublePlant plant = new DoublePlant();
+        //    if (species.equals(GrassSpecies.NORMAL)) {
+        //        plant.setSpecies(DoublePlantSpecies.DOUBLE_TALLGRASS);
+        //    } else if (species.equals(GrassSpecies.FERN_LIKE)) {
+        //        plant.setSpecies(DoublePlantSpecies.LARGE_FERN);
+        //    } else {
+        //        return;
+        //    }
+        //    block.setType(Material.DOUBLE_PLANT);
+        //    final GlowBlockState blockState = block.getState();
+        //    blockState.setData(plant);
+        //    block.getRelative(BlockFace.UP).setType(Material.DOUBLE_PLANT);
+        //    final GlowBlockState headBlockState = block.getRelative(BlockFace.UP).getState();
+        //    final MaterialData headData = headBlockState.getData();
+        //    ((DoublePlant) headData).setSpecies(DoublePlantSpecies.PLANT_APEX);
+        //    headBlockState.setData(headData);
+        //    blockState.update(true);
+        //    headBlockState.update(true);
+        //} else {
+        //    warnMaterialData(LongGrass.class, data);
+        //}
      }
 }

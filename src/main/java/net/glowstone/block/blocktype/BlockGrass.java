@@ -8,16 +8,16 @@ import org.bukkit.material.LongGrass;
 
 import net.glowstone.GlowWorld;
 import net.glowstone.block.GlowBlock;
+import net.glowstone.block.GlowBlockState;
 
 public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
+    // TODO
+    // maybe use GlowWorld random instance instead
+    private final Random random = new Random();
 
     public BlockGrass(Material dropType) {
         super(dropType);
     }
-
-    // TODO
-    // maybe use GlowWorld random instance instead
-    private final Random random = new Random();
 
     @Override
     public void fertilize(GlowBlock block) {
@@ -46,8 +46,9 @@ public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
                     } else if (world.getHighestBlockYAt(x, z) == y) {
                         // grow tall grass if highest block
                         world.getBlockAt(x, y, z).setType(Material.LONG_GRASS);
-                        world.getBlockAt(x, y, z).setData(
-                                new LongGrass(GrassSpecies.NORMAL).getData());
+                        final GlowBlockState blockState = world.getBlockAt(x, y, z).getState(); 
+                        blockState.setData(new LongGrass(GrassSpecies.NORMAL));
+                        blockState.update(true);
                     }
                 } else if (j < i / 16) { // look around for grass block
                     x += random.nextInt(3) - 1;
