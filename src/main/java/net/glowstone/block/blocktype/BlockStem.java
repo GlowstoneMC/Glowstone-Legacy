@@ -12,10 +12,15 @@ import org.bukkit.inventory.ItemStack;
 
 import net.glowstone.block.GlowBlock;
 
-public class BlockCrops extends BlockPlant implements IBlockGrowable {
+public class BlockStem extends BlockPlant implements IBlockGrowable {
+    private Material plantType;
     // TODO
     // maybe use GlowWorld random instance instead
     private final Random random = new Random();
+
+    public BlockStem(Material plantType) {
+        this.plantType = plantType;
+    }
 
     @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
@@ -29,7 +34,12 @@ public class BlockCrops extends BlockPlant implements IBlockGrowable {
     public Collection<ItemStack> getDrops(GlowBlock block) {
         // TODO
         // take care of ripe stage
-        return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.SEEDS, random.nextInt(4))));
+        if (plantType.equals(Material.MELON_STEM)) {
+            return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.MELON_SEEDS, random.nextInt(4))));
+        } else if (plantType.equals(Material.PUMPKIN_STEM)) {
+            return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.PUMPKIN_SEEDS, random.nextInt(4))));
+        }
+        return Collections.unmodifiableList(Arrays.asList(new ItemStack[0]));
     }
 
     @Override

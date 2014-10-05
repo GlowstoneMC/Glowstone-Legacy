@@ -4,6 +4,7 @@ import net.glowstone.block.blocktype.*;
 import net.glowstone.block.itemtype.ItemDye;
 import net.glowstone.block.itemtype.ItemHoe;
 import net.glowstone.block.itemtype.ItemPlaceAs;
+import net.glowstone.block.itemtype.ItemSeeds;
 import net.glowstone.block.itemtype.ItemSign;
 import net.glowstone.block.itemtype.ItemType;
 import org.bukkit.Material;
@@ -80,11 +81,11 @@ public final class ItemTable {
         reg(Material.LEAVES, new BlockLeaves());
         reg(Material.LEAVES_2, new BlockLeaves());
         reg(Material.MELON_BLOCK, new BlockMelon());
-        reg(Material.MELON_STEM, new BlockMelonStem());
+        reg(Material.MELON_STEM, new BlockStem(Material.MELON_STEM));
         reg(Material.NETHER_WARTS, new BlockDirectDrops(Material.NETHER_STALK));
         reg(Material.POTATO, new BlockDirectDrops(Material.POTATO_ITEM));
-        reg(Material.PUMPKIN_STEM, new BlockPumpkinStem());
-        reg(Material.CROPS, new BlockDirectDrops(Material.SEEDS));
+        reg(Material.PUMPKIN_STEM, new BlockStem(Material.PUMPKIN_STEM));
+        reg(Material.CROPS, new BlockCrops());
         reg(Material.CAKE_BLOCK, new BlockDropless());
         reg(Material.WEB, new BlockDirectDrops(Material.STRING));
         reg(Material.FIRE, new BlockFire());
@@ -140,6 +141,10 @@ public final class ItemTable {
         reg(Material.IRON_HOE, new ItemHoe());
         reg(Material.GOLD_HOE, new ItemHoe());
         reg(Material.DIAMOND_HOE, new ItemHoe());
+        reg(Material.SEEDS, new ItemSeeds(Material.CROPS, Material.SOIL));
+        reg(Material.MELON_SEEDS, new ItemSeeds(Material.MELON_STEM, Material.SOIL));
+        reg(Material.PUMPKIN_SEEDS, new ItemSeeds(Material.PUMPKIN_STEM, Material.SOIL));
+        reg(Material.NETHER_STALK, new ItemSeeds(Material.NETHER_WARTS, Material.SOUL_SAND));
     }
 
     private void reg(Material material, ItemType type) {
