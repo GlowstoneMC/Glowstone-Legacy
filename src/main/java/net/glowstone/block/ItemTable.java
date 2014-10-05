@@ -2,6 +2,7 @@ package net.glowstone.block;
 
 import net.glowstone.block.blocktype.*;
 import net.glowstone.block.itemtype.ItemDye;
+import net.glowstone.block.itemtype.ItemHoe;
 import net.glowstone.block.itemtype.ItemPlaceAs;
 import net.glowstone.block.itemtype.ItemSign;
 import net.glowstone.block.itemtype.ItemType;
@@ -134,6 +135,11 @@ public final class ItemTable {
         reg(Material.REDSTONE_COMPARATOR, new ItemPlaceAs(Material.REDSTONE_COMPARATOR_OFF));
         reg(Material.BED, new ItemPlaceAs(Material.BED_BLOCK));
         reg(Material.INK_SACK, new ItemDye());
+        reg(Material.WOOD_HOE, new ItemHoe());
+        reg(Material.STONE_HOE, new ItemHoe());
+        reg(Material.IRON_HOE, new ItemHoe());
+        reg(Material.GOLD_HOE, new ItemHoe());
+        reg(Material.DIAMOND_HOE, new ItemHoe());
     }
 
     private void reg(Material material, ItemType type) {
