@@ -5,12 +5,13 @@ import net.glowstone.block.GlowBlock;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 
-import java.util.*;
-
 public class BlockRedstoneTorch extends BlockTorch {
 
-    public BlockRedstoneTorch(Material matType) {
-        super(matType);
+    private final Boolean isTorchOn;
+    
+    public BlockRedstoneTorch(Boolean isOn) {
+        super(Material.REDSTONE_TORCH_ON);
+        isTorchOn = isOn;
     }
 
     @Override
@@ -36,11 +37,11 @@ public class BlockRedstoneTorch extends BlockTorch {
     @Override
     public void traceBlockPowerEnd(GlowBlock block, RSManager rsManager, int power) {
         // Handle power change.
-        Material mat = getMaterial();
-        if(mat == Material.REDSTONE_TORCH_ON && power == 0) {
+        Material mat;
+        if(isTorchOn && power == 0) {
             mat = Material.REDSTONE_TORCH_OFF;
             block.setTypeIdAndData(mat.getId(), (byte)block.getData(), false);
-        } else if(mat == Material.REDSTONE_TORCH_OFF && power != 0) {
+        } else if(!isTorchOn && power != 0) {
             mat = Material.REDSTONE_TORCH_ON;
             block.setTypeIdAndData(mat.getId(), (byte)block.getData(), false);
         }
@@ -69,22 +70,15 @@ public class BlockRedstoneTorch extends BlockTorch {
 
     @Override
     public void traceBlockPowerInit(GlowBlock block, RSManager rsManager) {
-        Material thisMat = getMaterial();
-        if(thisMat == Material.REDSTONE_TORCH_ON) {
-            // Set the charge to ensure that this is handled next tick.
-            rsManager.setBlockPower(block, 15, false);
-        } else if(thisMat == Material.REDSTONE_TORCH_OFF) {
-            // Set the charge now.
-            // If it needs to stay discharged, it will be discharged by other blocks.
-            rsManager.setBlockPower(block, 15, false);
-        }
+        // Set the charge to ensure that this is handled next tick.
+        // If it was discharged and needs to stay discharged, it will be discharged by other blocks.
+        rsManager.setBlockPower(block, 15, false);
     }
 
     @Override
     public void traceBlockPowerStart(GlowBlock block, RSManager rsManager) {
         // Abandon ship if this is not a charged RS torch.
-        Material thisMat = getMaterial();
-        if(thisMat != Material.REDSTONE_TORCH_ON) {
+        if(!isTorchOn) {
             return;
         }
 
@@ -100,11 +94,6 @@ public class BlockRedstoneTorch extends BlockTorch {
 
     @Override
     public void traceBlockPower(GlowBlock block, RSManager rsManager, Material srcMat, BlockFace flowDir, int inPower, boolean isDirect) {
-        // Abandon ship if this is just a regular torch.
-        Material thisMat = getMaterial();
-        if(thisMat != Material.REDSTONE_TORCH_ON && thisMat != Material.REDSTONE_TORCH_OFF) {
-            return;
-        }
         // Determine if we are getting this from a source.
         boolean isSource = (getOwnFacing(block) == flowDir);
         if(isSource) {
@@ -113,5 +102,5 @@ public class BlockRedstoneTorch extends BlockTorch {
         } else {
             // Disregard this.
         }
-    }
+    }  
 } 
