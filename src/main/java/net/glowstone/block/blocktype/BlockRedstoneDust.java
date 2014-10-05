@@ -36,10 +36,7 @@ public class BlockRedstoneDust extends BlockType {
     }
 
     private boolean traceBlockPowerRSWire(GlowBlock block, RSManager rsManager, BlockFace forbidDir, BlockFace outDir, int outPower, boolean isDirect) {
-        // Bail out early
-        if(forbidDir == outDir) {
-            return false;
-        }
+
         if(outPower <= 0) {
             return false;
         }
@@ -70,6 +67,17 @@ public class BlockRedstoneDust extends BlockType {
         // Check if glowstone 
         boolean glowUp    = (matUp   == Material.GLOWSTONE);
         boolean glowDn    = (matDn   == Material.GLOWSTONE);
+
+        //Check if on a slab
+        boolean onSlab = (blockDn != null ? (blockDn.getState().getData() instanceof Step || blockDn.getState().getData() instanceof Stairs) : false);
+
+        if (forbidDir == outDir) {
+            if(!(blockMid == null) &&
+               !(blockMid.getState().getData() instanceof Step) && 
+               !(blockMid.getState().getData() instanceof Stairs)) { //May go backwards if we're on a slab or on stairs
+                return false;
+            }
+        }
         if(glowUp) {
             solidFwUp = false;
         }
@@ -79,12 +87,12 @@ public class BlockRedstoneDust extends BlockType {
 
         // Determine which one we use
         GlowBlock useBlock = null;
-        if(wireFwDn && !solidMid) {
+        if(wireFwDn && !solidMid && !onSlab) { //Redstone doesn't go downwards from slabs or from stairs
             // Downwards
             useBlock = blockFwDn;
             rsManager.traceFromBlockToBlock(block, useBlock, outDir, outPower, isDirect);
         }
-        if(wireFwUp && !(solidUp && solidMid)) {
+        if(wireFwUp && !solidUp) {
             // Upwards
             useBlock = blockFwUp;
             rsManager.traceFromBlockToBlock(block, useBlock, outDir, outPower, isDirect);
