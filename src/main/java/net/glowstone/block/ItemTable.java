@@ -2,6 +2,7 @@ package net.glowstone.block;
 
 import net.glowstone.block.blocktype.*;
 import net.glowstone.block.itemtype.ItemDye;
+import net.glowstone.block.itemtype.ItemFoodSeeds;
 import net.glowstone.block.itemtype.ItemHoe;
 import net.glowstone.block.itemtype.ItemPlaceAs;
 import net.glowstone.block.itemtype.ItemSeeds;
@@ -72,7 +73,7 @@ public final class ItemTable {
         reg(Material.LAPIS_ORE, new BlockRandomDrops(Material.INK_SACK, 4, 4, 8));
         reg(Material.QUARTZ_ORE, new BlockDirectDrops(Material.QUARTZ));
         reg(Material.REDSTONE_ORE, new BlockRandomDrops(Material.REDSTONE, 0, 3, 4));
-        reg(Material.CARROT, new BlockDirectDrops(Material.CARROT_ITEM));
+        reg(Material.CARROT, new BlockCarrot());
         reg(Material.COCOA, new BlockDirectDrops(Material.INK_SACK, 3, 1));
         reg(Material.DEAD_BUSH, new BlockDeadBush());
         reg(Material.LONG_GRASS, new BlockTallGrass());
@@ -83,7 +84,7 @@ public final class ItemTable {
         reg(Material.MELON_BLOCK, new BlockMelon());
         reg(Material.MELON_STEM, new BlockStem(Material.MELON_STEM));
         reg(Material.NETHER_WARTS, new BlockDirectDrops(Material.NETHER_STALK));
-        reg(Material.POTATO, new BlockDirectDrops(Material.POTATO_ITEM));
+        reg(Material.POTATO, new BlockPotato());
         reg(Material.PUMPKIN_STEM, new BlockStem(Material.PUMPKIN_STEM));
         reg(Material.CROPS, new BlockCrops());
         reg(Material.CAKE_BLOCK, new BlockDropless());
@@ -145,6 +146,8 @@ public final class ItemTable {
         reg(Material.MELON_SEEDS, new ItemSeeds(Material.MELON_STEM, Material.SOIL));
         reg(Material.PUMPKIN_SEEDS, new ItemSeeds(Material.PUMPKIN_STEM, Material.SOIL));
         reg(Material.NETHER_STALK, new ItemSeeds(Material.NETHER_WARTS, Material.SOUL_SAND));
+        reg(Material.CARROT_ITEM, new ItemFoodSeeds(Material.CARROT, Material.SOIL));
+        reg(Material.POTATO_ITEM, new ItemFoodSeeds(Material.POTATO, Material.SOIL));
     }
 
     private void reg(Material material, ItemType type) {

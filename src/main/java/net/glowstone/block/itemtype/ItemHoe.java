@@ -20,5 +20,4 @@ public class ItemHoe extends ItemType {
             target.getState().update(true);
         }
     }
-
 }
