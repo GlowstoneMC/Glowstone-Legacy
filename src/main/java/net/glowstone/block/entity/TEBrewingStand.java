@@ -26,7 +26,7 @@ public class TEBrewingStand extends TEContainer {
     @Override
     public void loadNbt(CompoundTag tag) {
         super.loadNbt(tag);
-        if(tag.isInt("BrewTime")) {
+        if (tag.isInt("BrewTime")) {
             brewTime = tag.getInt("BrewTime");
         }
     }

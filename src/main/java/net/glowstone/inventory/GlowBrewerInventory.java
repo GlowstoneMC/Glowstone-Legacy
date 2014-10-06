@@ -13,7 +13,7 @@ public class GlowBrewerInventory extends GlowInventory implements BrewerInventor
         super(holder, InventoryType.BREWING);
 
         slotTypes[INGREDIENT_SLOT] = InventoryType.SlotType.FUEL;
-        for(int slot = 1; slot < 4; slot++) {
+        for (int slot = 1; slot < 4; slot++) {
             slotTypes[slot] = InventoryType.SlotType.CRAFTING;
         }
     }

@@ -31,10 +31,10 @@ public class TEFurnace extends TEContainer {
     @Override
     public void loadNbt(CompoundTag tag) {
         super.loadNbt(tag);
-        if(tag.isShort("BurnTime")) {
+        if (tag.isShort("BurnTime")) {
             burnTime = tag.getShort("BurnTime");
         }
-        if(tag.isShort("CookTime")) {
+        if (tag.isShort("CookTime")) {
             cookTime = tag.getShort("CookTime");
         }
     }

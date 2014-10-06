@@ -42,7 +42,7 @@ public class GlowBrewingStand extends GlowBlockState implements BrewingStand {
     @Override
     public boolean update(boolean force, boolean applyPhysics) {
         boolean result = super.update(force, applyPhysics);
-        if(result) {
+        if (result) {
             TEBrewingStand stand = getTileEntity();
             stand.setBrewTime(brewTime);
             stand.updateInRange();

@@ -55,7 +55,7 @@ public class GlowFurnace extends GlowBlockState implements Furnace {
     @Override
     public boolean update(boolean force, boolean applyPhysics) {
         boolean result = super.update(force, applyPhysics);
-        if(result) {
+        if (result) {
             TEFurnace furnace = getTileEntity();
             furnace.setBurnTime(burnTime);
             furnace.setCookTime(cookTime);
