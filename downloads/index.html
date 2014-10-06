@@ -1,7 +1,56 @@
 ---
 title: "Glowstone Downloads"
 ---
-{% include head.html %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/yeti/bootstrap.min.css" rel="stylesheet"/>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/block.png" type="image/png"/>
+    <title>{{page.title}}</title>
+    <style>
+    body, html {
+      position: relative;
+      min-height: 100%;
+    }
+    </style>
+  </head>
+  <body style="padding-top: 70px;padding-bottom:100px;">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a href="/" class="navbar-brand">Glowstone</a>
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+          <ul class="nav navbar-nav">
+            <li>
+              <a href="https://github.com/GlowstoneMC/Glowstone" target="_blank">GitHub</a>
+            </li>
+            <li>
+              <a href="/downloads/">Downloads</a>
+            </li>
+            <li>
+              <a href="https://github.com/SpaceManiac/Glowstone/issues" target="_blank">Issue Tracker</a>
+            </li>
+            <li>
+              <a href="http://build.greatmancode.com/job/Glowkit/javadoc/" target="_blank">API Docs</a>
+            </li>
+            <li>
+              <a href="https://github.com/GlowstoneMC/Glowstone/wiki" target="_blank">Wiki</a>
+            </li>
+            <li>
+              <a href="https://webchat.esper.net/?channels=glowstone" target="_blank">Get Help</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
 <div class="container">
   <table id="builds" class="table table-bordered table-hover">
     <tr>
@@ -27,7 +76,23 @@ title: "Glowstone Downloads"
     </div>
   </div>
 </div>
-<script>
+  <div class="container text-center" style="position:absolute;bottom:0;width:100%;">
+    <p>
+      <small>
+        Glowstone is written and maintained by <a href="http://www.platymuus.com">Tad Hardesty</a>, alias SpaceManiac,
+        with contributions from <a href="https://github.com/SpaceManiac/Glowstone/graphs/contributors">many others</a>.
+      </small>
+    </p>
+    <p>
+      <small>
+        &copy; 2014 Tad Hardesty
+      </small>
+    </p>
+  </div>
+  </body>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script>
 $(function() {
   setTimeout(function() {
     $.ajax({
@@ -77,4 +142,10 @@ $(function() {
   }, 500);
 })
 </script>
-{% include foot.html %}
+  <script>
+    $(function() {
+      $("[rel=tooltip-top]").tooltip({placement: "top"});
+    });
+  </script>
+</html>
+
