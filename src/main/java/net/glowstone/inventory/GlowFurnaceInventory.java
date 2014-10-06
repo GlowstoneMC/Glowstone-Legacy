@@ -21,7 +21,7 @@ public class GlowFurnaceInventory extends GlowInventory implements FurnaceInvent
 
     @Override
     public boolean itemPlaceAllowed(int slot, ItemStack stack) {
-        return slot == RESULT_SLOT;
+        return slot != RESULT_SLOT;
     }
 
     @Override
