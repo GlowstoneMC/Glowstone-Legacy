@@ -3,15 +3,15 @@ package net.glowstone.block.entity;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.state.GlowBrewingStand;
+import net.glowstone.inventory.GlowBrewerInventory;
 import net.glowstone.util.nbt.CompoundTag;
-import org.bukkit.event.inventory.InventoryType;
 
 public class TEBrewingStand extends TEContainer {
 
     private int brewTime = 0;
 
     public TEBrewingStand(GlowBlock block) {
-        super(block, InventoryType.BREWING);
+        super(block, new GlowBrewerInventory(new GlowBrewingStand(block, 0)));
         setSaveId("Cauldron");
     }
 
