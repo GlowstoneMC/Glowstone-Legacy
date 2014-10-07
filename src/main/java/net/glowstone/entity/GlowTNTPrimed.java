@@ -5,8 +5,8 @@ import net.glowstone.EventFactory;
 import net.glowstone.Explosion;
 import net.glowstone.net.message.play.entity.SpawnObjectMessage;
 import net.glowstone.util.Position;
-import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TNTPrimed;
@@ -34,7 +34,7 @@ public class GlowTNTPrimed extends GlowExplosive implements TNTPrimed {
         if (fuseTicks <= 0) {
             explode();
         } else {
-            world.playEffect(location.clone().add(0, 0.5d, 0), Effect.SMOKE, 0);
+            world.showParticle(location.clone().add(0, 0.5D, 0), Particle.SMOKE, 0, 0, 0, 0, 0);
         }
     }
 
