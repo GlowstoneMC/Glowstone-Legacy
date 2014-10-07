@@ -8,6 +8,7 @@ import net.glowstone.entity.GlowPlayer;
 
 import org.bukkit.DyeColor;
 import org.bukkit.GameMode;
+import org.bukkit.Particle;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Dye;
@@ -24,10 +25,10 @@ public class ItemDye extends ItemType {
             if (dye.getColor().equals(DyeColor.WHITE)) { // player interacts with bone meal in hand
                 BlockType blockType = ItemTable.instance().getBlock(target.getType());
                 if (blockType instanceof IBlockGrowable) {
-                    // TODO
-                    // wait particles branch is merged and uncomment below
-                    // target.getWorld().showParticle(target.getLocation(), Particle.HAPPY_VILLAGER,
-                    // 0, 0, 0, 0.25f, 5);
+                    // spawn some green particles
+                    target.getWorld().showParticle(target.getLocation().add(0.5D, 0.5D, 0.5D),
+                            Particle.VILLAGER_HAPPY,
+                            0.25F, 0.25F, 0.25F, 0.4F, 12);
 
                     ((IBlockGrowable) blockType).fertilize(target);
 
