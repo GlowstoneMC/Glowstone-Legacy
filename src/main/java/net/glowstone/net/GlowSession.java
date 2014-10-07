@@ -287,7 +287,9 @@ public final class GlowSession extends BasicSession {
             if (other != player && other.canSee((Player) player)) {
                 other.getSession().send(addMessage);
             }
-            entries.add(other.getUserListEntry());
+            if (player.canSee((Player) other)) {
+                entries.add(other.getUserListEntry());
+            }
         }
         send(new UserListItemMessage(UserListItemMessage.Action.ADD_PLAYER, entries));
     }
