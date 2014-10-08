@@ -33,12 +33,12 @@ public class GlowEnchantingInventory extends GlowInventory implements Enchanting
     }
 
     @Override
-    public void setLapis(ItemStack item) {
+    public void setResource(ItemStack item) {
         setItem(LAPIS_SLOT, item);
     }
 
     @Override
-    public ItemStack getLapis() {
+    public ItemStack getResource() {
         return getItem(LAPIS_SLOT);
     }
 }
