@@ -35,7 +35,7 @@ public final class PlayerSwingArmHandler implements MessageHandler<GlowSession, 
             // play the animation to others
             AnimateEntityMessage toSend = new AnimateEntityMessage(player.getEntityId(), AnimateEntityMessage.OUT_SWING_ARM);
             for (GlowPlayer observer : player.getWorld().getRawPlayers()) {
-                if (observer != player && observer.canSee((GlowEntity) player)) {
+                if (observer != player && observer.canSeeEntity(player)) {
                     observer.getSession().send(toSend);
                 }
             }

@@ -631,7 +631,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
      * Checks whether the player can see the given chunk.
      * @return If the chunk is known to the player's client.
      */
-    public boolean canSee(GlowChunk.Key chunk) {
+    public boolean canSeeChunk(GlowChunk.Key chunk) {
         return knownChunks.contains(chunk);
     }
 
@@ -639,7 +639,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
      * Checks whether the player can see the given entity.
      * @return If the entity is known to the player's client.
      */
-    public boolean canSee(GlowEntity entity) {
+    public boolean canSeeEntity(GlowEntity entity) {
         return knownEntities.contains(entity);
     }
 
@@ -827,7 +827,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         }
         Message updateMessage = UserListItemMessage.displayNameOne(getUniqueId(), displayName);
         for (GlowPlayer player : server.getOnlinePlayers()) {
-            if (player.canSee((Player) this)) {
+            if (player.canSee(this)) {
                 player.getSession().send(updateMessage);
             }
         }
@@ -1345,7 +1345,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     public void sendBlockChange(BlockChangeMessage message) {
         // only send message if the chunk is within visible range
         GlowChunk.Key key = new GlowChunk.Key(message.getX() >> 4, message.getZ() >> 4);
-        if (canSee(key)) {
+        if (canSeeChunk(key)) {
             blockChanges.add(message);
         }
     }

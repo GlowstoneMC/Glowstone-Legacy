@@ -27,7 +27,6 @@ import net.glowstone.net.protocol.GlowProtocol;
 import net.glowstone.net.protocol.LoginProtocol;
 import net.glowstone.net.protocol.PlayProtocol;
 import net.glowstone.net.protocol.ProtocolType;
-import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
@@ -284,10 +283,10 @@ public final class GlowSession extends BasicSession {
         Message addMessage = new UserListItemMessage(UserListItemMessage.Action.ADD_PLAYER, player.getUserListEntry());
         List<UserListItemMessage.Entry> entries = new ArrayList<>();
         for (GlowPlayer other : server.getOnlinePlayers()) {
-            if (other != player && other.canSee((Player) player)) {
+            if (other != player && other.canSee(player)) {
                 other.getSession().send(addMessage);
             }
-            if (player.canSee((Player) other)) {
+            if (player.canSee(other)) {
                 entries.add(other.getUserListEntry());
             }
         }
@@ -445,7 +444,7 @@ public final class GlowSession extends BasicSession {
 
         Message userListMessage = UserListItemMessage.removeOne(player.getUniqueId());
         for (GlowPlayer player : server.getOnlinePlayers()) {
-            if (player.canSee((Player) this.player)) {
+            if (player.canSee(this.player)) {
                 player.getSession().send(userListMessage);
             } else {
                 player.stopHidingDisconnectedPlayer(this.player);
