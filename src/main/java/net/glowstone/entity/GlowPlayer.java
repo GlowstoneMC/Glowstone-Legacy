@@ -1613,8 +1613,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     @Override
     public void hidePlayer(Player player) {
         Validate.notNull(player, "player cannot be null");
-        if (equals(player)) return;
-        if (!player.isOnline() || !session.isActive()) return;
+        if (equals(player) || !player.isOnline() || !session.isActive()) return;
         if (hiddenEntities.contains(player.getUniqueId())) return;
 
         hiddenEntities.add(player.getUniqueId());
@@ -1627,12 +1626,11 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     @Override
     public void showPlayer(Player player) {
         Validate.notNull(player, "player cannot be null");
-        if (equals(player)) return;
-        if (!player.isOnline() || !session.isActive()) return;
+        if (equals(player) || !player.isOnline() || !session.isActive()) return;
         if (!hiddenEntities.contains(player.getUniqueId())) return;
 
         hiddenEntities.remove(player.getUniqueId());
-        session.send(UserListItemMessage.addOne(((GlowPlayer) player).getProfile()));
+        session.send(new UserListItemMessage(UserListItemMessage.Action.ADD_PLAYER, ((GlowPlayer) player).getUserListEntry()));
     }
 
     @Override
