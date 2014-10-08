@@ -9,8 +9,10 @@ import org.bukkit.CropState;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Pumpkin;
 
 import net.glowstone.block.GlowBlock;
+import net.glowstone.block.GlowBlockState;
 
 public class BlockStem extends BlockPlant implements IBlockGrowable {
     private Material plantType;
@@ -43,6 +45,16 @@ public class BlockStem extends BlockPlant implements IBlockGrowable {
     }
 
     @Override
+    public boolean isFertilizable(GlowBlock block) {
+        return block.getData() != CropState.RIPE.ordinal();
+    }
+
+    @Override
+    public boolean canGrowWithChance(GlowBlock block) {
+        return true;
+    }
+
+    @Override
     public void fertilize(GlowBlock block) {
         int state = block.getData()
                 + (random.nextInt(CropState.MEDIUM.ordinal())
@@ -62,29 +74,38 @@ public class BlockStem extends BlockPlant implements IBlockGrowable {
             int n = random.nextInt(4);
             int x = block.getX();
             int z = block.getZ();
+            BlockFace face;
             switch (n) {
                 case 1:
                     x++;
+                    face = BlockFace.WEST;
                     break;
                 case 2:
-                    z = block.getZ() - 1;
+                    z--;
+                    face = BlockFace.SOUTH;
                     break;
                 case 3:
                     z++;
+                    face = BlockFace.NORTH;
                     break;
                 default:
-                    x = block.getX() - 1;
+                    x--;
+                    face = BlockFace.EAST;
             }
             final GlowBlock targetBlock = block.getWorld().getBlockAt(x, block.getY(), z);
+            final GlowBlockState targetBlockState = targetBlock.getState();
             final GlowBlock belowTargetBlock = targetBlock.getRelative(BlockFace.DOWN);
             if (targetBlock.getType().equals(Material.AIR)
                     && (belowTargetBlock.getType().equals(Material.SOIL)
                     || belowTargetBlock.getType().equals(Material.DIRT)
                     || belowTargetBlock.getType().equals(Material.GRASS))) {
                 if (plantType.equals(Material.MELON_STEM)) {
-                    targetBlock.setType(Material.MELON_BLOCK);
+                    targetBlockState.setType(Material.MELON_BLOCK);
+                    targetBlockState.update(true);
                 } else if (plantType.equals(Material.PUMPKIN_STEM)) {
-                    targetBlock.setType(Material.PUMPKIN);
+                    targetBlockState.setType(Material.PUMPKIN);
+                    targetBlockState.setData(new Pumpkin(face));
+                    targetBlockState.update(true);
                 }
             }
         }

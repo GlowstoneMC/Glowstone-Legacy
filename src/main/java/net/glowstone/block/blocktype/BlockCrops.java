@@ -27,9 +27,22 @@ public class BlockCrops extends BlockPlant implements IBlockGrowable {
 
     @Override
     public Collection<ItemStack> getDrops(GlowBlock block) {
-        // TODO
-        // take care of ripe stage
-        return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.SEEDS, random.nextInt(4))));
+        if (block.getData() >= CropState.RIPE.ordinal()) {
+            return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.SEEDS, random.nextInt(4)),
+                new ItemStack(Material.WHEAT, 1)));
+        } else {
+            return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.SEEDS, 1)));
+        }
+    }
+
+    @Override
+    public boolean isFertilizable(GlowBlock block) {
+        return block.getData() != CropState.RIPE.ordinal();
+    }
+
+    @Override
+    public boolean canGrowWithChance(GlowBlock block) {
+        return true;
     }
 
     @Override

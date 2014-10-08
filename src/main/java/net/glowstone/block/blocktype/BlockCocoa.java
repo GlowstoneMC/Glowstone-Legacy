@@ -65,6 +65,24 @@ public class BlockCocoa extends BlockAttachable implements IBlockGrowable {
     }
 
     @Override
+    public boolean isFertilizable(GlowBlock block) {
+        final MaterialData data = block.getState().getData();
+        if (data instanceof CocoaPlant) {
+            if (((CocoaPlant) data).getSize() != CocoaPlantSize.LARGE) {
+                return true;
+            }
+        } else {
+            warnMaterialData(CocoaPlant.class, data);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean canGrowWithChance(GlowBlock block) {
+        return true;
+    }
+
+    @Override
     public void fertilize(GlowBlock block) {
         final MaterialData data = block.getState().getData();
         if (data instanceof CocoaPlant) {

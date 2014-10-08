@@ -41,6 +41,41 @@ public class BlockDoublePlant extends BlockPlant implements IBlockGrowable {
     }
 
     @Override
+    public boolean isFertilizable(GlowBlock block) {
+        MaterialData data = block.getState().getData();
+        if (data.getData() == 8) { // above block
+            data = block.getRelative(BlockFace.DOWN).getState().getData();
+        }
+        if (data.getData() != 2 && // double tall grass
+            data.getData() != 3) { // large fern
+            return true;
+        }
+        // TODO
+        // wait PR #27 (https://github.com/GlowstoneMC/Glowkit/pull/27) is
+        // merged into Glowkit and uncomment below
+        //MaterialData data = block.getState().getData();
+        //if (data instanceof DoublePlant) {
+        //    DoublePlantSpecies species = ((DoublePlant) data).getSpecies();
+        //    if (species.equals(DoublePlantSpecies.PLANT_APEX)) {
+        //        data = block.getRelative(BlockFace.DOWN).getState().getData();
+        //        species = ((DoublePlant) data).getSpecies();
+        //    }
+        //    if (!species.equals(DoublePlantSpecies.DOUBLE_TALLGRASS)
+        //            && !species.equals(DoublePlantSpecies.LARGE_FERN)) {
+        //        return true;
+        //    }
+        //} else {
+        //    warnMaterialData(DoublePlant.class, data);
+        //}
+        return false;
+    }
+
+    @Override
+    public boolean canGrowWithChance(GlowBlock block) {
+        return true;
+    }
+
+    @Override
     public void fertilize(GlowBlock block) {
         MaterialData data = block.getState().getData();
         if (data.getData() == 8) { // above block

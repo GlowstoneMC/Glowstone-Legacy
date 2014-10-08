@@ -32,16 +32,19 @@ public class ItemDye extends ItemType {
                 BlockType blockType = ItemTable.instance().getBlock(target.getType());
                 if (blockType instanceof IBlockGrowable) {
                     IBlockGrowable growable = (IBlockGrowable) blockType;
-                    // spawn some green particles
-                    target.getWorld().showParticle(target.getLocation().add(0.5D, 0.5D, 0.5D),
-                            Particle.VILLAGER_HAPPY,
-                            0.25F, 0.25F, 0.25F, 0.4F, 12);
+                    if (growable.isFertilizable(target)) {
+                        // spawn some green particles
+                        target.getWorld().showParticle(target.getLocation().add(0.5D, 0.5D, 0.5D),
+                                Particle.VILLAGER_HAPPY, 0.25F, 0.25F, 0.25F, 0.4F, 12);
 
-                    growable.fertilize(target);
+                        if (growable.canGrowWithChance(target)) {
+                            growable.fertilize(target);
+                        }
 
-                    // deduct from stack if not in creative mode
-                    if (player.getGameMode() != GameMode.CREATIVE) {
-                        holding.setAmount(holding.getAmount() - 1);
+                        // deduct from stack if not in creative mode
+                        if (player.getGameMode() != GameMode.CREATIVE) {
+                            holding.setAmount(holding.getAmount() - 1);
+                        }
                     }
                 }
             } else if (dye.getColor().equals(DyeColor.BROWN)) { // player interacts with cocoa beans in hand

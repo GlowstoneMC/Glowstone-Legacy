@@ -38,6 +38,24 @@ public class BlockTallGrass extends BlockPlant implements IBlockGrowable {
     }
 
     @Override
+    public boolean isFertilizable(GlowBlock block) {
+        final MaterialData data = block.getState().getData();
+        if (data instanceof LongGrass) {
+            if (((LongGrass) data).getSpecies() != GrassSpecies.DEAD) {
+                return true;
+            }
+        } else {
+            warnMaterialData(LongGrass.class, data);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean canGrowWithChance(GlowBlock block) {
+        return true;
+    }
+
+    @Override
     public void fertilize(GlowBlock block) {
         final MaterialData data = block.getState().getData();
         if (data instanceof LongGrass) {

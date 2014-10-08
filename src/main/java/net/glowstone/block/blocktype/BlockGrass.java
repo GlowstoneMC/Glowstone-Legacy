@@ -4,11 +4,13 @@ import java.util.Random;
 
 import org.bukkit.GrassSpecies;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.material.LongGrass;
 
 import net.glowstone.GlowWorld;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
+import net.glowstone.block.ItemTable;
 
 public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
     // TODO
@@ -17,6 +19,16 @@ public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
 
     public BlockGrass(Material dropType) {
         super(dropType);
+    }
+
+    @Override
+    public boolean isFertilizable(GlowBlock block) {
+        return true;
+    }
+
+    @Override
+    public boolean canGrowWithChance(GlowBlock block) {
+        return true;
     }
 
     @Override
@@ -33,22 +45,29 @@ public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
             while (true) {
                 // if there's available space
                 if (world.getBlockAt(x, y, z).getType().equals(Material.AIR)) {
-                    if (random.nextInt(8) == 0 && world.getHighestBlockYAt(x, z) == y) {
-                        // sometimes grow random flower if highest block
+                    if (random.nextFloat() < 0.125D) {
+                        // sometimes grow random flower
                         // TODO
                         // call a method that choose a random flower depending
                         // on the biome
+                        Material flower;
                         if (random.nextInt(2) == 0) {
-                            world.getBlockAt(x, y, z).setType(Material.RED_ROSE);
+                            flower = Material.RED_ROSE;
                         } else {
-                            world.getBlockAt(x, y, z).setType(Material.YELLOW_FLOWER);
+                            flower = Material.YELLOW_FLOWER;
                         }
-                    } else if (world.getHighestBlockYAt(x, z) == y) {
-                        // grow tall grass if highest block
-                        world.getBlockAt(x, y, z).setType(Material.LONG_GRASS);
-                        final GlowBlockState blockState = world.getBlockAt(x, y, z).getState(); 
-                        blockState.setData(new LongGrass(GrassSpecies.NORMAL));
-                        blockState.update(true);
+                        if (ItemTable.instance().getBlock(flower).canPlaceAt(world.getBlockAt(x, y, z), BlockFace.DOWN)) {
+                            world.getBlockAt(x, y, z).setType(flower);
+                        }
+                    } else {
+                        final Material tallGrass = Material.LONG_GRASS;
+                        if (ItemTable.instance().getBlock(tallGrass).canPlaceAt(world.getBlockAt(x, y, z), BlockFace.DOWN)) {
+                            // grow tall grass if possible
+                            world.getBlockAt(x, y, z).setType(tallGrass);
+                            final GlowBlockState blockState = world.getBlockAt(x, y, z).getState(); 
+                            blockState.setData(new LongGrass(GrassSpecies.NORMAL));
+                            blockState.update(true);
+                        }
                     }
                 } else if (j < i / 16) { // look around for grass block
                     x += random.nextInt(3) - 1;
@@ -56,11 +75,11 @@ public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
                     z += random.nextInt(3) - 1;
                     if (world.getBlockAt(x, y - 1, z).getType().equals(Material.GRASS)) {
                         j++;
-                        continue; // FIXME
+                        continue;
                     }
                 }
                 i++;
-                break; // FIXME
+                break;
             }
         } while (i < 128);
     }
