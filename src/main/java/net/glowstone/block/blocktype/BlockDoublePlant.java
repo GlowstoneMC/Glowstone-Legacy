@@ -4,9 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
-import org.bukkit.util.Vector;
 
-import net.glowstone.GlowServer;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.entity.GlowPlayer;
 
@@ -40,12 +38,6 @@ public class BlockDoublePlant extends BlockPlant implements IBlockGrowable {
         //} else {
         //    warnMaterialData(DoublePlant.class, data);
         //}
-    }
-
-    @Override
-    public boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
-        GlowServer.logger.info("double plant interact!");
-        return false;
     }
 
     @Override
