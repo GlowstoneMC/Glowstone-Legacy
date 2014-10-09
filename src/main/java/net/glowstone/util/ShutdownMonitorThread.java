@@ -4,7 +4,6 @@ import net.glowstone.GlowServer;
 
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Thread started on shutdown that monitors for and kills rogue non-daemon threads.
@@ -42,18 +41,20 @@ public class ShutdownMonitorThread extends Thread {
                 continue;
             }
 
-            GlowServer.logger.warning("Rogue thread: " + thread.toString());
+            GlowServer.logger.log(Level.WARNING, "Rogue thread: {0}", thread);
             for (StackTraceElement trace : stack) {
-                GlowServer.logger.warning("\tat " + trace.toString());
+                GlowServer.logger.log(Level.WARNING, "\tat {0}", trace);
             }
 
             // ask nicely to kill them
             thread.interrupt();
             // wait for them to die on their own
-            try {
-                thread.join(1000);
-            } catch (InterruptedException ex) {
-                GlowServer.logger.severe(ex.toString());
+            if(thread.isAlive()){
+                try {
+                    thread.join(1000);
+                } catch (InterruptedException ex) {
+                    GlowServer.logger.log(Level.SEVERE, ex.getMessage(), ex);
+                }
             }
         }
         // kill them forcefully
