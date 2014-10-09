@@ -49,7 +49,7 @@ public class ShutdownMonitorThread extends Thread {
             // ask nicely to kill them
             thread.interrupt();
             // wait for them to die on their own
-            if(thread.isAlive()){
+            if (thread.isAlive()) {
                 try {
                     thread.join(1000);
                 } catch (InterruptedException ex) {
