@@ -44,7 +44,8 @@ public final class ItemTable {
         reg(Material.WALL_SIGN, new BlockSign());
         reg(Material.WORKBENCH, new BlockWorkbench());
         reg(Material.ENDER_CHEST, new BlockEnderchest());
-        reg(Material.CHEST, new BlockChest());
+        reg(Material.CHEST, new BlockChest(false));
+        reg(Material.TRAPPED_CHEST, new BlockChest(true));
         reg(Material.DISPENSER, new BlockDispenser());
         reg(Material.DROPPER, new BlockDropper());
         reg(Material.BOOKSHELF, new BlockDirectDrops(Material.BOOK, 3));

@@ -72,6 +72,7 @@ public class GlowInventory implements Inventory {
 
     /**
      * Add a viewer to the inventory.
+     *
      * @param viewer The HumanEntity to add.
      */
     public void addViewer(HumanEntity viewer) {
@@ -82,6 +83,7 @@ public class GlowInventory implements Inventory {
 
     /**
      * Remove a viewer from the inventory.
+     *
      * @param viewer The HumanEntity to remove.
      */
     public void removeViewer(HumanEntity viewer) {
@@ -92,6 +94,7 @@ public class GlowInventory implements Inventory {
 
     /**
      * Get the type of the specified slot.
+     *
      * @param slot The slot number.
      * @return The SlotType of the slot.
      */
@@ -105,6 +108,7 @@ public class GlowInventory implements Inventory {
      * at the slot, regardless of the slot's current contents. Should return
      * false for crafting output slots or armor slots which cannot accept
      * the given item.
+     *
      * @param slot The slot number.
      * @param stack The stack to add.
      * @return Whether the stack can be added there.
@@ -116,6 +120,7 @@ public class GlowInventory implements Inventory {
     /**
      * Check whether, in a shift-click operation, an item of the specified type
      * may be placed in the given slot.
+     *
      * @param slot The slot number.
      * @param stack The stack to add.
      * @return Whether the stack can be added there.
@@ -126,6 +131,7 @@ public class GlowInventory implements Inventory {
 
     /**
      * Set the custom title of this inventory or reset it to the default.
+     *
      * @param title The new title, or null to reset.
      */
     public void setTitle(String title) {
@@ -289,6 +295,22 @@ public class GlowInventory implements Inventory {
             throw new IllegalArgumentException("Length of items must be " + slots.length);
         }
         System.arraycopy(items, 0, slots, 0, items.length);
+    }
+
+    /**
+     * Replace the current part of this content with the given one, starting by beginIndex.
+     *
+     * @param beginIndex The index to begin to replace the contents
+     * @param items The ItemStack that will replace the existing ones
+     */
+    public void replaceContents(int beginIndex, ItemStack... items) {
+        for (int i = beginIndex; i < slots.length; i++) {
+            if (i >= items.length + beginIndex) {
+                break;
+            }
+
+            slots[i] = items[i - beginIndex];
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////
