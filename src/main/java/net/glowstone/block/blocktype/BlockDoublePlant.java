@@ -3,9 +3,9 @@ package net.glowstone.block.blocktype;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
 
 import net.glowstone.block.GlowBlock;
+import net.glowstone.block.GlowBlockState;
 import net.glowstone.entity.GlowPlayer;
 
 public class BlockDoublePlant extends BlockPlant implements IBlockGrowable {
@@ -21,19 +21,18 @@ public class BlockDoublePlant extends BlockPlant implements IBlockGrowable {
 
     @Override
     public void afterPlace(GlowPlayer player, GlowBlock block, ItemStack holding) {
-        block.getRelative(BlockFace.UP).setType(Material.DOUBLE_PLANT);
-        block.getRelative(BlockFace.UP).setData((byte) 0x8);
+        final GlowBlockState headBlockState = block.getRelative(BlockFace.UP).getState();
+        headBlockState.setType(Material.DOUBLE_PLANT);
+        headBlockState.setRawData((byte) 8);
+        headBlockState.update(true);
         // TODO
         // wait PR #27 (https://github.com/GlowstoneMC/Glowkit/pull/27) is
         // merged into Glowkit and uncomment below
-        //final GlowBlock headBlock = block.getRelative(BlockFace.UP);
         //final MaterialData data = block.getState().getData();
         //if (data instanceof DoublePlant) {
-        //    headBlock.setType(Material.DOUBLE_PLANT);
-        //    GlowBlockState headBlockState = headBlock.getState();
-        //    MaterialData headData = headBlockState.getData();
-        //    ((DoublePlant) headData).setSpecies(DoublePlantSpecies.PLANT_APEX);
-        //    headBlockState.setData(headData);
+        //    final GlowBlockState headBlockState = block.getRelative(BlockFace.UP).getState();
+        //    headBlockState.setType(Material.DOUBLE_PLANT);
+        //    headBlockState.setData(new DoublePlant(DoublePlantSpecies.PLANT_APEX));
         //    headBlockState.update(true);
         //} else {
         //    warnMaterialData(DoublePlant.class, data);
@@ -42,12 +41,12 @@ public class BlockDoublePlant extends BlockPlant implements IBlockGrowable {
 
     @Override
     public boolean isFertilizable(GlowBlock block) {
-        MaterialData data = block.getState().getData();
-        if (data.getData() == 8) { // above block
-            data = block.getRelative(BlockFace.DOWN).getState().getData();
+        int data = block.getData();
+        if (data == 8) { // above block
+            data = block.getRelative(BlockFace.DOWN).getState().getRawData();
         }
-        if (data.getData() != 2 && // double tall grass
-            data.getData() != 3) { // large fern
+        if (data != 2 && // double tall grass
+            data != 3) { // large fern
             return true;
         }
         // TODO
@@ -77,16 +76,16 @@ public class BlockDoublePlant extends BlockPlant implements IBlockGrowable {
 
     @Override
     public void fertilize(GlowBlock block) {
-        MaterialData data = block.getState().getData();
-        if (data.getData() == 8) { // above block
-            data = block.getRelative(BlockFace.DOWN).getState().getData();
+        int data = block.getData();
+        if (data == 8) { // above block
+            data = block.getRelative(BlockFace.DOWN).getState().getRawData();
         }
-        if (data.getData() == 0 ||     // sunflower
-                data.getData() == 1 || // lilac
-                data.getData() == 4 || // rose
-                data.getData() == 5) { // peony
+        if (data == 0 ||     // sunflower
+                data == 1 || // lilac
+                data == 4 || // rose
+                data == 5) { // peony
             block.getWorld().dropItemNaturally(block.getLocation(),
-                    new ItemStack(Material.DOUBLE_PLANT, 1, (short) data.getData()));
+                    new ItemStack(Material.DOUBLE_PLANT, 1, (short) data));
         }
         // TODO
         // wait PR #27 (https://github.com/GlowstoneMC/Glowkit/pull/27) is

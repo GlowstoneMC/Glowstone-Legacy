@@ -16,12 +16,21 @@ import net.glowstone.block.GlowBlockState;
 
 public class BlockStem extends BlockPlant implements IBlockGrowable {
     private Material plantType;
+    private Material fruitType;
+    private Material seedsType;
     // TODO
     // maybe use GlowWorld random instance instead
     private final Random random = new Random();
 
     public BlockStem(Material plantType) {
         this.plantType = plantType;
+        if (plantType.equals(Material.MELON_STEM)) {
+            fruitType = Material.MELON_BLOCK;
+            seedsType = Material.MELON_SEEDS;
+        } else if (plantType.equals(Material.PUMPKIN_STEM)) {
+            fruitType = Material.PUMPKIN;
+            seedsType = Material.PUMPKIN_SEEDS;
+        }
     }
 
     @Override
@@ -34,14 +43,11 @@ public class BlockStem extends BlockPlant implements IBlockGrowable {
 
     @Override
     public Collection<ItemStack> getDrops(GlowBlock block) {
-        // TODO
-        // take care of ripe stage
-        if (plantType.equals(Material.MELON_STEM)) {
-            return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.MELON_SEEDS, random.nextInt(4))));
-        } else if (plantType.equals(Material.PUMPKIN_STEM)) {
-            return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.PUMPKIN_SEEDS, random.nextInt(4))));
+        if (block.getState().getRawData() >= CropState.RIPE.ordinal()) {
+            return Collections.unmodifiableList(Arrays.asList(new ItemStack(seedsType, random.nextInt(4))));
+        } else {
+            return Collections.unmodifiableList(Arrays.asList(new ItemStack[0]));
         }
-        return Collections.unmodifiableList(Arrays.asList(new ItemStack[0]));
     }
 
     @Override
@@ -56,13 +62,18 @@ public class BlockStem extends BlockPlant implements IBlockGrowable {
 
     @Override
     public void fertilize(GlowBlock block) {
-        int state = block.getData()
-                + (random.nextInt(CropState.MEDIUM.ordinal())
-                + CropState.VERY_SMALL.ordinal());
-        if (state > CropState.RIPE.ordinal()) {
-            state = CropState.RIPE.ordinal();
+        final GlowBlockState state = block.getState();
+        int cropState = block.getData()
+            + (random.nextInt(CropState.MEDIUM.ordinal())
+            + CropState.VERY_SMALL.ordinal());
+        if (cropState > CropState.RIPE.ordinal()) {
+            cropState = CropState.RIPE.ordinal();
         }
-        block.setData((byte) state);
+        state.setRawData((byte) cropState);
+        // TODO
+        // call onBlockGrow from EventFactory
+        state.update(true);
+
         // TODO
         // the method below should be called from tick
         // and not in the fertilize method
@@ -70,7 +81,16 @@ public class BlockStem extends BlockPlant implements IBlockGrowable {
     }
 
     private void ripe(GlowBlock block) {
-        if (block.getData() == CropState.RIPE.ordinal()) {
+        int cropState = block.getData();
+        if (cropState >= CropState.RIPE.ordinal()) {
+            // check around there's not already a fruit
+            if (block.getRelative(BlockFace.EAST).getType().equals(fruitType)
+                    || block.getRelative(BlockFace.WEST).getType().equals(fruitType)
+                    || block.getRelative(BlockFace.NORTH).getType().equals(fruitType)
+                    || block.getRelative(BlockFace.SOUTH).getType().equals(fruitType)) {
+                return;
+            }
+            // produce a fruit if possible
             int n = random.nextInt(4);
             BlockFace face;
             switch (n) {
@@ -93,15 +113,19 @@ public class BlockStem extends BlockPlant implements IBlockGrowable {
                     && (belowTargetBlock.getType().equals(Material.SOIL)
                     || belowTargetBlock.getType().equals(Material.DIRT)
                     || belowTargetBlock.getType().equals(Material.GRASS))) {
-                if (plantType.equals(Material.MELON_STEM)) {
-                    targetBlockState.setType(Material.MELON_BLOCK);
-                    targetBlockState.update(true);
-                } else if (plantType.equals(Material.PUMPKIN_STEM)) {
-                    targetBlockState.setType(Material.PUMPKIN);
+                targetBlockState.setType(fruitType);
+                if (fruitType.equals(Material.PUMPKIN)) {
                     targetBlockState.setData(new Pumpkin(face.getOppositeFace()));
-                    targetBlockState.update(true);
                 }
+                targetBlockState.update(true);
             }
+        } else {
+            cropState++;
+            final GlowBlockState state = block.getState();
+            state.setRawData((byte) cropState);
+            // TODO
+            // call onBlockGrow from EventFactory
+            state.update(true);
         }
     }
 }

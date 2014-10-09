@@ -11,6 +11,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 
 import net.glowstone.block.GlowBlock;
+import net.glowstone.block.GlowBlockState;
 
 public class BlockCrops extends BlockPlant implements IBlockGrowable {
     // TODO
@@ -47,12 +48,16 @@ public class BlockCrops extends BlockPlant implements IBlockGrowable {
 
     @Override
     public void fertilize(GlowBlock block) {
-        int state = block.getData()
-                + (random.nextInt(CropState.MEDIUM.ordinal())
-                + CropState.VERY_SMALL.ordinal());
-        if (state > CropState.RIPE.ordinal()) {
-            state = CropState.RIPE.ordinal();
+        final GlowBlockState state = block.getState();
+        int cropState = block.getData()
+            + (random.nextInt(CropState.MEDIUM.ordinal())
+            + CropState.VERY_SMALL.ordinal());
+        if (cropState > CropState.RIPE.ordinal()) {
+            cropState = CropState.RIPE.ordinal();
         }
-        block.setData((byte) state);
+        state.setRawData((byte) cropState);
+        // TODO
+        // call onBlockGrow from EventFactory
+        state.update(true);
     }
 }

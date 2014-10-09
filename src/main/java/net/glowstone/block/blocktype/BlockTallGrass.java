@@ -1,6 +1,7 @@
 package net.glowstone.block.blocktype;
 
 import net.glowstone.block.GlowBlock;
+import net.glowstone.block.GlowBlockState;
 
 import org.bukkit.GrassSpecies;
 import org.bukkit.Material;
@@ -61,10 +62,16 @@ public class BlockTallGrass extends BlockPlant implements IBlockGrowable {
         if (data instanceof LongGrass) {
             final GrassSpecies species = ((LongGrass) data).getSpecies();
             if (species.equals(GrassSpecies.NORMAL) || species.equals(GrassSpecies.FERN_LIKE)) {
-                block.setType(Material.DOUBLE_PLANT);
-                block.setData((byte) (species.ordinal() + 1));
-                block.getRelative(BlockFace.UP).setType(Material.DOUBLE_PLANT);
-                block.getRelative(BlockFace.UP).setData((byte) 0x8);
+                final GlowBlockState blockState = block.getState();
+                final GlowBlockState headBlockState = block.getRelative(BlockFace.UP).getState();
+                blockState.setType(Material.DOUBLE_PLANT);
+                blockState.setRawData((byte) (species.ordinal() + 1));
+                headBlockState.setType(Material.DOUBLE_PLANT);
+                headBlockState.setRawData((byte) 8);
+                // TODO
+                // call onBlockGrow from EventFactory
+                blockState.update(true);
+                headBlockState.update(true);
             }
         } else {
             warnMaterialData(LongGrass.class, data);
@@ -83,14 +90,14 @@ public class BlockTallGrass extends BlockPlant implements IBlockGrowable {
         //    } else {
         //        return;
         //    }
-        //    block.setType(Material.DOUBLE_PLANT);
         //    final GlowBlockState blockState = block.getState();
-        //    blockState.setData(plant);
-        //    block.getRelative(BlockFace.UP).setType(Material.DOUBLE_PLANT);
         //    final GlowBlockState headBlockState = block.getRelative(BlockFace.UP).getState();
-        //    final MaterialData headData = headBlockState.getData();
-        //    ((DoublePlant) headData).setSpecies(DoublePlantSpecies.PLANT_APEX);
-        //    headBlockState.setData(headData);
+        //    blockState.setType(Material.DOUBLE_PLANT);
+        //    blockState.setData(plant);
+        //    headBlockState.setType(Material.DOUBLE_PLANT);
+        //    headBlockState.setData(new DoublePlant(DoublePlantSpecies.PLANT_APEX));
+        //    // TODO
+        //    // call onBlockGrow from EventFactory
         //    blockState.update(true);
         //    headBlockState.update(true);
         //} else {

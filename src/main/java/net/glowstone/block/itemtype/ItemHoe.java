@@ -13,9 +13,11 @@ public class ItemHoe extends ItemType {
 
     @Override
     public void rightClickBlock(GlowPlayer player, GlowBlock target, BlockFace face, ItemStack holding, Vector clickedLoc) {
-        if (target.getType().equals(Material.GRASS)
-                || target.getType().equals(Material.DIRT)) {
-            target.getWorld().playSound(target.getLocation(), Sound.STEP_GRAVEL, 1, 0.8F);
+        if ((target.getType().equals(Material.GRASS)
+                || target.getType().equals(Material.DIRT))
+                && target.getRelative(BlockFace.UP).getType().equals(Material.AIR)) {
+            target.getWorld().playSound(target.getLocation().add(0.5D, 0.5D, 0.5D), 
+                    Sound.STEP_GRAVEL, 1, 0.8F);
             target.setType(Material.SOIL);
             target.getState().update(true);
         }

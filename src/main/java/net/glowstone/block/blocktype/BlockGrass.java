@@ -45,6 +45,7 @@ public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
             while (true) {
                 // if there's available space
                 if (world.getBlockAt(x, y, z).getType().equals(Material.AIR)) {
+                    final GlowBlockState blockState = world.getBlockAt(x, y, z).getState();
                     if (random.nextFloat() < 0.125D) {
                         // sometimes grow random flower
                         // TODO
@@ -57,18 +58,19 @@ public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
                             flower = Material.YELLOW_FLOWER;
                         }
                         if (ItemTable.instance().getBlock(flower).canPlaceAt(world.getBlockAt(x, y, z), BlockFace.DOWN)) {
-                            world.getBlockAt(x, y, z).setType(flower);
+                            blockState.setType(flower);
                         }
                     } else {
                         final Material tallGrass = Material.LONG_GRASS;
                         if (ItemTable.instance().getBlock(tallGrass).canPlaceAt(world.getBlockAt(x, y, z), BlockFace.DOWN)) {
                             // grow tall grass if possible
-                            world.getBlockAt(x, y, z).setType(tallGrass);
-                            final GlowBlockState blockState = world.getBlockAt(x, y, z).getState(); 
+                            blockState.setType(tallGrass);
                             blockState.setData(new LongGrass(GrassSpecies.NORMAL));
-                            blockState.update(true);
                         }
                     }
+                    // TODO
+                    // call onBlockGrow from EventFactory
+                    blockState.update(true);
                 } else if (j < i / 16) { // look around for grass block
                     x += random.nextInt(3) - 1;
                     y += (random.nextInt(3) - 1) * random.nextInt(3) / 2;
