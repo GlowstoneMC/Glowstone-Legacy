@@ -72,27 +72,21 @@ public class BlockStem extends BlockPlant implements IBlockGrowable {
     private void ripe(GlowBlock block) {
         if (block.getData() == CropState.RIPE.ordinal()) {
             int n = random.nextInt(4);
-            int x = block.getX();
-            int z = block.getZ();
             BlockFace face;
             switch (n) {
                 case 1:
-                    x++;
                     face = BlockFace.WEST;
                     break;
                 case 2:
-                    z--;
-                    face = BlockFace.SOUTH;
-                    break;
-                case 3:
-                    z++;
                     face = BlockFace.NORTH;
                     break;
+                case 3:
+                    face = BlockFace.SOUTH;
+                    break;
                 default:
-                    x--;
                     face = BlockFace.EAST;
             }
-            final GlowBlock targetBlock = block.getWorld().getBlockAt(x, block.getY(), z);
+            final GlowBlock targetBlock = block.getRelative(face);
             final GlowBlockState targetBlockState = targetBlock.getState();
             final GlowBlock belowTargetBlock = targetBlock.getRelative(BlockFace.DOWN);
             if (targetBlock.getType().equals(Material.AIR)
@@ -104,7 +98,7 @@ public class BlockStem extends BlockPlant implements IBlockGrowable {
                     targetBlockState.update(true);
                 } else if (plantType.equals(Material.PUMPKIN_STEM)) {
                     targetBlockState.setType(Material.PUMPKIN);
-                    targetBlockState.setData(new Pumpkin(face));
+                    targetBlockState.setData(new Pumpkin(face.getOppositeFace()));
                     targetBlockState.update(true);
                 }
             }
