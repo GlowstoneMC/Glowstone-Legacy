@@ -38,7 +38,7 @@ public class ItemDye extends ItemType {
                                 Particle.VILLAGER_HAPPY, 0.25F, 0.25F, 0.25F, 0.4F, 12);
 
                         if (growable.canGrowWithChance(target)) {
-                            growable.fertilize(target);
+                            growable.grow(target);
                         }
 
                         // deduct from stack if not in creative mode

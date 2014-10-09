@@ -18,15 +18,15 @@ public interface IBlockGrowable {
     /**
      * Called to check if the block will effectively grow.
      *
-     * @param block the targeted block to fertilize
+     * @param block the targeted block to grow
      * @return True if the block will grow.
      */
     boolean canGrowWithChance(GlowBlock block);
 
     /**
-     * Fertilizes a growable block.
+     * Called to grow a growable block.
      *
-     * @param block the targeted block to fertilize
+     * @param block the targeted block to grow
      */
-    void fertilize(GlowBlock block);
+    void grow(GlowBlock block);
 }

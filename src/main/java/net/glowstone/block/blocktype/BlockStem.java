@@ -34,6 +34,11 @@ public class BlockStem extends BlockPlant implements IBlockGrowable {
     }
 
     @Override
+    public boolean canTickRandomly() {
+        return true;
+    }
+
+    @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
         if (block.getRelative(BlockFace.DOWN).getType().equals(Material.SOIL)) {
             return true;
@@ -51,36 +56,7 @@ public class BlockStem extends BlockPlant implements IBlockGrowable {
     }
 
     @Override
-    public boolean isFertilizable(GlowBlock block) {
-        return block.getData() != CropState.RIPE.ordinal();
-    }
-
-    @Override
-    public boolean canGrowWithChance(GlowBlock block) {
-        return true;
-    }
-
-    @Override
-    public void fertilize(GlowBlock block) {
-        final GlowBlockState state = block.getState();
-        int cropState = block.getData()
-            + (random.nextInt(CropState.MEDIUM.ordinal())
-            + CropState.VERY_SMALL.ordinal());
-        if (cropState > CropState.RIPE.ordinal()) {
-            cropState = CropState.RIPE.ordinal();
-        }
-        state.setRawData((byte) cropState);
-        // TODO
-        // call onBlockGrow from EventFactory
-        state.update(true);
-
-        // TODO
-        // the method below should be called from tick
-        // and not in the fertilize method
-        ripe(block); // FIXME
-    }
-
-    private void ripe(GlowBlock block) {
+    public void updateBlock(GlowBlock block) {
         int cropState = block.getData();
         if (cropState >= CropState.RIPE.ordinal()) {
             // check around there's not already a fruit
@@ -127,5 +103,30 @@ public class BlockStem extends BlockPlant implements IBlockGrowable {
             // call onBlockGrow from EventFactory
             state.update(true);
         }
+    }
+
+    @Override
+    public boolean isFertilizable(GlowBlock block) {
+        return block.getData() != CropState.RIPE.ordinal();
+    }
+
+    @Override
+    public boolean canGrowWithChance(GlowBlock block) {
+        return true;
+    }
+
+    @Override
+    public void grow(GlowBlock block) {
+        final GlowBlockState state = block.getState();
+        int cropState = block.getData()
+            + (random.nextInt(CropState.MEDIUM.ordinal())
+            + CropState.VERY_SMALL.ordinal());
+        if (cropState > CropState.RIPE.ordinal()) {
+            cropState = CropState.RIPE.ordinal();
+        }
+        state.setRawData((byte) cropState);
+        // TODO
+        // call onBlockGrow from EventFactory
+        state.update(true);
     }
 }

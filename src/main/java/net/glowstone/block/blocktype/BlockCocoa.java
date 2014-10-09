@@ -3,6 +3,7 @@ package net.glowstone.block.blocktype;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Random;
 
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
@@ -19,6 +20,14 @@ import org.bukkit.material.Tree;
 import org.bukkit.util.Vector;
 
 public class BlockCocoa extends BlockAttachable implements IBlockGrowable {
+    // TODO
+    // maybe use GlowWorld random instance instead
+    private final Random random = new Random();
+
+    @Override
+    public boolean canTickRandomly() {
+        return true;
+    }
 
     @Override
     public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {
@@ -65,6 +74,13 @@ public class BlockCocoa extends BlockAttachable implements IBlockGrowable {
     }
 
     @Override
+    public void updateBlock(GlowBlock block) {
+        if (random.nextInt(5) == 0) {
+            grow(block);
+        }
+    }
+
+    @Override
     public boolean isFertilizable(GlowBlock block) {
         final MaterialData data = block.getState().getData();
         if (data instanceof CocoaPlant) {
@@ -83,7 +99,7 @@ public class BlockCocoa extends BlockAttachable implements IBlockGrowable {
     }
 
     @Override
-    public void fertilize(GlowBlock block) {
+    public void grow(GlowBlock block) {
         final MaterialData data = block.getState().getData();
         if (data instanceof CocoaPlant) {
             final CocoaPlant cocoa = (CocoaPlant) data;
@@ -97,6 +113,7 @@ public class BlockCocoa extends BlockAttachable implements IBlockGrowable {
             }
             final GlowBlockState state = block.getState();
             state.setData(cocoa);
+            // call onBlockGrow from EventFactory
             state.update(true);
         } else {
             warnMaterialData(CocoaPlant.class, data);

@@ -24,7 +24,7 @@ public class BlockSapling extends BlockPlant implements IBlockGrowable {
     }
 
     @Override
-    public void fertilize(GlowBlock block) {
+    public void grow(GlowBlock block) {
         // TODO
         // make GlowWold.generateTree() to not overwrite blocks
         // and check there's enough place around to plant a tree

@@ -57,7 +57,7 @@ public class BlockTallGrass extends BlockPlant implements IBlockGrowable {
     }
 
     @Override
-    public void fertilize(GlowBlock block) {
+    public void grow(GlowBlock block) {
         final MaterialData data = block.getState().getData();
         if (data instanceof LongGrass) {
             final GrassSpecies species = ((LongGrass) data).getSpecies();

@@ -32,7 +32,7 @@ public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
     }
 
     @Override
-    public void fertilize(GlowBlock block) {
+    public void grow(GlowBlock block) {
         final GlowWorld world = block.getWorld();
 
         int i = 0;

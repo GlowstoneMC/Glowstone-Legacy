@@ -45,7 +45,7 @@ public class BlockMushroom extends BlockType implements IBlockGrowable {
     }
 
     @Override
-    public void fertilize(GlowBlock block) {
+    public void grow(GlowBlock block) {
         if (mushroomType.equals(Material.BROWN_MUSHROOM)) {
             generateHugeMushroom(block.getWorld(), block, Material.HUGE_MUSHROOM_1);
         } else if (mushroomType.equals(Material.RED_MUSHROOM)) {

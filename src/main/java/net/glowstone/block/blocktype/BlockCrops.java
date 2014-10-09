@@ -19,6 +19,11 @@ public class BlockCrops extends BlockPlant implements IBlockGrowable {
     private final Random random = new Random();
 
     @Override
+    public boolean canTickRandomly() {
+        return true;
+    }
+
+    @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
         if (block.getRelative(BlockFace.DOWN).getType().equals(Material.SOIL)) {
             return true;
@@ -37,6 +42,24 @@ public class BlockCrops extends BlockPlant implements IBlockGrowable {
     }
 
     @Override
+    public void updateBlock(GlowBlock block) {
+        final GlowBlockState state = block.getState();
+        int cropState = block.getData();
+        if (cropState < CropState.RIPE.ordinal()) {
+            if (random.nextInt(3) == 0) {
+               cropState++;
+            }
+        }
+        if (cropState > CropState.RIPE.ordinal()) {
+            cropState = CropState.RIPE.ordinal();
+        }
+        state.setRawData((byte) cropState);
+        // TODO
+        // call onBlockGrow from EventFactory
+        state.update(true);
+    }
+
+    @Override
     public boolean isFertilizable(GlowBlock block) {
         return block.getData() != CropState.RIPE.ordinal();
     }
@@ -47,7 +70,7 @@ public class BlockCrops extends BlockPlant implements IBlockGrowable {
     }
 
     @Override
-    public void fertilize(GlowBlock block) {
+    public void grow(GlowBlock block) {
         final GlowBlockState state = block.getState();
         int cropState = block.getData()
             + (random.nextInt(CropState.MEDIUM.ordinal())
