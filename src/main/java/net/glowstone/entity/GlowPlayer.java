@@ -29,6 +29,7 @@ import net.glowstone.util.TextMessage;
 import net.glowstone.util.TextWrapper;
 import org.apache.commons.lang.Validate;
 import org.bukkit.*;
+import org.bukkit.World.Environment;
 import org.bukkit.configuration.serialization.DelegateDeserialization;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
@@ -1156,6 +1157,55 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         }
 
         teleported = true;
+        return true;
+    }
+
+    @Override
+    public boolean teleportToSpawn() {
+        Location target = getBedSpawnLocation();
+        if (target == null) {
+            target = server.getWorlds().get(0).getSpawnLocation();
+        }
+
+        PlayerPortalEvent event = EventFactory.callEvent(new PlayerPortalEvent(this, location.clone(), target, null));
+        if (event.isCancelled()) {
+            return false;
+        }
+        target = event.getTo();
+
+        spawnAt(target);
+        teleported = true;
+
+        awardAchievement(Achievement.THE_END);
+        return true;
+    }
+
+    @Override
+    public boolean teleportToEnd() {
+        if (!server.getAllowEnd()) {
+            return false;
+        }
+        Location target = null;
+        for (World world : server.getWorlds()) {
+            if (world.getEnvironment() == Environment.THE_END) {
+                target = world.getSpawnLocation();
+                break;
+            }
+        }
+        if (target == null) {
+            return false;
+        }
+
+        PlayerPortalEvent event = EventFactory.callEvent(new PlayerPortalEvent(this, location.clone(), target, null));
+        if (event.isCancelled()) {
+            return false;
+        }
+        target = event.getTo();
+
+        spawnAt(target);
+        teleported = true;
+
+        awardAchievement(Achievement.END_PORTAL);
         return true;
     }
 
