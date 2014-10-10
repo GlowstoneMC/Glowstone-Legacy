@@ -94,9 +94,9 @@ public class BlockMushroom extends BlockType implements IBlockGrowable {
                         if (y != block.getY() || x != block.getX() || z != block.getZ()) {
                             b = world.getBlockAt(x, y, z);
                             // we can overlap leaves around
-                            if (!b.getType().equals(Material.AIR)
-                                    && b.getType().equals(Material.LEAVES)
-                                    && b.getType().equals(Material.LEAVES_2)) {
+                            if (!(b.getType().equals(Material.AIR)
+                                    || b.getType().equals(Material.LEAVES)
+                                    || b.getType().equals(Material.LEAVES_2))) {
                                 canGrow = false;
                             }
                         }
