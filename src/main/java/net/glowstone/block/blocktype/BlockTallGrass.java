@@ -1,11 +1,13 @@
 package net.glowstone.block.blocktype;
 
+import net.glowstone.EventFactory;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 
 import org.bukkit.GrassSpecies;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.LongGrass;
 import org.bukkit.material.MaterialData;
@@ -68,10 +70,12 @@ public class BlockTallGrass extends BlockPlant implements IBlockGrowable {
                 blockState.setRawData((byte) (species.ordinal() + 1));
                 headBlockState.setType(Material.DOUBLE_PLANT);
                 headBlockState.setRawData((byte) 8);
-                // TODO
-                // call onBlockGrow from EventFactory
-                blockState.update(true);
-                headBlockState.update(true);
+                BlockGrowEvent growEvent = new BlockGrowEvent(block, block.getState());
+                EventFactory.callEvent(growEvent);
+                if (!growEvent.isCancelled()) {
+                    blockState.update(true);
+                    headBlockState.update(true);
+                }
             }
         } else {
             warnMaterialData(LongGrass.class, data);
@@ -96,10 +100,12 @@ public class BlockTallGrass extends BlockPlant implements IBlockGrowable {
         //    blockState.setData(plant);
         //    headBlockState.setType(Material.DOUBLE_PLANT);
         //    headBlockState.setData(new DoublePlant(DoublePlantSpecies.PLANT_APEX));
-        //    // TODO
-        //    // call onBlockGrow from EventFactory
-        //    blockState.update(true);
-        //    headBlockState.update(true);
+        //    BlockGrowEvent growEvent = new BlockGrowEvent(block, block.getState());
+        //    EventFactory.callEvent(growEvent);
+        //    if (!growEvent.isCancelled()) {
+        //          blockState.update(true);
+        //          headBlockState.update(true);
+        //    }
         //} else {
         //    warnMaterialData(LongGrass.class, data);
         //}

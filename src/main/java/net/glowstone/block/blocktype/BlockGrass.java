@@ -5,8 +5,10 @@ import java.util.Random;
 import org.bukkit.GrassSpecies;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.material.LongGrass;
 
+import net.glowstone.EventFactory;
 import net.glowstone.GlowWorld;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
@@ -68,9 +70,11 @@ public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
                             blockState.setData(new LongGrass(GrassSpecies.NORMAL));
                         }
                     }
-                    // TODO
-                    // call onBlockGrow from EventFactory
-                    blockState.update(true);
+                    BlockGrowEvent growEvent = new BlockGrowEvent(block, block.getState());
+                    EventFactory.callEvent(growEvent);
+                    if (!growEvent.isCancelled()) {
+                        blockState.update(true);
+                    }
                 } else if (j < i / 16) { // look around for grass block
                     x += random.nextInt(3) - 1;
                     y += (random.nextInt(3) - 1) * random.nextInt(3) / 2;

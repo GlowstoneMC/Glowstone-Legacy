@@ -8,8 +8,10 @@ import java.util.Random;
 import org.bukkit.CropState;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.inventory.ItemStack;
 
+import net.glowstone.EventFactory;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 
@@ -54,9 +56,11 @@ public class BlockCrops extends BlockPlant implements IBlockGrowable {
             cropState = CropState.RIPE.ordinal();
         }
         state.setRawData((byte) cropState);
-        // TODO
-        // call onBlockGrow from EventFactory
-        state.update(true);
+        BlockGrowEvent growEvent = new BlockGrowEvent(block, block.getState());
+        EventFactory.callEvent(growEvent);
+        if (!growEvent.isCancelled()) {
+            state.update(true);
+        }
     }
 
     @Override
@@ -79,8 +83,10 @@ public class BlockCrops extends BlockPlant implements IBlockGrowable {
             cropState = CropState.RIPE.ordinal();
         }
         state.setRawData((byte) cropState);
-        // TODO
-        // call onBlockGrow from EventFactory
-        state.update(true);
+        BlockGrowEvent growEvent = new BlockGrowEvent(block, block.getState());
+        EventFactory.callEvent(growEvent);
+        if (!growEvent.isCancelled()) {
+            state.update(true);
+        }
     }
 }
