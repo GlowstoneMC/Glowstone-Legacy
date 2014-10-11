@@ -735,7 +735,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
     @Override
     public boolean isOnline() {
-        return online;
+        return online && session.isActive();
     }
 
     /**
