@@ -15,7 +15,7 @@ import java.util.UUID;
  */
 public final class UuidUtils {
 
-    private static String getURL = "https://api.mojang.com/users/profiles/minecraft/";
+    private static String PROFILE_URL = "https://api.mojang.com/users/profiles/minecraft/";
 
     private UuidUtils() {}
 
@@ -31,7 +31,7 @@ public final class UuidUtils {
 
     public static UUID fetchUUID(String username) {
         try {
-            URLConnection connection = new URL(getURL + username).openConnection();
+            URLConnection connection = new URL(PROFILE_URL + username).openConnection();
             JSONObject json;
 
             try (InputStream is = connection.getInputStream()) {
