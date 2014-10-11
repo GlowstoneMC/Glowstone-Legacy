@@ -78,7 +78,7 @@ public class BlockCocoa extends BlockAttachable implements IBlockGrowable {
     @Override
     public void updateBlock(GlowBlock block) {
         if (random.nextInt(5) == 0) {
-            grow(block);
+            grow(null, block);
         }
     }
 
@@ -101,7 +101,7 @@ public class BlockCocoa extends BlockAttachable implements IBlockGrowable {
     }
 
     @Override
-    public void grow(GlowBlock block) {
+    public void grow(GlowPlayer player, GlowBlock block) {
         final MaterialData data = block.getState().getData();
         if (data instanceof CocoaPlant) {
             final CocoaPlant cocoa = (CocoaPlant) data;

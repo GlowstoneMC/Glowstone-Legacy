@@ -15,6 +15,7 @@ import org.bukkit.material.Pumpkin;
 import net.glowstone.EventFactory;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
+import net.glowstone.entity.GlowPlayer;
 
 public class BlockStem extends BlockPlant implements IBlockGrowable {
     private Material plantType;
@@ -120,7 +121,7 @@ public class BlockStem extends BlockPlant implements IBlockGrowable {
     }
 
     @Override
-    public void grow(GlowBlock block) {
+    public void grow(GlowPlayer player, GlowBlock block) {
         final GlowBlockState state = block.getState();
         int cropState = block.getData()
             + (random.nextInt(CropState.MEDIUM.ordinal())

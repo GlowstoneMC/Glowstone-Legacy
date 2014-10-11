@@ -75,7 +75,7 @@ public class BlockDoublePlant extends BlockPlant implements IBlockGrowable {
     }
 
     @Override
-    public void grow(GlowBlock block) {
+    public void grow(GlowPlayer player, GlowBlock block) {
         int data = block.getData();
         if (data == 8) { // above block
             data = block.getRelative(BlockFace.DOWN).getState().getRawData();

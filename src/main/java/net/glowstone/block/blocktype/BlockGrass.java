@@ -13,6 +13,7 @@ import net.glowstone.GlowWorld;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.ItemTable;
+import net.glowstone.entity.GlowPlayer;
 
 public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
     // TODO
@@ -34,7 +35,7 @@ public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
     }
 
     @Override
-    public void grow(GlowBlock block) {
+    public void grow(GlowPlayer player, GlowBlock block) {
         final GlowWorld world = block.getWorld();
 
         int i = 0;
