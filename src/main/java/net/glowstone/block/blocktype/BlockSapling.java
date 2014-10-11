@@ -3,7 +3,9 @@ package net.glowstone.block.blocktype;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.TreeSpecies;
 import org.bukkit.TreeType;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.material.MaterialData;
@@ -21,6 +23,30 @@ public class BlockSapling extends BlockPlant implements IBlockGrowable {
     private final Random random = new Random();
 
     @Override
+    public boolean canTickRandomly() {
+        return true;
+    }
+
+    @Override
+    public void updateBlock(GlowBlock block) {
+        if (block.getRelative(BlockFace.UP).getLightLevel() >= 7 && random.nextInt(7) == 0) {
+            int dataValue = block.getData();
+            if ((dataValue & 8) == 0) {
+                block.setData((byte) (dataValue | 8));
+            } else {
+                final MaterialData data = block.getState().getData();
+                if (data instanceof Tree) {
+                    final Tree tree = (Tree) data;
+                    final TreeType type = getTreeType(tree.getSpecies());
+                    block.getWorld().generateTree(block.getLocation(), type);
+                } else {
+                    warnMaterialData(Tree.class, data);
+                }
+            }
+        }
+    }
+
+    @Override
     public boolean isFertilizable(GlowBlock block) {
         return true;
     }
@@ -32,33 +58,10 @@ public class BlockSapling extends BlockPlant implements IBlockGrowable {
 
     @Override
     public void grow(GlowPlayer player, GlowBlock block) {
-        // TODO
-        // make GlowWold.generateTree() to not overwrite blocks
-        // and check there's enough place around to plant a tree
-        // handle big trees
         final MaterialData data = block.getState().getData();
         if (data instanceof Tree) {
             final Tree tree = (Tree) data;
-            TreeType type = null;
-            switch (tree.getSpecies()) {
-                case REDWOOD:
-                    type = TreeType.REDWOOD;
-                    break;
-                case BIRCH:
-                    type = TreeType.BIRCH;
-                    break;
-                case JUNGLE:
-                    type = TreeType.JUNGLE;
-                    break;
-                case ACACIA:
-                    type = TreeType.ACACIA;
-                    break;
-                case DARK_OAK:
-                    type = TreeType.DARK_OAK;
-                    break;
-                default:
-                    type = TreeType.TREE;
-            }
+            final TreeType type = getTreeType(tree.getSpecies());
             final BlockStateDelegate delegate = new BlockStateDelegate();
             final TreeGenerator generator = new TreeGenerator(delegate);
             if (generator.generate(random, block.getLocation(), type)) {
@@ -74,6 +77,25 @@ public class BlockSapling extends BlockPlant implements IBlockGrowable {
             }
         } else {
             warnMaterialData(Tree.class, data);
+        }
+    }
+
+    private TreeType getTreeType(TreeSpecies species) {
+        switch (species) {
+            case GENERIC:
+                return TreeType.TREE;
+            case REDWOOD:
+                return TreeType.REDWOOD;
+            case BIRCH:
+                return TreeType.BIRCH;
+            case JUNGLE:
+                return TreeType.JUNGLE;
+            case ACACIA:
+                return TreeType.ACACIA;
+            case DARK_OAK:
+                return TreeType.DARK_OAK;
+            default:
+                return TreeType.TREE;
         }
     }
 }

@@ -769,9 +769,9 @@ public final class GlowWorld implements World {
         final BlockStateDelegate blockStateDelegate = new BlockStateDelegate();
         TreeGenerator generator;
         if (type.equals(TreeType.BROWN_MUSHROOM) || type.equals(TreeType.RED_MUSHROOM)) {
-            generator = new TreeGenerator(blockStateDelegate);
-        } else {
             generator = new HugeMushroomGenerator(blockStateDelegate);
+        } else {
+            generator = new TreeGenerator(blockStateDelegate);
         }
         if (generator.generate(random, loc, type)) {
             final List<BlockState> blockStates = blockStateDelegate.getBlockStates();
