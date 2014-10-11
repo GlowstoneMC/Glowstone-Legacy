@@ -5,9 +5,11 @@ import net.glowstone.GlowServer;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.io.PlayerDataService;
 import net.glowstone.io.entity.EntityStorage;
+import net.glowstone.util.UuidUtils;
 import net.glowstone.util.nbt.CompoundTag;
 import net.glowstone.util.nbt.NBTInputStream;
 import net.glowstone.util.nbt.NBTOutputStream;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -86,6 +88,17 @@ public class NbtPlayerDataService implements PlayerDataService {
                 return player.getUniqueId();
             }
         }
+
+        // If we're in online mode, let's find the real damn UUID already
+        if (Bukkit.getServer().getOnlineMode()) {
+            UUID id = UuidUtils.fetchUUID(name);
+
+            // Of course, the player might not exist or Mojang might be being dicks or something
+            if (id != null) {
+                return id;
+            }
+        }
+
         return UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
     }
 
