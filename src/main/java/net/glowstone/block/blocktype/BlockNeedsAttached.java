@@ -14,7 +14,8 @@ public class BlockNeedsAttached extends BlockType {
 
     @Override
     public void updatePhysics(GlowBlock me) {
-        if (me.getRelative(getAttachedFace(me)).getType() == Material.AIR) {
+        BlockFace attachedTo = getAttachedFace(me);
+        if (me.getRelative(attachedTo).getType() == Material.AIR || !canPlaceAt(me, attachedTo)) {
             dropMe(me);
         }
     }
