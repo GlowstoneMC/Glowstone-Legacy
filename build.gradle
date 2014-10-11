@@ -98,7 +98,7 @@ repositories {
 
 // Dependencies used by our project
 dependencies {
-    compile group: 'net.glowstone', name: 'glowkit', version: project.ext.bukkitVersion
+    compile group: 'net.glowstone', name: 'glowkit', version: bukkitVersion
     compile 'com.flowpowered:flow-networking:1.0.0-SNAPSHOT'
     compile 'jline:jline:2.11'
     //compile 'mysql:mysql-connector-java:5.1.14'
@@ -118,12 +118,14 @@ shadowJar {
     dependencies {
         exclude(dependency(lombok))
     }
+    
+    classifier = buildNumber
 }
 
 // Remap plugin settings
 remap {
     mappingFile = file('etc/remapper.txt')
-    inputTask = shadowJar
+    inputTask = gitDescribe
 }
 
 // Eclipse project name
@@ -137,10 +139,10 @@ eclipse {
 jar.manifest.mainAttributes(
         'Main-Class': mainClassName,
         'Implementation-Title': description,
-        'Implementation-Version': ext.gitDescribe,
+        'Implementation-Version': gitDescribe,
         'Implementation-Vendor': 'Glowstone Project',
         'Specification-Title': 'Bukkit/Glowkit',
-        'Specification-Version': ext.bukkitVersion,
+        'Specification-Version': bukkitVersion,
         'Specification-Vendor': 'Glowstone Project',
         'Sealed': true
 )
