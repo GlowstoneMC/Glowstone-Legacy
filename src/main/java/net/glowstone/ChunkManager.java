@@ -1,18 +1,10 @@
-package net.glowstone;
+packageone;
 
 import net.glowstone.constants.GlowBiome;
 import net.glowstone.io.ChunkIoService;
 import org.bukkit.block.Biome;
 import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.ChunkPopulateEvent;
-import org.bukkit.generator.BlockPopulator;
-import org.bukkit.generator.ChunkGenerator;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Level;
+import org.buLevel;
 
 /**
  * A class which manages the {@link GlowChunk}s currently loaded in memory.
@@ -23,24 +15,7 @@ public final class ChunkManager {
     /**
      * The world this ChunkManager is managing.
      */
-    private final GlowWorld world;
-
-    /**
-     * The chunk I/O service used to read chunks from the disk and write them to
-     * the disk.
-     */
-    private final ChunkIoService service;
-
-    /**
-     * The chunk generator used to generate new chunks.
-     */
-    private final ChunkGenerator generator;
-
-    /**
-     * A map of chunks currently loaded in memory.
-     */
-    private final ConcurrentMap<GlowChunk.Key, GlowChunk> chunks = new ConcurrentHashMap<>();
-
+    private final 
     /**
      * A map of chunks which are being kept loaded by players or other factors.
      */

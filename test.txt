@@ -1,0 +1,33 @@
+Starting Build
+Settings evaluated using settings file 'C:\DEVELOPMENT\EclipseSetup\Glowstone\settings.gradle'.
+Projects loaded. Root project using build file 'C:\DEVELOPMENT\EclipseSetup\Glowstone\build.gradle'.
+Included projects: [root project 'glowstone']
+Evaluating root project 'glowstone' using build file 'C:\DEVELOPMENT\EclipseSetup\Glowstone\build.gradle'.
+Starting process 'command 'git''. Working directory: C:\DEVELOPMENT\EclipseSetup\Glowstone Command: git describe --always --dirty=*
+An attempt to initialize for well behaving parent process finished.
+Successfully started process 'command 'git''
+All projects evaluated.
+No tasks specified. Using project default tasks 'clean', 'build', 'remap'
+Cached resource is up-to-date (lastModified: Wed Sep 03 20:23:57 MDT 2014). [HTTP: https://oss.sonatype.org/content/repositories/public/com/flowpowered/flow-networking/1.0.0-SNAPSHOT/flow-networking-1.0.0-20140904.022354-7.pom]
+Cached resource is up-to-date (lastModified: Wed Sep 03 20:23:54 MDT 2014). [HTTP: https://oss.sonatype.org/content/repositories/public/com/flowpowered/flow-networking/1.0.0-SNAPSHOT/flow-networking-1.0.0-20140904.022354-7.jar]
+Selected primary tasks 'clean', 'build', 'remap'
+Tasks to be executed: [task ':clean', task ':compileJava', task ':processResources', task ':classes', task ':jar', task ':assemble', task ':checkstyleMain', task ':compileTestJava', task ':processTestResources', task ':testClasses', task ':checkstyleTest', task ':test', task ':check', task ':build', task ':shadowJar', task ':remap']
+:clean (Thread[main,5,main]) started.
+:clean
+Executing task ':clean' (up-to-date check took 0.001 secs) due to:
+  Task has not declared any outputs.
+:clean (Thread[main,5,main]) completed. Took 0.007 secs.
+:compileJava (Thread[main,5,main]) started.
+:compileJava
+Executing task ':compileJava' (up-to-date check took 0.287 secs) due to:
+  Output file C:\DEVELOPMENT\EclipseSetup\Glowstone\build\classes\main has changed.
+  Output file C:\DEVELOPMENT\EclipseSetup\Glowstone\build\dependency-cache has changed.
+  Output file C:\DEVELOPMENT\EclipseSetup\Glowstone\build\classes\main\net\glowstone\GlowServer.class has been removed.
+Compiling with JDK Java compiler API.
+:compileJava FAILED
+:compileJava (Thread[main,5,main]) completed. Took 8.061 secs.
+
+BUILD FAILED
+
+Total time: 17.904 secs
+Stopped 0 compiler daemon(s).
