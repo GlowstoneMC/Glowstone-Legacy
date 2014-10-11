@@ -1,6 +1,6 @@
 package net.glowstone.net.protocol;
 
-import net.glowstone.net.codec.JsonCodec;
+import net.glowstone.net.codec.KickCodec;
 import net.glowstone.net.codec.SetCompressionCodec;
 import net.glowstone.net.codec.play.entity.*;
 import net.glowstone.net.codec.play.game.*;
@@ -101,7 +101,15 @@ public final class PlayProtocol extends GlowProtocol {
         outbound(0x39, PlayerAbilitiesMessage.class, PlayerAbilitiesCodec.class);
         outbound(0x3A, TabCompleteResponseMessage.class, TabCompleteResponseCodec.class);
         outbound(0x3F, PluginMessage.class, PluginMessageCodec.class);
-        outbound(0x40, KickMessage.class, JsonCodec.class);
+        outbound(0x40, KickMessage.class, KickCodec.class);
+        outbound(0x41, ServerDifficultyMessage.class, ServerDifficultyCodec.class);
+        outbound(0x42, CombatEventMessage.class, CombatEventCodec.class);
+        outbound(0x43, CameraMessage.class, CameraCodec.class);
+        outbound(0x44, WorldBorderMessage.class, WorldBorderCodec.class);
+        outbound(0x45, TitleMessage.class, TitleCodec.class);
         outbound(0x46, SetCompressionMessage.class, SetCompressionCodec.class);
+        outbound(0x47, UserListHeaderFooterMessage.class, UserListHeaderFooterCodec.class);
+        outbound(0x48, ResourcePackSendMessage.class, ResourcePackSendCodec.class);
+        outbound(0x49, UpdateEntityNBTMessage.class, UpdateEntityNBTCodec.class);
     }
 }

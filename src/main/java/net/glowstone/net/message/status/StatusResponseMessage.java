@@ -1,12 +1,16 @@
 package net.glowstone.net.message.status;
 
-import net.glowstone.net.message.JsonMessage;
+import com.flowpowered.networking.Message;
+import lombok.Data;
 import org.json.simple.JSONObject;
 
-public final class StatusResponseMessage extends JsonMessage {
+@Data
+public final class StatusResponseMessage implements Message {
+
+    private final String json;
 
     public StatusResponseMessage(JSONObject json) {
-        super(json);
+        this.json = json.toJSONString();
     }
 
 }

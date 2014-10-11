@@ -66,7 +66,7 @@ public final class GlowSession extends BasicSession {
     /**
      * The remote address of the connection.
      */
-    private final InetSocketAddress address;
+    private InetSocketAddress address;
 
     /**
      * The verify token used in authentication
@@ -93,6 +93,13 @@ public final class GlowSession extends BasicSession {
      * a certain value the session is disconnected.
      */
     private int readTimeoutCounter = 0;
+
+    /**
+     * Data regarding a user who has connected through a proxy, used to
+     * provide online-mode UUID and properties and other data even if the
+     * server is running in offline mode. Null for non-proxied sessions.
+     */
+    private ProxyData proxyData;
 
     /**
      * Similar to readTimeoutCounter but for writes.
@@ -171,6 +178,24 @@ public final class GlowSession extends BasicSession {
      */
     public void setVerifyUsername(String verifyUsername) {
         this.verifyUsername = verifyUsername;
+    }
+
+    /**
+     * Get the {@link ProxyData} for this session if available.
+     * @return The proxy data to use, or null for an unproxied connection.
+     */
+    public ProxyData getProxyData() {
+        return proxyData;
+    }
+
+    /**
+     * Set the {@link ProxyData} for this session.
+     * @param proxyData The proxy data to use.
+     */
+    public void setProxyData(ProxyData proxyData) {
+        this.proxyData = proxyData;
+        address = proxyData.getAddress();
+        hostname = proxyData.getHostname();
     }
 
     /**
@@ -283,10 +308,12 @@ public final class GlowSession extends BasicSession {
         Message addMessage = new UserListItemMessage(UserListItemMessage.Action.ADD_PLAYER, player.getUserListEntry());
         List<UserListItemMessage.Entry> entries = new ArrayList<>();
         for (GlowPlayer other : server.getOnlinePlayers()) {
-            if (other != player) {
+            if (other != player && other.canSee(player)) {
                 other.getSession().send(addMessage);
             }
-            entries.add(other.getUserListEntry());
+            if (player.canSee(other)) {
+                entries.add(other.getUserListEntry());
+            }
         }
         send(new UserListItemMessage(UserListItemMessage.Action.ADD_PLAYER, entries));
     }
@@ -442,7 +469,11 @@ public final class GlowSession extends BasicSession {
 
         Message userListMessage = UserListItemMessage.removeOne(player.getUniqueId());
         for (GlowPlayer player : server.getOnlinePlayers()) {
-            player.getSession().send(userListMessage);
+            if (player.canSee(this.player)) {
+                player.getSession().send(userListMessage);
+            } else {
+                player.stopHidingDisconnectedPlayer(this.player);
+            }
         }
 
         GlowServer.logger.info(player.getName() + " [" + address + "] lost connection");

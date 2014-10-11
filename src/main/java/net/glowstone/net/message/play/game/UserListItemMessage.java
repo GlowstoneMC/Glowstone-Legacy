@@ -1,13 +1,15 @@
 package net.glowstone.net.message.play.game;
 
 import com.flowpowered.networking.Message;
+import lombok.Data;
 import net.glowstone.entity.meta.PlayerProfile;
-import org.json.simple.JSONObject;
+import net.glowstone.util.TextMessage;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+@Data
 public final class UserListItemMessage implements Message {
 
     private final Action action;
@@ -24,16 +26,8 @@ public final class UserListItemMessage implements Message {
         }
     }
 
-    public UserListItemMessage(Action action, Entry... entries) {
-        this(action, Arrays.asList(entries));
-    }
-
-    public Action getAction() {
-        return action;
-    }
-
-    public List<Entry> getEntries() {
-        return entries;
+    public UserListItemMessage(Action action, Entry entry) {
+        this(action, Arrays.asList(entry));
     }
 
     // add
@@ -42,7 +36,7 @@ public final class UserListItemMessage implements Message {
         return add(profile, 0, 0, null);
     }
 
-    public static Entry add(PlayerProfile profile, int gameMode, int ping, JSONObject displayName) {
+    public static Entry add(PlayerProfile profile, int gameMode, int ping, TextMessage displayName) {
         return new Entry(Action.ADD_PLAYER, profile.getUniqueId(), profile, gameMode, ping, displayName);
     }
 
@@ -72,11 +66,11 @@ public final class UserListItemMessage implements Message {
 
     // display name
 
-    public static Entry displayName(UUID uuid, JSONObject displayName) {
+    public static Entry displayName(UUID uuid, TextMessage displayName) {
         return new Entry(Action.UPDATE_DISPLAY_NAME, uuid, null, 0, 0, displayName);
     }
 
-    public static UserListItemMessage displayNameOne(UUID uuid, JSONObject displayName) {
+    public static UserListItemMessage displayNameOne(UUID uuid, TextMessage displayName) {
         return new UserListItemMessage(Action.UPDATE_DISPLAY_NAME, displayName(uuid, displayName));
     }
 
@@ -90,13 +84,7 @@ public final class UserListItemMessage implements Message {
         return new UserListItemMessage(Action.REMOVE_PLAYER, remove(uuid));
     }
 
-    @Override
-    public String toString() {
-        return "UserListItemMessage{" +
-                "action=" + action +
-                ", entries=" + entries +
-                '}';
-    }
+    // inner classes
 
     public static enum Action {
         ADD_PLAYER,
@@ -106,33 +94,13 @@ public final class UserListItemMessage implements Message {
         REMOVE_PLAYER
     }
 
+    @Data
     public static final class Entry {
         private final Action action;
         public final UUID uuid;
         public final PlayerProfile profile;
         public final int gameMode;
         public final int ping;
-        public final JSONObject displayName;
-
-        private Entry(Action action, UUID uuid, PlayerProfile profile, int gameMode, int ping, JSONObject displayName) {
-            this.action = action;
-            this.uuid = uuid;
-            this.profile = profile;
-            this.gameMode = gameMode;
-            this.ping = ping;
-            this.displayName = displayName;
-        }
-
-        @Override
-        public String toString() {
-            return "Entry{" +
-                    "action=" + action +
-                    ", uuid=" + uuid +
-                    ", profile=" + profile +
-                    ", gameMode=" + gameMode +
-                    ", ping=" + ping +
-                    ", displayName=" + displayName +
-                    '}';
-        }
+        public final TextMessage displayName;
     }
 }

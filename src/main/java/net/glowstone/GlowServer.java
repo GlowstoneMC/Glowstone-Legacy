@@ -106,26 +106,29 @@ public final class GlowServer implements Server {
             final String opt = args[i];
 
             if (!opt.startsWith("-")) {
-                System.err.println("Invalid Option: " + opt);
-                System.exit(1);
-                return null;
+                System.err.println("Ignored invalid option: " + opt);
+                continue;
             }
 
-            // Help
-            if ("--help".equals(opt) || "-h".equals(opt) || "-?".endsWith(opt)) {
+            // Help and version
+            if ("--help".equals(opt) || "-h".equals(opt) || "-?".equals(opt)) {
                 System.out.println("Available command-line options:");
                 System.out.println("  --help, -h, -?                 Shows this help message and exits.");
-                System.out.println("  --version, -v                  Displays version information and exits.");
+                System.out.println("  --version, -v                  Shows version information and exits.");
                 System.out.println("  --configdir <directory>        Sets the configuration directory.");
                 System.out.println("  --configfile <file>            Sets the configuration file.");
                 System.out.println("  --port, -p <port>              Sets the server listening port.");
                 System.out.println("  --host, -H <ip | hostname>     Sets the server listening address.");
                 System.out.println("  --onlinemode, -o <onlinemode>  Sets the server's online-mode.");
+                System.out.println("  --jline <true/false>           Enables or disables JLine console.");
+                System.out.println("  --plugins-dir, -P <directory>  Sets the plugin directory to use.");
+                System.out.println("  --worlds-dir, -W <directory>   Sets the world directory to use.");
+                System.out.println("  --update-dir, -U <directory>   Sets the plugin update folder to use.");
+                System.out.println("  --max-players, -M <director>   Sets the maximum amount of players.");
+                System.out.println("  --world-name, -N <name>        Sets the main world name.");
+                System.out.println("  --log-pattern, -L <pattern>    Sets the log file pattern (%D for date).");
                 return null;
-            }
-
-            // Version
-            if ("--version".equals(opt) || "-v".equals(opt)) {
+            } else if ("--version".equals(opt) || "-v".equals(opt)) {
                 System.out.println("Glowstone version: " + GlowServer.class.getPackage().getImplementationVersion());
                 System.out.println("Bukkit version:    " + GlowServer.class.getPackage().getSpecificationVersion());
                 System.out.println("Minecraft version: " + GAME_VERSION + " protocol " + PROTOCOL_VERSION);
@@ -134,39 +137,59 @@ public final class GlowServer implements Server {
 
             // Below this point, options require parameters
             if (i == args.length - 1) {
-                System.err.println("Option specified without value: " + opt);
-                System.exit(1);
-                return null;
-            }
-
-            if ("--configdir".equals(opt)) {
-                configDirName = args[++i];
+                System.err.println("Ignored option specified without value: " + opt);
                 continue;
             }
 
-            if ("--configfile".equals(opt)) {
-                configFileName = args[++i];
-                continue;
+            switch (opt) {
+                case "--configdir":
+                    configDirName = args[++i];
+                    break;
+                case "--configfile":
+                    configFileName = args[++i];
+                    break;
+                case "--port":
+                case "-p":
+                    parameters.put(ServerConfig.Key.SERVER_PORT, Integer.valueOf(args[++i]));
+                    break;
+                case "--host":
+                case "-H":
+                    parameters.put(ServerConfig.Key.SERVER_IP, args[++i]);
+                    break;
+                case "--onlinemode":
+                case "-o":
+                    parameters.put(ServerConfig.Key.ONLINE_MODE, Boolean.valueOf(args[++i]));
+                    break;
+                case "--jline":
+                    parameters.put(ServerConfig.Key.USE_JLINE, Boolean.valueOf(args[++i]));
+                    break;
+                case "--plugins-dir":
+                case "-P":
+                    parameters.put(ServerConfig.Key.PLUGIN_FOLDER, args[++i]);
+                    break;
+                case "--worlds-dir":
+                case "-W":
+                    parameters.put(ServerConfig.Key.WORLD_FOLDER, args[++i]);
+                    break;
+                case "--update-dir":
+                case "-U":
+                    parameters.put(ServerConfig.Key.UPDATE_FOLDER, args[++i]);
+                    break;
+                case "--max-players":
+                case "-M":
+                    parameters.put(ServerConfig.Key.MAX_PLAYERS, Integer.valueOf(args[++i]));
+                    break;
+                case "--world-name":
+                case "-N":
+                    parameters.put(ServerConfig.Key.LEVEL_NAME, args[++i]);
+                    break;
+                case "--log-pattern":
+                case "-L":
+                    parameters.put(ServerConfig.Key.LOG_FILE, args[++i]);
+                    break;
+                default:
+                    System.err.println("Ignored invalid option: " + opt);
             }
-
-            if ("--port".equals(opt) || "-p".equals(opt)) {
-                parameters.put(ServerConfig.Key.SERVER_PORT, Integer.valueOf(args[++i]));
-                continue;
-            }
-
-            if ("--host".equals(opt) || "-H".equals(opt)) {
-                parameters.put(ServerConfig.Key.SERVER_IP, args[++i]);
-                continue;
-            }
-
-            if ("--onlinemode".equals(opt) || "-o".equals(opt)) {
-                parameters.put(ServerConfig.Key.ONLINE_MODE, Boolean.valueOf(args[++i]));
-                continue;
-            }
-
-            System.err.println("Unknown option: " + opt);
-            System.exit(1);
-            return null;
         }
 
         final File configDir = new File(configDirName);
@@ -333,8 +356,14 @@ public final class GlowServer implements Server {
         consoleManager.startConsole(config.getBoolean(ServerConfig.Key.USE_JLINE));
         consoleManager.startFile(config.getString(ServerConfig.Key.LOG_FILE));
 
-        if (!getOnlineMode()) {
-            logger.log(Level.WARNING, "The server is running in offline mode! Only do this if you know what you're doing.");
+        if (getProxySupport()) {
+            if (getOnlineMode()) {
+                logger.warning("Proxy support is enabled, but online mode is enabled.");
+            } else {
+                logger.info("Proxy support is enabled.");
+            }
+        } else if (!getOnlineMode()) {
+            logger.warning("The server is running in offline mode! Only do this if you know what you're doing.");
         }
 
         // Load player lists
@@ -446,7 +475,7 @@ public final class GlowServer implements Server {
         // special handling
         warnState = Warning.WarningState.value(config.getString(ServerConfig.Key.WARNING_STATE));
         try {
-            defaultGameMode = GameMode.valueOf(GameMode.class, config.getString(ServerConfig.Key.GAMEMODE));
+            defaultGameMode = GameMode.valueOf(config.getString(ServerConfig.Key.GAMEMODE));
         } catch (IllegalArgumentException | NullPointerException e) {
             defaultGameMode = GameMode.SURVIVAL;
         }
@@ -642,6 +671,34 @@ public final class GlowServer implements Server {
      */
     public int getCompressionThreshold() {
         return config.getInt(ServerConfig.Key.COMPRESSION_THRESHOLD);
+    }
+
+    /**
+     * Get the default game difficulty defined in the config.
+     * @return The default difficulty.
+     */
+    public Difficulty getDifficulty() {
+        try {
+            return Difficulty.valueOf(config.getString(ServerConfig.Key.DIFFICULTY));
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return Difficulty.NORMAL;
+        }
+    }
+
+    /**
+     * Get whether worlds should keep their spawns loaded by default.
+     * @return Whether to keep spawns loaded by default.
+     */
+    public boolean keepSpawnLoaded() {
+        return config.getBoolean(ServerConfig.Key.PERSIST_SPAWN);
+    }
+
+    /**
+     * Get whether parsing of data provided by a proxy is enabled.
+     * @return True if a proxy is providing data to use.
+     */
+    public boolean getProxySupport() {
+        return config.getBoolean(ServerConfig.Key.PROXY_SUPPORT);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1029,8 +1086,16 @@ public final class GlowServer implements Server {
             creator.generator(getGenerator(creator.name(), creator.environment(), creator.type()));
         }
 
-        world = new GlowWorld(this, creator);
-        return worlds.addWorld(world);
+        // GlowWorld's constructor calls addWorld below.
+        return new GlowWorld(this, creator);
+    }
+
+    /**
+     * Add a world to the internal world collection.
+     * @param world The world to add.
+     */
+    void addWorld(GlowWorld world) {
+        worlds.addWorld(world);
     }
 
     @Override
