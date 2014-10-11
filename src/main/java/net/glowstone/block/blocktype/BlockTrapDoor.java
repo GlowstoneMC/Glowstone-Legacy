@@ -8,13 +8,14 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.TrapDoor;
 import org.bukkit.util.Vector;
 
-public class BlockTrapDoor extends BlockOpenable {
-    private static final BlockFace[] faces = {BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH};
+public class BlockTrapDoor {
+    private BlockType parent;
 
-    @Override
+    public BlockTrapDoor(BlockType parent) {
+        this.parent = parent;
+    }
+
     public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {
-        super.placeBlock(player, state, face, holding, clickedLoc);
-
         MaterialData materialData = state.getData();
         if (materialData instanceof TrapDoor) {
             TrapDoor trapDoor = (TrapDoor) materialData;
@@ -25,7 +26,7 @@ public class BlockTrapDoor extends BlockOpenable {
                 trapDoor.setInverted(false);
             state.update(true);
         } else {
-            warnMaterialData(TrapDoor.class, materialData);
+            parent.warnMaterialData(TrapDoor.class, materialData);
         }
     }
 }
