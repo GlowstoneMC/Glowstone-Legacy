@@ -90,7 +90,7 @@ public class NbtPlayerDataService implements PlayerDataService {
         }
 
         // If we're in online mode, let's find the real damn UUID already
-        if (Bukkit.getServer().getOnlineMode()) {
+        if (Bukkit.getServer().getOnlineMode() || ((GlowServer) Bukkit.getServer()).getProxySupport()) {
             UUID id = UuidUtils.fetchUUID(name);
 
             // Of course, the player might not exist or Mojang might be being dicks or something
