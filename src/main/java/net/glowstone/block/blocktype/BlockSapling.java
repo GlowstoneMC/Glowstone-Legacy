@@ -29,7 +29,7 @@ public class BlockSapling extends BlockPlant implements IBlockGrowable {
 
     @Override
     public void updateBlock(GlowBlock block) {
-        if (block.getRelative(BlockFace.UP).getLightLevel() >= 7 && random.nextInt(7) == 0) {
+        if (block.getRelative(BlockFace.UP).getLightLevel() >= 9 && random.nextInt(7) == 0) {
             int dataValue = block.getData();
             if ((dataValue & 8) == 0) {
                 block.setData((byte) (dataValue | 8));
