@@ -15,7 +15,7 @@ import java.util.UUID;
  */
 public final class UuidUtils {
 
-    private static String PROFILE_URL = "https://api.mojang.com/users/profiles/minecraft/";
+    private static final String PROFILE_URL = "https://api.mojang.com/users/profiles/minecraft/";
 
     private UuidUtils() {}
 
