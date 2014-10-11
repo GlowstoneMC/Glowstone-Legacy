@@ -48,12 +48,11 @@ public class BlockLever extends BlockAttachable {
         if (data instanceof Lever) {
             final Lever l = (Lever) data;
             if (l.isPowered()) {
-                rsManager.setBlockPower(block, 15, false);
+                rsManager.setBlockPower(block, 15);
             } else {
-                rsManager.setBlockPower(block, 0, false);
+                rsManager.setBlockPower(block, 0);
             }
         }
-        
     }
     
     @Override
@@ -82,15 +81,11 @@ public class BlockLever extends BlockAttachable {
     
     @Override
     public void traceBlockPowerEnd(GlowBlock block, RSManager rsManager, int power) {
-        final MaterialData data = block.getState().getData();
-        if (data instanceof Lever) {
-            final Lever l = (Lever) data;
-            if(l.isPowered()) {
-                rsManager.addSource(block);
-            }
+        if (power == 15) {
+            rsManager.addSource(block);
         }
     }
-    
+
     public void setAttachedFace(final Lever lever, final BlockFace attachedFace) {
         byte data = lever.getData();
         switch (attachedFace) {

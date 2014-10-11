@@ -63,7 +63,7 @@ public class BlockTorch extends BlockType {
                 if (mat.isOccluding()) {
                     return true;
                 }
-                if (mat == Material.GLASS || mat == Material.STAINED_GLASS || mat == Material.FENCE || mat == Material.NETHER_FENCE || mat == Material.COBBLE_WALL) {
+                if (mat == Material.GLASS || mat == Material.STAINED_GLASS || mat == Material.FENCE || mat == Material.NETHER_FENCE || mat == Material.COBBLE_WALL || mat == Material.REDSTONE_BLOCK) {
                     return true;
                 }
                 MaterialData data = againstBlock.getState().getData();
@@ -94,7 +94,7 @@ public class BlockTorch extends BlockType {
         } else {
             if (againstBlock != null) {
                 Material mat = againstBlock.getType();
-                if (mat.isOccluding()) {
+                if (mat.isOccluding() || mat == Material.REDSTONE_BLOCK) {
                     return true;
                 } else if (withRecursion) {
                     for (BlockFace face : tryAfter) {
@@ -123,7 +123,7 @@ public class BlockTorch extends BlockType {
             }
         } else if (face != BlockFace.UP) {
             GlowBlock against = state.getBlock().getRelative(face.getOppositeFace());
-            if(!against.getType().isOccluding()) {
+            if(!against.getType().isOccluding() && against.getType() != Material.REDSTONE_BLOCK) {
                 for (BlockFace tryFace : tryAfter) {
                     if(tryFace == face) continue;
                     if (canPlaceAt(state.getBlock(), tryFace, false)) {

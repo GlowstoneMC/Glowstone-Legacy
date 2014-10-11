@@ -21,12 +21,7 @@ public class BlockRedstoneTorch extends BlockTorch {
             return false;
         }
 
-        // Direct emissions ONLY go up
-        if (face != BlockFace.UP && !isDirect) {
-            return false;
-        }
-
-        return true;
+        return face == BlockFace.UP || isDirect;
     }
 
     @Override
@@ -72,7 +67,11 @@ public class BlockRedstoneTorch extends BlockTorch {
     public void traceBlockPowerInit(GlowBlock block, RSManager rsManager) {
         // Set the charge to ensure that this is handled next tick.
         // If it was discharged and needs to stay discharged, it will be discharged by other blocks.
-        rsManager.setBlockPower(block, 15, false);
+        if (isTorchOn) {
+            rsManager.setBlockPower(block, 15);
+        } else if (rsManager.getNewBlockPower(block) != 15) {
+            rsManager.setBlockPowerDelayed(block, 15, 1);
+        }
     }
 
     @Override
@@ -96,11 +95,13 @@ public class BlockRedstoneTorch extends BlockTorch {
     public void traceBlockPower(GlowBlock block, RSManager rsManager, Material srcMat, BlockFace flowDir, int inPower, boolean isDirect) {
         // Determine if we are getting this from a source.
         boolean isSource = (getOwnFacing(block) == flowDir);
-        if(isSource) {
-            // Discharge this torch.
-            rsManager.setBlockPower(block, 0, false);
-        } else {
-            // Disregard this.
+        if (isSource) {
+            if (isTorchOn && rsManager.getNewBlockPower(block) != 0) {
+                rsManager.setBlockPowerDelayed(block, 0, 1);
+            } else {
+                rsManager.removeBlockPowerDelay(block);
+                rsManager.setBlockPower(block, 0);
+            }
         }
-    }  
-} 
+    }
+}

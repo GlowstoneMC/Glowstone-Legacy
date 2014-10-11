@@ -218,6 +218,16 @@ public class BlockType extends ItemType {
     }
 
     /**
+     * If needed, this method can be override to provide a different power level
+     * from the one stored in the redstone manager
+     * @param block The block to get the power level from
+     * @return The block's current power level
+     */
+    public Integer getBlockPower(GlowBlock block) {
+        return null;
+    }
+
+    /**
      * Update redstone state at the end of a redstone pulse.
      * @param block The block we are modifying.
      * @param rsManager The RSManager used for tracking.
@@ -270,9 +280,8 @@ public class BlockType extends ItemType {
             return;
         }
         Material destMat = destBlock.getType();
-        if(destMat == Material.REDSTONE_TORCH_ON || destMat == Material.REDSTONE_TORCH_OFF) {
-            // Will trace
-        } else {
+        Material[] trace = new Material[] {Material.REDSTONE_COMPARATOR_OFF, Material.REDSTONE_TORCH_OFF, Material.REDSTONE_TORCH_ON, Material.DIODE_BLOCK_OFF, Material.DIODE_BLOCK_ON};
+        if (!Arrays.asList(trace).contains(destMat)) {
             return;
         }
 

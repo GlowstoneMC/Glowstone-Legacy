@@ -18,7 +18,7 @@ public class BlockRedstone extends BlockType {
     
     @Override
     public void traceBlockPowerInit(GlowBlock block, RSManager rsManager) {
-        rsManager.setBlockPower(block, 15, false);
+        rsManager.setBlockPower(block, 15);
     }
     
     @Override

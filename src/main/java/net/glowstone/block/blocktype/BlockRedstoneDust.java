@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import net.glowstone.RSManager;
 import net.glowstone.block.GlowBlock;
+import net.glowstone.entity.GlowPlayer;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
@@ -16,11 +17,7 @@ public class BlockRedstoneDust extends BlockType {
     @Override
     public boolean canBlockEmitPower(GlowBlock block, BlockFace face, boolean isDirect) {
         // RS wire does not emit directly
-        if(isDirect) {
-            return false;
-        }
-
-        return true;
+        return !isDirect;
     }
 
     @Override
@@ -55,9 +52,9 @@ public class BlockRedstoneDust extends BlockType {
         Material matDn   = (blockDn   != null ? blockDn  .getType() : null);
 
         // Get some flags
-        boolean wireMid  = (matMid  == Material.REDSTONE_WIRE);
-        boolean wireFwUp = (matFwUp == Material.REDSTONE_WIRE);
-        boolean wireFwDn = (matFwDn == Material.REDSTONE_WIRE);
+        boolean continueMid = (matMid == Material.REDSTONE_WIRE || matMid == Material.DIODE_BLOCK_OFF || matMid == Material.DIODE_BLOCK_ON || matMid == Material.REDSTONE_COMPARATOR_OFF);
+        boolean continueFwUp = (matFwUp == Material.REDSTONE_WIRE);
+        boolean continueFwDn = (matFwDn == Material.REDSTONE_WIRE);
 
         boolean solidUp   = (matUp   != null && matUp  .isOccluding());
         boolean solidMid  = (matMid  != null && matMid .isOccluding());
@@ -70,11 +67,10 @@ public class BlockRedstoneDust extends BlockType {
 
         //Check if on a slab
         boolean onSlab = (blockDn != null ? (blockDn.getState().getData() instanceof Step || blockDn.getState().getData() instanceof Stairs) : false);
+        boolean slabMid = (blockMid != null) && ((blockMid.getState().getData() instanceof Step) || (blockMid.getState().getData() instanceof Stairs));
 
         if (forbidDir == outDir) {
-            if(!(blockMid == null) &&
-               !(blockMid.getState().getData() instanceof Step) && 
-               !(blockMid.getState().getData() instanceof Stairs)) { //May go backwards if we're on a slab or on stairs
+            if(!slabMid) { //May go backwards if there's a slab
                 return false;
             }
         }
@@ -82,20 +78,23 @@ public class BlockRedstoneDust extends BlockType {
             solidFwUp = false;
         }
         if(glowDn) {
-            wireFwDn = false;
+            continueFwDn = false;
         }
 
         // Determine which one we use
         GlowBlock useBlock = null;
-        if(wireFwDn && !solidMid && !onSlab) { //Redstone doesn't go downwards from slabs or from stairs
+        if(continueFwDn && !solidMid && !onSlab) { //Redstone doesn't go downwards from slabs or from stairs
             // Downwards
             useBlock = blockFwDn;
-            rsManager.traceFromBlockToBlock(block, useBlock, outDir, outPower, isDirect);
+            rsManager.traceFromBlockToBlock(block, useBlock, outDir, outPower, isDirect);           
         }
-        if(wireFwUp && !solidUp) {
+        if(continueFwUp && !solidUp) {
             // Upwards
             useBlock = blockFwUp;
             rsManager.traceFromBlockToBlock(block, useBlock, outDir, outPower, isDirect);
+            if (forbidDir == outDir && slabMid) {
+                useBlock = null; //Use block is used to detect if we have to inject power, and we need to do this if we were only going back
+            }
             if(glowUp) {
                 // Is there a wire 2 steps above us?
                 GlowBlock blockUp2 = blockUp.getRelative(BlockFace.UP);
@@ -107,7 +106,7 @@ public class BlockRedstoneDust extends BlockType {
                 }
             }
         }
-        if(wireMid) {
+        if(continueMid) {
             // Mid
             useBlock = blockMid;
             rsManager.traceFromBlockToBlock(block, useBlock, outDir, outPower, isDirect);
@@ -125,7 +124,7 @@ public class BlockRedstoneDust extends BlockType {
         }
 
         // Set power
-        rsManager.setBlockPower(block, inPower, true);
+        rsManager.setBlockPower(block, inPower);
 
         // Check if power sufficient
         if(inPower <= 1) {
@@ -191,6 +190,9 @@ public class BlockRedstoneDust extends BlockType {
             if(mat == Material.GLOWSTONE) {
                 return true;
             }
+            if (mat == Material.HOPPER || mat == Material.REDSTONE_BLOCK) {
+                return true;
+            }
             MaterialData md = floor.getState().getData();
             if (md instanceof Step) {
                 if(((Step)md).isInverted()) { //You can place redstone on upper slabs
@@ -203,6 +205,11 @@ public class BlockRedstoneDust extends BlockType {
             }
         }
         return false;
+    }
+
+    @Override
+    public void afterPlace(GlowPlayer player, GlowBlock block, ItemStack holding) {
+        block.getWorld().getRSManager().addFlush(block);
     }
 
     @Override
