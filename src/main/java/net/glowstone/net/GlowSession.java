@@ -107,7 +107,7 @@ public final class GlowSession extends BasicSession {
     private int writeTimeoutCounter = 0;
 
     /**
-     * Whether to kick the player the next time its updated. This is set to {@code true}
+     * Whether to kick the player the next time it's updated. This is set to {@code true}
      * when a timeout occurs in order for the player to be kicked from the main thread.
      */
     private boolean timedOut = false;
