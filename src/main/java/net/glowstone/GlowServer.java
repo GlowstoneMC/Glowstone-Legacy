@@ -52,7 +52,8 @@ import java.util.logging.Logger;
  * The core class of the Glowstone server.
  * @author Graham Edgecombe
  */
-public final class GlowServer implements Server {
+public final class GlowServer implements Server 
+{
 
     /**
      * The logger for this class.
