@@ -173,6 +173,7 @@ public final class ItemTable {
         reg(Material.ENCHANTMENT_TABLE, new BlockEnchantmentTable());
         reg(Material.ANVIL, new BlockAnvil());
         reg(Material.BREWING_STAND, new BlockBrewingStand());
+        reg(Material.CACTUS, new BlockCactus());
         reg(Material.WATER, new BlockWater());
         reg(Material.STATIONARY_WATER, new BlockWater());
         reg(Material.LAVA, new BlockLava());
