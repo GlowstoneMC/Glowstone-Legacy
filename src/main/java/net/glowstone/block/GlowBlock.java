@@ -273,7 +273,7 @@ public final class GlowBlock implements Block {
     @Override
     public boolean isBlockFacePowered(BlockFace face) {
         BlockType type = ItemTable.instance().getBlock(getType());
-        if(type == null) {
+        if (type == null) {
             return false;
         }
         return type.canBlockEmitPower(this, face, true) && getWorld().getRSManager().getBlockPower(this) > 0;
@@ -282,7 +282,7 @@ public final class GlowBlock implements Block {
     @Override
     public boolean isBlockFaceIndirectlyPowered(BlockFace face) {
         BlockType type = ItemTable.instance().getBlock(getType());
-        if(type == null) {
+        if (type == null) {
             return false;
         }
         return type.canBlockEmitPower(this, face, false) && getWorld().getRSManager().getBlockPower(this) > 0;
@@ -291,7 +291,7 @@ public final class GlowBlock implements Block {
     @Override
     public int getBlockPower(BlockFace face) {
         BlockType type = ItemTable.instance().getBlock(getType());
-        if(type == null) {
+        if (type == null) {
             return 0;
         }
         return type.canBlockEmitPower(this, face, false) ? getWorld().getRSManager().getBlockPower(this) : 0;

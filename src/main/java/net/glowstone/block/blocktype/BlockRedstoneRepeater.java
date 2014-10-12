@@ -61,10 +61,10 @@ public class BlockRedstoneRepeater extends BlockType {
             if (flowDir == diodeDir) {
                 if (!isRepeaterOn && !isDisabled(block)) {
                     if (rsManager.getNewBlockPower(block) != 15) {
-                        rsManager.setBlockPowerDelayed(block, 15, d.getDelay()*2-1); // Minus 1 because tracing starts not until the next tick
+                        rsManager.setBlockPowerDelayed(block, 15, d.getDelay() * 2 - 1); // Minus 1 because tracing starts not until the next tick
                     }
                     rsManager.setBlockPower(block, -1); //Prevent traceBlockPowerEnd from starting the turn-off timer
-                } else if(isRepeaterOn) {
+                } else if (isRepeaterOn) {
                     rsManager.removeBlockPowerDelay(block);
                     rsManager.setBlockPower(block, 15);
                 }
@@ -89,10 +89,10 @@ public class BlockRedstoneRepeater extends BlockType {
                 return;
             }
             if (rsManager.getNewBlockPower(block) != 1) {
-                rsManager.setBlockPowerDelayed(block, 1, d.getDelay()*2-1); // Minus 1 because tracing starts not until the next tick
+                rsManager.setBlockPowerDelayed(block, 1, d.getDelay() * 2 - 1); // Minus 1 because tracing starts not until the next tick
             }
         } else if (power == 1) { //Value 1 is used above to detect if it was turned off after a delay
-            if(isDisabled) {
+            if (isDisabled) {
                 rsManager.setBlockPower(block, 0);
                 return;
             }
@@ -133,7 +133,7 @@ public class BlockRedstoneRepeater extends BlockType {
             if (d.getDelay() > 3) {
                 d.setDelay(0);
             } else {
-                d.setDelay(d.getDelay()+1);
+                d.setDelay(d.getDelay() + 1);
             }
             state.setData(d);
             state.update();

@@ -246,11 +246,11 @@ public class BlockType extends ItemType {
     private void traceBlockPowerStartSolid(GlowBlock srcBlock, RSManager rsManager, BlockFace toDir, boolean isDirect) {
         // Get the destination block and ensure that it is suitable.
         GlowBlock destBlock = srcBlock.getRelative(toDir);
-        if(destBlock == null) {
+        if (destBlock == null) {
             return;
         }
         Material destMat = destBlock.getType();
-        if(destMat == Material.REDSTONE_WIRE) {
+        if (destMat == Material.REDSTONE_WIRE) {
             // Will trace
         } else {
             return;
@@ -270,13 +270,13 @@ public class BlockType extends ItemType {
      */
     private void traceBlockPowerSolidToBlock(GlowBlock srcBlock, RSManager rsManager, BlockFace forbidDir, BlockFace toDir, boolean isDirect) {
         // Get the forbidDir check out of the way.
-        if(forbidDir == toDir) {
+        if (forbidDir == toDir) {
             return;
         }
 
         // Get the destination block and ensure that it is suitable.
         GlowBlock destBlock = srcBlock.getRelative(toDir);
-        if(destBlock == null) {
+        if (destBlock == null) {
             return;
         }
         Material destMat = destBlock.getType();
@@ -304,7 +304,7 @@ public class BlockType extends ItemType {
      */
     public void traceBlockPowerStart(GlowBlock block, RSManager rsManager) {
         // Check if solid
-        if(block.getType() == null || !block.getType().isOccluding()) {
+        if (block.getType() == null || !block.getType().isOccluding()) {
             return;
         }
 
@@ -327,15 +327,15 @@ public class BlockType extends ItemType {
      */
     public void traceBlockPower(GlowBlock block, RSManager rsManager, Material srcMat, BlockFace flowDir, int inPower, boolean isDirect) {
         // Check if solid
-        if(block.getType() == null || !block.getType().isOccluding()) {
+        if (block.getType() == null || !block.getType().isOccluding()) {
             return;
         }
 
         // Ensure directness
-        if(isDirect) {
+        if (isDirect) {
             rsManager.addSource(block);
         } else {
-            if(srcMat != Material.REDSTONE_WIRE) {
+            if (srcMat != Material.REDSTONE_WIRE) {
                 return;
             }
         }

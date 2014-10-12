@@ -478,7 +478,7 @@ public final class GlowChunk implements Chunk {
         createEntity(x, y, z, type);
 
         // tell the redstone manager that this block has changed
-        world.getRSManager().dirtyBlock((this.x<<4)+x, y, (this.z<<4)+z);
+        world.getRSManager().dirtyBlock((this.x << 4) + x, y, (this.z << 4) + z);
     }
 
     /**
@@ -509,7 +509,7 @@ public final class GlowChunk implements Chunk {
         int type = section.types[index];
         if (type == 0) return;  // can't set metadata on air
         section.types[index] = (char) ((type & 0xfff0) | metaData);
-        world.getRSManager().dirtyBlock((this.x<<4)+x, y, (this.z<<4)+z);
+        world.getRSManager().dirtyBlock((this.x << 4) + x, y, (this.z << 4) + z);
     }
 
     /**

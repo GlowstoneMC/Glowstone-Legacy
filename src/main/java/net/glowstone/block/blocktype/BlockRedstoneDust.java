@@ -34,7 +34,7 @@ public class BlockRedstoneDust extends BlockType {
 
     private boolean traceBlockPowerRSWire(GlowBlock block, RSManager rsManager, BlockFace forbidDir, BlockFace outDir, int outPower, boolean isDirect) {
 
-        if(outPower <= 0) {
+        if (outPower <= 0) {
             return false;
         }
 
@@ -70,43 +70,43 @@ public class BlockRedstoneDust extends BlockType {
         boolean slabMid = (blockMid != null) && ((blockMid.getState().getData() instanceof Step) || (blockMid.getState().getData() instanceof Stairs));
 
         if (forbidDir == outDir) {
-            if(!slabMid) { //May go backwards if there's a slab
+            if (!slabMid) { //May go backwards if there's a slab
                 return false;
             }
         }
-        if(glowUp) {
+        if (glowUp) {
             solidFwUp = false;
         }
-        if(glowDn) {
+        if (glowDn) {
             continueFwDn = false;
         }
 
         // Determine which one we use
         GlowBlock useBlock = null;
-        if(continueFwDn && !solidMid && !onSlab) { //Redstone doesn't go downwards from slabs or from stairs
+        if (continueFwDn && !solidMid && !onSlab) { //Redstone doesn't go downwards from slabs or from stairs
             // Downwards
             useBlock = blockFwDn;
             rsManager.traceFromBlockToBlock(block, useBlock, outDir, outPower, isDirect);           
         }
-        if(continueFwUp && !solidUp) {
+        if (continueFwUp && !solidUp) {
             // Upwards
             useBlock = blockFwUp;
             rsManager.traceFromBlockToBlock(block, useBlock, outDir, outPower, isDirect);
             if (forbidDir == outDir && slabMid) {
                 useBlock = null; //Use block is used to detect if we have to inject power, and we need to do this if we were only going back
             }
-            if(glowUp) {
+            if (glowUp) {
                 // Is there a wire 2 steps above us?
                 GlowBlock blockUp2 = blockUp.getRelative(BlockFace.UP);
                 Material matUp2 = (blockUp2 != null ? blockUp2.getType() : null);
                 boolean wireUp2 = (matUp2 == Material.REDSTONE_WIRE);
-                if(wireUp2) {
+                if (wireUp2) {
                     // Yes - trace from FwUp pointing in the direction of that wire.
-                    traceBlockPowerRSWire(blockFwUp, rsManager, BlockFace.SELF, outDir.getOppositeFace(), outPower-1, isDirect);
+                    traceBlockPowerRSWire(blockFwUp, rsManager, BlockFace.SELF, outDir.getOppositeFace(), outPower - 1, isDirect);
                 }
             }
         }
-        if(continueMid) {
+        if (continueMid) {
             // Mid
             useBlock = blockMid;
             rsManager.traceFromBlockToBlock(block, useBlock, outDir, outPower, isDirect);
@@ -119,7 +119,7 @@ public class BlockRedstoneDust extends BlockType {
     @Override
     public void traceBlockPower(GlowBlock block, RSManager rsManager, Material srcMat, BlockFace flowDir, int inPower, boolean isDirect) {
         // Bail out if our input power is <= our current power
-        if(inPower <= rsManager.getNewBlockPower(block)) {
+        if (inPower <= rsManager.getNewBlockPower(block)) {
             return;
         }
 
@@ -127,7 +127,7 @@ public class BlockRedstoneDust extends BlockType {
         rsManager.setBlockPower(block, inPower);
 
         // Check if power sufficient
-        if(inPower <= 1) {
+        if (inPower <= 1) {
             return;
         }
 
@@ -141,29 +141,29 @@ public class BlockRedstoneDust extends BlockType {
 
         // Sum the numbers
         int bsum = 0;
-        if(nn) { bsum++; }
-        if(ns) { bsum++; }
-        if(ne) { bsum++; }
-        if(nw) { bsum++; }
+        if (nn) { bsum++; }
+        if (ns) { bsum++; }
+        if (ne) { bsum++; }
+        if (nw) { bsum++; }
 
         // Flow behaves differently from top and bottom
-        if(flowDir == BlockFace.UP || flowDir == BlockFace.DOWN) {
-            if(bsum == 0) {
+        if (flowDir == BlockFace.UP || flowDir == BlockFace.DOWN) {
+            if (bsum == 0) {
                 // If there are no wires, "inject" in a spread
                 traceBlockPowerInject(block, rsManager, BlockFace.NORTH, outPower);
                 traceBlockPowerInject(block, rsManager, BlockFace.SOUTH, outPower);
                 traceBlockPowerInject(block, rsManager, BlockFace.WEST, outPower);
                 traceBlockPowerInject(block, rsManager, BlockFace.EAST, outPower);
-            } else if(bsum == 1) {
+            } else if (bsum == 1) {
                 // If there is exactly one wire, "inject" in the OPPOSITE direction
-                if(ns) traceBlockPowerInject(block, rsManager, BlockFace.NORTH, outPower);
-                if(nn) traceBlockPowerInject(block, rsManager, BlockFace.SOUTH, outPower);
-                if(ne) traceBlockPowerInject(block, rsManager, BlockFace.WEST , outPower);
-                if(nw) traceBlockPowerInject(block, rsManager, BlockFace.EAST , outPower);
+                if (ns) traceBlockPowerInject(block, rsManager, BlockFace.NORTH, outPower);
+                if (nn) traceBlockPowerInject(block, rsManager, BlockFace.SOUTH, outPower);
+                if (ne) traceBlockPowerInject(block, rsManager, BlockFace.WEST , outPower);
+                if (nw) traceBlockPowerInject(block, rsManager, BlockFace.EAST , outPower);
             }
         } else {
             // If there is exactly one wire (the one we came from!), "inject"
-            if(bsum == 0) {
+            if (bsum == 0) {
                 traceBlockPowerInject(block, rsManager, flowDir, outPower);
             }
         }
@@ -175,19 +175,19 @@ public class BlockRedstoneDust extends BlockType {
     @Override
     public void traceBlockPowerEnd(GlowBlock block, RSManager rsManager, int power) {
         // Set block charge
-        assert(power >= 0 && power <= 15);
-        block.setTypeIdAndData(getMaterial().getId(), (byte)(power & 15), false);
+        assert (power >= 0 && power <= 15);
+        block.setTypeIdAndData(getMaterial().getId(), (byte) (power & 15), false);
     }
 
     @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
         GlowBlock floor = block.getRelative(BlockFace.DOWN);
-        if(floor != null) {
+        if (floor != null) {
             Material mat = floor.getType();
-            if(mat.isOccluding()) {
+            if (mat.isOccluding()) {
                 return true;
             }
-            if(mat == Material.GLOWSTONE) {
+            if (mat == Material.GLOWSTONE) {
                 return true;
             }
             if (mat == Material.HOPPER || mat == Material.REDSTONE_BLOCK) {
@@ -195,11 +195,11 @@ public class BlockRedstoneDust extends BlockType {
             }
             MaterialData md = floor.getState().getData();
             if (md instanceof Step) {
-                if(((Step)md).isInverted()) { //You can place redstone on upper slabs
+                if (((Step) md).isInverted()) { //You can place redstone on upper slabs
                     return true;
                 }
             } else if (md instanceof Stairs) {
-                if(((Stairs)md).isInverted()) {
+                if (((Stairs) md).isInverted()) {
                     return true;
                 }
             }
@@ -214,6 +214,6 @@ public class BlockRedstoneDust extends BlockType {
 
     @Override
     public Collection<ItemStack> getDrops(GlowBlock block) {
-        return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.REDSTONE, 1, (short)0)));
+        return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.REDSTONE, 1, (short) 0)));
     }
 } 

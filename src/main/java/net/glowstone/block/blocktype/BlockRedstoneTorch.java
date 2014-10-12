@@ -33,12 +33,12 @@ public class BlockRedstoneTorch extends BlockTorch {
     public void traceBlockPowerEnd(GlowBlock block, RSManager rsManager, int power) {
         // Handle power change.
         Material mat;
-        if(isTorchOn && power == 0) {
+        if (isTorchOn && power == 0) {
             mat = Material.REDSTONE_TORCH_OFF;
-            block.setTypeIdAndData(mat.getId(), (byte)block.getData(), false);
-        } else if(!isTorchOn && power != 0) {
+            block.setTypeIdAndData(mat.getId(), (byte) block.getData(), false);
+        } else if (!isTorchOn && power != 0) {
             mat = Material.REDSTONE_TORCH_ON;
-            block.setTypeIdAndData(mat.getId(), (byte)block.getData(), false);
+            block.setTypeIdAndData(mat.getId(), (byte) block.getData(), false);
         }
 
         rsManager.addSource(block);
@@ -55,7 +55,7 @@ public class BlockRedstoneTorch extends BlockTorch {
      */
     private void traceBlockPowerFromRSTorch(GlowBlock srcBlock, RSManager rsManager, BlockFace forbidDir, BlockFace toDir, boolean isDirect) {
         // Get the forbidDir check out of the way.
-        if(forbidDir == toDir) {
+        if (forbidDir == toDir) {
             return;
         }
 
@@ -77,7 +77,7 @@ public class BlockRedstoneTorch extends BlockTorch {
     @Override
     public void traceBlockPowerStart(GlowBlock block, RSManager rsManager) {
         // Abandon ship if this is not a charged RS torch.
-        if(!isTorchOn) {
+        if (!isTorchOn) {
             return;
         }
 

@@ -24,7 +24,7 @@ public class BlockRedstone extends BlockType {
     @Override
     public void traceBlockPowerStart(GlowBlock block, RSManager rsManager) {
         Material thisMat = getMaterial();
-        if(thisMat != Material.REDSTONE_BLOCK) {
+        if (thisMat != Material.REDSTONE_BLOCK) {
             return;
         }
 

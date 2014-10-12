@@ -60,7 +60,7 @@ public class BlockLever extends BlockAttachable {
         final MaterialData data = block.getState().getData();
         if (data instanceof Lever) {
             final Lever l = (Lever) data;
-            if(!l.isPowered()) return;
+            if (!l.isPowered()) return;
             // Trace in all directions.
             traceBlockPowerFromLever(block, rsManager, l.getAttachedFace(), BlockFace.UP);
             traceBlockPowerFromLever(block, rsManager, l.getAttachedFace(), BlockFace.DOWN);
@@ -72,7 +72,7 @@ public class BlockLever extends BlockAttachable {
     }
     
     private void traceBlockPowerFromLever(GlowBlock srcBlock, RSManager rsManager, BlockFace directDir, BlockFace toDir) {
-        if(toDir.equals(directDir)) {
+        if (toDir.equals(directDir)) {
             rsManager.traceFromBlock(srcBlock, toDir, 15, true);
         } else {
             rsManager.traceFromBlock(srcBlock, toDir, 15, false);
