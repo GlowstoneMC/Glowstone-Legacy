@@ -119,7 +119,7 @@ public class BlockRedstoneDust extends BlockType {
     @Override
     public void traceBlockPower(GlowBlock block, RSManager rsManager, Material srcMat, BlockFace flowDir, int inPower, boolean isDirect) {
         // Bail out if our input power is <= our current power
-        if (inPower <= rsManager.getNewBlockPower(block)) {
+        if (inPower <= rsManager.getBlockPower(block)) {
             return;
         }
 
