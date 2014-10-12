@@ -115,7 +115,7 @@ public class BlockCocoa extends BlockAttachable implements IBlockGrowable {
             }
             final GlowBlockState state = block.getState();
             state.setData(cocoa);
-            BlockGrowEvent growEvent = new BlockGrowEvent(block, block.getState());
+            BlockGrowEvent growEvent = new BlockGrowEvent(block, state);
             EventFactory.callEvent(growEvent);
             if (!growEvent.isCancelled()) {
                 state.update(true);

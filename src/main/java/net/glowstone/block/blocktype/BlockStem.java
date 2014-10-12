@@ -102,7 +102,7 @@ public class BlockStem extends BlockPlant implements IBlockGrowable {
             cropState++;
             final GlowBlockState state = block.getState();
             state.setRawData((byte) cropState);
-            BlockGrowEvent growEvent = new BlockGrowEvent(block, block.getState());
+            BlockGrowEvent growEvent = new BlockGrowEvent(block, state);
             EventFactory.callEvent(growEvent);
             if (!growEvent.isCancelled()) {
                 state.update(true);
@@ -130,7 +130,7 @@ public class BlockStem extends BlockPlant implements IBlockGrowable {
             cropState = CropState.RIPE.ordinal();
         }
         state.setRawData((byte) cropState);
-        BlockGrowEvent growEvent = new BlockGrowEvent(block, block.getState());
+        BlockGrowEvent growEvent = new BlockGrowEvent(block, state);
         EventFactory.callEvent(growEvent);
         if (!growEvent.isCancelled()) {
             state.update(true);

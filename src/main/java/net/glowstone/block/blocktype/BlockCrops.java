@@ -51,16 +51,16 @@ public class BlockCrops extends BlockPlant implements IBlockGrowable {
         if (cropState < CropState.RIPE.ordinal()) {
             if (random.nextInt(3) == 0) {
                cropState++;
+               if (cropState > CropState.RIPE.ordinal()) {
+                   cropState = CropState.RIPE.ordinal();
+               }
+               state.setRawData((byte) cropState);
+               BlockGrowEvent growEvent = new BlockGrowEvent(block, state);
+               EventFactory.callEvent(growEvent);
+               if (!growEvent.isCancelled()) {
+                   state.update(true);
+               }
             }
-        }
-        if (cropState > CropState.RIPE.ordinal()) {
-            cropState = CropState.RIPE.ordinal();
-        }
-        state.setRawData((byte) cropState);
-        BlockGrowEvent growEvent = new BlockGrowEvent(block, block.getState());
-        EventFactory.callEvent(growEvent);
-        if (!growEvent.isCancelled()) {
-            state.update(true);
         }
     }
 
@@ -84,7 +84,7 @@ public class BlockCrops extends BlockPlant implements IBlockGrowable {
             cropState = CropState.RIPE.ordinal();
         }
         state.setRawData((byte) cropState);
-        BlockGrowEvent growEvent = new BlockGrowEvent(block, block.getState());
+        BlockGrowEvent growEvent = new BlockGrowEvent(block, state);
         EventFactory.callEvent(growEvent);
         if (!growEvent.isCancelled()) {
             state.update(true);

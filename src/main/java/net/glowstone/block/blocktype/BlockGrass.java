@@ -48,7 +48,8 @@ public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
             while (true) {
                 // if there's available space
                 if (world.getBlockAt(x, y, z).getType().equals(Material.AIR)) {
-                    final GlowBlockState blockState = world.getBlockAt(x, y, z).getState();
+                    final GlowBlock b = world.getBlockAt(x, y, z);
+                    final GlowBlockState blockState = b.getState();
                     if (random.nextFloat() < 0.125D) {
                         // sometimes grow random flower
                         // TODO
@@ -60,18 +61,18 @@ public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
                         } else {
                             flower = Material.YELLOW_FLOWER;
                         }
-                        if (ItemTable.instance().getBlock(flower).canPlaceAt(world.getBlockAt(x, y, z), BlockFace.DOWN)) {
+                        if (ItemTable.instance().getBlock(flower).canPlaceAt(b, BlockFace.DOWN)) {
                             blockState.setType(flower);
                         }
                     } else {
                         final Material tallGrass = Material.LONG_GRASS;
-                        if (ItemTable.instance().getBlock(tallGrass).canPlaceAt(world.getBlockAt(x, y, z), BlockFace.DOWN)) {
+                        if (ItemTable.instance().getBlock(tallGrass).canPlaceAt(b, BlockFace.DOWN)) {
                             // grow tall grass if possible
                             blockState.setType(tallGrass);
                             blockState.setData(new LongGrass(GrassSpecies.NORMAL));
                         }
                     }
-                    BlockGrowEvent growEvent = new BlockGrowEvent(block, block.getState());
+                    BlockGrowEvent growEvent = new BlockGrowEvent(b, blockState);
                     EventFactory.callEvent(growEvent);
                     if (!growEvent.isCancelled()) {
                         blockState.update(true);
