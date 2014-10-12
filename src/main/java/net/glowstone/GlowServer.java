@@ -13,9 +13,11 @@ import net.glowstone.io.PlayerDataService;
 import net.glowstone.map.GlowMapView;
 import net.glowstone.net.GlowNetworkServer;
 import net.glowstone.net.SessionRegistry;
+import net.glowstone.net.query.QueryServer;
 import net.glowstone.scheduler.GlowScheduler;
 import net.glowstone.scheduler.WorldScheduler;
 import net.glowstone.util.*;
+import net.glowstone.util.ServerConfig.Key;
 import net.glowstone.util.bans.GlowBanList;
 import net.glowstone.util.bans.UuidListFile;
 import org.bukkit.*;
@@ -89,6 +91,9 @@ public final class GlowServer implements Server {
             final GlowServer server = new GlowServer(config);
             server.start();
             server.bind();
+            if (config.getBoolean(Key.QUERY_ENABLED)) {
+                server.bindQuery();
+            }
             logger.info("Ready for connections.");
         } catch (Throwable t) {
             logger.log(Level.SEVERE, "Error during server startup.", t);
@@ -329,6 +334,11 @@ public final class GlowServer implements Server {
     private final GlowNetworkServer networkServer = new GlowNetworkServer(this);
 
     /**
+     * The query server for this server.
+     */
+    private final QueryServer queryServer = new QueryServer(this);
+
+    /**
      * The default icon, usually blank, used for the server list.
      */
     private GlowServerIcon defaultIcon;
@@ -423,6 +433,29 @@ public final class GlowServer implements Server {
     }
 
     /**
+     * Binds the query server to the address specified in the configuration.
+     */
+    private void bindQuery() {
+        String ip = getIp();
+        int port = config.getInt(Key.QUERY_PORT);
+
+        SocketAddress address;
+        if (ip.length() == 0) {
+            address = new InetSocketAddress(port);
+        } else {
+            address = new InetSocketAddress(ip, port);
+        }
+
+        ChannelFuture future = queryServer.bind(address);
+        Channel channel = future.awaitUninterruptibly().channel();
+        if (!channel.isActive()) {
+            logger.warning("Unable to initialise query system on " + address + ": Address already in use?");
+        } else {
+            logger.info("Query running on " + address + "...");
+        }
+    }
+
+    /**
      * Stops this server.
      */
     @Override
@@ -445,6 +478,9 @@ public final class GlowServer implements Server {
         // Stop the network server - starts the shutdown process
         // It may take a second or two for Netty to totally clean up
         networkServer.shutdown();
+
+        // Stop query server
+        queryServer.shutdown();
 
         // Save worlds
         for (World world : getWorlds()) {
