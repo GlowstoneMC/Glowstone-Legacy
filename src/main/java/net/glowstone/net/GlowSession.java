@@ -378,6 +378,12 @@ public final class GlowSession extends BasicSession {
             GlowServer.logger.info("[" + address + "] kicked: " + reason);
         }
 
+        if (timedOut) {
+            quitReason = "timed out";
+            // consider this session gone
+            onDisconnect();
+        }
+
         if (quitReason == null) {
             quitReason = "kicked";
         }
@@ -413,8 +419,8 @@ public final class GlowSession extends BasicSession {
         }
 
         // connection timed out, we should disconnect them
-        if (timedOut) {
-            disconnect("Timed out");
+        if (timedOut && player != null) {
+            disconnect("Timed out", true);
         }
     }
 
