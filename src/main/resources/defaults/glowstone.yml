@@ -26,3 +26,7 @@ world:
     gen-structures: true
     allow-nether: true
     allow-end: true
+
+libraries:
+    depend: ["org.xerial:sqlite-jdbc:3.7.2", "mysql:mysql-connector-java:5.1.14", "org.apache.logging.log4j:log4j-core:2.0", "org.apache.logging.log4j:log4j-api:2.0"]
+    repo: "http://repo1.maven.org/maven2/"
