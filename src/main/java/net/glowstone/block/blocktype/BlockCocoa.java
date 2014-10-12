@@ -22,8 +22,7 @@ import org.bukkit.material.Tree;
 import org.bukkit.util.Vector;
 
 public class BlockCocoa extends BlockAttachable implements IBlockGrowable {
-    // TODO
-    // maybe use GlowWorld random instance instead
+
     private final Random random = new Random();
 
     @Override

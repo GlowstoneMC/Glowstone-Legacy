@@ -19,8 +19,7 @@ import java.util.Collections;
 import java.util.Random;
 
 public class BlockTallGrass extends BlockPlant implements IBlockGrowable {
-    // TODO
-    // maybe use GlowWorld random instance instead
+
     private final Random random = new Random();
 
     @Override
@@ -81,34 +80,5 @@ public class BlockTallGrass extends BlockPlant implements IBlockGrowable {
         } else {
             warnMaterialData(LongGrass.class, data);
         }
-        // TODO
-        // wait PR #27 (https://github.com/GlowstoneMC/Glowkit/pull/27) is
-        // merged into Glowkit and uncomment below
-        //final MaterialData data = block.getState().getData();
-        //if (data instanceof LongGrass) {
-        //    final GrassSpecies species = ((LongGrass) data).getSpecies();
-        //    final DoublePlant plant = new DoublePlant();
-        //    if (species.equals(GrassSpecies.NORMAL)) {
-        //        plant.setSpecies(DoublePlantSpecies.DOUBLE_TALLGRASS);
-        //    } else if (species.equals(GrassSpecies.FERN_LIKE)) {
-        //        plant.setSpecies(DoublePlantSpecies.LARGE_FERN);
-        //    } else {
-        //        return;
-        //    }
-        //    final GlowBlockState blockState = block.getState();
-        //    final GlowBlockState headBlockState = block.getRelative(BlockFace.UP).getState();
-        //    blockState.setType(Material.DOUBLE_PLANT);
-        //    blockState.setData(plant);
-        //    headBlockState.setType(Material.DOUBLE_PLANT);
-        //    headBlockState.setData(new DoublePlant(DoublePlantSpecies.PLANT_APEX));
-        //    BlockGrowEvent growEvent = new BlockGrowEvent(block, block.getState());
-        //    EventFactory.callEvent(growEvent);
-        //    if (!growEvent.isCancelled()) {
-        //          blockState.update(true);
-        //          headBlockState.update(true);
-        //    }
-        //} else {
-        //    warnMaterialData(LongGrass.class, data);
-        //}
-     }
+    }
 }

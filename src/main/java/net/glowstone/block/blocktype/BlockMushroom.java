@@ -19,9 +19,8 @@ import net.glowstone.generator.HugeMushroomGenerator;
 import net.glowstone.util.BlockStateDelegate;
 
 public class BlockMushroom extends BlockType implements IBlockGrowable {
+
     private final Material mushroomType;
-    // TODO
-    // maybe use GlowWorld random instance instead
     private final Random random = new Random();
 
     public BlockMushroom(Material mushroomType) {
@@ -39,7 +38,6 @@ public class BlockMushroom extends BlockType implements IBlockGrowable {
         final Material type = belowBlock.getType();
         if (type.equals(Material.GRASS)
                 || (type.equals(Material.DIRT) && belowBlock.getData() != 2)) {
-            // TODO
             // uncomment later to stop mushroom growth where there's too much light 
             //if (block.getLightLevel() < 13) { // checking light level for dirt, coarse dirt and grass
                 return true;

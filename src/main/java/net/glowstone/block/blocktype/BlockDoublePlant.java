@@ -25,47 +25,18 @@ public class BlockDoublePlant extends BlockPlant implements IBlockGrowable {
         headBlockState.setType(Material.DOUBLE_PLANT);
         headBlockState.setRawData((byte) 8);
         headBlockState.update(true);
-        // TODO
-        // wait PR #27 (https://github.com/GlowstoneMC/Glowkit/pull/27) is
-        // merged into Glowkit and uncomment below
-        //final MaterialData data = block.getState().getData();
-        //if (data instanceof DoublePlant) {
-        //    final GlowBlockState headBlockState = block.getRelative(BlockFace.UP).getState();
-        //    headBlockState.setType(Material.DOUBLE_PLANT);
-        //    headBlockState.setData(new DoublePlant(DoublePlantSpecies.PLANT_APEX));
-        //    headBlockState.update(true);
-        //} else {
-        //    warnMaterialData(DoublePlant.class, data);
-        //}
     }
 
     @Override
     public boolean isFertilizable(GlowBlock block) {
         int data = block.getData();
-        if (data == 8) { // above block
+        if (data == 8) { // above part
             data = block.getRelative(BlockFace.DOWN).getState().getRawData();
         }
         if (data != 2 && // double tall grass
             data != 3) { // large fern
             return true;
         }
-        // TODO
-        // wait PR #27 (https://github.com/GlowstoneMC/Glowkit/pull/27) is
-        // merged into Glowkit and uncomment below
-        //MaterialData data = block.getState().getData();
-        //if (data instanceof DoublePlant) {
-        //    DoublePlantSpecies species = ((DoublePlant) data).getSpecies();
-        //    if (species.equals(DoublePlantSpecies.PLANT_APEX)) {
-        //        data = block.getRelative(BlockFace.DOWN).getState().getData();
-        //        species = ((DoublePlant) data).getSpecies();
-        //    }
-        //    if (!species.equals(DoublePlantSpecies.DOUBLE_TALLGRASS)
-        //            && !species.equals(DoublePlantSpecies.LARGE_FERN)) {
-        //        return true;
-        //    }
-        //} else {
-        //    warnMaterialData(DoublePlant.class, data);
-        //}
         return false;
     }
 
@@ -77,7 +48,7 @@ public class BlockDoublePlant extends BlockPlant implements IBlockGrowable {
     @Override
     public void grow(GlowPlayer player, GlowBlock block) {
         int data = block.getData();
-        if (data == 8) { // above block
+        if (data == 8) { // above part
             data = block.getRelative(BlockFace.DOWN).getState().getRawData();
         }
         if (data == 0 ||     // sunflower
@@ -87,25 +58,5 @@ public class BlockDoublePlant extends BlockPlant implements IBlockGrowable {
             block.getWorld().dropItemNaturally(block.getLocation(),
                     new ItemStack(Material.DOUBLE_PLANT, 1, (short) data));
         }
-        // TODO
-        // wait PR #27 (https://github.com/GlowstoneMC/Glowkit/pull/27) is
-        // merged into Glowkit and uncomment below
-        //MaterialData data = block.getState().getData();
-        //if (data instanceof DoublePlant) {
-        //    DoublePlantSpecies species = ((DoublePlant) data).getSpecies();
-        //    if (species.equals(DoublePlantSpecies.PLANT_APEX)) {
-        //        data = block.getRelative(BlockFace.DOWN).getState().getData();
-        //        species = ((DoublePlant) data).getSpecies();
-        //    }
-        //    if (species.equals(DoublePlantSpecies.SUNFLOWER)
-        //            || species.equals(DoublePlantSpecies.LILAC)
-        //            || species.equals(DoublePlantSpecies.ROSE_BUSH)
-        //            || species.equals(DoublePlantSpecies.PEONY)) {
-        //        block.getWorld().dropItemNaturally(block.getLocation(),
-        //                new ItemStack(Material.DOUBLE_PLANT, 1, (short) species.ordinal()));
-        //    }
-        //} else {
-        //    warnMaterialData(DoublePlant.class, data);
-        //}
     }
 }

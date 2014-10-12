@@ -18,15 +18,11 @@ import net.glowstone.block.GlowBlockState;
 import net.glowstone.entity.GlowPlayer;
 
 public class BlockStem extends BlockPlant implements IBlockGrowable {
-    private Material plantType;
     private Material fruitType;
     private Material seedsType;
-    // TODO
-    // maybe use GlowWorld random instance instead
     private final Random random = new Random();
 
     public BlockStem(Material plantType) {
-        this.plantType = plantType;
         if (plantType.equals(Material.MELON_STEM)) {
             fruitType = Material.MELON_BLOCK;
             seedsType = Material.MELON_SEEDS;

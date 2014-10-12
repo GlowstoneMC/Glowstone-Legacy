@@ -18,8 +18,7 @@ import net.glowstone.generator.TreeGenerator;
 import net.glowstone.util.BlockStateDelegate;
 
 public class BlockSapling extends BlockPlant implements IBlockGrowable {
-    // TODO
-    // maybe use GlowWorld random instance instead
+
     private final Random random = new Random();
 
     @Override

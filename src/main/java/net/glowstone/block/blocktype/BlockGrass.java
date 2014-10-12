@@ -16,8 +16,7 @@ import net.glowstone.block.ItemTable;
 import net.glowstone.entity.GlowPlayer;
 
 public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
-    // TODO
-    // maybe use GlowWorld random instance instead
+
     private final Random random = new Random();
 
     public BlockGrass(Material dropType) {
@@ -52,9 +51,8 @@ public class BlockGrass extends BlockDirectDrops implements IBlockGrowable {
                     final GlowBlockState blockState = b.getState();
                     if (random.nextFloat() < 0.125D) {
                         // sometimes grow random flower
-                        // TODO
-                        // call a method that choose a random flower depending
-                        // on the biome
+                        // would be better to call a method that choose a random 
+                        // flower depending on the biome
                         Material flower;
                         if (random.nextInt(2) == 0) {
                             flower = Material.RED_ROSE;

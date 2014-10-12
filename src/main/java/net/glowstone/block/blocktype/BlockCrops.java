@@ -17,8 +17,7 @@ import net.glowstone.block.GlowBlockState;
 import net.glowstone.entity.GlowPlayer;
 
 public class BlockCrops extends BlockPlant implements IBlockGrowable {
-    // TODO
-    // maybe use GlowWorld random instance instead
+
     private final Random random = new Random();
 
     @Override

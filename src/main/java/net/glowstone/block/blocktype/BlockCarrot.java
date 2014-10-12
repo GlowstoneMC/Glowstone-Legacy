@@ -12,8 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public class BlockCarrot extends BlockCrops {
-    // TODO
-    // maybe use GlowWorld random instance instead
+
     private final Random random = new Random();
 
     @Override
