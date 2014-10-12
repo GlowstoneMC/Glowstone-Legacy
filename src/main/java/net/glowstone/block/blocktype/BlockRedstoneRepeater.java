@@ -130,8 +130,8 @@ public class BlockRedstoneRepeater extends BlockType {
         final MaterialData data = state.getData();
         if (data instanceof Diode) {
             final Diode d = (Diode) data;
-            if (d.getDelay() > 3) {
-                d.setDelay(0);
+            if (d.getDelay() == 4) {
+                d.setDelay(1);
             } else {
                 d.setDelay(d.getDelay() + 1);
             }
