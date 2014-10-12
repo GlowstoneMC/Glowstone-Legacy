@@ -15,7 +15,7 @@ import static net.glowstone.GlowServer.logger;
 
 public final class LibraryManager {
      /**
-     * The server of this world.
+     * The server.
      */
     private final GlowServer server;
     
