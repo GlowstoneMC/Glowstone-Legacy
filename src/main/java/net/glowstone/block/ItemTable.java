@@ -122,6 +122,8 @@ public final class ItemTable {
         reg(Material.REDSTONE_BLOCK, new BlockRedstone());
         reg(Material.DIODE_BLOCK_OFF, new BlockRedstoneRepeater(false));
         reg(Material.DIODE_BLOCK_ON, new BlockRedstoneRepeater(true));
+        reg(Material.REDSTONE_LAMP_OFF, new BlockRedstoneLamp(false));
+        reg(Material.REDSTONE_LAMP_ON, new BlockRedstoneLamp(true));
 
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
