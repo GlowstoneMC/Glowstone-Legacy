@@ -25,6 +25,15 @@ public final class SessionRegistry {
     }
 
     /**
+     * Pulses all the sessions in an asynchronous thread.
+     */
+    public void pulseAsync() {
+        for (GlowSession session : sessions.keySet()) {
+            session.pulseAsync();
+        }
+    }
+
+    /**
      * Adds a new session.
      * @param session The session to add.
      */
