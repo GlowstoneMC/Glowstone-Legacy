@@ -372,11 +372,27 @@ public final class GlowBlock implements Block {
         ItemTable itemTable = ItemTable.instance();
         Material newType = Material.getMaterial(newTypeId);
 
-        for (BlockFace face : surroundingFaces) {
-            GlowBlock notify = this.getRelative(face);
-            BlockType notifyType = itemTable.getBlock(notify.getTypeId());
-            if (notifyType != null)
-                notifyType.onNearBlockChanged(notify, face.getOppositeFace(), this, oldType, oldData, newType, newData);
+        for (int y = -1; y <= 1; y++) {
+            for (BlockFace face : LAYER) {
+                if (y == 0 && face == BlockFace.SELF) continue;
+
+                GlowBlock notify = this.getRelative(face.getModX(), face.getModY() + y, face.getModZ());
+
+                BlockFace blockFace;
+                if (y == 0) {
+                    blockFace = face;
+                } else if (y == -1 && face == BlockFace.SELF) {
+                    blockFace = BlockFace.DOWN;
+                } else if (y == 1 && face == BlockFace.SELF) {
+                    blockFace = BlockFace.UP;
+                } else {
+                    blockFace = null;
+                }
+
+                BlockType notifyType = itemTable.getBlock(notify.getTypeId());
+                if (notifyType != null)
+                    notifyType.onNearBlockChanged(notify, blockFace, this, oldType, oldData, newType, newData);
+            }
         }
 
         BlockType type = itemTable.getBlock(oldType);
@@ -384,5 +400,8 @@ public final class GlowBlock implements Block {
             type.onBlockChanged(this, oldType, oldData, newType, newData);
     }
 
-    private static final BlockFace[] surroundingFaces = new BlockFace[]{BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
+    private static final BlockFace[] LAYER = new BlockFace[]{
+            BlockFace.NORTH_WEST, BlockFace.NORTH, BlockFace.NORTH_EAST,
+            BlockFace.EAST, BlockFace.SELF, BlockFace.WEST,
+            BlockFace.SOUTH_WEST, BlockFace.SOUTH, BlockFace.SOUTH_EAST};
 }

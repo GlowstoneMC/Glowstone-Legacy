@@ -15,6 +15,11 @@ public class BlockSugarCane extends BlockNeedsAttached {
     private static final BlockFace[] direct_faces = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH};
 
     @Override
+    public void onNearBlockChanged(GlowBlock block, BlockFace position, GlowBlock changedBlock, Material oldType, byte oldData, Material newType, byte newData) {
+        updatePhysics(block);
+    }
+
+    @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
         Block below = block.getRelative(BlockFace.DOWN);
         Material type = below.getType();

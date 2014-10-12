@@ -166,7 +166,7 @@ public class BlockType extends ItemType {
      * Called when a near block changed it's type or data and physics should be applied.
      *
      * @param block The block near the changed one
-     * @param position The position where the changed block is (so BlockFace.DOWN = below block)
+     * @param position The position where the changed block is (so BlockFace.DOWN = below block) or NULL if BlockFace doesn't cover the position
      * @param changedBlock The block that changed its type and/or data
      * @param oldType The old type of the changed block
      * @param oldData The old data of the changed block
