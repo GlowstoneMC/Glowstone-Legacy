@@ -35,10 +35,8 @@ public final class LibraryManager {
         }
 
         for (String lib : libs) {
-            logger.log(Level.INFO, "Managing lib: " + lib);
             String[] libParsed = parseLib(lib);
             downloadLib(libParsed[0], libParsed[1], libParsed[2]);
-            logger.log(Level.INFO, "Lib path: " + libParsed[0]);
         }
     }
 
@@ -48,7 +46,6 @@ public final class LibraryManager {
 
     private void downloadLib(String libPackage, String libName, String libVersion) {
         String libPackageURL = "";
-        logger.log(Level.INFO, "Lib package: " + libPackage);
 
         String libURL =  server.getRepo() + libPackage.replaceAll("\\.", "/") + "/" + libName + "/" + libVersion + "/" + libName + "-" + libVersion + ".jar";
         File libFile = new File("libraries/" + libName + "-" + libVersion + ".jar");
