@@ -1,6 +1,10 @@
 package net.glowstone.entity;
 
 import com.flowpowered.networking.Message;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import net.glowstone.entity.meta.PlayerProfile;
 import net.glowstone.inventory.GlowCraftingInventory;
 import net.glowstone.inventory.GlowInventory;
@@ -13,7 +17,9 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
@@ -24,11 +30,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * Represents a human entity, such as an NPC or a player.
@@ -265,6 +266,19 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
     public void setOp(boolean value) {
         isOp = value;
         recalculatePermissions();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Health
+
+    @Override
+    public void damage(double amount, Entity source, EntityDamageEvent.DamageCause cause) {
+        super.damage(amount, source, cause);
+    }
+
+    @Override
+    protected boolean canDrown() {
+        return gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE;
     }
 
     ////////////////////////////////////////////////////////////////////////////
