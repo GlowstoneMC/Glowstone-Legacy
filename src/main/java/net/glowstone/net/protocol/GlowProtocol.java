@@ -24,8 +24,8 @@ public abstract class GlowProtocol extends AbstractProtocol {
 
     public GlowProtocol(String name, int highestOpcode) {
         super(name);
-        inboundCodecs = new CodecLookupService(highestOpcode);
-        outboundCodecs = new CodecLookupService(highestOpcode);
+        inboundCodecs = new CodecLookupService(highestOpcode + 1);
+        outboundCodecs = new CodecLookupService(highestOpcode + 1);
         handlers = new HandlerLookupService();
     }
 
@@ -56,6 +56,7 @@ public abstract class GlowProtocol extends AbstractProtocol {
     }
 
     @Override
+    @Deprecated
     public Codec<?> readHeader(ByteBuf buf) throws UnknownPacketException {
         int length = -1;
         int opcode = -1;
@@ -86,6 +87,7 @@ public abstract class GlowProtocol extends AbstractProtocol {
     }
 
     @Override
+    @Deprecated
     public ByteBuf writeHeader(ByteBuf out, Codec.CodecRegistration codec, ByteBuf data) {
         final ByteBuf opcodeBuffer = Unpooled.buffer(5);
         ByteBufUtils.writeVarInt(opcodeBuffer, codec.getOpcode());
@@ -94,7 +96,7 @@ public abstract class GlowProtocol extends AbstractProtocol {
         return out;
     }
 
-    public Codec<?> newReadHeader(ByteBuf in) throws Exception {
+    public Codec<?> newReadHeader(ByteBuf in) throws IOException, IllegalOpcodeException {
         int opcode = ByteBufUtils.readVarInt(in);
         return inboundCodecs.find(opcode);
     }

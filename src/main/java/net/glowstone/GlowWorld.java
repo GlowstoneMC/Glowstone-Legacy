@@ -5,6 +5,8 @@ import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.ItemTable;
 import net.glowstone.block.blocktype.BlockType;
 import net.glowstone.constants.GlowBiome;
+import net.glowstone.constants.GlowEffect;
+import net.glowstone.constants.GlowParticle;
 import net.glowstone.entity.*;
 import net.glowstone.entity.objects.GlowItem;
 import net.glowstone.io.WorldMetadataService.WorldFinalValues;
@@ -15,11 +17,14 @@ import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
+import org.bukkit.event.weather.LightningStrikeEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.event.world.*;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.MetadataStore;
 import org.bukkit.metadata.MetadataStoreBase;
 import org.bukkit.metadata.MetadataValue;
@@ -41,7 +46,7 @@ public final class GlowWorld implements World {
     /**
      * The metadata store class for worlds.
      */
-    private final static class WorldMetadataStore extends MetadataStoreBase<World> implements MetadataStore<World> {
+    private static final class WorldMetadataStore extends MetadataStoreBase<World> implements MetadataStore<World> {
         @Override
         protected String disambiguate(World subject, String metadataKey) {
             return subject.getName() + ":" + metadataKey;
@@ -51,7 +56,7 @@ public final class GlowWorld implements World {
     /**
      * The metadata store for world objects.
      */
-    private final static MetadataStore<World> metadata = new WorldMetadataStore();
+    private static final MetadataStore<World> metadata = new WorldMetadataStore();
 
     /**
      * The length in ticks of one Minecraft day.
@@ -240,6 +245,8 @@ public final class GlowWorld implements World {
         animalLimit = server.getAnimalSpawnLimit();
         waterAnimalLimit = server.getWaterAnimalSpawnLimit();
         ambientLimit = server.getAmbientSpawnLimit();
+        keepSpawnLoaded = server.keepSpawnLoaded();
+        difficulty = server.getDifficulty();
 
         // read in world data
         WorldFinalValues values = null;
@@ -262,8 +269,9 @@ public final class GlowWorld implements World {
 
         // begin loading spawn area
         spawnChunkLock = newChunkLock("spawn");
-        EventFactory.onWorldInit(this);
+        server.addWorld(this);
         server.getLogger().info("Preparing spawn for " + name + "...");
+        EventFactory.callEvent(new WorldInitEvent(this));
 
         // determine the spawn location if we need to
         if (spawnLocation == null) {
@@ -309,7 +317,7 @@ public final class GlowWorld implements World {
             }
         }
         server.getLogger().info("Preparing spawn for " + name + ": done");
-        EventFactory.onWorldLoad(this);
+        EventFactory.callEvent(new WorldLoadEvent(this));
     }
 
     @Override
@@ -496,7 +504,7 @@ public final class GlowWorld implements World {
     public boolean setSpawnLocation(int x, int y, int z) {
         Location oldSpawn = spawnLocation;
         spawnLocation = new Location(this, x, y, z);
-        EventFactory.onSpawnChange(this, oldSpawn);
+        EventFactory.callEvent(new SpawnChangeEvent(this, oldSpawn));
         return true;
     }
 
@@ -689,7 +697,7 @@ public final class GlowWorld implements World {
     }
 
     public void save(boolean async) {
-        EventFactory.onWorldSave(this);
+        EventFactory.callEvent(new WorldSaveEvent(this));
 
         // save metadata
         writeWorldData(async);
@@ -725,12 +733,156 @@ public final class GlowWorld implements World {
 
     @Override
     public boolean generateTree(Location location, TreeType type) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return generateTree(location, type, new SimpleBlockChangeDelegate());
     }
 
     @Override
     public boolean generateTree(Location loc, TreeType type, BlockChangeDelegate delegate) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // simple tree generation, always the same shape
+        // determine species variant
+        TreeSpecies species = getSpecies(type);
+        int wood = Material.LOG.getId();
+        int leaves = Material.LEAVES.getId();
+        final int data = species.getData() & 0x3;
+        if (species.getData() >= 4) {
+            wood = Material.LOG_2.getId();
+            leaves = Material.LEAVES_2.getId();
+        }
+
+        final int height = 4 + random.nextInt(3);
+        // -1 here is a hack for implicit +1 in rest of code
+        final int centerX = loc.getBlockX(), centerY = loc.getBlockY() - 1, centerZ = loc.getBlockZ();
+
+        // top leaf layer
+        delegate.setRawTypeIdAndData(centerX, centerY + height + 1, centerZ, leaves, data);
+        for (int j = 0; j < 4; j++) {
+            delegate.setRawTypeIdAndData(centerX, centerY + height + 1 - j, centerZ - 1, leaves, data);
+            delegate.setRawTypeIdAndData(centerX, centerY + height + 1 - j, centerZ + 1, leaves, data);
+            delegate.setRawTypeIdAndData(centerX - 1, centerY + height + 1 - j, centerZ, leaves, data);
+            delegate.setRawTypeIdAndData(centerX + 1, centerY + height + 1 - j, centerZ, leaves, data);
+        }
+
+        // layer below top
+        if (random.nextBoolean()) {
+            delegate.setRawTypeIdAndData(centerX + 1, centerY + height, centerZ + 1, leaves, data);
+        }
+        if (random.nextBoolean()) {
+            delegate.setRawTypeIdAndData(centerX + 1, centerY + height, centerZ - 1, leaves, data);
+        }
+        if (random.nextBoolean()) {
+            delegate.setRawTypeIdAndData(centerX - 1, centerY + height, centerZ + 1, leaves, data);
+        }
+        if (random.nextBoolean()) {
+            delegate.setRawTypeIdAndData(centerX - 1, centerY + height, centerZ - 1, leaves, data);
+        }
+
+        // two layers below that
+        delegate.setRawTypeIdAndData(centerX + 1, centerY + height - 1, centerZ + 1, leaves, data);
+        delegate.setRawTypeIdAndData(centerX + 1, centerY + height - 1, centerZ - 1, leaves, data);
+        delegate.setRawTypeIdAndData(centerX - 1, centerY + height - 1, centerZ + 1, leaves, data);
+        delegate.setRawTypeIdAndData(centerX - 1, centerY + height - 1, centerZ - 1, leaves, data);
+        delegate.setRawTypeIdAndData(centerX + 1, centerY + height - 2, centerZ + 1, leaves, data);
+        delegate.setRawTypeIdAndData(centerX + 1, centerY + height - 2, centerZ - 1, leaves, data);
+        delegate.setRawTypeIdAndData(centerX - 1, centerY + height - 2, centerZ + 1, leaves, data);
+        delegate.setRawTypeIdAndData(centerX - 1, centerY + height - 2, centerZ - 1, leaves, data);
+
+        // outer leaves
+        for (int j = 0; j < 2; j++) {
+            for (int k = -2; k <= 2; k++) {
+                for (int l = -2; l <= 2; l++) {
+                    delegate.setRawTypeIdAndData(centerX + k, centerY + height - 1 - j, centerZ + l, leaves, data);
+                }
+            }
+        }
+
+        for (int j = 0; j < 2; j++) {
+            if (random.nextBoolean()) {
+                delegate.setRawTypeId(centerX + 2, centerY + height - 1 - j, centerZ + 2, 0);
+            }
+            if (random.nextBoolean()) {
+                delegate.setRawTypeId(centerX + 2, centerY + height - 1 - j, centerZ - 2, 0);
+            }
+            if (random.nextBoolean()) {
+                delegate.setRawTypeId(centerX - 2, centerY + height - 1 - j, centerZ + 2, 0);
+            }
+            if (random.nextBoolean()) {
+                delegate.setRawTypeId(centerX - 2, centerY + height - 1 - j, centerZ - 2, 0);
+            }
+        }
+
+        // Trunk
+        for (int y = 1; y <= height; y++) {
+            delegate.setRawTypeIdAndData(centerX, centerY + y, centerZ, wood, data);
+        }
+
+        return true;
+    }
+
+    private TreeSpecies getSpecies(TreeType type) {
+        switch (type) {
+            case TREE:
+            case BIG_TREE:
+            case SWAMP:
+                return TreeSpecies.GENERIC;
+            case REDWOOD:
+            case TALL_REDWOOD:
+            case MEGA_REDWOOD:
+                return TreeSpecies.REDWOOD;
+            case BIRCH:
+            case TALL_BIRCH:
+                return TreeSpecies.BIRCH;
+            case JUNGLE:
+            case SMALL_JUNGLE:
+            case COCOA_TREE:
+            case JUNGLE_BUSH:
+                return TreeSpecies.JUNGLE;
+            case ACACIA:
+                return TreeSpecies.ACACIA;
+            case DARK_OAK:
+                return TreeSpecies.DARK_OAK;
+            // unhandled
+            case RED_MUSHROOM:
+            case BROWN_MUSHROOM:
+            default:
+                return TreeSpecies.GENERIC;
+        }
+    }
+
+    private class SimpleBlockChangeDelegate implements BlockChangeDelegate {
+        @Override
+        public boolean setRawTypeId(int x, int y, int z, int typeId) {
+            return setRawTypeIdAndData(x, y, z, typeId, 0);
+        }
+
+        @Override
+        public boolean setRawTypeIdAndData(int x, int y, int z, int typeId, int data) {
+            return getBlockAt(x, y, z).setTypeIdAndData(typeId, (byte) data, false);
+        }
+
+        @Override
+        public boolean setTypeId(int x, int y, int z, int typeId) {
+            return setTypeIdAndData(x, y, z, typeId, 0);
+        }
+
+        @Override
+        public boolean setTypeIdAndData(int x, int y, int z, int typeId, int data) {
+            return getBlockAt(x, y, z).setTypeIdAndData(typeId, (byte) data, true);
+        }
+
+        @Override
+        public int getTypeId(int x, int y, int z) {
+            return getBlockTypeIdAt(x, y, z);
+        }
+
+        @Override
+        public int getHeight() {
+            return getMaxHeight();
+        }
+
+        @Override
+        public boolean isEmpty(int x, int y, int z) {
+            return getBlockTypeIdAt(x, y, z) == 0;
+        }
     }
 
 
@@ -936,7 +1088,7 @@ public final class GlowWorld implements World {
         boolean result = false;
 
         for (GlowPlayer player : getRawPlayers()) {
-            if (player.canSee(key)) {
+            if (player.canSeeChunk(key)) {
                 player.getSession().send(getChunkAt(x, z).toMessage());
                 result = true;
             }
@@ -1047,14 +1199,23 @@ public final class GlowWorld implements World {
         return (LivingEntity) spawn(loc, type.getEntityClass());
     }
 
+    private GlowLightningStrike strikeLightningFireEvent(final Location loc, final boolean effect) {
+        final GlowLightningStrike strike = new GlowLightningStrike(loc, effect);
+        final LightningStrikeEvent event = new LightningStrikeEvent(this, strike);
+        if (EventFactory.callEvent(event).isCancelled()) {
+            return null;
+        }
+        return strike;
+    }
+
     @Override
     public GlowLightningStrike strikeLightning(Location loc) {
-        return new GlowLightningStrike(loc, false);
+        return strikeLightningFireEvent(loc, false);
     }
 
     @Override
     public GlowLightningStrike strikeLightningEffect(Location loc) {
-        return new GlowLightningStrike(loc, true);
+        return strikeLightningFireEvent(loc, true);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1198,9 +1359,9 @@ public final class GlowWorld implements World {
 
     @Override
     public void playEffect(Location location, Effect effect, int data, int radius) {
-        radius *= radius;
+        final int radiusSquared = radius * radius;
         for (Player player : getRawPlayers()) {
-            if (player.getLocation().distanceSquared(location) <= radius) {
+            if (player.getLocation().distanceSquared(location) <= radiusSquared) {
                 player.playEffect(location, effect, data);
             }
         }
@@ -1213,14 +1374,13 @@ public final class GlowWorld implements World {
 
     @Override
     public <T> void playEffect(Location location, Effect effect, T data, int radius) {
-        int rawData = 0;
-        playEffect(location, effect, rawData, radius);
+        playEffect(location, effect, GlowEffect.getDataValue(effect, data), radius);
     }
 
     public void playEffectExceptTo(Location location, Effect effect, int data, int radius, Player exclude) {
-        radius *= radius;
+        final int radiusSquared = radius * radius;
         for (Player player : getRawPlayers()) {
-            if (!player.equals(exclude) && player.getLocation().distanceSquared(location) <= radius) {
+            if (!player.equals(exclude) && player.getLocation().distanceSquared(location) <= radiusSquared) {
                 player.playEffect(location, effect, data);
             }
         }
@@ -1234,6 +1394,29 @@ public final class GlowWorld implements World {
         for (Player player : getRawPlayers()) {
             if (player.getLocation().distanceSquared(location) <= radiusSquared) {
                 player.playSound(location, sound, volume, pitch);
+            }
+        }
+    }
+
+    @Override
+    public void showParticle(Location loc, Particle particle, float offsetX, float offsetY, float offsetZ, float speed, int amount) {
+        showParticle(loc, particle, null, offsetX, offsetY, offsetZ, speed, amount);
+    }
+
+    @Override
+    public void showParticle(Location loc, Particle particle, MaterialData material, float offsetX, float offsetY, float offsetZ, float speed, int amount) {
+        if (loc == null || particle == null) return;
+
+        final double radiusSquared;
+        if (GlowParticle.isLongDistance(particle)) {
+            radiusSquared = 48 * 48;
+        } else {
+            radiusSquared = 16 * 16;
+        }
+
+        for (Player player : getRawPlayers()) {
+            if (player.getLocation().distanceSquared(loc) <= radiusSquared) {
+                player.showParticle(loc, particle, material, offsetX, offsetY, offsetZ, speed, amount);
             }
         }
     }
@@ -1277,6 +1460,7 @@ public final class GlowWorld implements World {
      * @return true if successful
      */
     public boolean unload() {
+        EventFactory.callEvent(new WorldUnloadEvent(this));
         try {
             storageProvider.getChunkIoService().unload();
         } catch (IOException e) {

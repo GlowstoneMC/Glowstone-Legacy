@@ -220,7 +220,8 @@ public final class ServerConfig {
                 bukkit.load(bukkitYml);
             } catch (InvalidConfigurationException e) {
                 report(bukkitYml, e);
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                GlowServer.logger.log(Level.WARNING, "Could not migrate from " + bukkitYml, e);
             }
 
             for (Key key : Key.values()) {
@@ -239,12 +240,25 @@ public final class ServerConfig {
             Properties props = new Properties();
             try {
                 props.load(new FileInputStream(serverProps));
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                GlowServer.logger.log(Level.WARNING, "Could not migrate from " + serverProps, e);
             }
 
             for (Key key : Key.values()) {
                 if (key.migrate == Migrate.PROPS && props.containsKey(key.migratePath)) {
-                    config.set(key.path, props.get(key.migratePath));
+                    String value = props.getProperty(key.migratePath);
+                    if (key.def instanceof Integer) {
+                        try {
+                            config.set(key.path, Integer.parseInt(value));
+                        } catch (NumberFormatException e) {
+                            GlowServer.logger.log(Level.WARNING, "Could not migrate " + key.migratePath + " from " + serverProps, e);
+                            continue;
+                        }
+                    } else if (key.def instanceof Boolean) {
+                        config.set(key.path, Boolean.parseBoolean(value));
+                    } else {
+                        config.set(key.path, value);
+                    }
                     migrateStatus = true;
                 }
             }
@@ -288,6 +302,7 @@ public final class ServerConfig {
         PLUGIN_PROFILING("advanced.plugin-profiling", false, Migrate.BUKKIT, "settings.plugin-profiling"),
         WARNING_STATE("advanced.deprecated-verbose", "false", Migrate.BUKKIT, "settings.deprecated-verbose"),
         COMPRESSION_THRESHOLD("advanced.compression-threshold", 256, Migrate.PROPS, "network-compression-threshold"),
+        PROXY_SUPPORT("advanced.proxy-support", false),
 
         // query rcon etc
         QUERY_ENABLED("extras.query-enabled", false, Migrate.PROPS, "enable-query"),
@@ -307,11 +322,12 @@ public final class ServerConfig {
         GENERATOR_SETTINGS("world.gen-settings", "", Migrate.PROPS, "generator-settings"),
         ALLOW_NETHER("world.allow-nether", true, Migrate.PROPS, "allow-nether"),
         ALLOW_END("world.allow-end", true, Migrate.BUKKIT, "settings.allow-end"),
+        PERSIST_SPAWN("world.keep-spawn-loaded", true),
 
         // game props
         GAMEMODE("game.gamemode", "SURVIVAL", Migrate.PROPS, "gamemode"),
         FORCE_GAMEMODE("game.gamemode-force", "false", Migrate.PROPS, "force-gamemode"),
-        DIFFICULTY("game.difficulty", "EASY", Migrate.PROPS, "difficulty"),
+        DIFFICULTY("game.difficulty", "NORMAL", Migrate.PROPS, "difficulty"),
         HARDCORE("game.hardcore", false, Migrate.PROPS, "hardcore"),
         PVP_ENABLED("game.pvp", true, Migrate.PROPS, "pvp"),
         MAX_BUILD_HEIGHT("game.max-build-height", 256, Migrate.PROPS, "max-build-height"),

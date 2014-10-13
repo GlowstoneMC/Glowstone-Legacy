@@ -1,15 +1,18 @@
 package net.glowstone.net.message;
 
-import org.json.simple.JSONObject;
+import com.flowpowered.networking.Message;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import net.glowstone.util.TextMessage;
 
-public final class KickMessage extends JsonMessage {
+@Data
+@RequiredArgsConstructor
+public final class KickMessage implements Message {
 
-    public KickMessage(JSONObject json) {
-        super(json);
-    }
+    private final TextMessage text;
 
     public KickMessage(String text) {
-        super(toTextJson(text));
+        this(new TextMessage(text));
     }
 
 }
