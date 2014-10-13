@@ -1176,7 +1176,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         spawnAt(target);
         teleported = true;
 
-        awardAchievement(Achievement.THE_END);
+        awardAchievement(Achievement.THE_END, false);
         return true;
     }
 
@@ -1205,7 +1205,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         spawnAt(target);
         teleported = true;
 
-        awardAchievement(Achievement.END_PORTAL);
+        awardAchievement(Achievement.END_PORTAL, false);
         return true;
     }
 
@@ -1429,7 +1429,28 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
     @Override
     public void awardAchievement(Achievement achievement) {
+        awardAchievement(achievement, true);
+    }
+
+    /**
+     * Awards the given achievement if the player already has the parent achievement,
+     * otherwise does nothing. If {@code awardParents} is true, award the player all
+     * parent achievements and the given achievement, making this method equivalent
+     * to {@link #awardAchievement(Achievement)}.
+     * @param achievement
+     * @param awardParents
+     */
+    public void awardAchievement(Achievement achievement, boolean awardParents) {
         if (hasAchievement(achievement)) return;
+
+        Achievement parent = achievement.getParent();
+        if (parent != null && !hasAchievement(parent)) {
+            if (awardParents) {
+                awardAchievement(parent, awardParents);
+            } else {
+                return; // player does not have the required parent achievement
+            }
+        }
 
         stats.setAchievement(achievement, true);
         sendAchievement(achievement, true);
