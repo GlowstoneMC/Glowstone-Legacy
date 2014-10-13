@@ -120,6 +120,7 @@ public final class ItemTable {
         reg(Material.STONE_BUTTON, new BlockButton(Material.STONE_BUTTON));
         reg(Material.WOOD_BUTTON, new BlockButton(Material.WOOD_BUTTON));
         reg(Material.BED_BLOCK, new BlockBed());
+        reg(Material.SKULL, new BlockSkull());
         reg(Material.TORCH, new BlockTorch());
         reg(Material.DAYLIGHT_DETECTOR, new BlockDaylightDetector());
         reg(Material.DAYLIGHT_DETECTOR_INVERTED, new BlockDaylightDetector());

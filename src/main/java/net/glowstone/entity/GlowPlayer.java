@@ -9,11 +9,12 @@ import net.glowstone.constants.GlowAchievement;
 import net.glowstone.constants.GlowEffect;
 import net.glowstone.constants.GlowParticle;
 import net.glowstone.constants.GlowSound;
+import net.glowstone.constants.GlowBlockEntity;
 import net.glowstone.entity.meta.ClientSettings;
 import net.glowstone.entity.meta.MetadataIndex;
 import net.glowstone.entity.meta.MetadataMap;
-import net.glowstone.entity.meta.PlayerProfile;
 import net.glowstone.inventory.GlowInventory;
+import net.glowstone.entity.meta.profile.PlayerProfile;
 import net.glowstone.inventory.InventoryMonitor;
 import net.glowstone.io.PlayerDataService;
 import net.glowstone.net.GlowSession;
@@ -27,6 +28,7 @@ import net.glowstone.net.message.play.player.PlayerAbilitiesMessage;
 import net.glowstone.net.protocol.ProtocolType;
 import net.glowstone.util.StatisticMap;
 import net.glowstone.util.TextMessage;
+import net.glowstone.util.nbt.CompoundTag;
 import org.apache.commons.lang.Validate;
 import org.bukkit.*;
 import org.bukkit.World.Environment;
@@ -1413,6 +1415,13 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         Validate.isTrue(lines.length == 4, "lines.length must equal 4");
 
         afterBlockChanges.add(UpdateSignMessage.fromPlainText(location.getBlockX(), location.getBlockY(), location.getBlockZ(), lines));
+    }
+
+    public void sendSkullChange(Location location, CompoundTag nbt) throws IllegalArgumentException {
+        Validate.notNull(location, "location cannot be null");
+        Validate.notNull(nbt, "nbt cannot be null");
+
+        afterBlockChanges.add(new UpdateBlockEntityMessage((int) location.getX(), (int) location.getY(), (int) location.getZ(), GlowBlockEntity.SKULL.getValue(), nbt));
     }
 
     @Override
