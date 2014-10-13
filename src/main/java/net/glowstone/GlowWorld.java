@@ -1,7 +1,6 @@
 package net.glowstone;
 
 import net.glowstone.block.GlowBlock;
-import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.ItemTable;
 import net.glowstone.block.blocktype.BlockType;
 import net.glowstone.constants.GlowBiome;
@@ -932,15 +931,15 @@ public final class GlowWorld implements World {
     }
 
     public boolean isBlockSideSolid(int x, int y, int z, BlockFace face) {
-        return isBlockSideSolid(getBlockAt(x,y,z), face);
+        return isBlockSideSolid(getBlockAt(x, y, z), face);
     }
 
     public boolean isBlockSolid(int x, int y, int z) {
-        return isBlockSolid(getBlockAt(x,y,z));
+        return isBlockSolid(getBlockAt(x, y, z));
     }
 
     public boolean isBlockSolidOnTop(int x, int y, int z) {
-        return isBlockSideSolid(getBlockAt(x,y,z), BlockFace.UP);
+        return isBlockSideSolid(getBlockAt(x, y, z), BlockFace.UP);
     }
 
     ////////////////////////////////////////////////////////////////////////////
