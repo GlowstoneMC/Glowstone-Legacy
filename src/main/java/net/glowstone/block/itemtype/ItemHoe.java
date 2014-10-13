@@ -19,7 +19,6 @@ public class ItemHoe extends ItemType {
             target.getWorld().playSound(target.getLocation().add(0.5D, 0.5D, 0.5D), 
                     Sound.STEP_GRAVEL, 1, 0.8F);
             target.setType(Material.SOIL);
-            target.getState().update(true);
         }
     }
 }
