@@ -12,6 +12,9 @@ import java.util.Map;
 import net.glowstone.constants.GlowPotionEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
+import com.flowpowered.networking.Message;
+import net.glowstone.inventory.EquipmentMonitor;
+import net.glowstone.net.message.play.entity.EntityEquipmentMessage;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -100,6 +103,11 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     private boolean pickupItems;
 
     /**
+     * Monitor for the equipment of this entity.
+     */
+    private EquipmentMonitor equipmentMonitor = new EquipmentMonitor(this);
+
+    /**
      * Creates a mob within the specified world.
      *
      * @param location The location.
@@ -151,6 +159,23 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
                 removePotionEffect(type);
             }
         }
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        equipmentMonitor.resetChanges();
+    }
+
+    @Override
+    public List<Message> createUpdateMessage() {
+        List<Message> messages = super.createUpdateMessage();
+
+        for (EquipmentMonitor.Entry change : equipmentMonitor.getChanges()) {
+            messages.add(new EntityEquipmentMessage(id, change.slot, change.item));
+        }
+
+        return messages;
     }
 
     ////////////////////////////////////////////////////////////////////////////
