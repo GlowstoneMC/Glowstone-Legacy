@@ -1161,7 +1161,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     }
 
     @Override
-    public boolean teleportToSpawn() {
+    protected boolean teleportToSpawn() {
         Location target = getBedSpawnLocation();
         if (target == null) {
             target = server.getWorlds().get(0).getSpawnLocation();
@@ -1181,7 +1181,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     }
 
     @Override
-    public boolean teleportToEnd() {
+    protected boolean teleportToEnd() {
         if (!server.getAllowEnd()) {
             return false;
         }

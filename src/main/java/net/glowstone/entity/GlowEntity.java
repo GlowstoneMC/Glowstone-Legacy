@@ -462,7 +462,7 @@ public abstract class GlowEntity implements Entity {
      * This is used to teleport out of the End.
      * @return {@code true} if the teleport was successful.
      */
-    public boolean teleportToSpawn() {
+    protected boolean teleportToSpawn() {
         Location target = server.getWorlds().get(0).getSpawnLocation();
 
         EntityPortalEvent event = EventFactory.callEvent(new EntityPortalEvent(this, location.clone(), target, null));
@@ -480,7 +480,7 @@ public abstract class GlowEntity implements Entity {
      * If no End world is loaded this does nothing.
      * @return {@code true} if the teleport was successful.
      */
-    public boolean teleportToEnd() {
+    protected boolean teleportToEnd() {
         if (!server.getAllowEnd()) {
             return false;
         }
