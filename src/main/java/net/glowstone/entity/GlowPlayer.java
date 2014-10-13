@@ -1439,16 +1439,17 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
      * to {@link #awardAchievement(Achievement)}.
      * @param achievement
      * @param awardParents
+     * @return {@code true} if the achievement was awarded, {@code false} otherwise
      */
-    public void awardAchievement(Achievement achievement, boolean awardParents) {
-        if (hasAchievement(achievement)) return;
+    public boolean awardAchievement(Achievement achievement, boolean awardParents) {
+        if (hasAchievement(achievement)) return false;
 
         Achievement parent = achievement.getParent();
         if (parent != null && !hasAchievement(parent)) {
             if (awardParents) {
                 awardAchievement(parent, awardParents);
             } else {
-                return; // player does not have the required parent achievement
+                return false; // player does not have the required parent achievement
             }
         }
 
@@ -1456,6 +1457,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         sendAchievement(achievement, true);
 
         // todo: make an announcement if that's enabled
+        return true;
     }
 
     @Override
