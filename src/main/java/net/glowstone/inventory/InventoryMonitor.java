@@ -121,11 +121,6 @@ public final class InventoryMonitor {
      */
     private static String getTypeId(InventoryType type) {
         switch (type) {
-            case PLAYER:
-            case CHEST:
-            case ENDER_CHEST:
-            default:
-                return "minecraft:chest";
             case WORKBENCH:
                 return "minecraft:crafting_table";
             case FURNACE:
@@ -146,6 +141,11 @@ public final class InventoryMonitor {
                 return "minecraft:hopper";
             case DROPPER:
                 return "minecraft:dropper";
+            case PLAYER:
+            case CHEST:
+            case ENDER_CHEST:
+            default:
+                return "minecraft:chest";
         }
     }
 }
