@@ -25,12 +25,12 @@ public class TEBanner extends TileEntity {
     @Override
     public void loadNbt(CompoundTag tag) {
         super.loadNbt(tag);
-        if(tag.isList("Patterns", TagType.COMPOUND)) {
+        if (tag.isList("Patterns", TagType.COMPOUND)) {
             List<CompoundTag> pattern = tag.getCompoundList("Patterns");
             this.pattern = BlockBanner.fromNBT(pattern);
         }
 
-        if(tag.isByte("Base")) {
+        if (tag.isByte("Base")) {
             this.base = DyeColor.getByDyeData(tag.getByte("Base"));
         }
     }
