@@ -2,6 +2,7 @@ package net.glowstone.block;
 
 import net.glowstone.GlowChunk;
 import net.glowstone.GlowWorld;
+import net.glowstone.block.blocktype.BlockType;
 import net.glowstone.block.entity.TileEntity;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.net.message.play.game.BlockChangeMessage;
@@ -261,32 +262,44 @@ public final class GlowBlock implements Block {
 
     @Override
     public boolean isBlockPowered() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return isBlockFacePowered(BlockFace.SELF);
     }
 
     @Override
     public boolean isBlockIndirectlyPowered() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return isBlockFaceIndirectlyPowered(BlockFace.SELF);
     }
 
     @Override
     public boolean isBlockFacePowered(BlockFace face) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        BlockType type = ItemTable.instance().getBlock(getType());
+        if (type == null) {
+            return false;
+        }
+        return type.canBlockEmitPower(this, face, true) && getWorld().getRSManager().getBlockPower(this) > 0;
     }
 
     @Override
     public boolean isBlockFaceIndirectlyPowered(BlockFace face) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        BlockType type = ItemTable.instance().getBlock(getType());
+        if (type == null) {
+            return false;
+        }
+        return type.canBlockEmitPower(this, face, false) && getWorld().getRSManager().getBlockPower(this) > 0;
     }
 
     @Override
     public int getBlockPower(BlockFace face) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        BlockType type = ItemTable.instance().getBlock(getType());
+        if (type == null) {
+            return 0;
+        }
+        return type.canBlockEmitPower(this, face, false) ? getWorld().getRSManager().getBlockPower(this) : 0;
     }
 
     @Override
     public int getBlockPower() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getWorld().getRSManager().getBlockPower(this);
     }
 
     @Override
