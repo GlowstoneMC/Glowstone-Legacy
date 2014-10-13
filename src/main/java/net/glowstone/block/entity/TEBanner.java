@@ -6,6 +6,7 @@ import net.glowstone.block.blocktype.BlockBanner;
 import net.glowstone.block.state.GlowBanner;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.util.nbt.CompoundTag;
+import net.glowstone.util.nbt.TagType;
 import org.bukkit.BannerPattern;
 import org.bukkit.DyeColor;
 
@@ -13,8 +14,8 @@ import java.util.List;
 
 public class TEBanner extends TileEntity {
 
-    private DyeColor base;
-    private BannerPattern pattern;
+    private DyeColor base = DyeColor.WHITE;
+    private BannerPattern pattern = BannerPattern.builder().build();
 
     public TEBanner(GlowBlock block) {
         super(block);
@@ -24,9 +25,14 @@ public class TEBanner extends TileEntity {
     @Override
     public void loadNbt(CompoundTag tag) {
         super.loadNbt(tag);
-        List<CompoundTag> pattern = tag.getCompoundList("Patterns");
-        this.pattern = BlockBanner.fromNBT(pattern);
-        this.base = DyeColor.getByDyeData(tag.getByte("Base"));
+        if(tag.isList("Patterns", TagType.COMPOUND)) {
+            List<CompoundTag> pattern = tag.getCompoundList("Patterns");
+            this.pattern = BlockBanner.fromNBT(pattern);
+        }
+
+        if(tag.isByte("Base")) {
+            this.base = DyeColor.getByDyeData(tag.getByte("Base"));
+        }
     }
 
     @Override

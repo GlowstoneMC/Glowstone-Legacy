@@ -10,8 +10,8 @@ import org.bukkit.block.Banner;
 
 public class GlowBanner extends GlowBlockState implements Banner {
 
-    private DyeColor base = DyeColor.WHITE;
-    private BannerPattern pattern = BannerPattern.builder().build();
+    private DyeColor base;
+    private BannerPattern pattern;
 
     public GlowBanner(GlowBlock block) {
         super(block);

@@ -3,6 +3,7 @@ package net.glowstone.inventory;
 import com.google.common.collect.ImmutableMap;
 import net.glowstone.block.blocktype.BlockBanner;
 import net.glowstone.util.nbt.CompoundTag;
+import net.glowstone.util.nbt.TagType;
 import org.apache.commons.lang.Validate;
 import org.bukkit.BannerPattern;
 import org.bukkit.DyeColor;
@@ -50,8 +51,10 @@ public class GlowMetaBanner extends GlowMetaItem implements BannerMeta {
     @Override
     void readNbt(CompoundTag tag) {
         super.readNbt(tag);
-        List<CompoundTag> pattern = tag.getCompound("BlockEntityTag").getCompoundList("Patterns");
-        this.pattern = BlockBanner.fromNBT(pattern);
+        if(tag.isCompound("BlockEntityTag") && tag.isList("Patterns", TagType.COMPOUND)) {
+            List<CompoundTag> pattern = tag.getCompound("BlockEntityTag").getCompoundList("Patterns");
+            this.pattern = BlockBanner.fromNBT(pattern);
+        }
     }
 
     @Override
