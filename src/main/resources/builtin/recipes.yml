@@ -2444,6 +2444,14 @@ shaped:
   - ee
   - ee
 - result:
+    type: IRON_TRAP_DOOR
+  ingredients:
+    e:
+      type: IRON_INGOT
+  shape:
+  - ee
+  - ee
+- result:
     type: BOWL
     amount: 4
   ingredients:
