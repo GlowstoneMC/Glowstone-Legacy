@@ -137,6 +137,8 @@ public final class ItemTable {
         reg(Material.MELON_SEEDS, new ItemSeeds(Material.MELON_STEM, Material.SOIL));
         reg(Material.PUMPKIN_SEEDS, new ItemSeeds(Material.PUMPKIN_STEM, Material.SOIL));
         reg(Material.NETHER_STALK, new ItemSeeds(Material.NETHER_WARTS, Material.SOUL_SAND));
+        reg(Material.CARROT_ITEM, new ItemFoodSeeds(Material.CARROT, Material.SOIL));
+        reg(Material.POTATO_ITEM, new ItemFoodSeeds(Material.POTATO, Material.SOIL));
     }
 
     private void reg(Material material, ItemType type) {
