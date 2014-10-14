@@ -3712,3 +3712,13 @@ shaped:
   shape:
   - aa
   - aa
+- result:
+    type: PRISMARINE
+    damage: 1
+  ingredients:
+    a:
+      type: PRISMARINE_SHARD
+  shape:
+  - aaa
+  - aaa
+  - aaa
