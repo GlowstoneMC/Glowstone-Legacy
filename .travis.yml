@@ -2,8 +2,6 @@
 language: java
 jdk: oraclejdk7
 
-
-
 install:
 
   # Required for fetch_glowkit_pr.sh
