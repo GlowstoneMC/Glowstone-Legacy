@@ -2426,6 +2426,7 @@ shaped:
   - cwc
 - result:
     type: WOOD_DOOR
+    amount: 3
   ingredients:
     e:
       type: WOOD
@@ -2436,6 +2437,7 @@ shaped:
   - ee
 - result:
     type: SPRUCE_DOOR
+    amount: 3
   ingredients:
     e:
       type: WOOD
@@ -2446,6 +2448,7 @@ shaped:
   - ee
 - result:
     type: BIRCH_DOOR
+    amount: 3
   ingredients:
     e:
       type: WOOD
@@ -2456,6 +2459,7 @@ shaped:
   - ee
 - result:
     type: JUNGLE_DOOR
+    amount: 3
   ingredients:
     e:
       type: WOOD
@@ -2466,6 +2470,7 @@ shaped:
   - ee
 - result:
     type: ACACIA_DOOR
+    amount: 3
   ingredients:
     e:
       type: WOOD
@@ -2476,6 +2481,7 @@ shaped:
   - ee
 - result:
     type: DARK_OAK_DOOR
+    amount: 3
   ingredients:
     e:
       type: WOOD
