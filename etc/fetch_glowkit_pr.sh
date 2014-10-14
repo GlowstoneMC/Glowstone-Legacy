@@ -14,25 +14,25 @@ curl_wrapped() {
 }
 
 # Fetch the body of this PR
-PR_BODY=$(curl_wrapped https://api.github.com/repos/GlowstoneMC/Glowstone/pulls/$PR_ID | jq -r '.body' | sed 's/\r$//')
+pr_body=$(curl_wrapped https://api.github.com/repos/GlowstoneMC/Glowstone/pulls/$PR_ID | jq -r '.body' | sed 's/\r$//')
 
 echo "Glowstone PR: $PR_ID. Body:"
 echo "-------------------------------------------------------------------------"
-echo "$PR_BODY"
+echo "$pr_body"
 echo "-------------------------------------------------------------------------"
 echo
 
 # Extract from body
-GLOWKIT_PR=$(echo $PR_BODY | egrep -o 'GlowstoneMC/Glowkit(/pull/|#)[0-9]+' | sed -r 's#GlowstoneMC/Glowkit(\#|/pull/)##')
+glowkit_pr=$(echo $pr_body | egrep -o 'GlowstoneMC/Glowkit(/pull/|#)[0-9]+' | sed -r 's#GlowstoneMC/Glowkit(\#|/pull/)##')
 
-echo "PR links found:" $GLOWKIT_PR
+echo "PR links found:" $glowkit_pr
 echo
 
 # Validate
-if [ -z "$GLOWKIT_PR" ]; then
+if [ -z "$glowkit_pr" ]; then
     echo "No PR links found. Aborting."
     exit 0
-elif [ $(echo "$GLOWKIT_PR" | wc -l) != 1 ]; then
+elif [ $(echo "$glowkit_pr" | wc -l) != 1 ]; then
     echo "More than one PR link found. Aborting"
     exit 0
 fi
@@ -43,7 +43,7 @@ TEMP=$(mktemp -d --tmpdir glowkit-XXXXXXXXXX)
 # Fetch the PR from the other repo just like travis-ci does
 git clone --depth=50 git://github.com/GlowstoneMC/Glowkit.git $TEMP
 pushd $TEMP
-git fetch origin +refs/pull/$GLOWKIT_PR/merge:
+git fetch origin +refs/pull/$glowkit_pr/merge:
 git checkout -qf FETCH_HEAD
 
 # Actually build it!
