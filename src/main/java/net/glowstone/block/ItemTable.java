@@ -68,7 +68,7 @@ public final class ItemTable {
         reg(Material.QUARTZ_ORE, new BlockDirectDrops(Material.QUARTZ));
         reg(Material.REDSTONE_ORE, new BlockRandomDrops(Material.REDSTONE, 0, 3, 4));
         reg(Material.CARROT, new BlockCarrot());
-        reg(Material.COCOA, new BlockDirectDrops(Material.INK_SACK, 3, 1));
+        reg(Material.COCOA, new BlockCocoa());
         reg(Material.DEAD_BUSH, new BlockDropless());
         reg(Material.LONG_GRASS, new BlockTallGrass());
         reg(Material.HUGE_MUSHROOM_1, new BlockHugeMushroom(true));
@@ -122,6 +122,8 @@ public final class ItemTable {
         reg(Material.STATIONARY_WATER, new BlockWater());
         reg(Material.LAVA, new BlockLava());
         reg(Material.STATIONARY_LAVA, new BlockLava());
+        reg(Material.DOUBLE_PLANT, new BlockDoublePlant());
+
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
         reg(Material.SUGAR_CANE, new ItemPlaceAs(Material.SUGAR_CANE_BLOCK));
