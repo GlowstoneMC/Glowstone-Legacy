@@ -1,7 +1,10 @@
 package net.glowstone.block.blocktype;
 
 import net.glowstone.block.GlowBlock;
+import net.glowstone.entity.GlowPlayer;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
@@ -27,7 +30,7 @@ public class BlockGravel extends BlockFalling {
     }
 
     @Override
-    public void onNearBlockChanges(GlowBlock me, BlockFace position, GlowBlock other, Material oldType, byte oldData, Material newType, byte newData) {
+    public void onNearBlockChanged(GlowBlock me, BlockFace position, GlowBlock other, Material oldType, byte oldData, Material newType, byte newData) {
         if (position == BlockFace.DOWN)
             updatePhysics(me);
     }
@@ -40,7 +43,7 @@ public class BlockGravel extends BlockFalling {
         }
     }
 
-    private void transformToFallingEntity(GlowBlock me) {
+    protected void transformToFallingEntity(GlowBlock me) {
         me.setType(Material.AIR);
         me.getWorld().spawnFallingBlock(me.getLocation(), Material.GRAVEL, (byte) 0);
     }

@@ -171,7 +171,6 @@ public final class ItemTable {
         reg(Material.POWERED_RAIL, new BlockNeedsAttached());
         reg(Material.CARPET, new BlockCarpet());
         reg(Material.ENCHANTMENT_TABLE, new BlockEnchantmentTable());
-        reg(Material.ANVIL, new BlockAnvil());
         reg(Material.BREWING_STAND, new BlockBrewingStand());
         reg(Material.CACTUS, new BlockCactus());
         reg(Material.WATER, new BlockWater());
