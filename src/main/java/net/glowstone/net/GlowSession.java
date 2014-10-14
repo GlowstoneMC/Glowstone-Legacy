@@ -121,6 +121,11 @@ public final class GlowSession extends BasicSession {
     private boolean disconnected;
 
     /**
+     * Whether the player has finished joining yet.
+     */
+    private boolean joined;
+
+    /**
      * Creates a new session.
      * @param server The server this session belongs to.
      * @param channel The channel associated with this session.
@@ -302,9 +307,10 @@ public final class GlowSession extends BasicSession {
             }
         }
 
-        player.getWorld().getRawPlayers().add(player);
-
         GlowServer.logger.info(player.getName() + " [" + address + "] connected, UUID: " + player.getUniqueId());
+        player.finishLogin();
+        player.getWorld().getRawPlayers().add(player);
+        joined = true;
 
         // message and user list
         String message = EventFactory.onPlayerJoin(player).getJoinMessage();
@@ -432,11 +438,17 @@ public final class GlowSession extends BasicSession {
                 }
             }
 
-            GlowServer.logger.info(player.getName() + " [" + address + "] lost connection");
+            String logMessage = player.getName() + " [" + address + "] disconnected";
+            if (quitReason != null) {
+                logMessage += ": " + quitReason;
+            }
+            GlowServer.logger.info(logMessage);
 
-            final String text = EventFactory.onPlayerQuit(player).getQuitMessage();
-            if (text != null && !text.isEmpty()) {
-                server.broadcastMessage(text);
+            if (joined) {
+                final String text = EventFactory.onPlayerQuit(player).getQuitMessage();
+                if (text != null && !text.isEmpty()) {
+                    server.broadcastMessage(text);
+                }
             }
 
             player = null; // in case we are disposed twice

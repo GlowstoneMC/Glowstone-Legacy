@@ -127,6 +127,11 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     private final long joinTime;
 
     /**
+     * Whether the player has finished joining yet.
+     */
+    private boolean joined;
+
+    /**
      * The settings sent by the client.
      */
     private ClientSettings settings = ClientSettings.DEFAULT;
@@ -256,7 +261,6 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         super(initLocation(session, reader), profile);
         setBoundingBox(0.6, 1.8);
         this.session = session;
-
         chunkLock = world.newChunkLock(getName());
 
         // enable compression if needed
@@ -268,20 +272,6 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         // send login response
         session.send(new LoginSuccessMessage(profile.getUniqueId().toString(), profile.getName()));
         session.setProtocol(ProtocolType.PLAY);
-
-        // send join game
-        // in future, handle hardcore, difficulty, and level type
-        String type = world.getWorldType().getName().toLowerCase();
-        int gameMode = getGameMode().getValue();
-        if (server.isHardcore()) {
-            gameMode |= 0x8;
-        }
-        session.send(new JoinGameMessage(SELF_ID, gameMode, world.getEnvironment().getId(), world.getDifficulty().getValue(), session.getServer().getMaxPlayers(), type, world.getGameRuleMap().getBoolean("reducedDebugInfo")));
-        setGameModeDefaults();
-
-        // send server brand and supported plugin channels
-        session.send(PluginMessage.fromString("MC|Brand", server.getName()));
-        sendSupportedChannels();
 
         // read data from player reader
         hasPlayedBefore = reader.hasPlayedBefore();
@@ -296,30 +286,6 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         joinTime = System.currentTimeMillis();
         reader.readData(this);
         reader.close();
-
-        // Add player to list of online players
-        getServer().setPlayerOnline(this, true);
-
-        // save data back out
-        saveData();
-
-        streamBlocks(); // stream the initial set of blocks
-        setCompassTarget(world.getSpawnLocation()); // set our compass target
-        sendTime();
-        sendWeather();
-        sendRainDensity();
-        sendSkyDarkness();
-        sendAbilities();
-
-        invMonitor = new InventoryMonitor(getOpenInventory());
-        updateInventory(); // send inventory contents
-
-        // send initial location
-        session.send(new PositionRotationMessage(location));
-
-        if (!server.getResourcePackURL().isEmpty()) {
-            setResourcePack(server.getResourcePackURL(), server.getResourcePackHash());
-        }
     }
 
     /**
@@ -364,6 +330,62 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     }
 
     /**
+     * Perform the tasks required to finish the player's login sequence.
+     * @throws IllegalStateException if the player is already logged in.
+     */
+    public void finishLogin() {
+        if (joined) {
+            throw new IllegalStateException("already logged in");
+        }
+        joined = true;
+
+        // send join game
+        String type = world.getWorldType().getName().toLowerCase();
+        int gameMode = getGameMode().getValue();
+        if (server.isHardcore()) {
+            gameMode |= 0x8;
+        }
+        session.send(new JoinGameMessage(SELF_ID, gameMode, world.getEnvironment().getId(), world.getDifficulty().getValue(), session.getServer().getMaxPlayers(), type, world.getGameRuleMap().getBoolean("reducedDebugInfo")));
+        setGameModeDefaults();
+
+        // send server brand and supported plugin channels
+        session.send(PluginMessage.fromString("MC|Brand", server.getName()));
+        sendSupportedChannels();
+
+        // spawn in
+        invMonitor = new InventoryMonitor(getOpenInventory());
+        spawnCommon();
+
+        if (!server.getResourcePackURL().isEmpty()) {
+            setResourcePack(server.getResourcePackURL(), server.getResourcePackHash());
+        }
+
+        // Add player to list of online players
+        getServer().setPlayerOnline(this, true);
+    }
+
+    /**
+     * Send common setup for the initial or subsequent spawns.
+     */
+    private void spawnCommon() {
+        // world info
+        streamBlocks();
+        setCompassTarget(world.getSpawnLocation());
+        sendTime();
+        sendWeather();
+        sendRainDensity();
+        sendSkyDarkness();
+        // player info
+        sendAbilities();
+        sendExperience();
+        sendHealth();
+        updateInventory();
+        session.send(new HeldItemMessage(getInventory().getHeldItemSlot()));
+        // location
+        session.send(new PositionRotationMessage(location));
+    }
+
+    /**
      * Destroys this entity by removing it from the world and marking it as not
      * being active.
      */
@@ -386,6 +408,10 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
     @Override
     public void pulse() {
+        if (!joined) {
+            return;
+        }
+
         super.pulse();
 
         // stream world
@@ -599,14 +625,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         String type = world.getWorldType().getName().toLowerCase();
         session.send(new RespawnMessage(world.getEnvironment().getId(), world.getDifficulty().getValue(), getGameMode().getValue(), type));
         setRawLocation(location); // take us to spawn position
-        streamBlocks(); // stream blocks
-        setCompassTarget(world.getSpawnLocation()); // set our compass target
-        session.send(new PositionRotationMessage(location));
-        sendWeather();
-        sendRainDensity();
-        sendSkyDarkness();
-        sendTime();
-        updateInventory();
+        spawnCommon();
 
         // fire world change if needed
         if (oldWorld != world) {
@@ -766,7 +785,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
     @Override
     public boolean isOnline() {
-        return session.isActive();
+        return joined && session.isActive();
     }
 
     @Override
@@ -1179,6 +1198,12 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         Validate.notNull(location, "location cannot be null");
         Validate.notNull(location.getWorld(), "location's world cannot be null");
         Validate.notNull(cause, "cause cannot be null");
+
+        if (!joined) {
+            // shouldn't send location here if we haven't joined yet, or else
+            // the client will think they have finished joining
+            return false;
+        }
 
         if (this.location != null && this.location.getWorld() != null) {
             PlayerTeleportEvent event = new PlayerTeleportEvent(this, this.location, location, cause);
