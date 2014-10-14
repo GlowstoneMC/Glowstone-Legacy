@@ -1580,7 +1580,18 @@ shaped:
   shape:
   - 'e  '
   - 'ee '
-  - eee
+  - 'eee'
+- result:
+    type: RED_SANDSTONE_STAIRS
+    amount: 4
+  ingredients:
+    e:
+      type: RED_SANDSTONE
+      damage: 32767
+  shape:
+  - 'e  '
+  - 'ee '
+  - 'eee'
 - result:
     type: QUARTZ_STAIRS
     amount: 4
