@@ -7,12 +7,14 @@ set -e
 
 PR_ID=$1
 
-
-# public repo access token, to bypass rate limiting. will probably revoke later
-ACCESS_TOKEN=053b27d9bf05b86706b531e8cd63afcf1af3bada:x-oauth-basic
+curl_wrapped() {
+    # public repo access token, to bypass rate limiting. will probably revoke later
+    GITHUB_ACCESS_TOKEN=053b27d9bf05b86706b531e8cd63afcf1af3bada:x-oauth-basic
+    curl -u $GITHUB_ACCESS_TOKEN -s $@
+}
 
 # Fetch the body of this PR
-PR_BODY=$(curl -u $ACCESS_TOKEN -s https://api.github.com/repos/GlowstoneMC/Glowstone/pulls/$PR_ID | jq -r '.body' | sed 's/\r$//')
+PR_BODY=$(curl_wrapped https://api.github.com/repos/GlowstoneMC/Glowstone/pulls/$PR_ID | jq -r '.body' | sed 's/\r$//')
 
 echo "Glowstone PR: $PR_ID. Body:"
 echo "-------------------------------------------------------------------------"
