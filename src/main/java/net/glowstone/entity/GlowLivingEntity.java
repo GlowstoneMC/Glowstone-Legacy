@@ -1,23 +1,43 @@
 package net.glowstone.entity;
 
-import com.flowpowered.networking.Message;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import net.glowstone.constants.GlowPotionEffect;
+import org.bukkit.Bukkit;
+import org.bukkit.EntityEffect;
+import com.flowpowered.networking.Message;
 import net.glowstone.inventory.EquipmentMonitor;
 import net.glowstone.net.message.play.entity.EntityEquipmentMessage;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Egg;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Fireball;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Snowball;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import java.util.*;
-
 /**
  * A GlowLivingEntity is a {@link org.bukkit.entity.Player} or {@link org.bukkit.entity.Monster}.
+ *
  * @author Graham Edgecombe.
  */
 public abstract class GlowLivingEntity extends GlowEntity implements LivingEntity {
@@ -89,6 +109,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
 
     /**
      * Creates a mob within the specified world.
+     *
      * @param location The location.
      */
     public GlowLivingEntity(Location location) {
@@ -109,14 +130,15 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
             --noDamageTicks;
         }
 
-        // breathing
         Material mat = getEyeLocation().getBlock().getType();
+        // breathing
         if (mat == Material.WATER || mat == Material.STATIONARY_WATER) {
-            --airTicks;
-            if (airTicks <= -20) {
-                airTicks = 0;
-                // todo: indicate that the damage was caused by drowning
-                damage(1);
+            if (canDrown()) {
+                --airTicks;
+                if (airTicks <= -20) {
+                    airTicks = 0;
+                    damage(1, EntityDamageEvent.DamageCause.DROWNING);
+                }
             }
         } else {
             airTicks = maximumAir;
@@ -252,6 +274,18 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         pickupItems = pickup;
     }
 
+    protected Sound getHurtSound() {
+        return null;
+    }
+
+    protected Sound getDeathSound() {
+        return null;
+    }
+
+    protected boolean canDrown() {
+        return true;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Line of Sight
 
@@ -345,15 +379,66 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
 
     @Override
     public void damage(double amount) {
-        damage(amount, null);
+        damage(amount, (Entity) null);
     }
 
     @Override
     public void damage(double amount, Entity source) {
-        // todo: handle noDamageTicks
+        damage(amount, source, EntityDamageEvent.DamageCause.CUSTOM);
+    }
+
+    @Override
+    public void damage(double amount, EntityDamageEvent.DamageCause cause) {
+        damage(amount, null, cause);
+    }
+
+    @Override
+    public void damage(double amount, Entity source, EntityDamageEvent.DamageCause cause) {
+        if (noDamageTicks > 0 || health <= 0) {
+            return;
+        }
+        if (cause != null && hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
+            switch (cause) {
+                case PROJECTILE:
+                    if (source == null || !(source instanceof Fireball)) {
+                        break;
+                    }
+                case FIRE:
+                case FIRE_TICK:
+                case LAVA:
+                    return;
+            }
+        }
+        EntityDamageEvent event;
+        // todo use damage modifier system
+        if (source == null) {
+            event = new EntityDamageEvent(this, cause, amount);
+        } else {
+            event = new EntityDamageByEntityEvent(source, this, cause, amount);
+        }
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
+        amount = event.getFinalDamage();
         lastDamage = amount;
         health -= amount;
-        // todo: death, events, so on
+        playEffect(EntityEffect.HURT);
+        if (health <= 0.0) {
+            Sound deathSound = getDeathSound();
+            if (deathSound != null) {
+                world.playSound(location, deathSound, 1.0f, 1.0f);
+            }
+            // todo drop itemsp
+        } else {
+            Sound hurtSound = getHurtSound();
+            if (hurtSound != null) {
+                world.playSound(location, hurtSound, 1.0f, 1.0f);
+            }
+        }
+        if (this instanceof Player) {
+            ((GlowPlayer) this).sendHealth();
+        }
     }
 
     @Override

@@ -625,6 +625,9 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         PlayerRespawnEvent event = new PlayerRespawnEvent(this, dest, spawnAtBed);
         EventFactory.callEvent(event);
         spawnAt(event.getRespawnLocation());
+
+        // just in case any items are left in their inventory after they respawn
+        updateInventory();
     }
 
     /**
@@ -1119,7 +1122,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         sendHealth();
     }
 
-    private void sendHealth() {
+    protected void sendHealth() {
         float finalHealth = (float) (getHealth() / getMaxHealth() * getHealthScale());
         session.send(new HealthMessage(finalHealth, getFoodLevel(), getSaturation()));
     }
