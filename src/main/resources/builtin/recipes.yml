@@ -113,6 +113,12 @@ furnace:
   input:
     type: CACTUS
     damage: 32767
+- result:
+    type: SMOOTH_BRICK
+    damage: 2
+  input:
+    type: SMOOTH_BRICK
+    damage: 0
 shapeless:
 - result:
     type: LEATHER_HELMET
