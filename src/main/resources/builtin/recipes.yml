@@ -2823,6 +2823,16 @@ shaped:
   - b
   - b
 - result:
+    type: RED_SANDSTONE
+    damage: 1
+  ingredients:
+    b:
+      type: STEP_2
+      damage: 0
+  shape:
+  - b
+  - b
+- result:
     type: QUARTZ_BLOCK
     damage: 1
   ingredients:
