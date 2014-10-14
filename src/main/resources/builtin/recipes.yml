@@ -2843,6 +2843,16 @@ shaped:
   - b
   - b
 - result:
+    type: SMOOTH_BRICK
+    damage: 3
+  ingredients:
+    c:
+      type: STEP
+      damage: 5
+  shape:
+  - c
+  - c
+- result:
     type: QUARTZ_BLOCK
     damage: 2
     amount: 2
