@@ -2410,6 +2410,17 @@ shaped:
   - cc
   - cc
 - result:
+    type: RED_SANDSTONE
+    damage: 2
+    amount: 4
+  ingredients:
+    c:
+      type: RED_SANDSTONE
+      damage: 32767
+  shape:
+  - cc
+  - cc
+- result:
     type: SMOOTH_BRICK
     amount: 4
   ingredients:
