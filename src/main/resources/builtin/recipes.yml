@@ -2368,7 +2368,57 @@ shaped:
   ingredients:
     e:
       type: WOOD
-      damage: 32767
+      damage: 0
+  shape:
+  - ee
+  - ee
+  - ee
+- result:
+    type: SPRUCE_DOOR
+  ingredients:
+    e:
+      type: WOOD
+      damage: 1
+  shape:
+  - ee
+  - ee
+  - ee
+- result:
+    type: BIRCH_DOOR
+  ingredients:
+    e:
+      type: WOOD
+      damage: 2
+  shape:
+  - ee
+  - ee
+  - ee
+- result:
+    type: JUNGLE_DOOR
+  ingredients:
+    e:
+      type: WOOD
+      damage: 3
+  shape:
+  - ee
+  - ee
+  - ee
+- result:
+    type: ACACIA_DOOR
+  ingredients:
+    e:
+      type: WOOD
+      damage: 4
+  shape:
+  - ee
+  - ee
+  - ee
+- result:
+    type: DARK_OAK_DOOR
+  ingredients:
+    e:
+      type: WOOD
+      damage: 5
   shape:
   - ee
   - ee
