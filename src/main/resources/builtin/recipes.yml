@@ -531,6 +531,13 @@ shapeless:
   ingredients:
   - type: COBBLESTONE
   - type: VINE
+- result:
+    type: STONE
+    damage: 1   # granite
+  ingredients:
+  - type: STONE
+    damage: 3   # diorite
+  - type: QUARTZ
 shaped:
 - result:
     type: WOOD_PICKAXE
