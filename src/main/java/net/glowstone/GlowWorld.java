@@ -83,6 +83,11 @@ public final class GlowWorld implements World {
     private final ChunkManager chunks;
 
     /**
+     * The redstone manager.
+     */
+    private final RSManager rsManager;
+
+    /**
      * A lock kept on the spawn chunks.
      */
     private final ChunkManager.ChunkLock spawnChunkLock;
@@ -245,6 +250,7 @@ public final class GlowWorld implements World {
         storageProvider = new AnvilWorldStorageProvider(new File(server.getWorldContainer(), name));
         storageProvider.setWorld(this);
         chunks = new ChunkManager(this, storageProvider.getChunkIoService(), generator);
+        rsManager = new RSManager(this);
         populators = generator.getDefaultPopulators(this);
 
         // set up values from server defaults
@@ -348,6 +354,14 @@ public final class GlowWorld implements World {
     }
 
     /**
+     * Get the world RS manager
+     * @return The RSManager for the world.
+     */
+    public RSManager getRSManager() {
+        return rsManager;
+    }
+
+    /**
      * Get the world's parent server.
      * @return The GlowServer for the world.
      */
@@ -426,6 +440,9 @@ public final class GlowWorld implements World {
                 }
             }
         }
+
+        // tick redstone
+        getRSManager().pulse();
 
         if (--saveTimer <= 0) {
             saveTimer = AUTOSAVE_TIME;
@@ -889,7 +906,11 @@ public final class GlowWorld implements World {
 
     @Override
     public boolean unloadChunk(int x, int z, boolean save, boolean safe) {
-        return !isChunkLoaded(x, z) || getChunkAt(x, z).unload(save, safe);
+        boolean success = (!isChunkLoaded(x, z) || getChunkAt(x, z).unload(save, safe));
+        if (success) {
+            getRSManager().dropChunk(x, z);
+        }
+        return success;
     }
 
     @Override
@@ -933,6 +954,8 @@ public final class GlowWorld implements World {
                 result = true;
             }
         }
+
+        getRSManager().dirtyChunk(x, z);
 
         return result;
     }
@@ -1428,4 +1451,4 @@ public final class GlowWorld implements World {
         }
         return result;
     }
-}
+} 
