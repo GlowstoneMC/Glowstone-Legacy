@@ -2207,6 +2207,66 @@ shaped:
   - wew
   - wew
 - result:
+    type: SPRUCE_FENCE
+    amount: 3
+  ingredients:
+    e:
+      type: STICK
+    w:
+      type: WOOD
+      damage: 1
+  shape:
+  - wew
+  - wew
+- result:
+    type: BIRCH_FENCE
+    amount: 3
+  ingredients:
+    e:
+      type: STICK
+    w:
+      type: WOOD
+      damage: 2
+  shape:
+  - wew
+  - wew
+- result:
+    type: JUNGLE_FENCE
+    amount: 3
+  ingredients:
+    e:
+      type: STICK
+    w:
+      type: WOOD
+      damage: 3
+  shape:
+  - wew
+  - wew
+- result:
+    type: ACACIA_FENCE
+    amount: 3
+  ingredients:
+    e:
+      type: STICK
+    w:
+      type: WOOD
+      damage: 4
+  shape:
+  - wew
+  - wew
+- result:
+    type: DARK_OAK_FENCE
+    amount: 3
+  ingredients:
+    e:
+      type: STICK
+    w:
+      type: WOOD
+      damage: 5
+  shape:
+  - wew
+  - wew
+- result:
     type: COBBLE_WALL
     amount: 6
   ingredients:
