@@ -3722,3 +3722,16 @@ shaped:
   - aaa
   - aaa
   - aaa
+- result:
+    type: PRISMARINE_SHARD
+    damage: 2
+  ingredients:
+    a:
+      type: PRISMARINE_SHARD
+    b:
+      type: INK_SACK
+      damage: 0
+  shape:
+  - aaa
+  - aba
+  - aaa
