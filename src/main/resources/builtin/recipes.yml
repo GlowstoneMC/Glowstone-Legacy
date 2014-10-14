@@ -550,7 +550,7 @@ shapeless:
   - type: QUARTZ
 - result:
     type: STONE
-    damage: 5       # andresite
+    damage: 5       # andesite
   ingredients:
   - type: STONE
     damage: 3       # diorite
