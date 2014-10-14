@@ -545,6 +545,11 @@ shapeless:
   - type: STONE
     damage: 3   # diorite
   - type: COBBLESTONE
+- result:
+    type: SLIME_BALL
+    amount: 9
+  ingredients:
+  - type: SLIME_BLOCK
 shaped:
 - result:
     type: WOOD_PICKAXE
