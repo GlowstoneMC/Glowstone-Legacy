@@ -538,6 +538,13 @@ shapeless:
   - type: STONE
     damage: 3   # diorite
   - type: QUARTZ
+- result:
+    type: STONE
+    damage: 5   # andresite
+  ingredients:
+  - type: STONE
+    damage: 3   # diorite
+  - type: COBBLESTONE
 shaped:
 - result:
     type: WOOD_PICKAXE
