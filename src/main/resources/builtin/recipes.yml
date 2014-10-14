@@ -543,17 +543,17 @@ shapeless:
   - type: VINE
 - result:
     type: STONE
-    damage: 1   # granite
+    damage: 1       # granite
   ingredients:
   - type: STONE
-    damage: 3   # diorite
+    damage: 3       # diorite
   - type: QUARTZ
 - result:
     type: STONE
-    damage: 5   # andresite
+    damage: 5       # andresite
   ingredients:
   - type: STONE
-    damage: 3   # diorite
+    damage: 3       # diorite
   - type: COBBLESTONE
 - result:
     type: SLIME_BALL
@@ -3588,7 +3588,7 @@ shaped:
   - a
 - result:
     type: STONE
-    damage: 3   # diorite
+    damage: 3       # diorite
     amount: 2
   ingredients:
     a:
@@ -3600,7 +3600,7 @@ shaped:
   - ba
 - result:
     type: STONE
-    damage: 4   # polished diorite
+    damage: 4       # polished diorite
     amount: 4
   ingredients:
     a:
@@ -3611,7 +3611,7 @@ shaped:
   - aa
 - result:
     type: STONE
-    damage: 2   # polished granite
+    damage: 2       # polished granite
     amount: 4
   ingredients:
     a:
@@ -3622,7 +3622,7 @@ shaped:
   - aa
 - result:
     type: STONE
-    damage: 6   # polished andesite
+    damage: 6       # polished andesite
     amount: 4
   ingredients:
     a:
