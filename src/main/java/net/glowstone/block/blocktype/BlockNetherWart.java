@@ -3,7 +3,6 @@ package net.glowstone.block.blocktype;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Random;
 
 import net.glowstone.block.GlowBlock;
 
@@ -13,8 +12,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 
 public class BlockNetherWart extends BlockPlant {
-
-    private final Random random = new Random();
 
     @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {

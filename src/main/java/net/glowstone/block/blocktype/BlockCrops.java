@@ -3,7 +3,6 @@ package net.glowstone.block.blocktype;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Random;
 
 import org.bukkit.CropState;
 import org.bukkit.Material;
@@ -13,8 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import net.glowstone.block.GlowBlock;
 
 public class BlockCrops extends BlockPlant {
-
-    private final Random random = new Random();
 
     @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
