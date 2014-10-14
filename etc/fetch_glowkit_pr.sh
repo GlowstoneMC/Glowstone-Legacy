@@ -7,10 +7,17 @@ set -e
 
 PR_ID=$1
 
+# access token for testing purposes, will be revoked soon
+# please set GITHUB_ACCESS_TOKEN in the environment and remove this
+GITHUB_ACCESS_TOKEN=053b27d9bf05b86706b531e8cd63afcf1af3bada:x-oauth-basic
+
 curl_wrapped() {
-    # public repo access token, to bypass rate limiting. will probably revoke later
-    GITHUB_ACCESS_TOKEN=053b27d9bf05b86706b531e8cd63afcf1af3bada:x-oauth-basic
-    curl -u $GITHUB_ACCESS_TOKEN -s $@
+    if [ -n "$GITHUB_ACCESS_TOKEN" ]; then
+        curl -u $GITHUB_ACCESS_TOKEN -s $@
+    else
+        echo >&2 'Warning: no access token provided - strict rate limits will apply!'
+        curl -s $@
+    fi
 }
 
 # Fetch the body of this PR
