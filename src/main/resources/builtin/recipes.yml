@@ -3406,3 +3406,12 @@ shaped:
   shape:
   - ab
   - ba
+- result:
+    type: STEP_2
+    damage: 0
+    amount: 6
+  ingredients:
+    a:
+      type: RED_SANDSTONE
+  shape:
+  - aaa
