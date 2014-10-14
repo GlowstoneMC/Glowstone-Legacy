@@ -3449,3 +3449,11 @@ shaped:
   - ' r '
   - 'cpm'
   - ' b '
+- result:
+    type: LEATHER
+  ingredients:
+    a:
+      type: RABBIT_HIDE
+  shape:
+  - aa
+  - aa
