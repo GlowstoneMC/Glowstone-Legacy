@@ -2309,6 +2309,61 @@ shaped:
   - cwc
   - cwc
 - result:
+    type: SPRUCE_FENCE_GATE
+  ingredients:
+    w:
+      type: WOOD
+      damage: 1
+    c:
+      type: STICK
+  shape:
+  - cwc
+  - cwc
+- result:
+    type: BIRCH_FENCE_GATE
+  ingredients:
+    w:
+      type: WOOD
+      damage: 2
+    c:
+      type: STICK
+  shape:
+  - cwc
+  - cwc
+- result:
+    type: JUNGLE_FENCE_GATE
+  ingredients:
+    w:
+      type: WOOD
+      damage: 3
+    c:
+      type: STICK
+  shape:
+  - cwc
+  - cwc
+- result:
+    type: ACACIA_FENCE_GATE
+  ingredients:
+    w:
+      type: WOOD
+      damage: 4
+    c:
+      type: STICK
+  shape:
+  - cwc
+  - cwc
+- result:
+    type: DARK_OAK_FENCE_GATE
+  ingredients:
+    w:
+      type: WOOD
+      damage: 5
+    c:
+      type: STICK
+  shape:
+  - cwc
+  - cwc
+- result:
     type: WOOD_DOOR
   ingredients:
     e:
