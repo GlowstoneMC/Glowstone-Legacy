@@ -10,51 +10,26 @@ import org.bukkit.material.Lever;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
-public class BlockLever extends BlockType {
+public class BlockLever extends BlockAttachable {
 
     public BlockLever() {
         setDrops(new ItemStack(Material.LEVER));
-    }
-
-    public void setAttachedFace(final Lever lever, final BlockFace attachedFace) {
-        byte data = lever.getData();
-        switch (attachedFace) {
-            case WEST:
-                data |= 1;
-                break;
-            case EAST:
-                data |= 2;
-                break;
-            case NORTH:
-                data |= 3;
-                break;
-            case SOUTH:
-                data |= 4;
-                break;
-            case DOWN:
-                data |= 5; // or 6
-                break;
-            case UP:
-                data |= 7; // or 0
-                break;
-        }
-        lever.setData(data);
     }
 
     @Override
     public boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
         final GlowBlockState state = block.getState();
         final MaterialData data = state.getData();
-        if (data instanceof Lever) {
-            final Lever l = (Lever) data;
-            l.setPowered(!l.isPowered());
-            state.setData(l);
-            state.update();
-            return true;
-        } else {
+
+        if (!(data instanceof Lever)) {
             warnMaterialData(Lever.class, data);
             return false;
         }
+
+        final Lever lever = (Lever) data;
+        lever.setPowered(!lever.isPowered());
+        state.update();
+        return true;
     }
 
     @Override
@@ -62,14 +37,16 @@ public class BlockLever extends BlockType {
         super.placeBlock(player, state, face, holding, clickedLoc);
 
         final MaterialData data = state.getData();
-        if (data instanceof Lever) {
-            final Lever l = (Lever) data;
-            setAttachedFace(l, face.getOppositeFace());
-            l.setFacingDirection(face == BlockFace.UP || face == BlockFace.DOWN ? player.getDirection() : face);
-            state.setData(l);
-        } else {
+
+        if (!(data instanceof Lever)) {
             warnMaterialData(Lever.class, data);
+            return;
         }
+
+        final Lever lever = (Lever) data;
+        setAttachedFace(state, face.getOppositeFace());
+        lever.setFacingDirection(face == BlockFace.UP || face == BlockFace.DOWN ? player.getDirection() : face);
+
     }
 
     @Override

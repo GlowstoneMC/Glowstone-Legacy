@@ -67,16 +67,16 @@ public class BlockSlab extends BlockType {
 
     @Override
     public boolean isSideSolid(GlowBlock block, BlockFace face) {
-        if(face != BlockFace.UP) return false;
+        if (face != BlockFace.UP) return false;
         // Block is solid only on the top, when inverted
         MaterialData materialData = block.getState().getData();
         // I'm not sure if these classes are right - NC
         boolean inverted;
-        if(materialData instanceof WoodenStep) {
-            inverted = ((WoodenStep)materialData).isInverted();
-        }else if(materialData instanceof Step) {
-            inverted = ((Step)materialData).isInverted();
-        }else{
+        if (materialData instanceof WoodenStep) {
+            inverted = ((WoodenStep) materialData).isInverted();
+        } else if (materialData instanceof Step) {
+            inverted = ((Step) materialData).isInverted();
+        } else {
             // Invalid object, default to false to make it obvious during testing that it's broken
             warnMaterialData(Step.class, materialData);
             return false;

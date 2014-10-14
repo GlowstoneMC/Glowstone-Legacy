@@ -24,7 +24,8 @@ public final class ItemTable {
         return INSTANCE;
     }
 
-    private ItemTable() {}
+    private ItemTable() {
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     // Data
@@ -59,7 +60,7 @@ public final class ItemTable {
         reg(Material.GRAVEL, new BlockGravel());
         reg(Material.ICE, new BlockDropless());
         reg(Material.PACKED_ICE, new BlockDropless());
-        reg(Material.SNOW, new BlockDropless());
+        reg(Material.SNOW, new BlockSnow());
         reg(Material.SNOW_BLOCK, new BlockDropless());
         reg(Material.STONE, new BlockDirectDrops(Material.COBBLESTONE));
         reg(Material.COAL_ORE, new BlockDirectDrops(Material.COAL));
@@ -109,6 +110,12 @@ public final class ItemTable {
         reg(Material.LOG_2, new BlockLog2());
         reg(Material.LADDER, new BlockLadder());
         reg(Material.VINE, new BlockVine());
+        reg(Material.STONE_BUTTON, new BlockButton(Material.STONE_BUTTON));
+        reg(Material.WOOD_BUTTON, new BlockButton(Material.WOOD_BUTTON));
+        reg(Material.BED_BLOCK, new BlockBed());
+        reg(Material.TORCH, new BlockTorch());
+        reg(Material.DAYLIGHT_DETECTOR, new BlockDaylightDetector());
+        reg(Material.DAYLIGHT_DETECTOR_INVERTED, new BlockDaylightDetector());
 
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
@@ -119,6 +126,7 @@ public final class ItemTable {
         reg(Material.FLOWER_POT_ITEM, new ItemPlaceAs(Material.FLOWER_POT));
         reg(Material.SKULL_ITEM, new ItemPlaceAs(Material.SKULL));
         reg(Material.REDSTONE_COMPARATOR, new ItemPlaceAs(Material.REDSTONE_COMPARATOR_OFF));
+        reg(Material.BED, new ItemPlaceAs(Material.BED_BLOCK));
     }
 
     private void reg(Material material, ItemType type) {

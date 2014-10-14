@@ -20,6 +20,9 @@ public enum MetadataIndex {
     NAME_TAG(10, STRING, LivingEntity.class),
     SHOW_NAME_TAG(11, BYTE, LivingEntity.class),
 
+    // allowed to override NAME_TAG from LivingEntity
+    PLAYER_SKIN_FLAGS(10, BYTE, HumanEntity.class),
+
     AGE(12, INT, Ageable.class),
 
     HORSE_FLAGS(16, INT, Horse.class),
@@ -125,6 +128,17 @@ public enum MetadataIndex {
 
     public boolean appliesTo(Class<? extends Entity> clazz) {
         return appliesTo.isAssignableFrom(clazz);
+    }
+
+    public static MetadataIndex getIndex(int index, MetadataType type) {
+        MetadataIndex output = null;
+        for (MetadataIndex entry : values()) {
+            if (entry.getIndex() == index && entry.getType().equals(type)) {
+                output = entry;
+                break;
+            }
+        }
+        return output;
     }
 
     public static interface StatusFlags {

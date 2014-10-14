@@ -1,5 +1,9 @@
 package net.glowstone.entity;
 
+import com.flowpowered.networking.Message;
+import net.glowstone.constants.GlowPotionEffect;
+import net.glowstone.inventory.EquipmentMonitor;
+import net.glowstone.net.message.play.entity.EntityEquipmentMessage;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -79,6 +83,11 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     private boolean pickupItems;
 
     /**
+     * Monitor for the equipment of this entity.
+     */
+    private EquipmentMonitor equipmentMonitor = new EquipmentMonitor(this);
+
+    /**
      * Creates a mob within the specified world.
      * @param location The location.
      */
@@ -95,10 +104,12 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     public void pulse() {
         super.pulse();
 
+        // invulnerability
         if (noDamageTicks > 0) {
             --noDamageTicks;
         }
 
+        // breathing
         Material mat = getEyeLocation().getBlock().getType();
         if (mat == Material.WATER || mat == Material.STATIONARY_WATER) {
             --airTicks;
@@ -111,7 +122,38 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
             airTicks = maximumAir;
         }
 
-        // todo: tick down potion effects
+        // potion effects
+        List<PotionEffect> effects = new ArrayList<>(potionEffects.values());
+        for (PotionEffect effect : effects) {
+            // pulse effect
+            GlowPotionEffect type = (GlowPotionEffect) effect.getType();
+            type.pulse(this, effect);
+
+            if (effect.getDuration() > 0) {
+                // reduce duration and re-add
+                addPotionEffect(new PotionEffect(type, effect.getDuration() - 1, effect.getAmplifier(), effect.isAmbient()), true);
+            } else {
+                // remove
+                removePotionEffect(type);
+            }
+        }
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        equipmentMonitor.resetChanges();
+    }
+
+    @Override
+    public List<Message> createUpdateMessage() {
+        List<Message> messages = super.createUpdateMessage();
+
+        for (EquipmentMonitor.Entry change : equipmentMonitor.getChanges()) {
+            messages.add(new EntityEquipmentMessage(id, change.slot, change.item));
+        }
+
+        return messages;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -119,7 +161,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
 
     @Override
     public double getEyeHeight() {
-       return 0;
+        return 0;
     }
 
     @Override
@@ -281,7 +323,9 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
 
     @Override
     public <T extends Projectile> T launchProjectile(Class<? extends T> projectile, Vector velocity) {
-        return null;
+        T entity = world.spawn(getEyeLocation(), projectile);
+        entity.setVelocity(velocity);
+        return entity;
     }
 
     ////////////////////////////////////////////////////////////////////////////

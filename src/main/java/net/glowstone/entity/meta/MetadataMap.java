@@ -86,31 +86,31 @@ public class MetadataMap {
     }
 
     public byte getByte(MetadataIndex index) {
-        return _get(index, MetadataType.BYTE, (byte) 0);
+        return get(index, MetadataType.BYTE, (byte) 0);
     }
 
     public short getShort(MetadataIndex index) {
-        return _get(index, MetadataType.SHORT, (short) 0);
+        return get(index, MetadataType.SHORT, (short) 0);
     }
 
     public int getInt(MetadataIndex index) {
-        return _get(index, MetadataType.INT, 0);
+        return get(index, MetadataType.INT, 0);
     }
 
     public float getFloat(MetadataIndex index) {
-        return _get(index, MetadataType.FLOAT, 0f);
+        return get(index, MetadataType.FLOAT, 0f);
     }
 
     public String getString(MetadataIndex index) {
-        return _get(index, MetadataType.STRING, null);
+        return get(index, MetadataType.STRING, null);
     }
 
     public ItemStack getItem(MetadataIndex index) {
-        return _get(index, MetadataType.ITEM, null);
+        return get(index, MetadataType.ITEM, null);
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T _get(MetadataIndex index, MetadataType expected, T def) {
+    private <T> T get(MetadataIndex index, MetadataType expected, T def) {
         if (index.getType() != expected) {
             throw new IllegalArgumentException("Cannot get " + index + ": is " + index.getType() + ", not " + expected);
         }
@@ -159,6 +159,26 @@ public class MetadataMap {
         @Override
         public int compareTo(Entry o) {
             return o.index.getIndex() - index.getIndex();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Entry entry = (Entry) o;
+
+            if (index != entry.index) return false;
+            if (value != null ? !value.equals(entry.value) : entry.value != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = index != null ? index.hashCode() : 0;
+            result = 31 * result + (value != null ? value.hashCode() : 0);
+            return result;
         }
 
         @Override

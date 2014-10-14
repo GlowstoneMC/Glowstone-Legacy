@@ -13,6 +13,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
+import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
@@ -157,26 +158,26 @@ public class BlockType extends ItemType {
             }
         }
 
-        GlowBlockState newState = target.getState();
-
         // call canBuild event
-        if (!EventFactory.onBlockCanBuild(target, getId(), face).isBuildable()) {
+        boolean canBuild = canPlaceAt(target, face);
+        BlockCanBuildEvent canBuildEvent = new BlockCanBuildEvent(target, getId(), canBuild);
+        if (!EventFactory.callEvent(canBuildEvent).isBuildable()) {
             //revert(player, target);
             return;
         }
 
-        // calculate new block
+        // grab states and update block
+        GlowBlockState oldState = target.getState(), newState = target.getState();
         placeBlock(player, newState, face, holding, clickedLoc);
+        newState.update(true);
 
         // call blockPlace event
-        BlockPlaceEvent event = EventFactory.onBlockPlace(target, newState, against, player);
+        BlockPlaceEvent event = new BlockPlaceEvent(target, oldState, against, holding, player, canBuild);
+        EventFactory.callEvent(event);
         if (event.isCancelled() || !event.canBuild()) {
-            //revert(player, target);
+            oldState.update(true);
             return;
         }
-
-        // perform the block change
-        newState.update(true);
 
         // play a sound effect
         // todo: vary sound effect based on block type
