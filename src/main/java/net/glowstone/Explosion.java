@@ -83,6 +83,10 @@ public class Explosion {
             handleBlockExplosion(world.getBlockAt(block.getBlockX(), block.getBlockY(), block.getBlockZ()));
         }
 
+        for (BlockVector block : droppedBlocks) {
+            setBlockOnFire(world.getBlockAt(block.getBlockX(), block.getBlockY(), block.getBlockZ()));
+        }
+
         Collection<GlowPlayer> affectedPlayers = damageEntities();
         for (GlowPlayer player : affectedPlayers) {
             playOutExplosion(player, droppedBlocks);
@@ -156,8 +160,6 @@ public class Explosion {
         }
 
         block.breakNaturally(yield);
-
-        setBlockOnFire(block);
     }
 
     private float calculateStartPower() {
@@ -188,6 +190,8 @@ public class Explosion {
 
         Block below = block.getRelative(BlockFace.DOWN);
         //TODO check for flammable blocks
+        Material belowType = below.getType();
+        if (belowType == Material.AIR || belowType == Material.FIRE) return;
 
         BlockIgniteEvent event = EventFactory.callEvent(new BlockIgniteEvent(block, BlockIgniteEvent.IgniteCause.EXPLOSION, source));
         if (event.isCancelled())
