@@ -3360,3 +3360,14 @@ shaped:
   shape:
   - ab
   - ba
+- result:
+    type: STONE
+    damage: 4   # polished diorite
+    amount: 4
+  ingredients:
+    a:
+      type: STONE
+      damage: 3     # diorite
+  shape:
+  - aa
+  - aa
