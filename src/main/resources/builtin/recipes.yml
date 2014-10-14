@@ -2300,14 +2300,14 @@ shaped:
 - result:
     type: FENCE_GATE
   ingredients:
-    e:
+    w:
       type: WOOD
-      damage: 32767
+      damage: 0
     c:
       type: STICK
   shape:
-  - cec
-  - cec
+  - cwc
+  - cwc
 - result:
     type: WOOD_DOOR
   ingredients:
