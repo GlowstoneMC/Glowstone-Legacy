@@ -519,6 +519,13 @@ shapeless:
   ingredients:
   - type: DOUBLE_PLANT
     damage: 5
+- result:
+    type: SMOOTH_BRICK
+    damage: 1
+  ingredients:
+  - type: SMOOTH_BRICK
+    damage: 0
+  - type: VINE
 shaped:
 - result:
     type: WOOD_PICKAXE
