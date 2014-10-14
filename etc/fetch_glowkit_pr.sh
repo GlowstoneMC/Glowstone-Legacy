@@ -21,7 +21,7 @@ echo "-------------------------------------------------------------------------"
 echo
 
 # Extract from body
-GLOWKIT_PR=$(echo $PR_BODY | egrep -o 'Glowkit/pull/[0-9]+' | sed 's#Glowkit/pull/##')
+GLOWKIT_PR=$(echo $PR_BODY | egrep -o 'GlowstoneMC/Glowkit(/pull/|#)[0-9]+' | sed -r 's#GlowstoneMC/Glowkit(\#|/pull/)##')
 
 echo "PR links found:" $GLOWKIT_PR
 echo
