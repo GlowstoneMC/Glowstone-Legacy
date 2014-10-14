@@ -526,6 +526,11 @@ shapeless:
   - type: SMOOTH_BRICK
     damage: 0
   - type: VINE
+- result:
+    type: MOSSY_COBBLESTONE
+  ingredients:
+  - type: COBBLESTONE
+  - type: VINE
 shaped:
 - result:
     type: WOOD_PICKAXE
