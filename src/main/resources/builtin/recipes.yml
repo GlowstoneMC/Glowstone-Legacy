@@ -3415,3 +3415,37 @@ shaped:
       type: RED_SANDSTONE
   shape:
   - aaa
+- result:
+    type: RABBIT_STEW
+  ingredients:
+    r:
+      type: COOKED_RABBIT
+    c:
+      type: CARROT_ITEM
+    p:
+      type: BAKED_POTATO
+    m:
+      type: BROWN_MUSHROOM
+    b:
+      type: BOWL
+  shape:
+  - ' r '
+  - 'cpm'
+  - ' b '
+- result:
+    type: RABBIT_STEW
+  ingredients:
+    r:
+      type: COOKED_RABBIT
+    c:
+      type: CARROT_ITEM
+    p:
+      type: BAKED_POTATO
+    m:
+      type: RED_MUSHROOM
+    b:
+      type: BOWL
+  shape:
+  - ' r '
+  - 'cpm'
+  - ' b '
