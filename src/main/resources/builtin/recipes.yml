@@ -119,6 +119,10 @@ furnace:
   input:
     type: SMOOTH_BRICK
     damage: 0
+- result:
+    type: COOKED_RABBIT
+  input:
+    type: RABBIT
 shapeless:
 - result:
     type: LEATHER_HELMET
