@@ -23,19 +23,37 @@ echo "-------------------------------------------------------------------------"
 echo
 
 # Extract from body
-glowkit_pr=$(echo $pr_body | egrep -o 'GlowstoneMC/Glowkit(/pull/|#)[0-9]+' | sed -r 's#GlowstoneMC/Glowkit(\#|/pull/)##')
+declare -a to_check
+declare -a checked
 
-echo "PR links found:" $glowkit_pr
+to_check=($(echo $pr_body | egrep -o 'GlowstoneMC/Glowkit(/pull/|#)[0-9]+' | sed -r 's#GlowstoneMC/Glowkit(\#|/pull/)##'))
+
+echo "Checking PR links: ${to_check[@]}"
+
+for pr in "${to_check[@]}"; do
+    pr_state=$(curl_wrapped https://api.github.com/repos/GlowstoneMC/Glowkit/pulls/$pr | jq -r .state)
+    if [ "$pr_state" = 'null' ]; then
+        echo "Linked issue #$pr is not a pull request, ignoring"
+    elif [ "$pr_state" != 'open' ]; then
+        echo "Linked PR #$pr state is $pr_state, ignoring"
+    else
+        checked+=($pr)
+    fi
+done
+
+echo "${#checked[@]} PR links found: ${checked[@]}"
 echo
 
 # Validate
-if [ -z "$glowkit_pr" ]; then
+if [ ${#checked[@]} -eq 0 ]; then
     echo "No PR links found. Aborting."
     exit 0
-elif [ $(echo "$glowkit_pr" | wc -l) != 1 ]; then
+elif [ ${#checked[@]} -ne 1 ]; then
     echo "More than one PR link found. Aborting"
     exit 0
 fi
+
+glowkit_pr=${checked[0]}
 
 # Create a temp directory to work in
 TEMP=$(mktemp -d --tmpdir glowkit-XXXXXXXXXX)
