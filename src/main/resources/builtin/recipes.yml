@@ -3371,3 +3371,14 @@ shaped:
   shape:
   - aa
   - aa
+- result:
+    type: STONE
+    damage: 2   # polished granite
+    amount: 4
+  ingredients:
+    a:
+      type: STONE
+      damage: 1     # granite
+  shape:
+  - aa
+  - aa
