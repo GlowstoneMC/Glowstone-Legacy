@@ -123,6 +123,8 @@ public final class ItemTable {
         reg(Material.LAVA, new BlockLava());
         reg(Material.STATIONARY_LAVA, new BlockLava());
         reg(Material.DOUBLE_PLANT, new BlockDoublePlant());
+        reg(Material.BROWN_MUSHROOM, new BlockMushroom(Material.BROWN_MUSHROOM));
+        reg(Material.RED_MUSHROOM, new BlockMushroom(Material.RED_MUSHROOM));
 
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
