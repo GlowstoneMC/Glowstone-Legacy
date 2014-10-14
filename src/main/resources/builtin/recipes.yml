@@ -3735,3 +3735,14 @@ shaped:
   - aaa
   - aba
   - aaa
+- result:
+    type: SEA_LANTERN
+  ingredients:
+    a:
+      type: PRISMARINE_SHARD
+    b:
+      type: PRISMARINE_CRYSTALS
+  shape:
+  - aba
+  - bbb
+  - aba
