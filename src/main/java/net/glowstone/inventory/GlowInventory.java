@@ -136,6 +136,17 @@ public class GlowInventory implements Inventory {
         }
     }
 
+    /**
+     * Gets the number of slots in this inventory. This is necessary because
+     * Mojang decided that some inventories such as anvils have <i>0</i> slots
+     * in the protocol.
+     * <br/>
+     * @return The numbers of slots
+     */
+    public int getNumSlots() {
+        return getSize();
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Basic Stuff
 
