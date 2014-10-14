@@ -3382,3 +3382,14 @@ shaped:
   shape:
   - aa
   - aa
+- result:
+    type: STONE
+    damage: 6   # polished andesite
+    amount: 4
+  ingredients:
+    a:
+      type: STONE
+      damage: 5     # andesite
+  shape:
+  - aa
+  - aa
