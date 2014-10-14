@@ -3703,3 +3703,12 @@ shaped:
   - 'aaa'
   - ' a '
   - 'aba'
+- result:
+    type: PRISMARINE
+    damage: 0
+  ingredients:
+    a:
+      type: PRISMARINE_SHARD
+  shape:
+  - aa
+  - aa
