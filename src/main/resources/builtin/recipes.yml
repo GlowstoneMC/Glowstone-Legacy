@@ -2390,6 +2390,15 @@ shaped:
   - cc
   - cc
 - result:
+    type: RED_SANDSTONE
+  ingredients:
+    c:
+      type: SAND
+      damage: 1
+  shape:
+  - cc
+  - cc
+- result:
     type: SANDSTONE
     damage: 2
     amount: 4
