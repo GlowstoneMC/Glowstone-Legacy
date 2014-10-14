@@ -3393,3 +3393,16 @@ shaped:
   shape:
   - aa
   - aa
+- result:
+    type: DIRT
+    damage: 1       # coarse dirt
+    amount: 4
+  ingredients:
+    a:
+      type: DIRT
+      damage: 0
+    b:
+      type: GRAVEL
+  shape:
+  - ab
+  - ba
