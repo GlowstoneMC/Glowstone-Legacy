@@ -3634,3 +3634,15 @@ shaped:
   shape:
   - aa
   - aa
+- result:
+    type: ARMOR_STAND
+  ingredients:
+    a:
+      type: STICK
+    b:
+      type: STEP
+      damage: 0
+  shape:
+  - 'aaa'
+  - ' a '
+  - 'aba'
