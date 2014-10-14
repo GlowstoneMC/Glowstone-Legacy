@@ -1,6 +1,7 @@
 package net.glowstone.block.entity;
 
 import net.glowstone.block.GlowBlock;
+import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.state.GlowDispenser;
 import net.glowstone.inventory.GlowInventory;
 import org.bukkit.event.inventory.InventoryType;
@@ -12,4 +13,8 @@ public class TEDispenser extends TEContainer {
         setSaveId("Trap");
     }
 
+    @Override
+    public GlowBlockState getState() {
+        return new GlowDispenser(block);
+    }
 }
