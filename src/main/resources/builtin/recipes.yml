@@ -706,6 +706,15 @@ shaped:
   - eee
   - eee
 - result:
+    type: SLIME_BLOCK
+  ingredients:
+    e:
+      type: SLIME_BALL
+  shape:
+  - eee
+  - eee
+  - eee
+- result:
     type: CHEST
   ingredients:
     g:
