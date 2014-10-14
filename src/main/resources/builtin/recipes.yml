@@ -2435,6 +2435,7 @@ shaped:
   - eee
 - result:
     type: IRON_DOOR
+    amount: 3
   ingredients:
     e:
       type: IRON_INGOT
