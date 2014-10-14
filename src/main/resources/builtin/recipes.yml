@@ -3348,3 +3348,15 @@ shaped:
       damage: 32767
   shape:
   - a
+- result:
+    type: STONE
+    damage: 3   # diorite
+    amount: 2
+  ingredients:
+    a:
+      type: COBBLESTONE
+    b:
+      type: QUARTZ
+  shape:
+  - ab
+  - ba
