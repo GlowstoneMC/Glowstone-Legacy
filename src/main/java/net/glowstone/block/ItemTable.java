@@ -78,7 +78,7 @@ public final class ItemTable {
         reg(Material.MELON_BLOCK, new BlockMelon());
         reg(Material.MELON_STEM, new BlockMelonStem());
         reg(Material.NETHER_WARTS, new BlockDirectDrops(Material.NETHER_STALK));
-        reg(Material.POTATO, new BlockDirectDrops(Material.POTATO_ITEM));
+        reg(Material.POTATO, new BlockPotato());
         reg(Material.PUMPKIN_STEM, new BlockPumpkinStem());
         reg(Material.CROPS, new BlockCrops());
         reg(Material.CAKE_BLOCK, new BlockDropless());
