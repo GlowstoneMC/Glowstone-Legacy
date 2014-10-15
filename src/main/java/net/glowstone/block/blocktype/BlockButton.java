@@ -1,5 +1,6 @@
 package net.glowstone.block.blocktype;
 
+import net.glowstone.RSManager;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.entity.GlowPlayer;
@@ -15,6 +16,75 @@ public class BlockButton extends BlockAttachable {
 
     public BlockButton(Material material) {
         setDrops(new ItemStack(material));
+    }
+
+    @Override
+    public boolean canBlockEmitPower(GlowBlock block, BlockFace face, boolean isDirect) {
+
+        final MaterialData data = block.getState().getData();
+        if (data instanceof Button) {
+            final Button l = (Button) data;
+            if (!l.isPowered()) {
+                return false;
+            }
+            //The button powers the attached block direct
+            if (l.getAttachedFace().equals(face)) {
+                return true;
+            } else if (isDirect) { //All other faces aren't powered direct
+                return false;
+            }
+            return true; //Emits power to all directions, but not direct
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isRedSource(GlowBlock block) {
+        return true;
+    }
+
+    @Override
+    public void traceBlockPowerInit(GlowBlock block, RSManager rsManager) {
+        final MaterialData data = block.getState().getData();
+        if (data instanceof Button) {
+            final Button l = (Button) data;
+            if (l.isPowered()) {
+                rsManager.setBlockPower(block, 15);
+            } else {
+                rsManager.setBlockPower(block, 0);
+            }
+        }
+    }
+
+    @Override
+    public void traceBlockPowerStart(GlowBlock block, RSManager rsManager) {
+        final MaterialData data = block.getState().getData();
+        if (data instanceof Button) {
+            final Button l = (Button) data;
+            if (!l.isPowered()) return;
+            // Trace in all directions.
+            traceBlockPowerFromButton(block, rsManager, l.getAttachedFace(), BlockFace.UP);
+            traceBlockPowerFromButton(block, rsManager, l.getAttachedFace(), BlockFace.DOWN);
+            traceBlockPowerFromButton(block, rsManager, l.getAttachedFace(), BlockFace.NORTH);
+            traceBlockPowerFromButton(block, rsManager, l.getAttachedFace(), BlockFace.SOUTH);
+            traceBlockPowerFromButton(block, rsManager, l.getAttachedFace(), BlockFace.WEST);
+            traceBlockPowerFromButton(block, rsManager, l.getAttachedFace(), BlockFace.EAST);
+        }
+    }
+
+    private void traceBlockPowerFromButton(GlowBlock srcBlock, RSManager rsManager, BlockFace directDir, BlockFace toDir) {
+        if (toDir.equals(directDir)) {
+            rsManager.traceFromBlock(srcBlock, toDir, 15, true);
+        } else {
+            rsManager.traceFromBlock(srcBlock, toDir, 15, false);
+        }
+    }
+
+    @Override
+    public void traceBlockPowerEnd(GlowBlock block, RSManager rsManager, int power) {
+        if (power == 15) {
+            rsManager.addSource(block);
+        }
     }
 
     @Override
