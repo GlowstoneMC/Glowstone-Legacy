@@ -263,9 +263,7 @@ public class BlockType extends ItemType {
             return;
         }
         Material destMat = destBlock.getType();
-        if (destMat == Material.REDSTONE_WIRE) {
-            // Will trace
-        } else {
+        if (destMat != Material.REDSTONE_WIRE) {
             return;
         }
 
