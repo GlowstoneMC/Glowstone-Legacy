@@ -1,12 +1,14 @@
 package net.glowstone.net.handler.play.player;
 
-import com.flowpowered.networking.MessageHandler;
 import net.glowstone.EventFactory;
 import net.glowstone.GlowWorld;
 import net.glowstone.block.GlowBlock;
+import net.glowstone.block.ItemTable;
+import net.glowstone.block.blocktype.BlockType;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.net.GlowSession;
 import net.glowstone.net.message.play.player.DiggingMessage;
+
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -18,6 +20,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
+
+import com.flowpowered.networking.MessageHandler;
 
 public final class DiggingHandler implements MessageHandler<GlowSession, DiggingMessage> {
     @Override
@@ -81,6 +86,10 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
                 BlockPlacementHandler.revert(player, block);
                 return;
             }
+
+            BlockType blockType = ItemTable.instance().getBlock(block.getType());
+            if (blockType != null)
+                blockType.blockDestroy(player, block, face, new Vector(message.getX(), message.getY(), message.getZ()));
 
             // destroy the block
             if (!block.isEmpty() && !block.isLiquid() && player.getGameMode() != GameMode.CREATIVE) {

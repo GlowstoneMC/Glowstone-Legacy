@@ -117,6 +117,16 @@ public class BlockType extends ItemType {
     }
 
     /**
+     * Called when a player attempts to destroys a block.
+     * @param player The player interacting
+     * @param block The block the player destroyed
+     * @param face The block face
+     * @param clickedLoc Where the destroy occurred
+     */
+    public void blockDestroy(GlowPlayer player, GlowBlock block, BlockFace face, Vector blockLoc) {
+    }
+
+    /**
      * Called when a player attempts to place a block on an existing block of
      * this type. Used to determine if the placement should occur into the air
      * adjacent to the block (normal behavior), or absorbed into the block
