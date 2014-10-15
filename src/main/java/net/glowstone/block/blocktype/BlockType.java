@@ -123,7 +123,8 @@ public class BlockType extends ItemType {
      * @param face The block face
      * @param clickedLoc Where the destroy occurred
      */
-    public void blockDestroy(GlowPlayer player, GlowBlock block, BlockFace face, Vector blockLoc) {
+    public void blockDestroy(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
+        // do nothing
     }
 
     /**
