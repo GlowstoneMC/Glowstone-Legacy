@@ -1729,7 +1729,7 @@ shaped:
       type: QUARTZ
     g:
       type: STONE
-      damage: 32767
+      damage: 0
     b:
       type: REDSTONE_TORCH_ON
       damage: 32767
@@ -2587,7 +2587,7 @@ shaped:
   ingredients:
     e:
       type: STONE
-      damage: 32767
+      damage: 0
     c:
       type: REDSTONE_TORCH_ON
       damage: 32767
@@ -2912,7 +2912,7 @@ shaped:
   ingredients:
     c:
       type: STONE
-      damage: 32767
+      damage: 0
   shape:
   - ccc
 - result:
@@ -3379,7 +3379,7 @@ shaped:
   ingredients:
     b:
       type: STONE
-      damage: 32767
+      damage: 0
   shape:
   - bb
 - result:
@@ -3581,7 +3581,7 @@ shaped:
   ingredients:
     a:
       type: STONE
-      damage: 32767
+      damage: 0
   shape:
   - a
 - result:
