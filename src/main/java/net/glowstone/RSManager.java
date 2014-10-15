@@ -32,12 +32,8 @@ public class RSManager {
     private final Set<BlockVector> redFlush = new HashSet<>(); 
     private final Map<BlockVector, Integer> redPowerWait = new HashMap<>();
     private final Map<BlockVector, Integer> redPowerNew = new HashMap<>();
-    private Set<BlockVector> redSourceNew = new HashSet<>();
-    private Set<BlockVector> redSourceOld = new HashSet<>();
-    private Set<BlockVector> chunksDirtyNew = new HashSet<>();
-    private Set<BlockVector> chunksDirtyOld = new HashSet<>();
-    private Set<BlockVector> blocksDirtyNew = new HashSet<>();
-    private Set<BlockVector> blocksDirtyOld = new HashSet<>();
+    private final Set<BlockVector> redSource = new HashSet<>();
+    private final Set<BlockVector> addAsSource = new HashSet<>();
 
     /**
      * Create a new RS manager for a world.
@@ -65,17 +61,14 @@ public class RSManager {
 
     /**
      * Sets the charge of a given block after a given delay.
-     * @param x
-     * @param y
-     * @param z
+     * @param bv The position of the block to set the charge of.
      * @param charge The charge level to set this block to.
      * @param afterTicks The ticks to wait after we set the given charge.
      */
-    public synchronized void setBlockPowerDelayed(int x, int y, int z, int charge, int afterTicks) {
+    public synchronized void setBlockPowerDelayed(BlockVector bv, int charge, int afterTicks) {
         assert (charge >= 0 && charge <= 15);
-        BlockVector p = new BlockVector(x, y, z);
-        redPowerWait.put(p, afterTicks);
-        redPowerNew.put(p, charge);
+        redPowerWait.put(bv, afterTicks);
+        redPowerNew.put(bv, charge);
     }
 
     /**
@@ -85,17 +78,7 @@ public class RSManager {
      * @param afterTicks The ticks to wait after we set the given charge.
      */
     public void setBlockPowerDelayed(Block block, int charge, int afterTicks) {
-        setBlockPowerDelayed(block.getX(), block.getY(), block.getZ(), charge, afterTicks);
-    }
-
-    /**
-     * Sets the charge of a given block after a given delay.
-     * @param p The position of the block to set the charge of.
-     * @param charge The charge level to set this block to.
-     * @param afterTicks The ticks to wait after we set the given charge.
-     */
-    public void setBlockPowerDelayed(BlockVector p, int charge, int afterTicks) {
-        setBlockPowerDelayed(p.getBlockX(), p.getBlockY(), p.getBlockZ(), charge, afterTicks);
+        setBlockPowerDelayed(new BlockVector(block.getX(), block.getY(), block.getZ()), charge, afterTicks);
     }
 
     /**
@@ -103,7 +86,7 @@ public class RSManager {
      * @param block The block to remove the charge of
      */
     public void removeBlockPowerDelay(Block block) {
-        removeBlockPowerDelay(block.getX(), block.getY(), block.getZ());
+        removeBlockPowerDelay(new BlockVector(block.getX(), block.getY(), block.getZ()));
     }
 
     /**
@@ -116,26 +99,13 @@ public class RSManager {
     }
 
     /**
-     * Removes the charge of a given block waiting to be set after a certain delay
-     * @param x
-     * @param y
-     * @param z 
-     */
-    public void removeBlockPowerDelay(int x, int y, int z) {
-        removeBlockPowerDelay(new BlockVector(x, y, z));
-    }
-
-    /**
      * Sets the charge of a given block.
-     * @param x
-     * @param y
-     * @param z
+     * @param bv The position of the block to set the charge of.
      * @param charge The charge level to set this block to.
      */
-    public synchronized void setBlockPower(int x, int y, int z, int charge) {
+    public synchronized void setBlockPower(BlockVector bv, int charge) {
         assert (charge >= 0 && charge <= 15);
-        BlockVector p = new BlockVector(x, y, z);
-        redPowerCurrent.put(p, charge);
+        redPowerCurrent.put(bv, charge);
     }
 
     /**
@@ -144,16 +114,7 @@ public class RSManager {
      * @param charge The charge level to set this block to.
      */
     public void setBlockPower(Block block, int charge) {
-        setBlockPower(block.getX(), block.getY(), block.getZ(), charge);
-    }
-
-    /**
-     * Sets the charge of a given block.
-     * @param p The position of the block to set the charge of.
-     * @param charge The charge level to set this block to.
-     */
-    public void setBlockPower(BlockVector p, int charge) {
-        setBlockPower(p.getBlockX(), p.getBlockY(), p.getBlockZ(), charge);
+        setBlockPower(new BlockVector(block.getX(), block.getY(), block.getZ()), charge);
     }
 
     /**
@@ -206,14 +167,11 @@ public class RSManager {
 
     /**
      * Gets the to-be-applied charge of a given block.
-     * @param x
-     * @param y
-     * @param z
+     * @param bv The block to get the new power of.
      * @return Power level in the range [0, 15].
      */
-    public synchronized int getNewBlockPower(int x, int y, int z) {
-        BlockVector p = new BlockVector(x, y, z);
-        Integer charge = redPowerNew.get(p);
+    public synchronized int getNewBlockPower(BlockVector bv) {
+        Integer charge = redPowerNew.get(bv);
         return (charge == null ? -1 : charge);
     }
 
@@ -223,7 +181,7 @@ public class RSManager {
      * @return Power level in the range [0, 15].
      */
     public int getNewBlockPower(Block block) {
-        return getNewBlockPower(block.getX(), block.getY(), block.getZ());
+        return getNewBlockPower(new BlockVector(block.getX(), block.getY(), block.getZ()));
     }
 
     /**
@@ -285,7 +243,7 @@ public class RSManager {
      */
     public synchronized void addSource(Block block) {
         BlockVector p = new BlockVector(block.getX(), block.getY(), block.getZ());
-        redSourceNew.add(p);
+        redSource.add(p);
     }
 
     /**
@@ -317,8 +275,13 @@ public class RSManager {
      * @param z
      */
     public synchronized void dirtyBlock(int x, int y, int z) {
-        BlockVector bv = new BlockVector(x, y, z);
-        blocksDirtyNew.add(bv);
+        // Get block
+        GlowBlock block = world.getBlockAt(x, y, z);
+        BlockType type = getBlockType(block);
+        // Check if we can add this as a source
+        if (type != null && type.isRedSource(block)) {
+            addAsSource.add(new BlockVector(block.getX(), block.getY(), block.getZ()));
+        }
     }
 
     /**
@@ -327,59 +290,17 @@ public class RSManager {
      * @param chunkZ
      */
     public synchronized void dirtyChunk(int chunkX, int chunkZ) {
-        chunksDirtyNew.add(new BlockVector(chunkX, 0, chunkZ));
-    }
-
-    /**
-     * Updates the redstone state for a block.
-     * @param x
-     * @param y
-     * @param z
-     */
-    private synchronized void updateBlock(int x, int y, int z) {
-        // Get block
-        GlowBlock block = world.getBlockAt(x, y, z);
-        if (block == null) {
-            return;
-        }
-        Material mat = block.getType();
-        if (mat == null) {
-            return;
-        }
-        BlockType type = ItemTable.instance().getBlock(mat);
-        // Check if we can add this as a source
-        if (type != null && type.isRedSource(block)) {
-            addSource(block);
-        }
-    }
-
-    /**
-     * Updates the redstone state for a chunk.
-     * @param chunkX
-     * @param chunkZ
-     */
-    private synchronized void updateChunk(int chunkX, int chunkZ) {
-        // Fetch chunk
+         // Fetch chunk
         GlowChunk chunk = world.getChunkAt(chunkX, chunkZ);
-
         // Loop
-        for (int pos = 0, y = 0; y < 256; y++) {
+        for (int y = 0; y < 256; y++) {
             for (int z = 0; z < 16; z++) {
-                for (int x = 0; x < 16; x++, pos++) {
+                for (int x = 0; x < 16; x++) {
                     // Get block
                     GlowBlock block = chunk.getBlock(x, y, z);
-                    if (block == null) {
-                        continue;
-                    }
-                    Material mat = block.getType();
-                    if (mat == null) {
-                        continue;
-                    }
-                    BlockType type = ItemTable.instance().getBlock(mat);
-
-                    // Check if we can add this as a source
+                    BlockType type = getBlockType(block);
                     if (type != null && type.isRedSource(block)) {
-                        addSource(block);
+                        addAsSource.add(new BlockVector(block.getX(), block.getY(), block.getZ()));
                     }
                 }
             }
@@ -407,9 +328,6 @@ public class RSManager {
             return null;
         }
         BlockType type = ItemTable.instance().getBlock(mat);
-        if (type == null) {
-            return null;
-        }
         return type;
     }
 
@@ -417,53 +335,24 @@ public class RSManager {
      * Update all the redstone logic in the manager's assigned world.
      */
     public synchronized void pulse() {
-        // Swap chunksDirty buffers
-        Set<BlockVector> chunksDirtyTemp = chunksDirtyNew;
-        chunksDirtyNew = chunksDirtyOld;
-        chunksDirtyOld = chunksDirtyTemp;
-
-        // Clear dirty chunks
-        chunksDirtyNew.clear();
-
-        // Update all dirty chunks
-        for (BlockVector p : chunksDirtyOld) {
-            // Skip unloaded chunks
-            if (!isChunkLoaded(p.getBlockX(), p.getBlockZ())) {
-                continue;
-            }
-
-            // Update RS chunk
-            updateChunk(p.getBlockX(), p.getBlockZ());
-        }
 
         // Swap blocksDirty buffers
-        Set<BlockVector> blocksDirtyTemp = blocksDirtyNew;
-        blocksDirtyNew = blocksDirtyOld;
-        blocksDirtyOld = blocksDirtyTemp;
-
-        // Clear dirty blocks
-        blocksDirtyNew.clear();
+        Set<BlockVector> addAsSourceTemp = new HashSet<>(addAsSource);
 
         // Update all dirty blocks
-        for (BlockVector p : blocksDirtyOld) {
+        for (BlockVector p : addAsSourceTemp) {
             // Skip unloaded chunks
             if (!isChunkLoaded(p.getBlockX() >> 4, p.getBlockZ() >> 4)) {
                 continue;
             }
-
-            // Update RS block
-            updateBlock(p.getBlockX(), p.getBlockY(), p.getBlockZ());
+            redSource.add(p);
         }
 
-        // Swap sources and clear new
-        Set<BlockVector> redSourceTemp = redSourceNew;
-        redSourceNew = redSourceOld;
-        redSourceOld = redSourceTemp;
-        redSourceNew.clear();
-
+        Set<BlockVector> redSourceTemp = new HashSet<>(redSource);
 
         // Initialise sources
-        for (BlockVector p : redSourceOld) {
+        for (BlockVector p : redSourceTemp) {
+            redSource.remove(p);
             GlowBlock block = world.getBlockAt(p.getBlockX(), p.getBlockY(), p.getBlockZ());
             BlockType type = getBlockType(block);
             if (type == null) {
@@ -473,7 +362,7 @@ public class RSManager {
         }
 
         // Trace from sources
-        for (BlockVector p : redSourceOld) {
+        for (BlockVector p : redSourceTemp) {
             GlowBlock block = world.getBlockAt(p.getBlockX(), p.getBlockY(), p.getBlockZ());
             BlockType type = getBlockType(block);
             if (type == null) {
@@ -524,7 +413,6 @@ public class RSManager {
             redPowerWait.remove(p);
             redPowerCurrent.remove(p);
             redPowerOld.remove(p);
-            redPowerRemoval.remove(p);
         }
         redFlush.clear();
 
