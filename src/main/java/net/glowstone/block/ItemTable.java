@@ -1,9 +1,11 @@
 package net.glowstone.block;
 
 import net.glowstone.block.blocktype.*;
+import net.glowstone.block.itemtype.ItemDoor;
 import net.glowstone.block.itemtype.ItemPlaceAs;
 import net.glowstone.block.itemtype.ItemSign;
 import net.glowstone.block.itemtype.ItemType;
+
 import org.bukkit.Material;
 
 import java.util.HashMap;
@@ -49,6 +51,20 @@ public final class ItemTable {
         reg(Material.DROPPER, new BlockDropper());
         reg(Material.BOOKSHELF, new BlockDirectDrops(Material.BOOK, 3));
         reg(Material.CLAY, new BlockDirectDrops(Material.CLAY_BALL, 4));
+        reg(Material.WOODEN_DOOR, new BlockDoor());
+        reg(Material.IRON_DOOR_BLOCK, new BlockDoor());
+        reg(Material.SPRUCE_DOOR, new BlockDoor());
+        reg(Material.BIRCH_DOOR, new BlockDoor());
+        reg(Material.JUNGLE_DOOR, new BlockDoor());
+        reg(Material.ACACIA_DOOR, new BlockDoor());
+        reg(Material.DARK_OAK_DOOR, new BlockDoor());
+        reg(Material.WOOD_DOOR, new ItemDoor());
+        reg(Material.IRON_DOOR, new ItemDoor());
+        reg(Material.SPRUCE_DOOR_ITEM, new ItemDoor());
+        reg(Material.BIRCH_DOOR_ITEM, new ItemDoor());
+        reg(Material.JUNGLE_DOOR_ITEM, new ItemDoor());
+        reg(Material.ACACIA_DOOR_ITEM, new ItemDoor());
+        reg(Material.DARK_OAK_DOOR_ITEM, new ItemDoor());
         reg(Material.DOUBLE_STEP, new BlockDoubleSlab());
         reg(Material.SOIL, new BlockDirectDrops(Material.DIRT));
         reg(Material.GLASS, new BlockDropless());
