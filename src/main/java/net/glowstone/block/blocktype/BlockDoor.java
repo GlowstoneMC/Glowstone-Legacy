@@ -133,4 +133,5 @@ public class BlockDoor extends BlockType {
 
         return true;
     }
+
 }

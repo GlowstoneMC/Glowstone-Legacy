@@ -5,7 +5,6 @@ import net.glowstone.block.itemtype.ItemDoor;
 import net.glowstone.block.itemtype.ItemPlaceAs;
 import net.glowstone.block.itemtype.ItemSign;
 import net.glowstone.block.itemtype.ItemType;
-
 import org.bukkit.Material;
 
 import java.util.HashMap;
