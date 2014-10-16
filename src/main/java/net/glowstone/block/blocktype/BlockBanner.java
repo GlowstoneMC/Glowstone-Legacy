@@ -70,10 +70,10 @@ public class BlockBanner extends BlockType {
 
     public static List<CompoundTag> toNBT(BannerPattern pattern) {
         List<CompoundTag> patterns = new ArrayList<>();
-        for (Map.Entry<BannerPattern.Type, DyeColor> layer : pattern.getLayers().entrySet()) {
+        for (BannerPattern.BannerLayer layer : pattern.getLayers()) {
             CompoundTag layerTag = new CompoundTag();
-            layerTag.putString("Pattern", layer.getKey().getCode());
-            layerTag.putInt("Color", layer.getValue().getDyeData());
+            layerTag.putString("Pattern", layer.getTexture().getCode());
+            layerTag.putInt("Color", layer.getColor().getDyeData());
             patterns.add(layerTag);
         }
         return patterns;
@@ -82,7 +82,7 @@ public class BlockBanner extends BlockType {
     public static BannerPattern fromNBT(List<CompoundTag> tag) {
         BannerPattern.Builder builder = BannerPattern.builder();
         for (CompoundTag layer : tag) {
-            BannerPattern.Type type = BannerPattern.Type.getByCode(layer.getString("Pattern"));
+            BannerPattern.LayerTexture type = BannerPattern.LayerTexture.getByCode(layer.getString("Pattern"));
             DyeColor color = DyeColor.getByDyeData((byte) layer.getInt("Color"));
             builder.layer(type, color);
         }
