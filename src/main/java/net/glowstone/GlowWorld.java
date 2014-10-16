@@ -449,6 +449,8 @@ public final class GlowWorld implements World {
      * @return a value between 0 and 1, where 0 = all rays blocked and 1 = all rays unblocked
      */
     public float rayTrace(Location location, GlowEntity entity) {
+        //TODO calculate how much of the entity is visible (not blocked by blocks) from the location
+
         /**
          * To calculate this step through the entity's bounding box and check whether the ray to the point in the bounding box is blocked.
          * Return (unblockedRays / allRays)
