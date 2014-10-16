@@ -29,7 +29,7 @@ public class GlowMetaBanner extends GlowMetaItem implements BannerMeta {
     }
 
     @Override
-    public void setPattern(BannerPattern pattern) throws NullPointerException {
+    public void setPattern(BannerPattern pattern) {
         Validate.notNull(pattern, "Pattern cannot be null!");
         this.pattern = pattern;
     }

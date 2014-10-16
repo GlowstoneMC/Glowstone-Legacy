@@ -24,7 +24,7 @@ public class GlowBanner extends GlowBlockState implements Banner {
     }
 
     @Override
-    public void setBase(DyeColor base) throws NullPointerException {
+    public void setBase(DyeColor base) {
         Validate.notNull(base, "Base cannot be null");
         this.base = base;
     }
@@ -35,7 +35,7 @@ public class GlowBanner extends GlowBlockState implements Banner {
     }
 
     @Override
-    public void setPattern(BannerPattern pattern) throws NullPointerException {
+    public void setPattern(BannerPattern pattern) {
         Validate.notNull(pattern, "Pattern cannot be null");
         this.pattern = pattern;
     }
