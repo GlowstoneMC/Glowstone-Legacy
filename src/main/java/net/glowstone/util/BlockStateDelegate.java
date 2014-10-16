@@ -1,6 +1,7 @@
 package net.glowstone.util;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import net.glowstone.block.GlowBlockState;
@@ -29,7 +30,7 @@ public class BlockStateDelegate {
     public void setType(World world, int x, int y, int z, Material type) {
         final GlowBlockState state = (GlowBlockState) world.getBlockAt(x, y, z).getState();
         state.setType(type);
-        blockStateList.add(state);
+        addToStateList(state);
     }
 
     /**
@@ -45,7 +46,7 @@ public class BlockStateDelegate {
         final GlowBlockState state = (GlowBlockState) world.getBlockAt(x, y, z).getState();
         state.setType(type);
         state.setRawData((byte) data);
-        blockStateList.add(state);
+        addToStateList(state);
     }
 
     /**
@@ -63,5 +64,20 @@ public class BlockStateDelegate {
         for (BlockState state : blockStateList) {
             state.update(true);
         }
+    }
+
+    private void addToStateList(BlockState state) {
+        int x = state.getX();
+        int y = state.getY();
+        int z = state.getZ();
+        Iterator<BlockState> it = blockStateList.iterator();
+        while (it.hasNext()) {
+            final BlockState previous = (BlockState) it.next();
+            if (x == previous.getX() && y == previous.getY() && z == previous.getZ()) {
+                it.remove();
+                break;
+            }
+        }
+        blockStateList.add(state);
     }
 }

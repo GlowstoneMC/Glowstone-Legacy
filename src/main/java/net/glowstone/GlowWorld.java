@@ -6,7 +6,6 @@ import net.glowstone.constants.GlowEffect;
 import net.glowstone.constants.GlowParticle;
 import net.glowstone.entity.*;
 import net.glowstone.entity.objects.GlowItem;
-import net.glowstone.generator.HugeMushroomGenerator;
 import net.glowstone.generator.TreeGenerator;
 import net.glowstone.io.WorldMetadataService.WorldFinalValues;
 import net.glowstone.io.WorldStorageProvider;
@@ -739,12 +738,7 @@ public final class GlowWorld implements World {
     @Override
     public boolean generateTree(Location loc, TreeType type, BlockChangeDelegate delegate) {
         final BlockStateDelegate blockStateDelegate = new BlockStateDelegate();
-        TreeGenerator generator;
-        if (type.equals(TreeType.BROWN_MUSHROOM) || type.equals(TreeType.RED_MUSHROOM)) {
-            generator = new HugeMushroomGenerator(blockStateDelegate);
-        } else {
-            generator = new TreeGenerator(blockStateDelegate);
-        }
+        final TreeGenerator generator = new TreeGenerator(blockStateDelegate);
         if (generator.generate(random, loc, type)) {
             final List<BlockState> blockStates = blockStateDelegate.getBlockStates();
             StructureGrowEvent growEvent =
