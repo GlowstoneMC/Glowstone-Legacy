@@ -5,12 +5,12 @@ import org.bukkit.entity.Explosive;
 
 public abstract class GlowExplosive extends GlowEntity implements Explosive {
     private float yield;
-    private boolean isIncendiary;
+    private boolean incendiary;
 
     public GlowExplosive(Location location, float yield) {
         super(location);
         this.yield = yield;
-        this.isIncendiary = false;
+        this.incendiary = false;
     }
 
     @Override
@@ -24,12 +24,12 @@ public abstract class GlowExplosive extends GlowEntity implements Explosive {
     }
 
     @Override
-    public void setIsIncendiary(boolean isIncendiary) {
-        this.isIncendiary = isIncendiary;
+    public void setIsIncendiary(boolean incendiary) {
+        this.incendiary = incendiary;
     }
 
     @Override
     public boolean isIncendiary() {
-        return this.isIncendiary;
+        return this.incendiary;
     }
 }

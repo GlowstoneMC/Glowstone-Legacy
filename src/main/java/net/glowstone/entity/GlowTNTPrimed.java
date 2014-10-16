@@ -14,6 +14,7 @@ import org.bukkit.event.entity.ExplosionPrimeEvent;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 
 public class GlowTNTPrimed extends GlowExplosive implements TNTPrimed {
@@ -24,6 +25,14 @@ public class GlowTNTPrimed extends GlowExplosive implements TNTPrimed {
         super(location, Explosion.POWER_TNT);
         this.fuseTicks = 80;
         this.source = source;
+    }
+
+    public void setIgnitedByExplosion(boolean ignitedByExplosion) {
+        if (ignitedByExplosion) {
+            //if ignited by an explosion, the fuseTicks should be a random number between 10 and 30 ticks
+            Random random = new Random();
+            this.fuseTicks = random.nextInt(21) + 10;
+        }
     }
 
     @Override

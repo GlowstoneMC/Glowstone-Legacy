@@ -155,7 +155,7 @@ public class Explosion {
         if (block.getType() == Material.AIR) {
             return;
         } else if (block.getType() == Material.TNT) {
-            ((BlockTNT) itemTable.getBlock(Material.TNT)).explodeTNTBlock(block);
+            ((BlockTNT) itemTable.getBlock(Material.TNT)).explodeBlock(block, true);
             return;
         }
 

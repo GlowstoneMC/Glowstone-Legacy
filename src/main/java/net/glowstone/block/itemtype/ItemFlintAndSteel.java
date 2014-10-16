@@ -33,11 +33,11 @@ public class ItemFlintAndSteel extends ItemTool {
     }
 
     private void fireNetherPortal() {
-        //TODO
+        //TODO check for nether portal and activate it
     }
 
     private void fireTnt(GlowBlock tnt) {
-        ((BlockTNT) ItemTable.instance().getBlock(Material.TNT)).explodeTNTBlock(tnt);
+        ((BlockTNT) ItemTable.instance().getBlock(Material.TNT)).explodeBlock(tnt);
     }
 
     private boolean setBlockOnFire(GlowPlayer player, GlowBlock clicked, BlockFace face, ItemStack holding, Vector clickedLoc) {
