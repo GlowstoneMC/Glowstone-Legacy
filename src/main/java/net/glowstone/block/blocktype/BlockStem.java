@@ -22,7 +22,7 @@ public class BlockStem extends BlockPlant {
         } else if (plantType.equals(Material.PUMPKIN_STEM)) {
             fruitType = Material.PUMPKIN;
             seedsType = Material.PUMPKIN_SEEDS;
-        }
+        } else throw new IllegalArgumentException("Invalid plant material " + plantType.name() + " for BlockStem");
     }
 
     @Override
