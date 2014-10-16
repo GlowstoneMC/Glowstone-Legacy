@@ -117,7 +117,7 @@ public class BlockType extends ItemType {
     }
 
     /**
-     * Called when a player attempts to destroys a block.
+     * Called when a player attempts to destroy a block.
      * @param player The player interacting
      * @param block The block the player destroyed
      * @param face The block face
