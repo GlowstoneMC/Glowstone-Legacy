@@ -31,7 +31,7 @@ public class TEBanner extends TileEntity {
         }
 
         if (tag.isByte("Base")) {
-            this.base = DyeColor.getByDyeData(tag.getByte("Base"));
+            this.base = DyeColor.getByDyeData((byte) tag.getInt("Base"));
         }
     }
 
@@ -39,7 +39,7 @@ public class TEBanner extends TileEntity {
     public void saveNbt(CompoundTag tag) {
         super.saveNbt(tag);
         tag.putCompoundList("Patterns", BlockBanner.toNBT(pattern));
-        tag.putByte("Base", base.getDyeData());
+        tag.putInt("Base", base.getDyeData());
     }
 
     @Override

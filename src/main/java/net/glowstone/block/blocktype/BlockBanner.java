@@ -73,7 +73,7 @@ public class BlockBanner extends BlockType {
         for (Map.Entry<BannerPattern.Type, DyeColor> layer : pattern.getLayers().entrySet()) {
             CompoundTag layerTag = new CompoundTag();
             layerTag.putString("Pattern", layer.getKey().getCode());
-            layerTag.putByte("Color", layer.getValue().getDyeData());
+            layerTag.putInt("Color", layer.getValue().getDyeData());
             patterns.add(layerTag);
         }
         return patterns;
@@ -83,7 +83,7 @@ public class BlockBanner extends BlockType {
         BannerPattern.Builder builder = BannerPattern.builder();
         for (CompoundTag layer : tag) {
             BannerPattern.Type type = BannerPattern.Type.getByCode(layer.getString("Pattern"));
-            DyeColor color = DyeColor.getByDyeData(layer.getByte("Color"));
+            DyeColor color = DyeColor.getByDyeData((byte) layer.getInt("Color"));
             builder.layer(type, color);
         }
         return builder.build();
