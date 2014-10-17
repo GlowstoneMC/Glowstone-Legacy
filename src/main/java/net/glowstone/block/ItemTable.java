@@ -1,7 +1,11 @@
 package net.glowstone.block;
 
 import net.glowstone.block.blocktype.*;
+import net.glowstone.block.itemtype.ItemDye;
+import net.glowstone.block.itemtype.ItemFoodSeeds;
+import net.glowstone.block.itemtype.ItemHoe;
 import net.glowstone.block.itemtype.ItemPlaceAs;
+import net.glowstone.block.itemtype.ItemSeeds;
 import net.glowstone.block.itemtype.ItemSign;
 import net.glowstone.block.itemtype.ItemType;
 import org.bukkit.Material;
@@ -55,7 +59,7 @@ public final class ItemTable {
         reg(Material.THIN_GLASS, new BlockDropless());
         reg(Material.GLOWSTONE, new BlockRandomDrops(Material.GLOWSTONE_DUST, 2, 4));
         reg(Material.MYCEL, new BlockDirectDrops(Material.DIRT));
-        reg(Material.GRASS, new BlockDirectDrops(Material.DIRT));
+        reg(Material.GRASS, new BlockGrass(Material.DIRT));
         reg(Material.DIRT, new BlockDirectDrops(Material.DIRT));
         reg(Material.GRAVEL, new BlockGravel());
         reg(Material.ICE, new BlockDropless());
@@ -69,20 +73,20 @@ public final class ItemTable {
         reg(Material.LAPIS_ORE, new BlockRandomDrops(Material.INK_SACK, 4, 4, 8));
         reg(Material.QUARTZ_ORE, new BlockDirectDrops(Material.QUARTZ));
         reg(Material.REDSTONE_ORE, new BlockRandomDrops(Material.REDSTONE, 0, 3, 4));
-        reg(Material.CARROT, new BlockDirectDrops(Material.CARROT_ITEM));
-        reg(Material.COCOA, new BlockDirectDrops(Material.INK_SACK, 3, 1));
-        reg(Material.DEAD_BUSH, new BlockDropless());
+        reg(Material.CARROT, new BlockCarrot());
+        reg(Material.COCOA, new BlockCocoa());
+        reg(Material.DEAD_BUSH, new BlockDeadBush());
         reg(Material.LONG_GRASS, new BlockTallGrass());
         reg(Material.HUGE_MUSHROOM_1, new BlockHugeMushroom(true));
         reg(Material.HUGE_MUSHROOM_2, new BlockHugeMushroom(false));
         reg(Material.LEAVES, new BlockLeaves());
         reg(Material.LEAVES_2, new BlockLeaves());
         reg(Material.MELON_BLOCK, new BlockMelon());
-        reg(Material.MELON_STEM, new BlockMelonStem());
+        reg(Material.MELON_STEM, new BlockStem(Material.MELON_STEM));
         reg(Material.NETHER_WARTS, new BlockDirectDrops(Material.NETHER_STALK));
-        reg(Material.POTATO, new BlockDirectDrops(Material.POTATO_ITEM));
-        reg(Material.PUMPKIN_STEM, new BlockPumpkinStem());
-        reg(Material.CROPS, new BlockDirectDrops(Material.SEEDS));
+        reg(Material.POTATO, new BlockPotato());
+        reg(Material.PUMPKIN_STEM, new BlockStem(Material.PUMPKIN_STEM));
+        reg(Material.CROPS, new BlockCrops());
         reg(Material.CAKE_BLOCK, new BlockDropless());
         reg(Material.WEB, new BlockDirectDrops(Material.STRING));
         reg(Material.FIRE, new BlockFire());
@@ -120,6 +124,11 @@ public final class ItemTable {
         reg(Material.ENCHANTMENT_TABLE, new BlockEnchantmentTable());
         reg(Material.ANVIL, new BlockAnvil());
         reg(Material.BREWING_STAND, new BlockBrewingStand());
+        reg(Material.SAPLING, new BlockSapling());
+        reg(Material.DOUBLE_PLANT, new BlockDoublePlant());
+        reg(Material.BROWN_MUSHROOM, new BlockMushroom(Material.BROWN_MUSHROOM));
+        reg(Material.RED_MUSHROOM, new BlockMushroom(Material.RED_MUSHROOM));
+        reg(Material.PUMPKIN, new BlockPumpkin());
 
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
@@ -131,6 +140,18 @@ public final class ItemTable {
         reg(Material.SKULL_ITEM, new ItemPlaceAs(Material.SKULL));
         reg(Material.REDSTONE_COMPARATOR, new ItemPlaceAs(Material.REDSTONE_COMPARATOR_OFF));
         reg(Material.BED, new ItemPlaceAs(Material.BED_BLOCK));
+        reg(Material.INK_SACK, new ItemDye());
+        reg(Material.WOOD_HOE, new ItemHoe());
+        reg(Material.STONE_HOE, new ItemHoe());
+        reg(Material.IRON_HOE, new ItemHoe());
+        reg(Material.GOLD_HOE, new ItemHoe());
+        reg(Material.DIAMOND_HOE, new ItemHoe());
+        reg(Material.SEEDS, new ItemSeeds(Material.CROPS, Material.SOIL));
+        reg(Material.MELON_SEEDS, new ItemSeeds(Material.MELON_STEM, Material.SOIL));
+        reg(Material.PUMPKIN_SEEDS, new ItemSeeds(Material.PUMPKIN_STEM, Material.SOIL));
+        reg(Material.NETHER_STALK, new ItemSeeds(Material.NETHER_WARTS, Material.SOUL_SAND));
+        reg(Material.CARROT_ITEM, new ItemFoodSeeds(Material.CARROT, Material.SOIL));
+        reg(Material.POTATO_ITEM, new ItemFoodSeeds(Material.POTATO, Material.SOIL));
     }
 
     private void reg(Material material, ItemType type) {
