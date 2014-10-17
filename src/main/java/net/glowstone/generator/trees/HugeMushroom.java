@@ -1,75 +1,62 @@
-package net.glowstone.generator;
+package net.glowstone.generator.trees;
 
 import java.util.Random;
 
-import net.glowstone.GlowWorld;
 import net.glowstone.util.BlockStateDelegate;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 
-public class HugeMushroomGenerator extends TreeGenericGenerator {
+public class HugeMushroom extends GenericTree {
     private Material type;
 
-    public HugeMushroomGenerator(Material type) {
-        this(type, new BlockStateDelegate());
-    }
-
-    public HugeMushroomGenerator(Material type, BlockStateDelegate delegate) {
-        super(delegate);
+    public HugeMushroom(Random random, Material type, BlockStateDelegate delegate) {
+        super(random, delegate);
         if (!type.equals(Material.HUGE_MUSHROOM_1) && !type.equals(Material.HUGE_MUSHROOM_2)) {
             throw new IllegalArgumentException("Invalid huge mushroom type");
         }
         this.type = type;
+        setOverridables(
+                Material.AIR,
+                Material.LEAVES,
+                Material.LEAVES_2
+        );
+        setHeight(random.nextInt(3) + 4);
     }
 
     @Override
-    public boolean generate(Random random, Location loc) {
-        // random height
-        final int height = random.nextInt(3) + 4;
-        final int sourceX = loc.getBlockX();
-        final int sourceY = loc.getBlockY();
-        final int sourceZ = loc.getBlockZ();
-
-        // check height range
-        if (sourceY < 1 || sourceY + height + 1 > 255) {
+    public boolean canPlaceOn(World world, int x, int y, int z) {
+        final BlockState state = delegate.getBlockState(world, x, y, z);
+        if (!state.getType().equals(Material.GRASS)
+                && !state.getType().equals(Material.DIRT)
+                && !state.getType().equals(Material.MYCEL)) {
             return false;
         }
+        return true;
+    }
 
-        final World world = (GlowWorld) loc.getWorld();
-        //final Block block  = world.getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-
-        // check below block
-        Block b = world.getBlockAt(sourceX, sourceY - 1, sourceZ);
-        if (!b.getType().equals(Material.DIRT) && !b.getType().equals(Material.GRASS)
-                && !b.getType().equals(Material.MYCEL)) {
-            return false;
-        }
-
-        // check around if there's enough space
-        int x, y, z, radius;
-        for (y = sourceY; y <= sourceY + 1 + height; y++) {
+    @Override
+    public boolean canPlaceAt(World world, int sourceX, int sourceY, int sourceZ) {
+        for (int y = sourceY; y <= sourceY + 1 + height; y++) {
             // Space requirement is 7x7 blocks, so brown mushroom's cap
             // can be directly touching a mushroom next to it.
             // Since red mushrooms fits in 5x5 blocks it will never
             // touch another huge mushroom.
-            radius = 3;
+            int radius = 3;
             if (y <= sourceY + 3) {
                 radius = 0; // radius is 0 below 4 blocks tall (only the stem to take in account)
             }
             // check for block collision on horizontal slices
-            for (x = sourceX - radius; x <= sourceX + radius; x++) {
-                for (z = sourceZ - radius; z <= sourceZ + radius; z++) {
+            for (int x = sourceX - radius; x <= sourceX + radius; x++) {
+                for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
                     if (y >= 0 && y < 256) {
                         // skip source block check
                         if (y != sourceY || x != sourceX || z != sourceZ) {
-                            b = world.getBlockAt(x, y, z);
                             // we can overlap leaves around
-                            if (!(b.getType().equals(Material.AIR)
-                                    || b.getType().equals(Material.LEAVES)
-                                    || b.getType().equals(Material.LEAVES_2))) {
+                            final Material type = delegate.getBlockState(world, x, y, z).getType();
+                            if (!overridables.contains(type)) {
                                 return false;
                             }
                         }
@@ -79,9 +66,35 @@ public class HugeMushroomGenerator extends TreeGenericGenerator {
                 }
             }
         }
+        return true;
+    }
+
+    @Override
+    public boolean generate(Location loc) {
+
+        final int sourceX = loc.getBlockX();
+        final int sourceY = loc.getBlockY();
+        final int sourceZ = loc.getBlockZ();
+
+        // check height range
+        if (!canHeightFitAt(sourceY)) {
+            return false;
+        }
+
+        final World world = loc.getWorld();
+
+        // check below block
+        if (!canPlaceOn(world, sourceX, sourceY - 1, sourceZ)) {
+            return false;
+        }
+
+        // check for sufficient space around
+        if (!canPlaceAt(world, sourceX, sourceY, sourceZ)) {
+            return false;
+        }
 
         // generate the stem
-        for (y = 0; y < height; y++) {
+        for (int y = 0; y < height; y++) {
             delegate.setTypeAndRawData(world, sourceX, sourceY + y, sourceZ, type, 10); // stem texture
         }
 
@@ -92,8 +105,8 @@ public class HugeMushroomGenerator extends TreeGenericGenerator {
         }
 
         // generate mushroom's cap
-        for (y = capY; y <= sourceY + height; y++) { // from bottom to top of mushroom
-            radius = 1; // radius for the top of red mushroom
+        for (int y = capY; y <= sourceY + height; y++) { // from bottom to top of mushroom
+            int radius = 1; // radius for the top of red mushroom
             if (y < sourceY + height) {
                 radius = 2; // radius for red mushroom cap is 2
             }
@@ -101,8 +114,8 @@ public class HugeMushroomGenerator extends TreeGenericGenerator {
                 radius = 3; // radius always 3 for a brown mushroom
             }
             // loop over horizontal slice
-            for (x = sourceX - radius; x <= sourceX + radius; x++) {
-                for (z = sourceZ - radius; z <= sourceZ + radius; z++) {
+            for (int x = sourceX - radius; x <= sourceX + radius; x++) {
+                for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
                     int data = 5; // cap texture on top
                     // cap's borders/corners treatment
                     if (x == sourceX - radius) {

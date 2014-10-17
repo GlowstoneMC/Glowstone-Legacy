@@ -2,6 +2,10 @@ package net.glowstone.generator;
 
 import java.util.Random;
 
+import net.glowstone.generator.trees.HugeMushroom;
+import net.glowstone.generator.trees.BirchTree;
+import net.glowstone.generator.trees.GenericTree;
+import net.glowstone.generator.trees.SpruceTree;
 import net.glowstone.util.BlockStateDelegate;
 
 import org.bukkit.Location;
@@ -9,7 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.TreeType;
 
 public class TreeGenerator {
-    private BlockStateDelegate delegate;
+    private final BlockStateDelegate delegate;
     private boolean forceUpdate;
 
     public TreeGenerator() {
@@ -23,45 +27,47 @@ public class TreeGenerator {
     }
 
     public boolean generate(Random random, Location loc, TreeType type) {
-        // simple tree generation, always the same shape
-        // determine species variant
-        //TreeSpecies species = getSpecies(type);
-        TreeGenericGenerator generator = null;
+        GenericTree tree = null;
         switch (type) {
             case TREE:
             case BIG_TREE:
             case SWAMP:
+                tree = new GenericTree(random, delegate);
+                break;
             case REDWOOD:
             case TALL_REDWOOD:
             case MEGA_REDWOOD:
-                generator = new TreeGenericGenerator(delegate);
+                tree = new SpruceTree(random, delegate);
                 break;
             case BIRCH:
-                generator = new TreeBirchGenerator(delegate);
+                tree = new BirchTree(random, delegate);
                 break;
             case TALL_BIRCH:
-                generator = new TreeBirchGenerator(true, delegate);
+                tree = new BirchTree(random, true, delegate);
                 break;
             case JUNGLE:
             case SMALL_JUNGLE:
+                tree = new GenericTree(random, random.nextInt(7) + 4, 3, 3, delegate);
+                break;
             case COCOA_TREE:
+                tree = new GenericTree(random, random.nextInt(7) + 4, 3, 3, true, delegate);
+                break;
             case JUNGLE_BUSH:
             case ACACIA:
             case DARK_OAK:
-                generator = new TreeGenericGenerator(delegate);
+                tree = new GenericTree(random, delegate);
                 break;
-            // unhandled
             case RED_MUSHROOM:
-                generator = new HugeMushroomGenerator(Material.HUGE_MUSHROOM_1, delegate);
+                tree = new HugeMushroom(random, Material.HUGE_MUSHROOM_1, delegate);
                 break;
             case BROWN_MUSHROOM:
-                generator = new HugeMushroomGenerator(Material.HUGE_MUSHROOM_2, delegate);
+                tree = new HugeMushroom(random, Material.HUGE_MUSHROOM_2, delegate);
                 break;
             default:
                 return false;
         }
 
-        if (generator.generate(random, loc)) {
+        if (tree.generate(loc)) {
 
             if (forceUpdate) {
                 delegate.updateBlockStates();

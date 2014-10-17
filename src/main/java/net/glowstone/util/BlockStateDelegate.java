@@ -1,14 +1,15 @@
 package net.glowstone.util;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
 
 import net.glowstone.block.GlowBlockState;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
+import org.bukkit.material.MaterialData;
 
 /**
  * A small utility class that allow to maintain a {@link BlockState}'s 
@@ -17,7 +18,7 @@ import org.bukkit.block.BlockState;
  */
 public class BlockStateDelegate {
 
-    private List<BlockState> blockStateList = new ArrayList<BlockState>();
+    private HashMap<Location, BlockState> blockStateMap = new HashMap<Location, BlockState>();
 
     /**
      * Sets a block type and add it to the BlockState list.
@@ -30,7 +31,23 @@ public class BlockStateDelegate {
     public void setType(World world, int x, int y, int z, Material type) {
         final GlowBlockState state = (GlowBlockState) world.getBlockAt(x, y, z).getState();
         state.setType(type);
-        addToStateList(state);
+        addToStateMap(world, x, y, z, state);
+    }
+
+    /**
+     * Sets a block type and MaterialData, and add it to the BlockState list.
+     * @param world the world which contains the block
+     * @param x the x-coordinate of this block
+     * @param y the y-coordinate of this block
+     * @param z the z-coordinate of this block
+     * @param type the new type of this block
+     * @param data the new MaterialData of this block
+     */
+    public void setTypeAndData(World world, int x, int y, int z, Material type, MaterialData data) {
+        final GlowBlockState state = (GlowBlockState) world.getBlockAt(x, y, z).getState();
+        state.setType(type);
+        state.setData(data);
+        addToStateMap(world, x, y, z, state);
     }
 
     /**
@@ -46,38 +63,50 @@ public class BlockStateDelegate {
         final GlowBlockState state = (GlowBlockState) world.getBlockAt(x, y, z).getState();
         state.setType(type);
         state.setRawData((byte) data);
-        addToStateList(state);
+        addToStateMap(world, x, y, z, state);
     }
 
     /**
      * Returns the BlockState list
      * @return A list with all {@link BlockState}.
      */
-    public List<BlockState> getBlockStates() {
-        return blockStateList;
+    public Collection<BlockState> getBlockStates() {
+        return blockStateMap.values();
     }
 
     /**
      * Updates all block states contained in the BlockState list.
      */
     public void updateBlockStates() {
-        for (BlockState state : blockStateList) {
+        for (BlockState state : blockStateMap.values()) {
             state.update(true);
         }
     }
 
-    private void addToStateList(BlockState state) {
-        int x = state.getX();
-        int y = state.getY();
-        int z = state.getZ();
-        Iterator<BlockState> it = blockStateList.iterator();
-        while (it.hasNext()) {
-            final BlockState previous = (BlockState) it.next();
-            if (x == previous.getX() && y == previous.getY() && z == previous.getZ()) {
-                it.remove();
-                break;
-            }
+    /**
+     * Returns the BlockState of a block at the given coordinates
+     * @param world the world which contains the block
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @param z the z-coordinate
+     * @return A list with all {@link BlockState}.
+     */
+    public BlockState getBlockState(World world, int x, int y, int z) {
+        final Location loc = new Location(world, x, y, z);
+        if (blockStateMap.containsKey(loc)) {
+            return blockStateMap.get(loc);
+        } else {
+            return world.getBlockAt(loc).getState();
         }
-        blockStateList.add(state);
+    }
+
+    private void addToStateMap(World world, int x, int y, int z, BlockState state) {
+        final Location loc = world.getBlockAt(x, y, z).getLocation();
+        if (blockStateMap.containsKey(loc)) {
+            blockStateMap.remove(loc);
+            blockStateMap.put(loc, state);
+        } else {
+            blockStateMap.put(loc, state);
+        }
     }
 }
