@@ -1,9 +1,7 @@
 package net.glowstone.block;
 
 import net.glowstone.block.blocktype.*;
-import net.glowstone.block.itemtype.ItemPlaceAs;
-import net.glowstone.block.itemtype.ItemSign;
-import net.glowstone.block.itemtype.ItemType;
+import net.glowstone.block.itemtype.*;
 import org.bukkit.Material;
 
 import java.util.HashMap;
@@ -131,6 +129,18 @@ public final class ItemTable {
         reg(Material.SKULL_ITEM, new ItemPlaceAs(Material.SKULL));
         reg(Material.REDSTONE_COMPARATOR, new ItemPlaceAs(Material.REDSTONE_COMPARATOR_OFF));
         reg(Material.BED, new ItemPlaceAs(Material.BED_BLOCK));
+        reg(Material.WOOD_HOE, new ItemHoe());
+        reg(Material.STONE_HOE, new ItemHoe());
+        reg(Material.IRON_HOE, new ItemHoe());
+        reg(Material.GOLD_HOE, new ItemHoe());
+        reg(Material.DIAMOND_HOE, new ItemHoe());
+        reg(Material.SEEDS, new ItemSeeds(Material.CROPS, Material.SOIL));
+        reg(Material.MELON_SEEDS, new ItemSeeds(Material.MELON_STEM, Material.SOIL));
+        reg(Material.PUMPKIN_SEEDS, new ItemSeeds(Material.PUMPKIN_STEM, Material.SOIL));
+        reg(Material.NETHER_STALK, new ItemSeeds(Material.NETHER_WARTS, Material.SOUL_SAND));
+        reg(Material.CARROT_ITEM, new ItemFoodSeeds(Material.CARROT, Material.SOIL));
+        reg(Material.POTATO_ITEM, new ItemFoodSeeds(Material.POTATO, Material.SOIL));
+        reg(Material.INK_SACK, new ItemDye());
     }
 
     private void reg(Material material, ItemType type) {
