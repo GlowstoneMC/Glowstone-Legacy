@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import net.glowstone.RSManager;
 import net.glowstone.block.GlowBlock;
-import net.glowstone.entity.GlowPlayer;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
@@ -205,11 +204,6 @@ public class BlockRedstoneDust extends BlockType {
             }
         }
         return false;
-    }
-
-    @Override
-    public void afterPlace(GlowPlayer player, GlowBlock block, ItemStack holding) {
-        block.getWorld().getRSManager().addFlush(block);
     }
 
     @Override

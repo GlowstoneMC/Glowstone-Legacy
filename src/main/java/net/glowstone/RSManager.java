@@ -347,7 +347,8 @@ public class RSManager {
             }
             redSource.add(p);
         }
-
+        addAsSource.clear();
+        
         Set<BlockVector> redSourceTemp = new HashSet<>(redSource);
 
         // Initialise sources
