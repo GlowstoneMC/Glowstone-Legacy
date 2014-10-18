@@ -4,7 +4,6 @@ import java.util.Random;
 
 import net.glowstone.util.BlockStateDelegate;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 
@@ -53,18 +52,12 @@ public class SpruceTree extends GenericTree {
     }
 
     @Override
-    public boolean generate(Location loc) {
-
-        final int sourceX = loc.getBlockX();
-        final int sourceY = loc.getBlockY();
-        final int sourceZ = loc.getBlockZ();
+    public boolean generate(World world, int sourceX, int sourceY, int sourceZ) {
 
         // check height range
         if (!canHeightFitAt(sourceY)) {
             return false;
         }
-
-        final World world = loc.getWorld();
 
         // check below block
         if (!canPlaceOn(world, sourceX, sourceY - 1, sourceZ)) {

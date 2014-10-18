@@ -18,7 +18,7 @@ import org.bukkit.material.MaterialData;
  */
 public class BlockStateDelegate {
 
-    private HashMap<Location, BlockState> blockStateMap = new HashMap<Location, BlockState>();
+    private final HashMap<Location, BlockState> blockStateMap = new HashMap<Location, BlockState>();
 
     /**
      * Sets a block type and add it to the BlockState list.
@@ -31,7 +31,7 @@ public class BlockStateDelegate {
     public void setType(World world, int x, int y, int z, Material type) {
         final GlowBlockState state = (GlowBlockState) world.getBlockAt(x, y, z).getState();
         state.setType(type);
-        addToStateMap(world, x, y, z, state);
+        blockStateMap.put(world.getBlockAt(x, y, z).getLocation(), state);
     }
 
     /**
@@ -47,7 +47,7 @@ public class BlockStateDelegate {
         final GlowBlockState state = (GlowBlockState) world.getBlockAt(x, y, z).getState();
         state.setType(type);
         state.setData(data);
-        addToStateMap(world, x, y, z, state);
+        blockStateMap.put(world.getBlockAt(x, y, z).getLocation(), state);
     }
 
     /**
@@ -63,7 +63,7 @@ public class BlockStateDelegate {
         final GlowBlockState state = (GlowBlockState) world.getBlockAt(x, y, z).getState();
         state.setType(type);
         state.setRawData((byte) data);
-        addToStateMap(world, x, y, z, state);
+        blockStateMap.put(world.getBlockAt(x, y, z).getLocation(), state);
     }
 
     /**
@@ -84,29 +84,19 @@ public class BlockStateDelegate {
     }
 
     /**
-     * Returns the BlockState of a block at the given coordinates
+     * Returns the {@link BlockState} of a block at the given coordinates
      * @param world the world which contains the block
      * @param x the x-coordinate
      * @param y the y-coordinate
      * @param z the z-coordinate
-     * @return A list with all {@link BlockState}.
+     * @return The {@link BlockState} state.
      */
     public BlockState getBlockState(World world, int x, int y, int z) {
-        final Location loc = new Location(world, x, y, z);
+        final Location loc = world.getBlockAt(x, y, z).getLocation();
         if (blockStateMap.containsKey(loc)) {
             return blockStateMap.get(loc);
         } else {
             return world.getBlockAt(loc).getState();
-        }
-    }
-
-    private void addToStateMap(World world, int x, int y, int z, BlockState state) {
-        final Location loc = world.getBlockAt(x, y, z).getLocation();
-        if (blockStateMap.containsKey(loc)) {
-            blockStateMap.remove(loc);
-            blockStateMap.put(loc, state);
-        } else {
-            blockStateMap.put(loc, state);
         }
     }
 }

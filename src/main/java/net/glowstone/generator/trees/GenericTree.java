@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -61,8 +60,8 @@ public class GenericTree {
         this.height = height;
     }
 
-    public boolean canHeightFitAt(int y) {
-        if (y < 1 || y  + height + 1 > 255) {
+    public boolean canHeightFitAt(int sourceY) {
+        if (sourceY < 1 || sourceY  + height + 1 > 255) {
             return false;
         }
         return true;
@@ -105,18 +104,12 @@ public class GenericTree {
         return true;
     }
 
-    public boolean generate(Location loc) {
-
-        final int sourceX = loc.getBlockX();
-        final int sourceY = loc.getBlockY();
-        final int sourceZ = loc.getBlockZ();
+    public boolean generate(World world, int sourceX, int sourceY, int sourceZ) {
 
         // check height range
         if (!canHeightFitAt(sourceY)) {
             return false;
         }
-
-        final World world = loc.getWorld();
 
         // check below block
         if (!canPlaceOn(world, sourceX, sourceY - 1, sourceZ)) {
@@ -170,24 +163,21 @@ public class GenericTree {
 
     private void addVinesOnTrunk(World world, int sourceX, int sourceY, int sourceZ) {
         for (int y = 1; y < height; y++) {
-            final Material material = delegate.getBlockState(world, sourceX, sourceY + y, sourceZ).getType();
-            if (material.equals(Material.AIR) || material.equals(Material.LEAVES)) {
-                if (random.nextInt(3) != 0
-                        && delegate.getBlockState(world, sourceX - 1, sourceY + y, sourceZ).getType().equals(Material.AIR)) {
-                    delegate.setTypeAndData(world, sourceX - 1, sourceY + y, sourceZ, Material.VINE, new Vine(BlockFace.EAST));
-                }
-                if (random.nextInt(3) != 0
-                        && delegate.getBlockState(world, sourceX + 1, sourceY + y, sourceZ).getType().equals(Material.AIR)) {
-                    delegate.setTypeAndData(world, sourceX + 1, sourceY + y, sourceZ, Material.VINE, new Vine(BlockFace.WEST));
-                }
-                if (random.nextInt(3) != 0
-                        && delegate.getBlockState(world, sourceX, sourceY + y, sourceZ - 1).getType().equals(Material.AIR)) {
-                    delegate.setTypeAndData(world, sourceX, sourceY + y, sourceZ - 1, Material.VINE, new Vine(BlockFace.SOUTH));
-                }
-                if (random.nextInt(3) != 0
-                        && delegate.getBlockState(world, sourceX, sourceY + y, sourceZ + 1).getType().equals(Material.AIR)) {
-                    delegate.setTypeAndData(world, sourceX, sourceY + y, sourceZ + 1, Material.VINE, new Vine(BlockFace.NORTH));
-                }
+            if (random.nextInt(3) != 0
+                    && delegate.getBlockState(world, sourceX - 1, sourceY + y, sourceZ).getType().equals(Material.AIR)) {
+                delegate.setTypeAndData(world, sourceX - 1, sourceY + y, sourceZ, Material.VINE, new Vine(BlockFace.EAST));
+            }
+            if (random.nextInt(3) != 0
+                    && delegate.getBlockState(world, sourceX + 1, sourceY + y, sourceZ).getType().equals(Material.AIR)) {
+                delegate.setTypeAndData(world, sourceX + 1, sourceY + y, sourceZ, Material.VINE, new Vine(BlockFace.WEST));
+            }
+            if (random.nextInt(3) != 0
+                    && delegate.getBlockState(world, sourceX, sourceY + y, sourceZ - 1).getType().equals(Material.AIR)) {
+                delegate.setTypeAndData(world, sourceX, sourceY + y, sourceZ - 1, Material.VINE, new Vine(BlockFace.SOUTH));
+            }
+            if (random.nextInt(3) != 0
+                    && delegate.getBlockState(world, sourceX, sourceY + y, sourceZ + 1).getType().equals(Material.AIR)) {
+                delegate.setTypeAndData(world, sourceX, sourceY + y, sourceZ + 1, Material.VINE, new Vine(BlockFace.NORTH));
             }
         }
     }

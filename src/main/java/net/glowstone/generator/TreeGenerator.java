@@ -67,7 +67,7 @@ public class TreeGenerator {
                 return false;
         }
 
-        if (tree.generate(loc)) {
+        if (tree.generate(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())) {
 
             if (forceUpdate) {
                 delegate.updateBlockStates();
