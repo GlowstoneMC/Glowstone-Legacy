@@ -1,10 +1,13 @@
 package net.glowstone.block.blocktype;
 
 import net.glowstone.GlowChunk;
+import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.entity.TEDispenser;
 import net.glowstone.block.entity.TileEntity;
 import net.glowstone.entity.GlowPlayer;
+import net.glowstone.inventory.MaterialMatcher;
+import net.glowstone.inventory.ToolType;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
@@ -35,4 +38,8 @@ public class BlockDispenser extends BlockContainer {
         }
     }
 
+    @Override
+    protected MaterialMatcher getNeededMiningTool(GlowBlock block) {
+        return ToolType.PICKAXE;
+    }
 }
