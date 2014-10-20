@@ -12,23 +12,23 @@ public final class PlayerUpdateHandler implements MessageHandler<GlowSession, Pl
 
     @Override
     public void handle(GlowSession session, PlayerUpdateMessage message) {
-        Location originLoc = session.getPlayer().getLocation();
-        Location newLoc = originLoc.clone();
+        Location original = session.getPlayer().getLocation();
+        Location newLoc = original.clone();
         Location finalLoc = newLoc;
         message.update(newLoc);
 
         // don't let players move more than 16 blocks in a single packet.
         // this is NOT robust hack prevention - only to prevent client
         // confusion about where its actual location is (e.g. during login)
-        if (newLoc.distanceSquared(originLoc) > 16 * 16) {
+        if (newLoc.distanceSquared(original) > 16 * 16) {
             return;
         }
 
-        if (!originLoc.equals(newLoc)) {
-            final PlayerMoveEvent event = EventFactory.callEvent(new PlayerMoveEvent(session.getPlayer(), originLoc, newLoc));
+        if (!original.equals(newLoc)) {
+            final PlayerMoveEvent event = EventFactory.callEvent(new PlayerMoveEvent(session.getPlayer(), original, newLoc));
 
             if (event.isCancelled()) {
-                finalLoc = originLoc;
+                finalLoc = original;
             } else if (!event.getTo().equals(newLoc)) {
                 finalLoc = event.getTo();
             }
