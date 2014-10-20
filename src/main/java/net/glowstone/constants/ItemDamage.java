@@ -87,6 +87,12 @@ public final class ItemDamage {
                 case DIAMOND_SPADE:
                     item.setDurability((short) (item.getDurability() + 2));
                     break;
+                case WOOD_SWORD:
+                case GOLD_SWORD:
+                case IRON_SWORD:
+                case DIAMOND_SWORD:
+                    item.setDurability((short) (item.getDurability() + 1));
+                    break;
                 default:
                     break;
             }

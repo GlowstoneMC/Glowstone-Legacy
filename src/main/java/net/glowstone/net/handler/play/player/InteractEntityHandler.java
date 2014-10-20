@@ -2,6 +2,7 @@ package net.glowstone.net.handler.play.player;
 
 import com.flowpowered.networking.MessageHandler;
 import com.google.common.collect.ImmutableList;
+import net.glowstone.EventFactory;
 import net.glowstone.GlowServer;
 import net.glowstone.constants.ItemDamage;
 import net.glowstone.entity.GlowEntity;
@@ -12,6 +13,7 @@ import net.glowstone.net.message.play.player.InteractEntityMessage;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -45,9 +47,15 @@ public final class InteractEntityHandler implements MessageHandler<GlowSession, 
                 float damage = critical ? ItemDamage.getCriticalDamageFor(type) : ItemDamage.getDamageFor(type);
 
                 if (!target.isDead() && (!(target instanceof Player) || !invulnerableGamemodes.contains(((Player) target).getGameMode()))) {
-                    target.damage(damage, player, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
-                    ItemDamage.applyDurabilityLoss(hand);
-                    player.updateInventory();
+                    // TODO: Calculate damage modifiers
+                    // ... also make sure the correct event constructor is used
+                    EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage);
+                    EventFactory.callEvent(event);
+                    if (!event.isCancelled()) {
+                        target.damage(damage, player, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+                        ItemDamage.applyDurabilityLoss(hand);
+                        player.updateInventory();
+                    }
                 }
             }
         } else if (message.getAction() == InteractEntityMessage.Action.ATTACK_AT.ordinal()) {
