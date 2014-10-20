@@ -86,6 +86,9 @@ public final class ItemDamage {
                 case IRON_SPADE:
                 case DIAMOND_SPADE:
                     item.setDurability((short) (item.getDurability() + 2));
+                    break;
+                default:
+                    break;
             }
         }
     }
