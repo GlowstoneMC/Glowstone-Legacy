@@ -14,6 +14,7 @@ public final class PlayerUpdateHandler implements MessageHandler<GlowSession, Pl
     public void handle(GlowSession session, PlayerUpdateMessage message) {
         Location originLoc = session.getPlayer().getLocation();
         Location newLoc = originLoc.clone();
+        Location finalLoc = newLoc;
         message.update(newLoc);
 
         // don't let players move more than 16 blocks in a single packet.
@@ -24,14 +25,23 @@ public final class PlayerUpdateHandler implements MessageHandler<GlowSession, Pl
         }
 
         if (!originLoc.equals(newLoc)) {
+            session.getPlayer().sendMessage("before " + newLoc.toString());
             final PlayerMoveEvent event = EventFactory.callEvent(new PlayerMoveEvent(session.getPlayer(), originLoc, newLoc));
+            session.getPlayer().sendMessage("after  " + newLoc.toString());
+
             if (event.isCancelled()) {
-                session.send(new PositionRotationMessage(originLoc, session.getPlayer().getEyeHeight(true)));
-                return;
+                finalLoc = originLoc;
+            } else if (!event.getTo().equals(newLoc)) {
+                finalLoc = event.getTo();
+            }
+
+            if (!newLoc.equals(finalLoc)) {
+                session.send(new PositionRotationMessage(finalLoc, session.getPlayer().getEyeHeight(true)));
             }
         }
 
+
         // do stuff with onGround if we need to
-        session.getPlayer().setRawLocation(newLoc);
+        session.getPlayer().setRawLocation(finalLoc);
     }
 }
