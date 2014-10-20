@@ -19,18 +19,6 @@ public final class AttackDamage {
      * @return the raw damage caused by that item
      */
     public static float getMeleeDamage(Material material) {
-        return getMeleeDamage(material, false);
-    }
-
-    /**
-     * Gets the damage an item in-hand would cause without added benefits.
-     *
-     * @param material the item type
-     * @param critical true if critical damage should be returned
-     *
-     * @return the raw damage caused by that item
-     */
-    public static float getMeleeDamage(Material material, boolean critical) {
         if (material == null) return 0.0f;
 
         switch (material) {
@@ -64,6 +52,19 @@ public final class AttackDamage {
             default:
                 return 1.0f;
         }
+    }
+
+    /**
+     * Gets the damage an item in-hand would cause without added benefits.
+     *
+     * @param material the item type
+     * @param critical true if critical damage should be returned
+     *
+     * @return the raw damage caused by that item
+     */
+    public static float getMeleeDamage(Material material, boolean critical) {
+        float raw = getMeleeDamage(material);
+        return critical ? raw * 1.5f : raw;
     }
 
     /**
