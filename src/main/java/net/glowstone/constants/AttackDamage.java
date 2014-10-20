@@ -14,6 +14,7 @@ public final class AttackDamage {
      * Gets the damage an item in-hand would cause without added benefits.
      *
      * @param material the item type
+     *
      * @return the raw damage caused by that item
      */
     public static float getMeleeDamage(Material material) {
@@ -57,6 +58,7 @@ public final class AttackDamage {
      * a critical hit.
      *
      * @param material the item type
+     *
      * @return the raw damage caused by that item during a critical hit
      */
     public static float getCriticalMeleeDamage(Material material) {
@@ -69,37 +71,34 @@ public final class AttackDamage {
      * assumes that the supplied type was used for a melee attack.
      *
      * @param material the item type
+     *
      * @return the durability points lost, or 0
      */
     public static short getMeleeDurabilityLoss(Material material) {
-        short loss = 0;
-        if (material != null) {
-            switch (material) {
-                case WOOD_AXE:
-                case GOLD_AXE:
-                case STONE_AXE:
-                case DIAMOND_AXE:
-                case WOOD_PICKAXE:
-                case GOLD_PICKAXE:
-                case IRON_PICKAXE:
-                case DIAMOND_PICKAXE:
-                case WOOD_SPADE:
-                case GOLD_SPADE:
-                case IRON_SPADE:
-                case DIAMOND_SPADE:
-                    loss = 2;
-                    break;
-                case WOOD_SWORD:
-                case GOLD_SWORD:
-                case IRON_SWORD:
-                case DIAMOND_SWORD:
-                    loss = 1;
-                    break;
-                default:
-                    break;
-            }
+        if (material == null) return 0;
+
+        switch (material) {
+            case WOOD_AXE:
+            case GOLD_AXE:
+            case STONE_AXE:
+            case DIAMOND_AXE:
+            case WOOD_PICKAXE:
+            case GOLD_PICKAXE:
+            case IRON_PICKAXE:
+            case DIAMOND_PICKAXE:
+            case WOOD_SPADE:
+            case GOLD_SPADE:
+            case IRON_SPADE:
+            case DIAMOND_SPADE:
+                return 2;
+            case WOOD_SWORD:
+            case GOLD_SWORD:
+            case IRON_SWORD:
+            case DIAMOND_SWORD:
+                return 1;
+            default:
+                return 0;
         }
-        return loss;
     }
 
     // TODO: Other methods for stuff like lava contact, fire, arrows, etc
