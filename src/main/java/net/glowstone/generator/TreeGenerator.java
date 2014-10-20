@@ -57,10 +57,10 @@ public class TreeGenerator {
             case DARK_OAK:
                 tree = new GenericTree(random, delegate);
                 break;
-            case RED_MUSHROOM:
+            case BROWN_MUSHROOM:
                 tree = new HugeMushroom(random, Material.HUGE_MUSHROOM_1, delegate);
                 break;
-            case BROWN_MUSHROOM:
+            case RED_MUSHROOM:
                 tree = new HugeMushroom(random, Material.HUGE_MUSHROOM_2, delegate);
                 break;
             default:
