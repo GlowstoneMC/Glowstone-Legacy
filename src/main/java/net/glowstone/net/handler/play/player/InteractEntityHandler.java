@@ -58,7 +58,7 @@ public final class InteractEntityHandler implements MessageHandler<GlowSession, 
 
                         // Apply durability loss (if applicable)
                         short durabilityLoss = AttackDamage.getMeleeDurabilityLoss(type);
-                        if (durabilityLoss > 0) {
+                        if (durabilityLoss > 0 && hand != null) {
                             // Yes, this actually subtracts
                             hand.setDurability((short) (hand.getDurability() + durabilityLoss));
                         }
