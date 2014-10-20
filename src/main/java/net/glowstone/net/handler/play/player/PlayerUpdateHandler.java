@@ -25,9 +25,7 @@ public final class PlayerUpdateHandler implements MessageHandler<GlowSession, Pl
         }
 
         if (!originLoc.equals(newLoc)) {
-            session.getPlayer().sendMessage("before " + newLoc.toString());
             final PlayerMoveEvent event = EventFactory.callEvent(new PlayerMoveEvent(session.getPlayer(), originLoc, newLoc));
-            session.getPlayer().sendMessage("after  " + newLoc.toString());
 
             if (event.isCancelled()) {
                 finalLoc = originLoc;
