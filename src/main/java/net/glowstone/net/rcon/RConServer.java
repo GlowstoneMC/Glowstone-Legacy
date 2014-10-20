@@ -27,6 +27,10 @@ public class RConServer {
      */
     private ServerBootstrap bootstrap = new ServerBootstrap();
 
+    public GlowServer getServer() {
+        return server;
+    }
+
     /**
      * Instance of the GlowServer.
      */

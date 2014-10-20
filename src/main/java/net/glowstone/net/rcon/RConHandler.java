@@ -3,14 +3,20 @@ package net.glowstone.net.rcon;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandException;
+
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
 public class RConHandler extends SimpleChannelInboundHandler<ByteBuf> {
+    private static final byte TYPE_RESPONSE = 0;
     private static final byte TYPE_COMMAND = 2;
     private static final byte TYPE_LOGIN = 3;
     private final String password;
+
+    private boolean loggedIn = false;
 
     /**
      * The {@link net.glowstone.net.query.QueryServer} this handler belongs to.
@@ -24,14 +30,10 @@ public class RConHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ByteBuf buf) throws Exception {
-        System.out.println("Reading");
-        if (buf.readableBytes() < 16) {
-            System.out.println("Nope");
+        if (buf.readableBytes() < 10) {
             return;
         }
-
         String payload;
-
         int length = buf.order(ByteOrder.LITTLE_ENDIAN).readInt();
 
         // The request ID, type, and 2 byte pad take up 10 bytes in total.
@@ -50,21 +52,43 @@ public class RConHandler extends SimpleChannelInboundHandler<ByteBuf> {
         buf.readBytes(2); // Two byte padding
 
         if (type == TYPE_LOGIN) {
-            System.out.println("Login");
             handleLogin(ctx, payload, requestId);
+        } else if (type == TYPE_COMMAND) {
+            handleCommand(ctx, payload, requestId);
+        } else {
+            sendMultiPacketResponse(ctx, requestId, String.format("Unknown request %s", Integer.toHexString(type)));
         }
 
+    }
+
+    private void handleCommand(ChannelHandlerContext ctx, String payload, int requestId) throws IOException {
+        if (this.loggedIn) {
+            RConCommandSender sender = (RConCommandSender) rconServer.getServer().getRemoteConsoleCommandSender();
+            try {
+                rconServer.getServer().dispatchCommand(rconServer.getServer().getRemoteConsoleCommandSender(), payload);
+                sendMultiPacketResponse(ctx, requestId, ChatColor.stripColor(sender.getLog()));
+                sender.clearLog();
+            } catch (CommandException e) {
+                sendMultiPacketResponse(ctx, requestId, String.format("Error executing: %s (%s)", payload, e.getMessage()));
+            }
+        } else {
+            ByteBuf buf = ctx.alloc().buffer();
+            createResponse(buf, -1, 2, "");
+            ctx.write(buf);
+        }
     }
 
     private void handleLogin(ChannelHandlerContext ctx, String password, int requestId) throws IOException {
         ByteBuf buf;
 
         if (password.equals(this.password)) {
+            this.loggedIn = true;
             rconServer.setVerified(requestId, true);
 
             buf = ctx.alloc().buffer();
             createResponse(buf, requestId, 2, "");
         } else {
+            this.loggedIn = false;
             rconServer.setVerified(requestId, false);
 
             buf = ctx.alloc().buffer();
@@ -86,5 +110,19 @@ public class RConHandler extends SimpleChannelInboundHandler<ByteBuf> {
         buf.writeBytes(payload.getBytes(StandardCharsets.UTF_8));
         buf.writeByte(0);
         buf.writeByte(0);
+    }
+
+    private void sendMultiPacketResponse(ChannelHandlerContext ctx, int requestId, String payload) throws IOException {
+        int length = payload.length();
+
+        while (length != 0) {
+            int truncated = length > 4096 ? 4096 : length;
+
+            ByteBuf buf = ctx.alloc().buffer();
+            createResponse(buf, requestId, TYPE_RESPONSE, payload.substring(0, truncated));
+            ctx.write(buf);
+            payload = payload.substring(truncated);
+            length = payload.length();
+        }
     }
 }

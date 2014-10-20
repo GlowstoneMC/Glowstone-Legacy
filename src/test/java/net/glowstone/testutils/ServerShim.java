@@ -3,10 +3,7 @@ package net.glowstone.testutils;
 import com.avaje.ebean.config.ServerConfig;
 import net.glowstone.inventory.GlowItemFactory;
 import org.bukkit.*;
-import org.bukkit.command.CommandException;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.PluginCommand;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.help.HelpMap;
@@ -326,6 +323,10 @@ public class ServerShim implements Server {
     }
 
     public ConsoleCommandSender getConsoleSender() {
+        return null;
+    }
+
+    public RemoteConsoleCommandSender getRemoteConsoleCommandSender() {
         return null;
     }
 
