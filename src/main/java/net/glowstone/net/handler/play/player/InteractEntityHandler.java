@@ -4,7 +4,7 @@ import com.flowpowered.networking.MessageHandler;
 import com.google.common.collect.ImmutableList;
 import net.glowstone.EventFactory;
 import net.glowstone.GlowServer;
-import net.glowstone.constants.ItemDamage;
+import net.glowstone.constants.AttackDamage;
 import net.glowstone.entity.GlowEntity;
 import net.glowstone.entity.GlowLivingEntity;
 import net.glowstone.entity.GlowPlayer;
@@ -44,7 +44,7 @@ public final class InteractEntityHandler implements MessageHandler<GlowSession, 
                 Material type = hand == null ? Material.AIR : hand.getType();
 
                 boolean critical = false; // TODO: Actual critical hit check
-                float damage = critical ? ItemDamage.getCriticalDamageFor(type) : ItemDamage.getDamageFor(type);
+                float damage = critical ? AttackDamage.getCriticalMeleeDamage(type) : AttackDamage.getMeleeDamage(type);
 
                 // TODO: Calculate damage modifiers
                 // ... also make sure the correct event constructor is used
@@ -57,7 +57,7 @@ public final class InteractEntityHandler implements MessageHandler<GlowSession, 
                         target.damage(damage, player, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
 
                         // Apply durability loss (if applicable)
-                        short durabilityLoss = ItemDamage.getDurabilityLoss(type);
+                        short durabilityLoss = AttackDamage.getMeleeDurabilityLoss(type);
                         if (durabilityLoss > 0) {
                             // Yes, this actually subtracts
                             hand.setDurability((short) (hand.getDurability() + durabilityLoss));

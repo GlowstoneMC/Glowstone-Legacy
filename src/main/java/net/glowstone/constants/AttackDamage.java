@@ -3,11 +3,11 @@ package net.glowstone.constants;
 import org.bukkit.Material;
 
 /**
- * Maps item types to damage values
+ * Maps attack damage values
  */
-public final class ItemDamage {
+public final class AttackDamage {
 
-    private ItemDamage() {
+    private AttackDamage() {
     }
 
     /**
@@ -16,7 +16,7 @@ public final class ItemDamage {
      * @param material the item type
      * @return the raw damage caused by that item
      */
-    public static float getDamageFor(Material material) {
+    public static float getMeleeDamage(Material material) {
         if (material == null) return 0.0f;
 
         switch (material) {
@@ -59,8 +59,8 @@ public final class ItemDamage {
      * @param material the item type
      * @return the raw damage caused by that item during a critical hit
      */
-    public static float getCriticalDamageFor(Material material) {
-        float raw = getDamageFor(material);
+    public static float getCriticalMeleeDamage(Material material) {
+        float raw = getMeleeDamage(material);
         return raw * 1.5f;
     }
 
@@ -71,7 +71,7 @@ public final class ItemDamage {
      * @param material the item type
      * @return the durability points lost, or 0
      */
-    public static short getDurabilityLoss(Material material) {
+    public static short getMeleeDurabilityLoss(Material material) {
         short loss = 0;
         if (material != null) {
             switch (material) {
