@@ -11,13 +11,26 @@ public final class AttackDamage {
     }
 
     /**
-     * Gets the damage an item in-hand would cause without added benefits.
+     * Gets the damage an item in-hand would cause without added benefits. This
+     * assumes a non-critical attack.
      *
      * @param material the item type
      *
      * @return the raw damage caused by that item
      */
     public static float getMeleeDamage(Material material) {
+        return getMeleeDamage(material, false);
+    }
+
+    /**
+     * Gets the damage an item in-hand would cause without added benefits.
+     *
+     * @param material the item type
+     * @param critical true if critical damage should be returned
+     *
+     * @return the raw damage caused by that item
+     */
+    public static float getMeleeDamage(Material material, boolean critical) {
         if (material == null) return 0.0f;
 
         switch (material) {
@@ -54,21 +67,7 @@ public final class AttackDamage {
     }
 
     /**
-     * Gets the damage an in-hand item would cause without added benefits upon
-     * a critical hit.
-     *
-     * @param material the item type
-     *
-     * @return the raw damage caused by that item during a critical hit
-     */
-    public static float getCriticalMeleeDamage(Material material) {
-        float raw = getMeleeDamage(material);
-        return raw * 1.5f;
-    }
-
-    /**
-     * Gets the durability loss of the supplied type for a successful hit. This
-     * assumes that the supplied type was used for a melee attack.
+     * Gets the durability loss of the supplied type for a successful hit.
      *
      * @param material the item type
      *
@@ -100,7 +99,5 @@ public final class AttackDamage {
                 return 0;
         }
     }
-
-    // TODO: Other methods for stuff like lava contact, fire, arrows, etc
 
 }

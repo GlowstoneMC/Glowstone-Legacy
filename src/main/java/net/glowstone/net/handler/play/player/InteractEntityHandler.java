@@ -44,7 +44,7 @@ public final class InteractEntityHandler implements MessageHandler<GlowSession, 
                 Material type = hand == null ? Material.AIR : hand.getType();
 
                 boolean critical = false; // TODO: Actual critical hit check
-                float damage = critical ? AttackDamage.getCriticalMeleeDamage(type) : AttackDamage.getMeleeDamage(type);
+                float damage = AttackDamage.getMeleeDamage(type, critical);
 
                 // TODO: Calculate damage modifiers
                 // ... also make sure the correct event constructor is used
