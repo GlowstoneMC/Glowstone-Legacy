@@ -488,6 +488,16 @@ public final class GlowWorld implements World {
         return result;
     }
 
+    /**
+     * Gets an entity by it's internal ID.
+     *
+     * @param id the entity's ID
+     * @return the entity found, or null otherwise
+     */
+    public GlowEntity getEntityById(int id) {
+        return entities.getEntity(id);
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Various malleable world properties
 
