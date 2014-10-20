@@ -85,7 +85,7 @@ public final class ItemDamage {
                 case GOLD_SPADE:
                 case IRON_SPADE:
                 case DIAMOND_SPADE:
-                    item.setDurability((short) (item.getDurability() - 2));
+                    item.setDurability((short) (item.getDurability() + 2));
             }
         }
     }
