@@ -170,7 +170,8 @@ public class Explosion {
     }
 
     private double getBlastDurability(GlowBlock block) {
-        return 2.5; //Dirt
+        //TODO return the block's blast durability
+        return 2.5;
     }
 
     private List<Block> toBlockList(Collection<BlockVector> locs) {
