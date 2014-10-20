@@ -1,7 +1,6 @@
 package net.glowstone.constants;
 
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * Maps item types to damage values
@@ -66,13 +65,16 @@ public final class ItemDamage {
     }
 
     /**
-     * Applies durability loss, if applicable, to the item for a successful hit.
+     * Gets the durability loss of the supplied type for a successful hit. This
+     * assumes that the supplied type was used for a melee attack.
      *
-     * @param item the item to damage
+     * @param material the item type
+     * @return the durability points lost, or 0
      */
-    public static void applyDurabilityLoss(ItemStack item) {
-        if (item != null) {
-            switch (item.getType()) {
+    public static short getDurabilityLoss(Material material) {
+        short loss = 0;
+        if (material != null) {
+            switch (material) {
                 case WOOD_AXE:
                 case GOLD_AXE:
                 case STONE_AXE:
@@ -85,18 +87,19 @@ public final class ItemDamage {
                 case GOLD_SPADE:
                 case IRON_SPADE:
                 case DIAMOND_SPADE:
-                    item.setDurability((short) (item.getDurability() + 2));
+                    loss = 2;
                     break;
                 case WOOD_SWORD:
                 case GOLD_SWORD:
                 case IRON_SWORD:
                 case DIAMOND_SWORD:
-                    item.setDurability((short) (item.getDurability() + 1));
+                    loss = 1;
                     break;
                 default:
                     break;
             }
         }
+        return loss;
     }
 
     // TODO: Other methods for stuff like lava contact, fire, arrows, etc

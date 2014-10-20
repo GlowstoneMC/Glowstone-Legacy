@@ -46,14 +46,22 @@ public final class InteractEntityHandler implements MessageHandler<GlowSession, 
                 boolean critical = false; // TODO: Actual critical hit check
                 float damage = critical ? ItemDamage.getCriticalDamageFor(type) : ItemDamage.getDamageFor(type);
 
+                // TODO: Calculate damage modifiers
+                // ... also make sure the correct event constructor is used
+
                 if (!target.isDead() && (!(target instanceof Player) || !invulnerableGamemodes.contains(((Player) target).getGameMode()))) {
-                    // TODO: Calculate damage modifiers
-                    // ... also make sure the correct event constructor is used
                     EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage);
                     EventFactory.callEvent(event);
+
                     if (!event.isCancelled()) {
                         target.damage(damage, player, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
-                        ItemDamage.applyDurabilityLoss(hand);
+
+                        // Apply durability loss (if applicable)
+                        short durabilityLoss = ItemDamage.getDurabilityLoss(type);
+                        if (durabilityLoss > 0) {
+                            // Yes, this actually subtracts
+                            hand.setDurability((short) (hand.getDurability() + durabilityLoss));
+                        }
                         player.updateInventory();
                     }
                 }
