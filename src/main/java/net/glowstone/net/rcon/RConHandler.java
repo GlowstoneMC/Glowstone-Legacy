@@ -58,7 +58,6 @@ public class RConHandler extends SimpleChannelInboundHandler<ByteBuf> {
         } else {
             sendMultiPacketResponse(ctx, requestId, String.format("Unknown request %s", Integer.toHexString(type)));
         }
-
     }
 
     private void handleCommand(ChannelHandlerContext ctx, String payload, int requestId) throws IOException {
@@ -79,28 +78,16 @@ public class RConHandler extends SimpleChannelInboundHandler<ByteBuf> {
     }
 
     private void handleLogin(ChannelHandlerContext ctx, String password, int requestId) throws IOException {
-        ByteBuf buf;
+        ByteBuf buf = ctx.alloc().buffer();;
 
         if (password.equals(this.password)) {
             this.loggedIn = true;
-            rconServer.setVerified(requestId, true);
-
-            buf = ctx.alloc().buffer();
             createResponse(buf, requestId, 2, "");
         } else {
             this.loggedIn = false;
-            rconServer.setVerified(requestId, false);
-
-            buf = ctx.alloc().buffer();
             createResponse(buf, -1, 2, "");
         }
-
-        System.out.println("Done");
-
-        if (buf != null) {
-            System.out.println("Ended");
-            ctx.write(buf);
-        }
+        ctx.write(buf);
     }
 
     private void createResponse(ByteBuf buf, int requestId, int type, String payload) throws IOException {

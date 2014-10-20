@@ -74,12 +74,4 @@ public class RConServer {
         workerGroup.shutdownGracefully();
         bossGroup.shutdownGracefully();
     }
-
-    public boolean isVerified(int requestId) {
-        return verifiedRequests.get(requestId);
-    }
-
-    public void setVerified(int requestId, boolean verified) {
-        verifiedRequests.put(requestId, verified);
-    }
 }
