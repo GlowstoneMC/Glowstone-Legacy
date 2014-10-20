@@ -884,7 +884,6 @@ public final class GlowServer implements Server {
     @Override
     public RemoteConsoleCommandSender getRemoteConsoleCommandSender() { return remoteConsoleCommandSender; }
 
-    @Override
     public PluginCommand getPluginCommand(String name) {
         Command command = commandMap.getCommand(name);
         if (command instanceof PluginCommand) {
