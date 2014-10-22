@@ -6,6 +6,8 @@ import com.flowpowered.networking.session.Session;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleStateEvent;
+import net.glowstone.net.GlowSession;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -46,6 +48,13 @@ public final class MessageHandler extends SimpleChannelInboundHandler<Message> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Message i) {
         session.get().messageReceived(i);
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            ((GlowSession) session.get()).idle();
+        }
     }
 
     @Override
