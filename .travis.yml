@@ -5,7 +5,7 @@ jdk: oraclejdk7
 install:
 
   # Required for fetch_glowkit_pr.sh
-  - "sudo apt-get install jq"
+  - "[[ $TRAVIS_PULL_REQUEST == false ]] || sudo apt-get install jq"
 
   # Try to fetch required glowkit PRs, if any.
   - "./etc/fetch_glowkit_pr.sh $TRAVIS_PULL_REQUEST || echo 'Glowkit build failed - trying to continue anyway'"
