@@ -36,10 +36,10 @@ public class BlockCocoa extends BlockAttachable {
 
     @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
-        if (block.getRelative(against.getOppositeFace()).getType().equals(Material.LOG)) {
+        if (block.getRelative(against.getOppositeFace()).getType() == Material.LOG) {
             final MaterialData data = block.getState().getData();
             if (data instanceof Tree) {
-                if (((Tree) data).getSpecies().equals(TreeSpecies.JUNGLE)) {
+                if (((Tree) data).getSpecies() == TreeSpecies.JUNGLE) {
                     return true;
                 }
             } else {

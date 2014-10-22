@@ -15,7 +15,7 @@ public class BlockCrops extends BlockPlant {
 
     @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
-        if (block.getRelative(BlockFace.DOWN).getType().equals(Material.SOIL)) {
+        if (block.getRelative(BlockFace.DOWN).getType() == Material.SOIL) {
             return true;
         }
         return false;

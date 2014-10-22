@@ -15,8 +15,7 @@ public class BlockNetherWart extends BlockPlant {
 
     @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
-        final Material type = block.getRelative(BlockFace.DOWN).getType();
-        if (type.equals(Material.SOUL_SAND)) {
+        if (block.getRelative(BlockFace.DOWN).getType() == Material.SOUL_SAND) {
             return true;
         }
         return false;

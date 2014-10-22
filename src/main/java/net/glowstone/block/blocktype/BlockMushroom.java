@@ -17,13 +17,13 @@ public class BlockMushroom extends BlockType {
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
         final GlowBlock belowBlock = block.getRelative(BlockFace.DOWN);
         final Material type = belowBlock.getType();
-        if (type.equals(Material.GRASS)
-                || (type.equals(Material.DIRT) && belowBlock.getData() != 2)) {
+        if (type == Material.GRASS ||
+                (type == Material.DIRT && belowBlock.getData() != 2)) {
             if (block.getLightLevel() < 13) { // checking light level for dirt, coarse dirt and grass
                 return true;
             }
-        } else if (type.equals(Material.MYCEL)
-                || (type.equals(Material.DIRT) && belowBlock.getData() == 2)) {
+        } else if (type == Material.MYCEL ||
+                (type == Material.DIRT && belowBlock.getData() == 2)) {
             // not checking light level if mycel or podzol
             return true;
         }

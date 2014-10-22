@@ -16,10 +16,10 @@ public class BlockStem extends BlockPlant {
     private Material seedsType;
 
     public BlockStem(Material plantType) {
-        if (plantType.equals(Material.MELON_STEM)) {
+        if (plantType == Material.MELON_STEM) {
             fruitType = Material.MELON_BLOCK;
             seedsType = Material.MELON_SEEDS;
-        } else if (plantType.equals(Material.PUMPKIN_STEM)) {
+        } else if (plantType == Material.PUMPKIN_STEM) {
             fruitType = Material.PUMPKIN;
             seedsType = Material.PUMPKIN_SEEDS;
         } else throw new IllegalArgumentException("Invalid plant material " + plantType.name() + " for BlockStem");
@@ -27,7 +27,7 @@ public class BlockStem extends BlockPlant {
 
     @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
-        if (block.getRelative(BlockFace.DOWN).getType().equals(Material.SOIL)) {
+        if (block.getRelative(BlockFace.DOWN).getType() == Material.SOIL) {
             return true;
         }
         return false;

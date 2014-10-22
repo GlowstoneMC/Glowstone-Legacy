@@ -17,8 +17,8 @@ public class BlockDeadBush extends BlockPlant {
     @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
         final Material type = block.getRelative(BlockFace.DOWN).getType();
-        if (type.equals(Material.SAND) || type.equals(Material.DIRT)
-                || type.equals(Material.HARD_CLAY) || type.equals(Material.STAINED_CLAY)) {
+        if (type == Material.SAND || type == Material.DIRT ||
+                type == Material.HARD_CLAY || type == Material.STAINED_CLAY) {
             return true;
         }
         return false;

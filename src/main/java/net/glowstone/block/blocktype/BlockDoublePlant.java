@@ -13,7 +13,7 @@ public class BlockDoublePlant extends BlockPlant {
     @Override
     public boolean canPlaceAt(GlowBlock block, BlockFace against) {
         if (super.canPlaceAt(block, against)
-                && block.getRelative(BlockFace.UP).getType().equals(Material.AIR)) {
+                && block.getRelative(BlockFace.UP).getType() == Material.AIR) {
             return true;
         }
         return false;
