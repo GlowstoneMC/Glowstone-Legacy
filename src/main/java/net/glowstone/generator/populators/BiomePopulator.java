@@ -20,7 +20,7 @@ public class BiomePopulator extends BlockPopulator {
         // the order is important
 
         addDecorator(new DeadBushDecorator()
-                .setDefaultAmount(10)
+                .setDefaultAmount(0)
                 .setBiomeAmount(Biome.DESERT, 2)
                 .setBiomeAmount(Biome.MESA, 20)
                 .setBiomeAmount(Biome.SWAMPLAND, 1)
