@@ -2,6 +2,7 @@ package net.glowstone.generator.populators;
 
 import net.glowstone.generator.decorators.DeadBushDecorator;
 import net.glowstone.generator.decorators.Decorator;
+import net.glowstone.generator.decorators.PumpkinDecorator;
 import net.glowstone.generator.decorators.SugarCaneDecorator;
 
 import org.bukkit.Chunk;
@@ -33,6 +34,8 @@ public class BiomePopulator extends BlockPopulator {
                 .setBiomeAmount(Biome.DESERT, 60)
                 .setBiomeAmount(Biome.MESA, 13)
                 .setBiomeAmount(Biome.SWAMPLAND, 20));
+
+        addDecorator(new PumpkinDecorator());
     }
 
     @Override
