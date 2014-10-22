@@ -78,7 +78,7 @@ public class SpruceTree extends GenericTree {
             for (int x = sourceX - radius; x <= sourceX + radius; x++) {
                 for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
                     if ((Math.abs(x - sourceX) != radius || Math.abs(z - sourceZ) != radius || radius <= 0) && 
-                            delegate.getBlockState(world, x, y, z).getType().equals(Material.AIR)) {
+                            delegate.getBlockState(world, x, y, z).getType() == Material.AIR) {
                         delegate.setTypeAndRawData(world, x, y, z, Material.LEAVES, 1);
                     }
                 }
@@ -98,7 +98,7 @@ public class SpruceTree extends GenericTree {
         // generate the trunk
         for (int y = 0; y < height - random.nextInt(3); y++) {
             final Material material = delegate.getBlockState(world, sourceX, sourceY + y, sourceZ).getType();
-            if (material.equals(Material.AIR) || material.equals(Material.LEAVES)) {
+            if (material == Material.AIR || material == Material.LEAVES) {
                 delegate.setTypeAndRawData(world, sourceX, sourceY + y, sourceZ, Material.LOG, 1);
             }
         }

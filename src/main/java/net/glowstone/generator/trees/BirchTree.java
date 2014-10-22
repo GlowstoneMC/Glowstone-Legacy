@@ -49,7 +49,7 @@ public class BirchTree extends GenericTree {
                     if (Math.abs(x - sourceX) != radius || Math.abs(z - sourceZ) != radius
                             || (random.nextBoolean() && n != 0)) {
                         final Material material = delegate.getBlockState(world, x, y, z).getType();
-                        if (material.equals(Material.AIR) || material.equals(Material.LEAVES)) {
+                        if (material == Material.AIR || material == Material.LEAVES) {
                             delegate.setTypeAndRawData(world, x, y, z, Material.LEAVES, 2);
                         }
                     }
@@ -60,7 +60,7 @@ public class BirchTree extends GenericTree {
         // generate the trunk
         for (int y = 0; y < height; y++) {
             final Material material = delegate.getBlockState(world, sourceX, sourceY + y, sourceZ).getType();
-            if (material.equals(Material.AIR) || material.equals(Material.LEAVES)) {
+            if (material == Material.AIR || material == Material.LEAVES) {
                 delegate.setTypeAndRawData(world, sourceX, sourceY + y, sourceZ, Material.LOG, 2);
             }
         }

@@ -13,7 +13,7 @@ public class HugeMushroom extends GenericTree {
 
     public HugeMushroom(Random random, Material type, BlockStateDelegate delegate) {
         super(random, delegate);
-        if (!type.equals(Material.HUGE_MUSHROOM_1) && !type.equals(Material.HUGE_MUSHROOM_2)) {
+        if (type != Material.HUGE_MUSHROOM_1 && type != Material.HUGE_MUSHROOM_2) {
             throw new IllegalArgumentException("Invalid huge mushroom type");
         }
         this.type = type;
@@ -28,9 +28,9 @@ public class HugeMushroom extends GenericTree {
     @Override
     public boolean canPlaceOn(World world, int x, int y, int z) {
         final BlockState state = delegate.getBlockState(world, x, y, z);
-        if (!state.getType().equals(Material.GRASS)
-                && !state.getType().equals(Material.DIRT)
-                && !state.getType().equals(Material.MYCEL)) {
+        if (state.getType() != Material.GRASS
+                && state.getType() != Material.DIRT
+                && state.getType() != Material.MYCEL) {
             return false;
         }
         return true;
@@ -93,7 +93,7 @@ public class HugeMushroom extends GenericTree {
 
         // get the mushroom's cap Y start
         int capY = sourceY + height; // for brown mushroom it starts on top directly
-        if (type.equals(Material.HUGE_MUSHROOM_2)) {
+        if (type == Material.HUGE_MUSHROOM_2) {
             capY = sourceY + height - 3; // for red mushroom, cap's thickness is 4 blocks
         }
 
@@ -103,7 +103,7 @@ public class HugeMushroom extends GenericTree {
             if (y < sourceY + height) {
                 radius = 2; // radius for red mushroom cap is 2
             }
-            if (type.equals(Material.HUGE_MUSHROOM_1)) {
+            if (type == Material.HUGE_MUSHROOM_1) {
                 radius = 3; // radius always 3 for a brown mushroom
             }
             // loop over horizontal slice
@@ -125,7 +125,7 @@ public class HugeMushroom extends GenericTree {
                     // corners shrink treatment
                     // if it's a brown mushroom we need it always
                     // it's a red mushroom, it's only applied below the top
-                    if (type.equals(Material.HUGE_MUSHROOM_1) || y < sourceY + height) {
+                    if (type == Material.HUGE_MUSHROOM_1 || y < sourceY + height) {
 
                         // excludes the real corners of the cap structure
                         if ((x == sourceX - radius || x == sourceX + radius)

@@ -69,9 +69,9 @@ public class GenericTree {
 
     public boolean canPlaceOn(World world, int x, int y, int z) {
         final BlockState state = delegate.getBlockState(world, x, y, z);
-        if (!state.getType().equals(Material.GRASS)
-                && !state.getType().equals(Material.DIRT)
-                && !state.getType().equals(Material.SOIL)) {
+        if (state.getType() != Material.GRASS
+                && state.getType() != Material.DIRT
+                && state.getType() != Material.SOIL) {
             return false;
         }
         return true;
@@ -130,7 +130,7 @@ public class GenericTree {
                     if (Math.abs(x - sourceX) != radius || Math.abs(z - sourceZ) != radius
                             || (random.nextBoolean() && n != 0)) {
                         final Material material = delegate.getBlockState(world, x, y, z).getType();
-                        if (material.equals(Material.AIR) || material.equals(Material.LEAVES)) {
+                        if (material == Material.AIR || material == Material.LEAVES) {
                             delegate.setTypeAndRawData(world, x, y, z, Material.LEAVES, leavesType);
                         }
                     }
@@ -141,7 +141,7 @@ public class GenericTree {
         // generate the trunk
         for (int y = 0; y < height; y++) {
             final Material material = delegate.getBlockState(world, sourceX, sourceY + y, sourceZ).getType();
-            if (material.equals(Material.AIR) || material.equals(Material.LEAVES)) {
+            if (material == Material.AIR || material == Material.LEAVES) {
                 delegate.setTypeAndRawData(world, sourceX, sourceY + y, sourceZ, Material.LOG, logType);
             }
         }
@@ -164,19 +164,19 @@ public class GenericTree {
     private void addVinesOnTrunk(World world, int sourceX, int sourceY, int sourceZ) {
         for (int y = 1; y < height; y++) {
             if (random.nextInt(3) != 0
-                    && delegate.getBlockState(world, sourceX - 1, sourceY + y, sourceZ).getType().equals(Material.AIR)) {
+                    && delegate.getBlockState(world, sourceX - 1, sourceY + y, sourceZ).getType() == Material.AIR) {
                 delegate.setTypeAndData(world, sourceX - 1, sourceY + y, sourceZ, Material.VINE, new Vine(BlockFace.EAST));
             }
             if (random.nextInt(3) != 0
-                    && delegate.getBlockState(world, sourceX + 1, sourceY + y, sourceZ).getType().equals(Material.AIR)) {
+                    && delegate.getBlockState(world, sourceX + 1, sourceY + y, sourceZ).getType() == Material.AIR) {
                 delegate.setTypeAndData(world, sourceX + 1, sourceY + y, sourceZ, Material.VINE, new Vine(BlockFace.WEST));
             }
             if (random.nextInt(3) != 0
-                    && delegate.getBlockState(world, sourceX, sourceY + y, sourceZ - 1).getType().equals(Material.AIR)) {
+                    && delegate.getBlockState(world, sourceX, sourceY + y, sourceZ - 1).getType() == Material.AIR) {
                 delegate.setTypeAndData(world, sourceX, sourceY + y, sourceZ - 1, Material.VINE, new Vine(BlockFace.SOUTH));
             }
             if (random.nextInt(3) != 0
-                    && delegate.getBlockState(world, sourceX, sourceY + y, sourceZ + 1).getType().equals(Material.AIR)) {
+                    && delegate.getBlockState(world, sourceX, sourceY + y, sourceZ + 1).getType() == Material.AIR) {
                 delegate.setTypeAndData(world, sourceX, sourceY + y, sourceZ + 1, Material.VINE, new Vine(BlockFace.NORTH));
             }
         }
@@ -188,21 +188,21 @@ public class GenericTree {
             int radius = 2 - nY / 2;
             for (int x = sourceX - radius; x <= sourceX + radius; x++) {
                 for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
-                    if (delegate.getBlockState(world, x, y, z).getType().equals(Material.LEAVES)) {
+                    if (delegate.getBlockState(world, x, y, z).getType() == Material.LEAVES) {
                         if (random.nextInt(4) == 0
-                                && delegate.getBlockState(world, x - 1, y, z).getType().equals(Material.AIR)) {
+                                && delegate.getBlockState(world, x - 1, y, z).getType() == Material.AIR) {
                             addHangingVine(world, x - 1, y, z, BlockFace.EAST);
                         }
                         if (random.nextInt(4) == 0
-                                && delegate.getBlockState(world, x + 1, y, z).getType().equals(Material.AIR)) {
+                                && delegate.getBlockState(world, x + 1, y, z).getType() == Material.AIR) {
                             addHangingVine(world, x + 1, y, z, BlockFace.WEST);
                         }
                         if (random.nextInt(4) == 0
-                                && delegate.getBlockState(world, x, y, z - 1).getType().equals(Material.AIR)) {
+                                && delegate.getBlockState(world, x, y, z - 1).getType() == Material.AIR) {
                             addHangingVine(world, x, y, z - 1, BlockFace.SOUTH);
                         }
                         if (random.nextInt(4) == 0
-                                && delegate.getBlockState(world, x, y, z + 1).getType().equals(Material.AIR)) {
+                                && delegate.getBlockState(world, x, y, z + 1).getType() == Material.AIR) {
                             addHangingVine(world, x, y, z + 1, BlockFace.NORTH);
                         }
                     }
@@ -230,7 +230,7 @@ public class GenericTree {
 
     private void addHangingVine(World world, int x, int y, int z, BlockFace face) {
         for (int i = 0; i < 5; i++) {
-            if (!delegate.getBlockState(world, x, y - i, z).getType().equals(Material.AIR)) {
+            if (delegate.getBlockState(world, x, y - i, z).getType() != Material.AIR) {
                 break;
             }
             delegate.setTypeAndData(world, x, y - i, z, Material.VINE, new Vine(face));
