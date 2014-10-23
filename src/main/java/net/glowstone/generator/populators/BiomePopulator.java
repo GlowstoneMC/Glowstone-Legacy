@@ -22,7 +22,10 @@ public class BiomePopulator extends BlockPopulator {
         addDecorator(new DeadBushDecorator()
                 .setDefaultAmount(0)
                 .setBiomeAmount(Biome.DESERT, 2)
+                .setBiomeAmount(Biome.DESERT_HILLS, 2)
                 .setBiomeAmount(Biome.MESA, 20)
+                .setBiomeAmount(Biome.MESA_PLATEAU, 20)
+                .setBiomeAmount(Biome.MESA_PLATEAU_FOREST, 20)
                 .setBiomeAmount(Biome.SWAMPLAND, 1)
                 .setBiomeAmount(Biome.TAIGA, 1));
 
@@ -33,12 +36,17 @@ public class BiomePopulator extends BlockPopulator {
         addDecorator(new SugarCaneDecorator()
                 .setDefaultAmount(10)
                 .setBiomeAmount(Biome.DESERT, 60)
+                .setBiomeAmount(Biome.DESERT_HILLS, 60)
                 .setBiomeAmount(Biome.MESA, 13)
+                .setBiomeAmount(Biome.MESA_PLATEAU, 13)
+                .setBiomeAmount(Biome.MESA_PLATEAU_FOREST, 13)
                 .setBiomeAmount(Biome.SWAMPLAND, 20));
 
         addDecorator(new MelonDecorator()
                 .setDefaultAmount(0)
-                .setBiomeAmount(Biome.JUNGLE, 1));
+                .setBiomeAmount(Biome.JUNGLE, 1)
+                .setBiomeAmount(Biome.JUNGLE_HILLS, 1)
+                .setBiomeAmount(Biome.JUNGLE_EDGE, 1));
 
         addDecorator(new PumpkinDecorator());
     }

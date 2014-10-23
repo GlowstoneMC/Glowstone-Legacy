@@ -24,6 +24,7 @@ public class MelonDecorator extends BlockDecorator {
                     world.getBlockAt(x, y - 1, z).getType() == Material.GRASS) {
                 final Block block = world.getBlockAt(x, y, z);
                 block.setType(Material.MELON_BLOCK);
+                block.setData((byte) 0);
             }
         }
     }
