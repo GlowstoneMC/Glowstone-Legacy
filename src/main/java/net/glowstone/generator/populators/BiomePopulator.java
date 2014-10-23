@@ -13,7 +13,7 @@ import java.util.Random;
 
 public class BiomePopulator extends BlockPopulator {
 
-    private List<Decorator> decorators = new ArrayList<Decorator>();
+    private final List<BlockPopulator> decorators = new ArrayList<BlockPopulator>();
 
     public BiomePopulator() {
 
@@ -41,12 +41,12 @@ public class BiomePopulator extends BlockPopulator {
 
     @Override
     public void populate(World world, Random random, Chunk source) {
-        for (Decorator decorator : decorators) {
-            decorator.decorate(world, random, source);
+        for (BlockPopulator decorator : decorators) {
+            decorator.populate(world, random, source);
         }
     }
 
-    private void addDecorator(Decorator decorator) {
+    private void addDecorator(BlockPopulator decorator) {
         decorators.add(decorator);
     }
 }

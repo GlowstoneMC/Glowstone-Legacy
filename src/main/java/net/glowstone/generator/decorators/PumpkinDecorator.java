@@ -6,11 +6,12 @@ import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.generator.BlockPopulator;
 
-public class PumpkinDecorator extends Decorator {
+public class PumpkinDecorator extends BlockPopulator {
 
     @Override
-    public void decorate(World world, Random random, Chunk source) {
+    public void populate(World world, Random random, Chunk source) {
         if (random.nextInt(32) == 0) {
             int sourceX = (source.getX() << 4) + random.nextInt(16);
             int sourceZ = (source.getZ() << 4) + random.nextInt(16);
