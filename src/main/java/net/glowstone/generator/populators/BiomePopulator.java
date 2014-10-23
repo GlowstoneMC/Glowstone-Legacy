@@ -19,8 +19,15 @@ public class BiomePopulator extends BlockPopulator {
 
         // the order is important
 
+        addDecorator(new DesertWellDecorator()
+                .setDefaultAmount(0)
+                .setBiomeAmount(Biome.OCEAN, 1) // fix for lack of biomes
+                .setBiomeAmount(Biome.DESERT, 1)
+                .setBiomeAmount(Biome.DESERT_HILLS, 1));
+
         addDecorator(new DeadBushDecorator()
                 .setDefaultAmount(0)
+                .setBiomeAmount(Biome.OCEAN, 1) // fix for lack of biomes
                 .setBiomeAmount(Biome.DESERT, 2)
                 .setBiomeAmount(Biome.DESERT_HILLS, 2)
                 .setBiomeAmount(Biome.MESA, 20)
@@ -44,6 +51,7 @@ public class BiomePopulator extends BlockPopulator {
 
         addDecorator(new MelonDecorator()
                 .setDefaultAmount(0)
+                .setBiomeAmount(Biome.OCEAN, 1) // fix for lack of biomes
                 .setBiomeAmount(Biome.JUNGLE, 1)
                 .setBiomeAmount(Biome.JUNGLE_HILLS, 1)
                 .setBiomeAmount(Biome.JUNGLE_EDGE, 1));

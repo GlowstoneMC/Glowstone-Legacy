@@ -10,7 +10,7 @@ import org.bukkit.block.Block;
 public class WaterLilyDecorator extends BlockDecorator {
 
     @Override
-    public void populate(World world, Random random, Chunk source) {
+    public void decorate(World world, Random random, Chunk source) {
         int sourceX = (source.getX() << 4) + random.nextInt(16);
         int sourceZ = (source.getZ() << 4) + random.nextInt(16);
         int sourceY = random.nextInt(world.getHighestBlockYAt(sourceX, sourceZ) << 1);
