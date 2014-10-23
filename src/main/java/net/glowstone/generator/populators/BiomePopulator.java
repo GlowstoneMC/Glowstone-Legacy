@@ -21,40 +21,31 @@ public class BiomePopulator extends BlockPopulator {
 
         addDecorator(new DesertWellDecorator()
                 .setDefaultAmount(0)
-                .setBiomeAmount(Biome.OCEAN, 1) // fix for lack of biomes
-                .setBiomeAmount(Biome.DESERT, 1)
-                .setBiomeAmount(Biome.DESERT_HILLS, 1));
+                .setBiomeAmount(5, Biome.OCEAN) // fix for lack of biomes
+                .setBiomeAmount(1, Biome.DESERT, Biome.DESERT_HILLS));
 
         addDecorator(new DeadBushDecorator()
                 .setDefaultAmount(0)
-                .setBiomeAmount(Biome.OCEAN, 1) // fix for lack of biomes
-                .setBiomeAmount(Biome.DESERT, 2)
-                .setBiomeAmount(Biome.DESERT_HILLS, 2)
-                .setBiomeAmount(Biome.MESA, 20)
-                .setBiomeAmount(Biome.MESA_PLATEAU, 20)
-                .setBiomeAmount(Biome.MESA_PLATEAU_FOREST, 20)
-                .setBiomeAmount(Biome.SWAMPLAND, 1)
-                .setBiomeAmount(Biome.TAIGA, 1));
+                .setBiomeAmount(1, Biome.OCEAN) // fix for lack of biomes
+                .setBiomeAmount(2, Biome.DESERT, Biome.DESERT_HILLS)
+                .setBiomeAmount(20, Biome.MESA, Biome.MESA_PLATEAU, Biome.MESA_PLATEAU_FOREST)
+                .setBiomeAmount(1, Biome.SWAMPLAND)
+                .setBiomeAmount(1, Biome.TAIGA));
 
         addDecorator(new WaterLilyDecorator()
                 .setDefaultAmount(0)
-                .setBiomeAmount(Biome.SWAMPLAND, 4));
+                .setBiomeAmount(4, Biome.SWAMPLAND));
 
         addDecorator(new SugarCaneDecorator()
                 .setDefaultAmount(10)
-                .setBiomeAmount(Biome.DESERT, 60)
-                .setBiomeAmount(Biome.DESERT_HILLS, 60)
-                .setBiomeAmount(Biome.MESA, 13)
-                .setBiomeAmount(Biome.MESA_PLATEAU, 13)
-                .setBiomeAmount(Biome.MESA_PLATEAU_FOREST, 13)
-                .setBiomeAmount(Biome.SWAMPLAND, 20));
+                .setBiomeAmount(60, Biome.DESERT, Biome.DESERT_HILLS)
+                .setBiomeAmount(13, Biome.MESA, Biome.MESA_PLATEAU, Biome.MESA_PLATEAU_FOREST)
+                .setBiomeAmount(20, Biome.SWAMPLAND));
 
         addDecorator(new MelonDecorator()
                 .setDefaultAmount(0)
-                .setBiomeAmount(Biome.OCEAN, 1) // fix for lack of biomes
-                .setBiomeAmount(Biome.JUNGLE, 1)
-                .setBiomeAmount(Biome.JUNGLE_HILLS, 1)
-                .setBiomeAmount(Biome.JUNGLE_EDGE, 1));
+                .setBiomeAmount(1, Biome.OCEAN) // fix for lack of biomes
+                .setBiomeAmount(1, Biome.JUNGLE, Biome.JUNGLE_HILLS, Biome.JUNGLE_EDGE));
 
         addDecorator(new PumpkinDecorator());
     }

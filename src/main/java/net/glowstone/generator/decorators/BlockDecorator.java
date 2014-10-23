@@ -19,8 +19,10 @@ public class BlockDecorator extends BlockPopulator {
         return this;
     }
 
-    public final BlockDecorator setBiomeAmount(Biome biome, int amount) {
-        biomesDecorations.put(biome, amount);
+    public final BlockDecorator setBiomeAmount(int amount, Biome... biomes) {
+        for (Biome biome : biomes) {
+            biomesDecorations.put(biome, amount);
+        }
         return this;
     }
 
