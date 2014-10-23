@@ -131,6 +131,7 @@ public final class ItemTable {
         reg(Material.STATIONARY_WATER, new BlockWater());
         reg(Material.LAVA, new BlockLava());
         reg(Material.STATIONARY_LAVA, new BlockLava());
+
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
         reg(Material.SUGAR_CANE, new ItemPlaceAs(Material.SUGAR_CANE_BLOCK));
