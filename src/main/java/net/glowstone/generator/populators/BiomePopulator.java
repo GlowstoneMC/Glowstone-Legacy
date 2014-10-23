@@ -36,6 +36,10 @@ public class BiomePopulator extends BlockPopulator {
                 .setBiomeAmount(Biome.MESA, 13)
                 .setBiomeAmount(Biome.SWAMPLAND, 20));
 
+        addDecorator(new MelonDecorator()
+                .setDefaultAmount(0)
+                .setBiomeAmount(Biome.JUNGLE, 1));
+
         addDecorator(new PumpkinDecorator());
     }
 
