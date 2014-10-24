@@ -4,18 +4,18 @@ import net.glowstone.block.GlowBlock;
 import net.glowstone.block.ItemTable;
 import net.glowstone.block.blocktype.BlockTNT;
 import net.glowstone.entity.GlowEntity;
+import net.glowstone.entity.GlowHumanEntity;
 import net.glowstone.entity.GlowLivingEntity;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.net.message.play.game.ExplosionMessage;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
@@ -222,7 +222,16 @@ public class Explosion {
 
             double basicDamage = calculateDamage(entity, disDivPower);
             int explosionDamage = (int) ((basicDamage * basicDamage + basicDamage) * 4 * (double) power + 1.0D);
-            entity.damage(explosionDamage);
+
+            if (!(entity instanceof GlowHumanEntity && ((GlowHumanEntity) entity).getGameMode() == GameMode.CREATIVE)) {
+                EntityDamageEvent.DamageCause damageCause;
+                if (source == null || source.getType() == EntityType.PRIMED_TNT) {
+                    damageCause = EntityDamageEvent.DamageCause.BLOCK_EXPLOSION;
+                } else {
+                    damageCause = EntityDamageEvent.DamageCause.ENTITY_EXPLOSION;
+                }
+                entity.damage(explosionDamage, source, damageCause);
+            }
 
             double enchantedDamage = calculateEnchantedDamage(basicDamage, entity);
             vecDistance.multiply(enchantedDamage);
