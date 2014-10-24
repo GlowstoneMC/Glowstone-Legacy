@@ -94,6 +94,18 @@ public class DesertWell {
             }
         }
 
+        // remove blocks that could obstruct above water
+        world.getBlockAt(sourceX, sourceY + 1, sourceZ).setType(Material.AIR);
+        world.getBlockAt(sourceX, sourceY + 1, sourceZ).setData((byte) 0);
+        world.getBlockAt(sourceX - 1, sourceY + 1, sourceZ).setType(Material.AIR);
+        world.getBlockAt(sourceX - 1, sourceY + 1, sourceZ).setData((byte) 0);
+        world.getBlockAt(sourceX + 1, sourceY + 1, sourceZ).setType(Material.AIR);
+        world.getBlockAt(sourceX + 1, sourceY + 1, sourceZ).setData((byte) 0);
+        world.getBlockAt(sourceX, sourceY + 1, sourceZ - 1).setType(Material.AIR);
+        world.getBlockAt(sourceX, sourceY + 1, sourceZ - 1).setData((byte) 0);
+        world.getBlockAt(sourceX, sourceY + 1, sourceZ + 1).setType(Material.AIR);
+        world.getBlockAt(sourceX, sourceY + 1, sourceZ + 1).setData((byte) 0);
+
         // places the water in the middle of the well
         world.getBlockAt(sourceX, sourceY, sourceZ).setType(Material.STATIONARY_WATER);
         world.getBlockAt(sourceX, sourceY, sourceZ).setData((byte) 0);

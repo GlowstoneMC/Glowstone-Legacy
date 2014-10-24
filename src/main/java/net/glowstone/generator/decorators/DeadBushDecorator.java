@@ -22,8 +22,8 @@ public class DeadBushDecorator extends BlockDecorator {
 
         for (int j = 0; j < 4; j++) {
             int x = sourceX + random.nextInt(8) - random.nextInt(8);
-            int y = sourceY + random.nextInt(4) - random.nextInt(4);
             int z = sourceZ + random.nextInt(8) - random.nextInt(8);
+            int y = sourceY + random.nextInt(4) - random.nextInt(4);
 
             if (world.getBlockAt(x, y, z).getType() == Material.AIR &&
                     (world.getBlockAt(x, y - 1, z).getType() == Material.SAND ||
