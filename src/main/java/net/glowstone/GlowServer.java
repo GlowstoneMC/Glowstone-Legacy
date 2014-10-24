@@ -749,6 +749,22 @@ public final class GlowServer implements Server {
     public boolean getProxySupport() {
         return config.getBoolean(ServerConfig.Key.PROXY_SUPPORT);
     }
+    
+    /**
+     * Get the reason of kick that server sends to you if you're not in the whitelist.
+     * @return Kick reason for whitelist disconnection.
+     */
+    public String getWhitelistKickMessage() {
+        return config.getString(ServerConfig.Key.KICK_WHITELIST_MESSAGE);
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public String getServerIsFullMessage() {
+        return config.getString(ServerConfig.Key.KICK_SERVERFULL).replace("{0}", Integer.toString(this.getMaxPlayers()));
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     // Static server properties
