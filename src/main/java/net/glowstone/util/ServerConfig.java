@@ -291,6 +291,10 @@ public final class ServerConfig {
         // custom messages
         KICK_WHITELIST_MESSAGE("messages.kick-whitelist-message", "You are not whitelisted on this server"),
         KICK_SERVERFULL("messages.kick-serverfull", "The server is full (Max {0} players)"),
+        OUTDATED_CLIENT("messages.outdated-client", "Outdated client! Please use {0}"),
+        OUTDATED_SERVER("messages.outdated-server", "Outdated server! Server is still on {0}"),
+        UNKNOW_COMMAND("messages.unknown-command", "Unknown command {0}, try \"help\""),
+        
         
         // files
         PERMISSIONS_FILE("files.permissions", "permissions.yml", Migrate.BUKKIT, "settings.permissions-file"),

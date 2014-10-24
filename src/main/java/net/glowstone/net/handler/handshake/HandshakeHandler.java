@@ -45,9 +45,9 @@ public class HandshakeHandler implements MessageHandler<GlowSession, HandshakeMe
 
         if (protocol == ProtocolType.LOGIN) {
             if (message.getVersion() < GlowServer.PROTOCOL_VERSION) {
-                session.disconnect("Outdated client!");
+                session.disconnect(session.getServer().getOutdatedClientMessage());
             } else if (message.getVersion() > GlowServer.PROTOCOL_VERSION) {
-                session.disconnect("Outdated server!");
+                session.disconnect(session.getServer().getOutdatedServerMessage());
             }
         }
     }
