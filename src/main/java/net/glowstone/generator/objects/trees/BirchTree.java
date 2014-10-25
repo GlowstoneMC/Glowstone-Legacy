@@ -1,4 +1,4 @@
-package net.glowstone.generator.trees;
+package net.glowstone.generator.objects.trees;
 
 import net.glowstone.util.BlockStateDelegate;
 import org.bukkit.Material;

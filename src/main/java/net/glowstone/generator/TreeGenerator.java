@@ -1,15 +1,15 @@
 package net.glowstone.generator;
 
-import net.glowstone.generator.trees.BirchTree;
-import net.glowstone.generator.trees.GenericTree;
-import net.glowstone.generator.trees.HugeMushroom;
-import net.glowstone.generator.trees.SpruceTree;
+import java.util.Random;
+
+import net.glowstone.generator.objects.trees.BirchTree;
+import net.glowstone.generator.objects.trees.GenericTree;
+import net.glowstone.generator.objects.trees.HugeMushroom;
+import net.glowstone.generator.objects.trees.SpruceTree;
 import net.glowstone.util.BlockStateDelegate;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeType;
-
-import java.util.Random;
 
 public class TreeGenerator {
 
