@@ -2,10 +2,7 @@ package net.glowstone.generator;
 
 import java.util.Random;
 
-import net.glowstone.generator.objects.trees.BirchTree;
-import net.glowstone.generator.objects.trees.GenericTree;
-import net.glowstone.generator.objects.trees.HugeMushroom;
-import net.glowstone.generator.objects.trees.SpruceTree;
+import net.glowstone.generator.objects.trees.*;
 import net.glowstone.util.BlockStateDelegate;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -55,7 +52,7 @@ public class TreeGenerator {
             case JUNGLE_BUSH:
             case ACACIA:
             case DARK_OAK:
-                tree = new GenericTree(random, delegate);
+                tree = new DarkOakTree(random, delegate);
                 break;
             case BROWN_MUSHROOM:
                 tree = new HugeMushroom(random, Material.HUGE_MUSHROOM_1, delegate);
