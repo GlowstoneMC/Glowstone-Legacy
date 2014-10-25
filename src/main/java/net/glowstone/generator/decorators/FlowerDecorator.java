@@ -40,11 +40,6 @@ public class FlowerDecorator extends BlockDecorator {
         int sourceX = (source.getX() << 4) + random.nextInt(16);
         int sourceZ = (source.getZ() << 4) + random.nextInt(16);
         int sourceY = random.nextInt(world.getHighestBlockYAt(sourceX, sourceZ)  + 32);
-        while ((world.getBlockAt(sourceX, sourceY, sourceZ).getType() == Material.AIR ||
-                world.getBlockAt(sourceX, sourceY, sourceZ).getType() == Material.LEAVES) &&
-                sourceY > 0) {
-            sourceY--;
-        }
 
         // the flower can change on each decoration pass
         Flower flower = null;
@@ -58,7 +53,7 @@ public class FlowerDecorator extends BlockDecorator {
             return;
         }
 
-        for (int i = 0; i < random.nextInt(4) + 1; i++) {
+        for (int i = 0; i < 64; i++) {
             int x = sourceX + random.nextInt(8) - random.nextInt(8);
             int z = sourceZ + random.nextInt(8) - random.nextInt(8);
             int y = sourceY + random.nextInt(4) - random.nextInt(4);
