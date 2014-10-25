@@ -21,16 +21,18 @@ public class BiomePopulator extends BlockPopulator {
 
         addDecorator(new DesertWellDecorator()
                 .setDefaultAmount(0)
-                .setBiomeAmount(5, Biome.OCEAN) // fix for lack of biomes
+                .setBiomeAmount(2, Biome.OCEAN) // fix for lack of biomes
                 .setBiomeAmount(1, Biome.DESERT, Biome.DESERT_HILLS));
 
         addDecorator(new FlowerDecorator()
-                .setDefaultFlowerWeight(3, FlowerDecorator.Flower.DANDELION)
+                .setDefaultFlowerWeight(2, FlowerDecorator.Flower.DANDELION)
                 .setDefaultFlowerWeight(1, FlowerDecorator.Flower.POPPY)
 
-                .setFlowerWeight(3, FlowerDecorator.Flower.DANDELION, Biome.OCEAN) // fix for lack of biomes
-                .setFlowerWeight(1, FlowerDecorator.Flower.POPPY, Biome.OCEAN)     // fix for lack of biomes
-                .setFlowerWeight(1, FlowerDecorator.Flower.HOUSTONIA, Biome.OCEAN) // fix for lack of biomes
+                .setFlowerWeight(4, FlowerDecorator.Flower.DANDELION, Biome.OCEAN) // fix for lack of biomes
+                .setFlowerWeight(2, FlowerDecorator.Flower.POPPY, Biome.OCEAN) // fix for lack of biomes
+                .setFlowerWeight(1, FlowerDecorator.Flower.LILAC, Biome.OCEAN) // fix for lack of biomes
+                .setFlowerWeight(1, FlowerDecorator.Flower.ROSE_BUSH, Biome.OCEAN) // fix for lack of biomes
+                .setFlowerWeight(1, FlowerDecorator.Flower.PEONIA, Biome.OCEAN) // fix for lack of biomes
 
                 .setDefaultAmount(2));
 

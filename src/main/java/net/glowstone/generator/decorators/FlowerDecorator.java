@@ -60,9 +60,16 @@ public class FlowerDecorator extends BlockDecorator {
 
             if (y < 255 && world.getBlockAt(x, y, z).getType() == Material.AIR &&
                     world.getBlockAt(x, y - 1, z).getType() == Material.GRASS) {
+                if (flower.isDoublePlant() && world.getBlockAt(x, y + 1, z).getType() != Material.AIR) {
+                    continue;
+                }
                 final Block block = world.getBlockAt(x, y, z);
                 block.setType(flower.getType());
                 block.setData((byte) flower.getData());
+                if (flower.isDoublePlant()) {
+                    world.getBlockAt(x, y + 1, z).setType(flower.getType());
+                    world.getBlockAt(x, y + 1, z).setData((byte) 8);
+                }
             }
         }
     }
@@ -93,14 +100,25 @@ public class FlowerDecorator extends BlockDecorator {
         TULIP_ORANGE(Material.RED_ROSE, 5),
         TULIP_WHITE(Material.RED_ROSE, 6),
         TULIP_PINK(Material.RED_ROSE, 7),
-        OXEYE_DAISY(Material.RED_ROSE, 8);
+        OXEYE_DAISY(Material.RED_ROSE, 8),
 
-        private Material type;
-        private int data;
+        SUNFLOWER(Material.DOUBLE_PLANT, 0, true),
+        LILAC(Material.DOUBLE_PLANT, 1, true),
+        ROSE_BUSH(Material.DOUBLE_PLANT, 4, true),
+        PEONIA(Material.DOUBLE_PLANT, 5, true);
+
+        private final Material type;
+        private final int data;
+        private final boolean doublePlant;
 
         private Flower(Material type, int data) {
+            this(type, data, false);
+        }
+
+        private Flower(Material type, int data, boolean doublePlant) {
             this.type = type;
             this.data = data;
+            this.doublePlant = doublePlant;
         }
 
         public Material getType() {
@@ -109,6 +127,10 @@ public class FlowerDecorator extends BlockDecorator {
 
         public int getData() {
             return data;
+        }
+
+        public boolean isDoublePlant() {
+            return doublePlant;
         }
     }
 

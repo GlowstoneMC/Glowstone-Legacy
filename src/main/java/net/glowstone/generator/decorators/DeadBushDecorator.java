@@ -20,7 +20,7 @@ public class DeadBushDecorator extends BlockDecorator {
             sourceY--;
         }
 
-        for (int j = 0; j < 4; j++) {
+        for (int i = 0; i < 4; i++) {
             int x = sourceX + random.nextInt(8) - random.nextInt(8);
             int z = sourceZ + random.nextInt(8) - random.nextInt(8);
             int y = sourceY + random.nextInt(4) - random.nextInt(4);
