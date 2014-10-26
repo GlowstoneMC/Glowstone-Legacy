@@ -51,6 +51,8 @@ public class TreeGenerator {
                 break;
             case JUNGLE_BUSH:
             case ACACIA:
+                tree = new AcaciaTree(random, delegate);
+                break;
             case DARK_OAK:
                 tree = new DarkOakTree(random, delegate);
                 break;

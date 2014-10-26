@@ -6,25 +6,13 @@ import net.glowstone.util.BlockStateDelegate;
 
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
 
-public class DarkOakTree extends GenericTree {
+public class DarkOakTree extends AcaciaTree {
 
     public DarkOakTree(Random random, BlockStateDelegate delegate) {
         super(random, delegate);
         int height = random.nextInt(2) + random.nextInt(3) + 6;
         setHeight(height);
-    }
-
-    @Override
-    public boolean canPlaceOn(World world, int x, int y, int z) {
-        final BlockState state = delegate.getBlockState(world, x, y, z);
-        if (state.getType() != Material.GRASS
-                && state.getType() != Material.DIRT) {
-            return false;
-        }
-        return true;
     }
 
     @Override
@@ -56,8 +44,8 @@ public class DarkOakTree extends GenericTree {
 
             // trunk twists
             if (twistCount > 0 && y >= twistHeight) {
-                centerX += getModX(n);
-                centerZ += getModZ(n);
+                centerX += getDirectionalModX(n);
+                centerZ += getDirectionalModZ(n);
                 twistCount--;
             }
 
@@ -140,36 +128,6 @@ public class DarkOakTree extends GenericTree {
         delegate.setTypeAndRawData(world, sourceX + 1, sourceY - 1, sourceZ + 1, Material.DIRT, 0);
 
         return true;
-    }
-
-    private int getModX(int n) {
-        switch (n) {
-            case 0:
-                return BlockFace.SOUTH.getModX();
-            case 1:
-                return BlockFace.WEST.getModX();
-            case 2:
-                return BlockFace.NORTH.getModX();
-            case 3:
-                return BlockFace.EAST.getModX();
-            default:
-                return 0;
-        }
-    }
-
-    private int getModZ(int n) {
-        switch (n) {
-            case 0:
-                return BlockFace.SOUTH.getModZ();
-            case 1:
-                return BlockFace.WEST.getModZ();
-            case 2:
-                return BlockFace.NORTH.getModZ();
-            case 3:
-                return BlockFace.EAST.getModZ();
-            default:
-                return 0;
-        }
     }
 
     private void setLeaveAt(World world, int x, int y, int z) {
