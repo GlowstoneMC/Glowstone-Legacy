@@ -50,6 +50,8 @@ public class TreeGenerator {
                 tree = new GenericTree(random, random.nextInt(7) + 4, 3, 3, true, delegate);
                 break;
             case JUNGLE_BUSH:
+                tree = new JungleBush(random, delegate);
+                break;
             case ACACIA:
                 tree = new AcaciaTree(random, delegate);
                 break;
