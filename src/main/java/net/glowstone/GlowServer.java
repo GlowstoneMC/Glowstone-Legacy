@@ -917,7 +917,6 @@ public final class GlowServer implements Server {
         if (firstword.indexOf(' ') >= 0) {
             firstword = firstword.substring(0, firstword.indexOf(' '));
         }
-        
         sender.sendMessage(ChatColor.GRAY + getUnknownCommandMessage(firstword));
         return false;
     }
