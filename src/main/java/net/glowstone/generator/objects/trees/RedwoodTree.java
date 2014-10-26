@@ -6,12 +6,12 @@ import org.bukkit.World;
 
 import java.util.Random;
 
-public class SpruceTree extends GenericTree {
+public class RedwoodTree extends GenericTree {
 
     private final int maxRadius;
     private final int leavesHeight;
 
-    public SpruceTree(Random random, BlockStateDelegate delegate) {
+    public RedwoodTree(Random random, BlockStateDelegate delegate) {
         super(random, delegate);
         setOverridables(
                 Material.AIR,
