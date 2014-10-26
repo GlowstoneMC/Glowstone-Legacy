@@ -28,8 +28,10 @@ public class TreeGenerator {
         switch (type) {
             case TREE:
             case BIG_TREE:
-            case SWAMP:
                 tree = new GenericTree(random, delegate);
+                break;
+            case SWAMP:
+                tree = new SwampTree(random, delegate);
                 break;
             case REDWOOD:
             case TALL_REDWOOD:

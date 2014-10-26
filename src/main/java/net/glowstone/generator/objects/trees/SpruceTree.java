@@ -95,8 +95,8 @@ public class SpruceTree extends GenericTree {
 
         // generate the trunk
         for (int y = 0; y < height - random.nextInt(3); y++) {
-            final Material material = delegate.getBlockState(world, sourceX, sourceY + y, sourceZ).getType();
-            if (material == Material.AIR || material == Material.LEAVES) {
+            final Material type = delegate.getBlockState(world, sourceX, sourceY + y, sourceZ).getType();
+            if (overridables.contains(type)) {
                 delegate.setTypeAndRawData(world, sourceX, sourceY + y, sourceZ, Material.LOG, 1);
             }
         }

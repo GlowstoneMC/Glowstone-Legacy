@@ -174,7 +174,7 @@ public class GenericTree {
         }
     }
 
-    private void addVinesOnLeaves(World world, int sourceX, int sourceY, int sourceZ) {
+    public void addVinesOnLeaves(World world, int sourceX, int sourceY, int sourceZ) {
         for (int y = sourceY - 3 + height; y <= sourceY + height; y++) {
             int nY = y - (sourceY + height);
             int radius = 2 - nY / 2;
