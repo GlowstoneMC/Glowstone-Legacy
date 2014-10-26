@@ -8,8 +8,8 @@ import java.util.Random;
 
 public class RedwoodTree extends GenericTree {
 
-    private final int maxRadius;
-    private final int leavesHeight;
+    protected int maxRadius;
+    protected int leavesHeight;
 
     public RedwoodTree(Random random, BlockStateDelegate delegate) {
         super(random, delegate);
@@ -18,8 +18,16 @@ public class RedwoodTree extends GenericTree {
                 Material.LEAVES
         );
         setHeight(random.nextInt(4) + 6);
-        maxRadius = random.nextInt(2) + 2;
-        leavesHeight = random.nextInt(2) + 1;
+        setLeavesHeight(random.nextInt(2) + 1);
+        setMaxRadius(random.nextInt(2) + 2);
+    }
+
+    protected final void setMaxRadius(int maxRadius) {
+        this.maxRadius = maxRadius;
+    }
+
+    protected final void setLeavesHeight(int leavesHeight) {
+        this.leavesHeight = leavesHeight;
     }
 
     @Override

@@ -34,7 +34,11 @@ public class TreeGenerator {
                 tree = new SwampTree(random, delegate);
                 break;
             case REDWOOD:
+                tree = new RedwoodTree(random, delegate);
+                break;
             case TALL_REDWOOD:
+                tree = new TallRedwoodTree(random, delegate);
+                break;
             case MEGA_REDWOOD:
                 tree = new RedwoodTree(random, delegate);
                 break;
