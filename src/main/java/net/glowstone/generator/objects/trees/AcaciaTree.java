@@ -6,7 +6,6 @@ import net.glowstone.util.BlockStateDelegate;
 
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 
 public class AcaciaTree extends GenericTree {
@@ -15,36 +14,6 @@ public class AcaciaTree extends GenericTree {
         super(random, delegate);
         int height = random.nextInt(3) + random.nextInt(3) + 5;
         setHeight(height);
-    }
-
-    protected final int getDirectionalModX(int n) {
-        switch (n) {
-            case 0:
-                return BlockFace.SOUTH.getModX();
-            case 1:
-                return BlockFace.WEST.getModX();
-            case 2:
-                return BlockFace.NORTH.getModX();
-            case 3:
-                return BlockFace.EAST.getModX();
-            default:
-                return 0;
-        }
-    }
-
-    protected final int getDirectionalModZ(int n) {
-        switch (n) {
-            case 0:
-                return BlockFace.SOUTH.getModZ();
-            case 1:
-                return BlockFace.WEST.getModZ();
-            case 2:
-                return BlockFace.NORTH.getModZ();
-            case 3:
-                return BlockFace.EAST.getModZ();
-            default:
-                return 0;
-        }
     }
 
     @Override
@@ -75,7 +44,16 @@ public class AcaciaTree extends GenericTree {
             return false;
         }
 
-        int n = random.nextInt(4);
+        float d = (float) (random.nextFloat() * Math.PI * 2.0F); // random direction
+        int dx = ((int) (Math.cos(d) + 1.5F)) - 1;
+        int dz = ((int) (Math.sin(d) + 1.5F)) - 1;
+        if (Math.abs(dx) > 0 && Math.abs(dz) > 0) { // reduce possible directions to NSEW
+            if (random.nextBoolean()) {
+                dx = 0;
+            } else {
+                dz = 0;
+            }
+        }
         int twistHeight = height - 1 - random.nextInt(4);
         int twistCount = random.nextInt(3) + 1;
         int centerX = sourceX, centerZ = sourceZ;
@@ -86,8 +64,8 @@ public class AcaciaTree extends GenericTree {
 
             // trunk twists
             if (twistCount > 0 && y >= twistHeight) {
-                centerX += getDirectionalModX(n);
-                centerZ += getDirectionalModZ(n);
+                centerX += dx;
+                centerZ += dz;
                 twistCount--;
             }
 
@@ -114,8 +92,17 @@ public class AcaciaTree extends GenericTree {
         }
 
         // try to choose a different direction for second branching and canopy
-        int m = random.nextInt(4);
-        if (m != n) {
+        d = (float) (random.nextFloat() * Math.PI * 2.0F);
+        int dxB = ((int) (Math.cos(d) + 1.5F)) - 1;
+        int dzB = ((int) (Math.sin(d) + 1.5F)) - 1;
+        if (Math.abs(dxB) > 0 && Math.abs(dzB) > 0) {
+            if (random.nextBoolean()) {
+                dxB = 0;
+            } else {
+                dzB = 0;
+            }
+        }
+        if (dx != dxB || dz != dzB) {
             centerX = sourceX; centerZ = sourceZ;
             int branchHeight = twistHeight - 1 - random.nextInt(2);
             twistCount = random.nextInt(3) + 1;
@@ -124,8 +111,8 @@ public class AcaciaTree extends GenericTree {
             // generates the trunk
             for (int y = branchHeight + 1; y < height; y++) {
                 if (twistCount > 0) {
-                    centerX += getDirectionalModX(m);
-                    centerZ += getDirectionalModZ(m);
+                    centerX += dxB;
+                    centerZ += dzB;
                     final Material material = delegate.getBlockState(world, centerX, sourceY + y, centerZ).getType();
                     if (material == Material.AIR || material == Material.LEAVES) {
                         trunkTopY = sourceY + y;

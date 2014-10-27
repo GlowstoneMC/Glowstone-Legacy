@@ -6,13 +6,24 @@ import net.glowstone.util.BlockStateDelegate;
 
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.BlockState;
 
-public class DarkOakTree extends AcaciaTree {
+public class DarkOakTree extends GenericTree {
 
     public DarkOakTree(Random random, BlockStateDelegate delegate) {
         super(random, delegate);
         int height = random.nextInt(2) + random.nextInt(3) + 6;
         setHeight(height);
+    }
+
+    @Override
+    public boolean canPlaceOn(World world, int x, int y, int z) {
+        final BlockState state = delegate.getBlockState(world, x, y, z);
+        if (state.getType() != Material.GRASS
+                && state.getType() != Material.DIRT) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -33,7 +44,16 @@ public class DarkOakTree extends AcaciaTree {
             return false;
         }
 
-        int n = random.nextInt(4);
+        float d = (float) (random.nextFloat() * Math.PI * 2.0F); // random direction
+        int dx = ((int) (Math.cos(d) + 1.5F)) - 1;
+        int dz = ((int) (Math.sin(d) + 1.5F)) - 1;
+        if (Math.abs(dx) > 0 && Math.abs(dz) > 0) { // reduce possible directions to NSEW
+            if (random.nextBoolean()) {
+                dx = 0;
+            } else {
+                dz = 0;
+            }
+        }
         int twistHeight = height - random.nextInt(4);
         int twistCount = random.nextInt(3);
         int centerX = sourceX, centerZ = sourceZ;
@@ -44,8 +64,8 @@ public class DarkOakTree extends AcaciaTree {
 
             // trunk twists
             if (twistCount > 0 && y >= twistHeight) {
-                centerX += getDirectionalModX(n);
-                centerZ += getDirectionalModZ(n);
+                centerX += dx;
+                centerZ += dz;
                 twistCount--;
             }
 
