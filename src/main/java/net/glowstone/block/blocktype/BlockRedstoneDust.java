@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Stairs;
 import org.bukkit.material.Step;
+import org.bukkit.material.WoodenStep;
 
 public class BlockRedstoneDust extends BlockType {
     @Override
@@ -65,8 +66,8 @@ public class BlockRedstoneDust extends BlockType {
         boolean glowDn    = (matDn   == Material.GLOWSTONE);
 
         //Check if on a slab (or on upside-down stairs)
-        boolean onSlab = (blockDn != null ? (blockDn.getState().getData() instanceof Step || blockDn.getState().getData() instanceof Stairs) : false);
-        boolean slabMid = (blockMid != null) && ((blockMid.getState().getData() instanceof Step) || (blockMid.getState().getData() instanceof Stairs));
+        boolean onSlab = (blockDn != null ? (blockDn.getState().getData() instanceof Step || blockDn.getState().getData() instanceof Stairs || blockDn.getState().getData() instanceof WoodenStep) : false);
+        boolean slabMid = (blockMid != null) && ((blockMid.getState().getData() instanceof Step) || (blockMid.getState().getData() instanceof Stairs) || (blockMid.getState().getData() instanceof WoodenStep));
 
         if (forbidDir == outDir) {
             if (!slabMid) { //May go backwards if there's a slab
@@ -195,6 +196,10 @@ public class BlockRedstoneDust extends BlockType {
             MaterialData md = floor.getState().getData();
             if (md instanceof Step) {
                 if (((Step) md).isInverted()) { //You can place redstone on upper slabs
+                    return true;
+                }
+            } else if (md instanceof WoodenStep) {
+                if (((WoodenStep) md).isInverted()) {
                     return true;
                 }
             } else if (md instanceof Stairs) {
