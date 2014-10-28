@@ -49,6 +49,8 @@ public class TreeGenerator {
                 tree = new BirchTree(random, true, delegate);
                 break;
             case JUNGLE:
+                tree = new JungleTree(random, delegate);
+                break;
             case SMALL_JUNGLE:
                 tree = new GenericTree(random, random.nextInt(7) + 4, 3, 3, delegate);
                 break;
