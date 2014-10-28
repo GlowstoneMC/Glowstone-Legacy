@@ -30,7 +30,7 @@ public class TEBanner extends TileEntity {
             this.pattern = BlockBanner.fromNBT(pattern);
         }
 
-        if (tag.isByte("Base")) {
+        if (tag.isInt("Base")) {
             this.base = DyeColor.getByDyeData((byte) tag.getInt("Base"));
         }
     }
