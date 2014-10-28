@@ -336,10 +336,9 @@ public class RSManager {
      */
     public synchronized void pulse() {
 
-        // Swap blocksDirty buffers
         Set<BlockVector> addAsSourceTemp = new HashSet<>(addAsSource);
 
-        // Update all dirty blocks
+        // Add sources
         for (BlockVector p : addAsSourceTemp) {
             // Skip unloaded chunks
             if (!isChunkLoaded(p.getBlockX() >> 4, p.getBlockZ() >> 4)) {
