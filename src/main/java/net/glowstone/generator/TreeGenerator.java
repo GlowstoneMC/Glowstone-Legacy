@@ -40,7 +40,7 @@ public class TreeGenerator {
                 tree = new TallRedwoodTree(random, delegate);
                 break;
             case MEGA_REDWOOD:
-                tree = new RedwoodTree(random, delegate);
+                tree = new MegaRedwoodTree(random, delegate);
                 break;
             case BIRCH:
                 tree = new BirchTree(random, delegate);
