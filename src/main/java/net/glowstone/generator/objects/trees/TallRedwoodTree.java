@@ -52,7 +52,7 @@ public class TallRedwoodTree extends RedwoodTree {
                 for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
                     if ((Math.abs(x - sourceX) != radius || Math.abs(z - sourceZ) != radius || radius <= 0) && 
                             delegate.getBlockState(world, x, y, z).getType() == Material.AIR) {
-                        delegate.setTypeAndRawData(world, x, y, z, Material.LEAVES, 1);
+                        delegate.setTypeAndRawData(world, x, y, z, Material.LEAVES, leavesType);
                     }
                 }
             }
@@ -67,7 +67,7 @@ public class TallRedwoodTree extends RedwoodTree {
         for (int y = 0; y < height - 1; y++) {
             final Material type = delegate.getBlockState(world, sourceX, sourceY + y, sourceZ).getType();
             if (type == Material.AIR || type == Material.LEAVES) {
-                delegate.setTypeAndRawData(world, sourceX, sourceY + y, sourceZ, Material.LOG, 1);
+                delegate.setTypeAndRawData(world, sourceX, sourceY + y, sourceZ, Material.LOG, logType);
             }
         }
 

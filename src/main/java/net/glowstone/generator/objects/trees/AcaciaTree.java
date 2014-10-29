@@ -12,8 +12,7 @@ public class AcaciaTree extends GenericTree {
 
     public AcaciaTree(Random random, BlockStateDelegate delegate) {
         super(random, delegate);
-        int height = random.nextInt(3) + random.nextInt(3) + 5;
-        setHeight(height);
+        setHeight(random.nextInt(3) + random.nextInt(3) + 5);
     }
 
     @Override

@@ -6,13 +6,12 @@ import net.glowstone.util.BlockStateDelegate;
 
 import org.bukkit.World;
 
-public class MegaRedwoodTree extends JungleTree {
+public class MegaRedwoodTree extends MegaJungleTree {
 
     public MegaRedwoodTree(Random random, BlockStateDelegate delegate) {
         super(random, delegate);
         setHeight(random.nextInt(15) + random.nextInt(3) + 13);
-        logType = 1;
-        leavesType = 1;
+        setTypes(1, 1);
     }
 
     @Override

@@ -20,6 +20,7 @@ public class RedwoodTree extends GenericTree {
         setHeight(random.nextInt(4) + 6);
         setLeavesHeight(random.nextInt(2) + 1);
         setMaxRadius(random.nextInt(2) + 2);
+        setTypes(1, 1);
     }
 
     protected final void setMaxRadius(int maxRadius) {
@@ -85,7 +86,7 @@ public class RedwoodTree extends GenericTree {
                 for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
                     if ((Math.abs(x - sourceX) != radius || Math.abs(z - sourceZ) != radius || radius <= 0) &&
                             delegate.getBlockState(world, x, y, z).getType() == Material.AIR) {
-                        delegate.setTypeAndRawData(world, x, y, z, Material.LEAVES, 1);
+                        delegate.setTypeAndRawData(world, x, y, z, Material.LEAVES, leavesType);
                     }
                 }
             }
@@ -105,7 +106,7 @@ public class RedwoodTree extends GenericTree {
         for (int y = 0; y < height - random.nextInt(3); y++) {
             final Material type = delegate.getBlockState(world, sourceX, sourceY + y, sourceZ).getType();
             if (overridables.contains(type)) {
-                delegate.setTypeAndRawData(world, sourceX, sourceY + y, sourceZ, Material.LOG, 1);
+                delegate.setTypeAndRawData(world, sourceX, sourceY + y, sourceZ, Material.LOG, logType);
             }
         }
 

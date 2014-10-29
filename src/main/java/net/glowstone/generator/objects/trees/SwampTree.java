@@ -8,7 +8,7 @@ import org.bukkit.block.BlockState;
 
 import net.glowstone.util.BlockStateDelegate;
 
-public class SwampTree extends GenericTree {
+public class SwampTree extends CocoaTree {
 
     public SwampTree(Random random, BlockStateDelegate delegate) {
         super(random, delegate);
@@ -16,8 +16,8 @@ public class SwampTree extends GenericTree {
                 Material.AIR,
                 Material.LEAVES
         );
-        int height = random.nextInt(4) + 5;
-        setHeight(height);
+        setHeight(random.nextInt(4) + 5);
+        setTypes(0, 0);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class SwampTree extends GenericTree {
                             || (random.nextBoolean() && n != 0)) {
                         final Material material = delegate.getBlockState(world, x, y, z).getType();
                         if (material == Material.AIR || material == Material.LEAVES) {
-                            delegate.setTypeAndRawData(world, x, y, z, Material.LEAVES, 0);
+                            delegate.setTypeAndRawData(world, x, y, z, Material.LEAVES, leavesType);
                         }
                     }
                 }
@@ -110,7 +110,7 @@ public class SwampTree extends GenericTree {
             final Material material = delegate.getBlockState(world, sourceX, sourceY + y, sourceZ).getType();
             if (material == Material.AIR || material == Material.LEAVES ||
                     material == Material.WATER || material == Material.STATIONARY_WATER) {
-                delegate.setTypeAndRawData(world, sourceX, sourceY + y, sourceZ, Material.LOG, 0);
+                delegate.setTypeAndRawData(world, sourceX, sourceY + y, sourceZ, Material.LOG, logType);
             }
         }
 

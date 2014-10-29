@@ -46,16 +46,16 @@ public class TreeGenerator {
                 tree = new BirchTree(random, delegate);
                 break;
             case TALL_BIRCH:
-                tree = new BirchTree(random, true, delegate);
+                tree = new TallBirchTree(random, delegate);
                 break;
             case JUNGLE:
-                tree = new JungleTree(random, delegate);
+                tree = new MegaJungleTree(random, delegate);
                 break;
             case SMALL_JUNGLE:
-                tree = new GenericTree(random, random.nextInt(7) + 4, 3, 3, delegate);
+                tree = new JungleTree(random, delegate);
                 break;
             case COCOA_TREE:
-                tree = new GenericTree(random, random.nextInt(7) + 4, 3, 3, true, delegate);
+                tree = new CocoaTree(random, delegate);
                 break;
             case JUNGLE_BUSH:
                 tree = new JungleBush(random, delegate);

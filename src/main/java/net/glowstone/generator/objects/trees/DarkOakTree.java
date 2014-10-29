@@ -12,8 +12,7 @@ public class DarkOakTree extends GenericTree {
 
     public DarkOakTree(Random random, BlockStateDelegate delegate) {
         super(random, delegate);
-        int height = random.nextInt(2) + random.nextInt(3) + 6;
-        setHeight(height);
+        setHeight(random.nextInt(2) + random.nextInt(3) + 6);
     }
 
     @Override

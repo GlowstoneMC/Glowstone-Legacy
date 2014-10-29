@@ -12,6 +12,7 @@ public class JungleBush extends GenericTree {
 
     public JungleBush(Random random, BlockStateDelegate delegate) {
         super(random, delegate);
+        setTypes(3, 0);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class JungleBush extends GenericTree {
         }
 
         // generates the trunk
-        delegate.setTypeAndRawData(world, sourceX, sourceY + 1, sourceZ, Material.LOG, 3);
+        delegate.setTypeAndRawData(world, sourceX, sourceY + 1, sourceZ, Material.LOG, logType);
 
         // generates the leaves
         for (int y = sourceY + 1; y <= sourceY + 3; y++) {
@@ -49,7 +50,7 @@ public class JungleBush extends GenericTree {
                 for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
                     if ((Math.abs(x - sourceX) != radius || Math.abs(z - sourceZ) != radius || random.nextBoolean()) &&
                             !delegate.getBlockState(world, x, y, z).getType().isSolid()) {
-                        delegate.setTypeAndRawData(world, x, y, z, Material.LEAVES, 0);
+                        delegate.setTypeAndRawData(world, x, y, z, Material.LEAVES, leavesType);
                     }
                 }
             }
