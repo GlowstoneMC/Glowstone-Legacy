@@ -71,9 +71,6 @@ public final class GlowEffect {
                 Validate.isTrue(((Material) data).isBlock(), "Material is not a block!");
                 result = ((Material) data).getId();
                 break;
-            case LAND_DUST:
-                result = (Integer) data;
-                break;
             default:
                 result = 0;
         }
