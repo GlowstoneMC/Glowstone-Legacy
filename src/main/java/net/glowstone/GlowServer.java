@@ -14,7 +14,6 @@ import net.glowstone.map.GlowMapView;
 import net.glowstone.net.GlowNetworkServer;
 import net.glowstone.net.SessionRegistry;
 import net.glowstone.net.query.QueryServer;
-import net.glowstone.net.rcon.RConCommandSender;
 import net.glowstone.net.rcon.RConServer;
 import net.glowstone.scheduler.GlowScheduler;
 import net.glowstone.scheduler.WorldScheduler;
@@ -214,11 +213,6 @@ public final class GlowServer implements Server {
     private final ConsoleManager consoleManager = new ConsoleManager(this);
 
     /**
-     * The remote console command sender for this server.
-     */
-    private RemoteConsoleCommandSender remoteConsoleCommandSender;
-
-    /**
      * The services manager of this server.
      */
     private final SimpleServicesManager servicesManager = new SimpleServicesManager();
@@ -375,8 +369,6 @@ public final class GlowServer implements Server {
         // Determine console mode and start reading input
         consoleManager.startConsole(config.getBoolean(ServerConfig.Key.USE_JLINE));
         consoleManager.startFile(config.getString(ServerConfig.Key.LOG_FILE));
-
-        remoteConsoleCommandSender = new RConCommandSender(this);
 
         if (getProxySupport()) {
             if (getOnlineMode()) {
@@ -880,9 +872,6 @@ public final class GlowServer implements Server {
     public ConsoleCommandSender getConsoleSender() {
         return consoleManager.getSender();
     }
-
-    @Override
-    public RemoteConsoleCommandSender getRemoteConsoleCommandSender() { return remoteConsoleCommandSender; }
 
     public PluginCommand getPluginCommand(String name) {
         Command command = commandMap.getCommand(name);

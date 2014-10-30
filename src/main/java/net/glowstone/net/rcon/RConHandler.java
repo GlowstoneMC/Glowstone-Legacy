@@ -3,8 +3,10 @@ package net.glowstone.net.rcon;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import net.glowstone.EventFactory;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandException;
+import org.bukkit.event.server.RemoteServerCommandEvent;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -23,9 +25,15 @@ public class RConHandler extends SimpleChannelInboundHandler<ByteBuf> {
      */
     private RConServer rconServer;
 
+    /**
+     * The {@link net.glowstone.net.rcon.RConCommandSender} for this connection.
+     */
+    private RConCommandSender commandSender;
+
     public RConHandler(RConServer rconServer, String password) {
         this.rconServer = rconServer;
         this.password = password;
+        this.commandSender = new RConCommandSender(rconServer.getServer());
     }
 
     @Override
@@ -62,11 +70,11 @@ public class RConHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     private void handleCommand(ChannelHandlerContext ctx, String payload, int requestId) throws IOException {
         if (this.loggedIn) {
-            RConCommandSender sender = (RConCommandSender) rconServer.getServer().getRemoteConsoleCommandSender();
             try {
-                rconServer.getServer().dispatchCommand(rconServer.getServer().getRemoteConsoleCommandSender(), payload);
-                sendMultiPacketResponse(ctx, requestId, ChatColor.stripColor(sender.getLog()));
-                sender.clearLog();
+                EventFactory.callEvent(new RemoteServerCommandEvent(commandSender, payload));
+;               rconServer.getServer().dispatchCommand(commandSender, payload);
+                sendMultiPacketResponse(ctx, requestId, ChatColor.stripColor(commandSender.getLog()));
+                commandSender.clearLog();
             } catch (CommandException e) {
                 sendMultiPacketResponse(ctx, requestId, String.format("Error executing: %s (%s)", payload, e.getMessage()));
             }
