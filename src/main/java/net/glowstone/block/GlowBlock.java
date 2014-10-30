@@ -2,6 +2,7 @@ package net.glowstone.block;
 
 import net.glowstone.GlowChunk;
 import net.glowstone.GlowWorld;
+import net.glowstone.block.blocktype.BlockType;
 import net.glowstone.block.entity.TileEntity;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.net.message.play.game.BlockChangeMessage;
@@ -328,7 +329,7 @@ public final class GlowBlock implements Block {
 
     @Override
     public Collection<ItemStack> getDrops() {
-        return ItemTable.instance().getBlock(getType()).getDrops(this);
+        return getBlockType().getDrops(this);
     }
 
     @Override
@@ -365,5 +366,17 @@ public final class GlowBlock implements Block {
     @Override
     public void removeMetadata(String metadataKey, Plugin owningPlugin) {
         metadata.removeMetadata(this, metadataKey, owningPlugin);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // BlockType
+
+    /**
+     * Gets the {@link BlockType} of this block.
+     *
+     * @return The corresponding {@link BlockType} for this block.
+     */
+    public BlockType getBlockType() {
+        return ItemTable.instance().getBlock(getType());
     }
 }

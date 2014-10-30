@@ -30,6 +30,7 @@ import java.util.List;
 public class BlockType extends ItemType {
 
     protected List<ItemStack> drops = null;
+    private double hardness = 0.0D;
 
     ////////////////////////////////////////////////////////////////////////////
     // Setters for subclass use
@@ -140,6 +141,23 @@ public class BlockType extends ItemType {
      */
     public boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
         return block.isLiquid();
+    }
+
+    /**
+     * Called to set block material hardness.
+     * @param hardness The hardness value for this block
+     */
+    public final BlockType setHardness(double hardness) {
+        this.hardness = hardness;
+        return this;
+    }
+
+    /**
+     * Called to get block material hardness.
+     * @return Whether this block hardness value.
+     */
+    public double getHardness() {
+        return hardness;
     }
 
     @Override
