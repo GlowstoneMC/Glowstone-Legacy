@@ -20,6 +20,9 @@ public enum MetadataIndex {
     NAME_TAG(10, STRING, LivingEntity.class),
     SHOW_NAME_TAG(11, BYTE, LivingEntity.class),
 
+    // allowed to override NAME_TAG from LivingEntity
+    PLAYER_SKIN_FLAGS(10, BYTE, HumanEntity.class),
+
     AGE(12, INT, Ageable.class),
 
     HORSE_FLAGS(16, INT, Horse.class),
@@ -127,27 +130,38 @@ public enum MetadataIndex {
         return appliesTo.isAssignableFrom(clazz);
     }
 
-    public static interface StatusFlags {
-        final int ON_FIRE = 0x01;
-        final int SNEAKING = 0x02;
-        final int SPRINTING = 0x08;
-        final int ARM_UP = 0x10; // eating, drinking, blocking
-        final int INVISIBLE = 0x20;
+    public static MetadataIndex getIndex(int index, MetadataType type) {
+        MetadataIndex output = null;
+        for (MetadataIndex entry : values()) {
+            if (entry.getIndex() == index && entry.getType().equals(type)) {
+                output = entry;
+                break;
+            }
+        }
+        return output;
     }
 
-    public static interface HorseFlags {
-        final int IS_TAME = 0x02;
-        final int HAS_SADDLE = 0x04;
-        final int HAS_CHEST = 0x08;
-        final int IS_BRED = 0x10;
-        final int IS_EATING = 0x20;
-        final int IS_REARING = 0x40;
-        final int MOUTH_OPEN = 0x80;
+    public interface StatusFlags {
+        int ON_FIRE = 0x01;
+        int SNEAKING = 0x02;
+        int SPRINTING = 0x08;
+        int ARM_UP = 0x10; // eating, drinking, blocking
+        int INVISIBLE = 0x20;
     }
 
-    public static interface TameableFlags {
-        final int IS_SITTING = 0x01;
-        final int WOLF_IS_ANGRY = 0x02;
-        final int IS_TAME = 0x04;
+    public interface HorseFlags {
+        int IS_TAME = 0x02;
+        int HAS_SADDLE = 0x04;
+        int HAS_CHEST = 0x08;
+        int IS_BRED = 0x10;
+        int IS_EATING = 0x20;
+        int IS_REARING = 0x40;
+        int MOUTH_OPEN = 0x80;
+    }
+
+    public interface TameableFlags {
+        int IS_SITTING = 0x01;
+        int WOLF_IS_ANGRY = 0x02;
+        int IS_TAME = 0x04;
     }
 }

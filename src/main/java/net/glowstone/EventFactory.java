@@ -1,25 +1,22 @@
 package net.glowstone;
 
-import net.glowstone.block.GlowBlock;
-import net.glowstone.block.ItemTable;
-import net.glowstone.block.blocktype.BlockType;
 import net.glowstone.entity.GlowPlayer;
-import net.glowstone.net.GlowSession;
-import org.bukkit.*;
+import org.bukkit.BanList;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.block.*;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.*;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import org.bukkit.event.server.ServerCommandEvent;
-import org.bukkit.event.world.*;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.Collection;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -30,8 +27,8 @@ import java.util.logging.Level;
  */
 public final class EventFactory {
 
-    // Private to prevent creation
-    private EventFactory() {}
+    private EventFactory() {
+    }
 
     /**
      * Calls an event through the plugin manager.
@@ -66,15 +63,76 @@ public final class EventFactory {
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Player Events
 
-    // -- Player Events
+    public static AsyncPlayerPreLoginEvent onPlayerPreLogin(String name, InetSocketAddress address, UUID uuid) {
+        // call async event
+        final AsyncPlayerPreLoginEvent event = new AsyncPlayerPreLoginEvent(name, address.getAddress(), uuid);
+        callEvent(event);
 
-    public static PlayerChatEvent onPlayerChat(Player player, String message) {
-        return callEvent(new PlayerChatEvent(player, message));
+        // call sync event only if needed
+        if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length > 0) {
+            // initialize event to match current state from async event
+            final PlayerPreLoginEvent syncEvent = new PlayerPreLoginEvent(name, address.getAddress(), uuid);
+            if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+                syncEvent.disallow(event.getResult(), event.getKickMessage());
+            }
+
+            // call event synchronously and copy data back to original event
+            callEvent(syncEvent);
+            event.disallow(syncEvent.getResult(), syncEvent.getKickMessage());
+        }
+
+        return event;
     }
 
-    public static PlayerCommandPreprocessEvent onPlayerCommand(Player player, String message) {
-        return callEvent(new PlayerCommandPreprocessEvent(player, message));
+    public static PlayerLoginEvent onPlayerLogin(GlowPlayer player, String hostname) {
+        final GlowServer server = player.getServer();
+        final InetAddress address = player.getAddress().getAddress();
+        final String addressString = address.getHostAddress();
+        final PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, address);
+
+        final BanList nameBans = server.getBanList(BanList.Type.NAME);
+        final BanList ipBans = server.getBanList(BanList.Type.IP);
+
+        if (nameBans.isBanned(player.getName())) {
+            event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
+                    "Banned: " + nameBans.getBanEntry(player.getName()).getReason());
+        } else if (ipBans.isBanned(addressString)) {
+            event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
+                    "Banned: " + ipBans.getBanEntry(addressString).getReason());
+        } else if (server.hasWhitelist() && !player.isWhitelisted()) {
+            event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST,
+                    "You are not whitelisted on this server.");
+        } else if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
+            event.disallow(PlayerLoginEvent.Result.KICK_FULL,
+                    "The server is full (" + player.getServer().getMaxPlayers() + " players).");
+        }
+
+        return callEvent(event);
+    }
+
+    public static AsyncPlayerChatEvent onPlayerChat(boolean async, Player player, String message) {
+        // call async event
+        final Set<Player> recipients = new HashSet<>(player.getServer().getOnlinePlayers());
+        final AsyncPlayerChatEvent event = new AsyncPlayerChatEvent(async, player, message, recipients);
+        callEvent(event);
+
+        // call sync event only if needed
+        if (PlayerChatEvent.getHandlerList().getRegisteredListeners().length > 0) {
+            // initialize event to match current state from async event
+            final PlayerChatEvent syncEvent = new PlayerChatEvent(player, event.getMessage(), event.getFormat(), recipients);
+            syncEvent.setCancelled(event.isCancelled());
+
+            // call event synchronously and copy data back to original event
+            callEvent(syncEvent);
+            event.setMessage(syncEvent.getMessage());
+            event.setFormat(syncEvent.getFormat());
+            event.setCancelled(syncEvent.isCancelled());
+        }
+
+        return event;
     }
 
     public static PlayerJoinEvent onPlayerJoin(Player player) {
@@ -105,117 +163,4 @@ public final class EventFactory {
         return callEvent(new PlayerInteractEvent(player, action, player.getItemInHand(), clicked, face));
     }
 
-    public static PlayerTeleportEvent onPlayerTeleport(Player player, Location from, Location to, TeleportCause cause) {
-        return callEvent(new PlayerTeleportEvent(player, from, to, cause));
-    }
-
-    public static PlayerLoginEvent onPlayerLogin(GlowPlayer player) {
-        final GlowServer server = player.getServer();
-        final String address = player.getAddress().getAddress().getHostAddress();
-        final PlayerLoginEvent event = new PlayerLoginEvent(player);
-
-        final BanList nameBans = server.getBanList(BanList.Type.NAME);
-        final BanList ipBans = server.getBanList(BanList.Type.IP);
-
-        if (nameBans.isBanned(player.getName())) {
-            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, "Banned: " + nameBans.getBanEntry(player.getName()).getReason());
-        } else if (ipBans.isBanned(address)) {
-            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, "Banned: " + ipBans.getBanEntry(address).getReason());
-        } else if (server.hasWhitelist() && !player.isWhitelisted()) {
-            event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, "You are not whitelisted on this server.");
-        } else if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
-            event.disallow(PlayerLoginEvent.Result.KICK_FULL,
-                    "The server is full (" + player.getServer().getMaxPlayers() + " players).");
-        }
-
-        return callEvent(event);
-    }
-
-    public static PlayerPreLoginEvent onPlayerPreLogin(String name, GlowSession session) {
-        return callEvent(new PlayerPreLoginEvent(name, session.getAddress().getAddress()));
-    }
-
-    public static PlayerAnimationEvent onPlayerAnimate(GlowPlayer player) {
-        return callEvent(new PlayerAnimationEvent(player));
-    }
-
-    public static PlayerChatTabCompleteEvent onPlayerTabComplete(Player who, String message, Collection<String> completions) {
-        return callEvent(new PlayerChatTabCompleteEvent(who, message, completions));
-    }
-
-    public static PlayerToggleSneakEvent onPlayerToggleSneak(Player player, boolean isSneaking) {
-        return callEvent(new PlayerToggleSneakEvent(player, isSneaking));
-    }
-
-    // -- Block Events
-
-    public static BlockBreakEvent onBlockBreak(Block block, Player player) {
-        return callEvent(new BlockBreakEvent(block, player));
-    }
-
-    public static BlockDamageEvent onBlockDamage(Player player, Block block) {
-        return onBlockDamage(player, block, player.getItemInHand(), player.getGameMode() == GameMode.CREATIVE);
-    }
-
-    public static BlockDamageEvent onBlockDamage(Player player, Block block, ItemStack tool, boolean instaBreak) {
-        return callEvent(new BlockDamageEvent(player, block, tool, instaBreak));
-    }
-
-    public static BlockPlaceEvent onBlockPlace(Block block, BlockState newState, Block against, Player player) {
-        return callEvent(new BlockPlaceEvent(block, newState, against, player.getItemInHand(), player, true));
-    }
-
-    public static BlockPhysicsEvent onBlockPhysics(GlowBlock block) {
-        return callEvent(new BlockPhysicsEvent(block, block.getTypeId()));
-    }
-
-    public static BlockPhysicsEvent onBlockPhysics(GlowBlock block, int changedType) {
-        return callEvent(new BlockPhysicsEvent(block, changedType));
-    }
-
-    public static BlockCanBuildEvent onBlockCanBuild(GlowBlock block, int newId, BlockFace against) {
-        BlockType type = ItemTable.instance().getBlock(newId);
-        boolean canBuild = type == null || type.canPlaceAt(block, against);
-        return callEvent(new BlockCanBuildEvent(block, newId, canBuild));
-    }
-
-    // -- Server Events
-
-    public static ServerCommandEvent onServerCommand(ConsoleCommandSender sender, String command) {
-        return callEvent(new ServerCommandEvent(sender, command));
-    }
-
-    // -- World Events
-
-    public static ChunkLoadEvent onChunkLoad(GlowChunk chunk, boolean isNew) {
-        return callEvent(new ChunkLoadEvent(chunk, isNew));
-    }
-
-    public static ChunkPopulateEvent onChunkPopulate(GlowChunk populatedChunk) {
-        return callEvent(new ChunkPopulateEvent(populatedChunk));
-    }
-
-    public static ChunkUnloadEvent onChunkUnload(GlowChunk chunk) {
-        return callEvent(new ChunkUnloadEvent(chunk));
-    }
-
-    public static SpawnChangeEvent onSpawnChange(GlowWorld world, Location previousLocation) {
-        return callEvent(new SpawnChangeEvent(world, previousLocation));
-    }
-
-    public static WorldInitEvent onWorldInit(GlowWorld world) {
-        return callEvent(new WorldInitEvent(world));
-    }
-
-    public static WorldLoadEvent onWorldLoad(GlowWorld world) {
-        return callEvent(new WorldLoadEvent(world));
-    }
-
-    public static WorldSaveEvent onWorldSave(GlowWorld world) {
-        return callEvent(new WorldSaveEvent(world));
-    }
-
-    public static WorldUnloadEvent onWorldUnload(GlowWorld world) {
-        return callEvent(new WorldUnloadEvent(world));
-    }
 }

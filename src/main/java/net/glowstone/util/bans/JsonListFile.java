@@ -6,7 +6,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 /**
@@ -96,12 +99,12 @@ public abstract class JsonListFile {
     /**
      * Base interface for entries in JSON list files.
      */
-    protected static interface BaseEntry {
+    protected interface BaseEntry {
         /**
          * Serialize this entry to JSON format.
          * @return The resulting JSON object.
          */
-        public Map<String, String> write();
+        Map<String, String> write();
     }
 
 }

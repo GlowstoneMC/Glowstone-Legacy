@@ -2,21 +2,28 @@ package net.glowstone;
 
 import net.glowstone.block.GlowBlock;
 import net.glowstone.constants.GlowBiome;
+import net.glowstone.constants.GlowEffect;
+import net.glowstone.constants.GlowParticle;
 import net.glowstone.entity.*;
 import net.glowstone.entity.objects.GlowItem;
+import net.glowstone.generator.TreeGenerator;
 import net.glowstone.io.WorldMetadataService.WorldFinalValues;
 import net.glowstone.io.WorldStorageProvider;
 import net.glowstone.io.anvil.AnvilWorldStorageProvider;
+import net.glowstone.util.BlockStateDelegate;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.*;
 import org.bukkit.event.weather.LightningStrikeEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.event.world.*;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.MetadataStore;
 import org.bukkit.metadata.MetadataStoreBase;
 import org.bukkit.metadata.MetadataValue;
@@ -38,7 +45,7 @@ public final class GlowWorld implements World {
     /**
      * The metadata store class for worlds.
      */
-    private final static class WorldMetadataStore extends MetadataStoreBase<World> implements MetadataStore<World> {
+    private static final class WorldMetadataStore extends MetadataStoreBase<World> implements MetadataStore<World> {
         @Override
         protected String disambiguate(World subject, String metadataKey) {
             return subject.getName() + ":" + metadataKey;
@@ -48,7 +55,7 @@ public final class GlowWorld implements World {
     /**
      * The metadata store for world objects.
      */
-    private final static MetadataStore<World> metadata = new WorldMetadataStore();
+    private static final MetadataStore<World> metadata = new WorldMetadataStore();
 
     /**
      * The length in ticks of one Minecraft day.
@@ -237,6 +244,8 @@ public final class GlowWorld implements World {
         animalLimit = server.getAnimalSpawnLimit();
         waterAnimalLimit = server.getWaterAnimalSpawnLimit();
         ambientLimit = server.getAmbientSpawnLimit();
+        keepSpawnLoaded = server.keepSpawnLoaded();
+        difficulty = server.getDifficulty();
 
         // read in world data
         WorldFinalValues values = null;
@@ -259,8 +268,9 @@ public final class GlowWorld implements World {
 
         // begin loading spawn area
         spawnChunkLock = newChunkLock("spawn");
-        EventFactory.onWorldInit(this);
+        server.addWorld(this);
         server.getLogger().info("Preparing spawn for " + name + "...");
+        EventFactory.callEvent(new WorldInitEvent(this));
 
         // determine the spawn location if we need to
         if (spawnLocation == null) {
@@ -306,7 +316,7 @@ public final class GlowWorld implements World {
             }
         }
         server.getLogger().info("Preparing spawn for " + name + ": done");
-        EventFactory.onWorldLoad(this);
+        EventFactory.callEvent(new WorldLoadEvent(this));
     }
 
     @Override
@@ -493,7 +503,7 @@ public final class GlowWorld implements World {
     public boolean setSpawnLocation(int x, int y, int z) {
         Location oldSpawn = spawnLocation;
         spawnLocation = new Location(this, x, y, z);
-        EventFactory.onSpawnChange(this, oldSpawn);
+        EventFactory.callEvent(new SpawnChangeEvent(this, oldSpawn));
         return true;
     }
 
@@ -686,7 +696,7 @@ public final class GlowWorld implements World {
     }
 
     public void save(boolean async) {
-        EventFactory.onWorldSave(this);
+        EventFactory.callEvent(new WorldSaveEvent(this));
 
         // save metadata
         writeWorldData(async);
@@ -722,12 +732,28 @@ public final class GlowWorld implements World {
 
     @Override
     public boolean generateTree(Location location, TreeType type) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return generateTree(location, type, null);
     }
 
     @Override
     public boolean generateTree(Location loc, TreeType type, BlockChangeDelegate delegate) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        final BlockStateDelegate blockStateDelegate = new BlockStateDelegate();
+        final TreeGenerator generator = new TreeGenerator(blockStateDelegate);
+        if (generator.generate(random, loc, type)) {
+            final List<BlockState> blockStates = new ArrayList<BlockState>(blockStateDelegate.getBlockStates());
+            StructureGrowEvent growEvent = new StructureGrowEvent(loc, type, false, null, blockStates);
+            EventFactory.callEvent(growEvent);
+            if (!growEvent.isCancelled()) {
+                for (BlockState state : blockStates) {
+                    state.update(true);
+                    if (delegate != null) {
+                        delegate.setTypeIdAndData(state.getX(), state.getY(), state.getZ(), state.getTypeId(), state.getRawData());
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -890,7 +916,7 @@ public final class GlowWorld implements World {
         boolean result = false;
 
         for (GlowPlayer player : getRawPlayers()) {
-            if (player.canSee(key)) {
+            if (player.canSeeChunk(key)) {
                 player.getSession().send(getChunkAt(x, z).toMessage());
                 result = true;
             }
@@ -1161,9 +1187,9 @@ public final class GlowWorld implements World {
 
     @Override
     public void playEffect(Location location, Effect effect, int data, int radius) {
-        radius *= radius;
+        final int radiusSquared = radius * radius;
         for (Player player : getRawPlayers()) {
-            if (player.getLocation().distanceSquared(location) <= radius) {
+            if (player.getLocation().distanceSquared(location) <= radiusSquared) {
                 player.playEffect(location, effect, data);
             }
         }
@@ -1176,14 +1202,13 @@ public final class GlowWorld implements World {
 
     @Override
     public <T> void playEffect(Location location, Effect effect, T data, int radius) {
-        int rawData = 0;
-        playEffect(location, effect, rawData, radius);
+        playEffect(location, effect, GlowEffect.getDataValue(effect, data), radius);
     }
 
     public void playEffectExceptTo(Location location, Effect effect, int data, int radius, Player exclude) {
-        radius *= radius;
+        final int radiusSquared = radius * radius;
         for (Player player : getRawPlayers()) {
-            if (!player.equals(exclude) && player.getLocation().distanceSquared(location) <= radius) {
+            if (!player.equals(exclude) && player.getLocation().distanceSquared(location) <= radiusSquared) {
                 player.playEffect(location, effect, data);
             }
         }
@@ -1197,6 +1222,29 @@ public final class GlowWorld implements World {
         for (Player player : getRawPlayers()) {
             if (player.getLocation().distanceSquared(location) <= radiusSquared) {
                 player.playSound(location, sound, volume, pitch);
+            }
+        }
+    }
+
+    @Override
+    public void showParticle(Location loc, Particle particle, float offsetX, float offsetY, float offsetZ, float speed, int amount) {
+        showParticle(loc, particle, null, offsetX, offsetY, offsetZ, speed, amount);
+    }
+
+    @Override
+    public void showParticle(Location loc, Particle particle, MaterialData material, float offsetX, float offsetY, float offsetZ, float speed, int amount) {
+        if (loc == null || particle == null) return;
+
+        final double radiusSquared;
+        if (GlowParticle.isLongDistance(particle)) {
+            radiusSquared = 48 * 48;
+        } else {
+            radiusSquared = 16 * 16;
+        }
+
+        for (Player player : getRawPlayers()) {
+            if (player.getLocation().distanceSquared(loc) <= radiusSquared) {
+                player.showParticle(loc, particle, material, offsetX, offsetY, offsetZ, speed, amount);
             }
         }
     }
@@ -1240,6 +1288,7 @@ public final class GlowWorld implements World {
      * @return true if successful
      */
     public boolean unload() {
+        EventFactory.callEvent(new WorldUnloadEvent(this));
         try {
             storageProvider.getChunkIoService().unload();
         } catch (IOException e) {
