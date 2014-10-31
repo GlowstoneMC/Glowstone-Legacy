@@ -4,11 +4,13 @@ import com.flowpowered.networking.Message;
 import net.glowstone.net.message.play.entity.SpawnLightningStrikeMessage;
 import net.glowstone.util.Position;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LightningStrike;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 /**
  * A GlowLightning strike is an entity produced during thunderstorms.
@@ -25,10 +27,12 @@ public class GlowLightningStrike extends GlowWeather implements LightningStrike 
      */
     private final int ticksToLive;
 
+    private final Random random = new Random();
+
     public GlowLightningStrike(Location location, boolean effect) {
         super(location);
         this.effect = effect;
-        this.ticksToLive = 30;
+        this.ticksToLive = random.nextInt(3) + 1;
     }
 
     @Override
@@ -44,8 +48,15 @@ public class GlowLightningStrike extends GlowWeather implements LightningStrike 
     @Override
     public void pulse() {
         super.pulse();
-        if (getTicksLived() >= ticksToLive) {
+        if (getTicksLived() > ticksToLive) {
             remove();
+        }
+        if (getTicksLived() == 1) {
+            location.getWorld().playSound(location, Sound.AMBIENCE_THUNDER, 10000, 0.8F + random.nextFloat() * 0.2F);
+            location.getWorld().playSound(location, Sound.EXPLODE, 2, 0.5F + random.nextFloat() * 0.2F);
+        }
+        if (getTicksLived() >= 3 && getTicksLived() - 2 < random.nextInt(10)) {
+            setTicksLived(1);
         }
     }
 
