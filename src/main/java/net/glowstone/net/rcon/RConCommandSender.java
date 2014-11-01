@@ -114,6 +114,6 @@ public class RConCommandSender implements RemoteConsoleCommandSender {
 
     @Override
     public void setOp(boolean value) {
-        throw new UnsupportedOperationException("Cannot change operator status of server console");
+        throw new UnsupportedOperationException("Cannot change operator status of RCon command sender");
     }
 }
