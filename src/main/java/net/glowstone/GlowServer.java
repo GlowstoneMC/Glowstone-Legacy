@@ -785,6 +785,12 @@ public final class GlowServer implements Server {
         return config.getBoolean(ServerConfig.Key.RCON_COLORS);
     }
 
+    /*
+     * Get the resource pack url for this server, or <code>null</code> if not set
+     * @return url The url of the resource pack to use, or <code>null</code>
+     */
+    public String getResourcePackURL() { return config.getString(ServerConfig.Key.RESOURCE_PACK); }
+
     ////////////////////////////////////////////////////////////////////////////
     // Static server properties
 

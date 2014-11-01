@@ -21,6 +21,7 @@ import net.glowstone.net.message.play.entity.EntityVelocityMessage;
 import net.glowstone.net.message.play.game.*;
 import net.glowstone.net.message.play.inv.*;
 import net.glowstone.net.message.play.player.PlayerAbilitiesMessage;
+import net.glowstone.net.message.play.player.ResourcePackSendMessage;
 import net.glowstone.net.protocol.ProtocolType;
 import net.glowstone.util.StatisticMap;
 import net.glowstone.util.TextMessage;
@@ -308,6 +309,10 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
         // send initial location
         session.send(new PositionRotationMessage(location));
+
+        if (server.getResourcePackURL() != null) {
+            setResourcePack(server.getResourcePackURL());
+        }
     }
 
     /**
@@ -1319,8 +1324,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
     @Override
     public void setResourcePack(String url) {
-        // todo: update for 1.8 if needed
-        session.send(PluginMessage.fromString("MC|RPack", url));
+        session.send(new ResourcePackSendMessage(url, ""));
     }
 
     ////////////////////////////////////////////////////////////////////////////
