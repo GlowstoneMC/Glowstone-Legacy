@@ -1055,7 +1055,7 @@ public final class GlowWorld implements World {
     }
 
     private GlowLightningStrike strikeLightningFireEvent(final Location loc, final boolean effect) {
-        final GlowLightningStrike strike = new GlowLightningStrike(loc, effect);
+        final GlowLightningStrike strike = new GlowLightningStrike(random, loc, effect);
         final LightningStrikeEvent event = new LightningStrikeEvent(this, strike);
         if (EventFactory.callEvent(event).isCancelled()) {
             return null;

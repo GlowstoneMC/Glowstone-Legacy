@@ -27,12 +27,13 @@ public class GlowLightningStrike extends GlowWeather implements LightningStrike 
      */
     private final int ticksToLive;
 
-    private final Random random = new Random();
+    private final Random random;
 
-    public GlowLightningStrike(Location location, boolean effect) {
+    public GlowLightningStrike(Random random, Location location, boolean effect) {
         super(location);
         this.effect = effect;
         this.ticksToLive = random.nextInt(3) + 1;
+        this.random = random;
     }
 
     @Override
