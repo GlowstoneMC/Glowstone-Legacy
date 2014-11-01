@@ -50,7 +50,6 @@ public class RConServer {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
-                        System.out.println("Channel created!");
                         ch.pipeline().
                                 addLast(new RConFramingHandler()).
                                 addLast(new RConHandler(rconServer, password));
