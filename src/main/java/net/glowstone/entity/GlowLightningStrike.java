@@ -55,7 +55,7 @@ public class GlowLightningStrike extends GlowWeather implements LightningStrike 
             location.getWorld().playSound(location, Sound.AMBIENCE_THUNDER, 10000, 0.8F + random.nextFloat() * 0.2F);
             location.getWorld().playSound(location, Sound.EXPLODE, 2, 0.5F + random.nextFloat() * 0.2F);
         }
-        if (getTicksLived() >= 3 && getTicksLived() - 2 < random.nextInt(10)) {
+        if (getTicksLived() >= 3 && getTicksLived() - 2 >= random.nextInt(10)) {
             setTicksLived(1);
         }
     }
