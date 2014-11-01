@@ -1287,7 +1287,7 @@ public final class GlowWorld implements World {
     public void playSound(Location location, Sound sound, float volume, float pitch) {
         if (location == null || sound == null) return;
 
-        final double radiusSquared = Math.pow(volume > 1 ? volume * 16 : 16, 2);
+        final double radiusSquared = Math.pow(volume * 16, 2);
         for (Player player : getRawPlayers()) {
             if (player.getLocation().distanceSquared(location) <= radiusSquared) {
                 player.playSound(location, sound, volume, pitch);
