@@ -188,19 +188,9 @@ public final class GlowWorld implements World {
     private int thunderingTicks = 0;
 
     /**
-     * The rain density on the previous world tick.
-     */
-    private float previousRainDensity = 0;
-
-    /**
      * The rain density on the current world tick.
      */
     private float currentRainDensity = 0;
-
-    /**
-     * The sky darkness on the previous world tick.
-     */
-    private float previousSkyDarkness = 0;
 
     /**
      * The sky darkness on the current world tick.
@@ -1188,19 +1178,13 @@ public final class GlowWorld implements World {
             previouslyRaining = currentlyRaining;
         }
 
-        float rainModifier, skyDarknessModifier;
-        if (currentlyRaining) {
-            rainModifier = .01F;
-        } else {
-            rainModifier = -.01F;
-        }
-        if (currentlyThundering) {
-            skyDarknessModifier = .01F;
-        } else {
-            skyDarknessModifier = -.01F;
-        }
+        float previousRainDensity = currentRainDensity;
+        float previousSkyDarkness = currentSkyDarkness;
 
-        currentRainDensity = (float) Math.max(0, Math.min(1, previousRainDensity + rainModifier));
+        final float rainDensityModifier = currentlyRaining ? .01F : -.01F;
+        final float skyDarknessModifier = currentlyThundering ? .01F : -.01F;
+
+        currentRainDensity = (float) Math.max(0, Math.min(1, previousRainDensity + rainDensityModifier));
         currentSkyDarkness = (float) Math.max(0, Math.min(1, previousSkyDarkness + skyDarknessModifier));
 
         if (previousRainDensity != currentRainDensity) {
