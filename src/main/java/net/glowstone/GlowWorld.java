@@ -178,11 +178,6 @@ public final class GlowWorld implements World {
     private int rainingTicks = 0;
 
     /**
-     * Whether it was thundering on this world in the previous tick.
-     */
-    private boolean previouslyThundering = false;
-
-    /**
      * Whether it is currently thundering on this world.
      */
     private boolean currentlyThundering = false;
@@ -1176,12 +1171,11 @@ public final class GlowWorld implements World {
 
     private void updateWeather() {
 
-        if (previouslyRaining != currentlyRaining || previouslyThundering != currentlyThundering) {
+        if (previouslyRaining != currentlyRaining) {
             for (GlowPlayer player : getRawPlayers()) {
                 player.sendWeather();
             }
             previouslyRaining = currentlyRaining;
-            previouslyThundering = currentlyThundering;
         }
 
         float previousRainDensity = currentRainDensity;
