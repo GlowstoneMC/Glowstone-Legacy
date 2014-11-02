@@ -72,7 +72,7 @@ public class RConHandler extends SimpleChannelInboundHandler<ByteBuf> {
         if (this.loggedIn) {
             try {
                 EventFactory.callEvent(new RemoteServerCommandEvent(commandSender, payload));
-;               rconServer.getServer().dispatchCommand(commandSender, payload);
+                rconServer.getServer().dispatchCommand(commandSender, payload);
                 sendMultiPacketResponse(ctx, requestId, ChatColor.stripColor(commandSender.getLog()));
                 commandSender.clearLog();
             } catch (CommandException e) {
