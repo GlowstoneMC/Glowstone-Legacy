@@ -49,7 +49,7 @@ public class GlowLightningStrike extends GlowWeather implements LightningStrike 
     @Override
     public void pulse() {
         super.pulse();
-        if (getTicksLived() > ticksToLive) {
+        if (getTicksLived() >= ticksToLive) {
             remove();
         }
         if (getTicksLived() == 1) {
