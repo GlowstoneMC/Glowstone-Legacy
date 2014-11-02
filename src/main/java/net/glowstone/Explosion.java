@@ -79,12 +79,16 @@ public class Explosion {
 
         playOutSoundAndParticles();
 
-        for (BlockVector block : droppedBlocks) {
-            handleBlockExplosion(world.getBlockAt(block.getBlockX(), block.getBlockY(), block.getBlockZ()));
+        List<Block> blocks = toBlockList(droppedBlocks);
+
+        for (Block block : blocks) {
+            handleBlockExplosion((GlowBlock) block);
         }
 
-        for (BlockVector block : droppedBlocks) {
-            setBlockOnFire(world.getBlockAt(block.getBlockX(), block.getBlockY(), block.getBlockZ()));
+        if (incendiary) {
+            for (Block block : blocks) {
+                setBlockOnFire((GlowBlock) block);
+            }
         }
 
         Collection<GlowPlayer> affectedPlayers = damageEntities();
@@ -183,9 +187,6 @@ public class Explosion {
 
 
     private void setBlockOnFire(GlowBlock block) {
-        if (!incendiary || block.getType() != Material.AIR)
-            return;
-
         if (random.nextInt(3) != 0)
             return;
 
@@ -307,10 +308,15 @@ public class Explosion {
     private void playOutExplosion(GlowPlayer player, Iterable<BlockVector> blocks) {
         Collection<ExplosionMessage.Record> records = new ArrayList<>();
 
+        Location clientLoc = location.clone();
+        clientLoc.setX((int) clientLoc.getX());
+        clientLoc.setY((int) clientLoc.getY());
+        clientLoc.setZ((int) clientLoc.getZ());
+
         for (BlockVector block : blocks) {
-            byte x = (byte) (block.getBlockX() - location.getBlockX());
-            byte y = (byte) (block.getBlockY() - location.getBlockY());
-            byte z = (byte) (block.getBlockZ() - location.getBlockZ());
+            byte x = (byte) (block.getBlockX() - clientLoc.getBlockX());
+            byte y = (byte) (block.getBlockY() - clientLoc.getBlockY());
+            byte z = (byte) (block.getBlockZ() - clientLoc.getBlockZ());
             records.add(new ExplosionMessage.Record(x, y, z));
         }
 
