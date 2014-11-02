@@ -3,6 +3,7 @@ package net.glowstone.generator;
 import java.util.Random;
 
 import net.glowstone.generator.objects.trees.*;
+import net.glowstone.generator.structures.WitchHut;
 import net.glowstone.util.BlockStateDelegate;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -74,6 +75,14 @@ public class TreeGenerator {
                 break;
             default:
                 return false;
+        }
+
+        // FIXME: ugly way for tests :)
+        if (type == TreeType.JUNGLE) {
+            WitchHut hut = new WitchHut(random, loc, delegate);
+            hut.generate();
+            delegate.updateBlockStates();
+            return false;
         }
 
         if (tree.generate()) {
