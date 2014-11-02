@@ -34,7 +34,7 @@ public class GlowMetaLeatherArmor extends GlowMetaItem implements LeatherArmorMe
 
     @Override
     public boolean isApplicable(Material material) {
-        switch(material) {
+        switch (material) {
             case LEATHER_HELMET:
             case LEATHER_CHESTPLATE:
             case LEATHER_LEGGINGS:
@@ -49,7 +49,7 @@ public class GlowMetaLeatherArmor extends GlowMetaItem implements LeatherArmorMe
     public Map<String, Object> serialize() {
         Map<String, Object> result = super.serialize();
         result.put("meta-type", "LEATHER_ARMOR");
-        if(hasColor()) {
+        if (hasColor()) {
             result.put("color", color.serialize());
         }
         return result;
@@ -59,7 +59,7 @@ public class GlowMetaLeatherArmor extends GlowMetaItem implements LeatherArmorMe
     void writeNbt(CompoundTag tag) {
         super.writeNbt(tag);
 
-        if(hasColor()) {
+        if (hasColor()) {
             CompoundTag display = new CompoundTag();
             display.putInt("color", color.asRGB());
             tag.putCompound("display", display);
@@ -70,9 +70,9 @@ public class GlowMetaLeatherArmor extends GlowMetaItem implements LeatherArmorMe
     void readNbt(CompoundTag tag) {
         super.readNbt(tag);
 
-        if(tag.isCompound("display")) {
+        if (tag.isCompound("display")) {
             CompoundTag display = tag.getCompound("display");
-            if(display.isInt("color")) {
+            if (display.isInt("color")) {
                 this.color = Color.fromRGB(display.getInt("color"));
             }
         }
