@@ -1,7 +1,5 @@
 package net.glowstone.generator.objects;
 
-import net.glowstone.GlowServer;
-
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -118,7 +116,6 @@ public class DesertWell {
         world.getBlockAt(sourceX, sourceY, sourceZ + 1).setType(Material.STATIONARY_WATER);
         world.getBlockAt(sourceX, sourceY, sourceZ + 1).setData((byte) 0);
 
-        GlowServer.logger.info("desert well generated: " + sourceX + "," + sourceY + "," + sourceZ);
         return true;
     }
 }
