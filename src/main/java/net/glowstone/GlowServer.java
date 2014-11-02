@@ -781,6 +781,14 @@ public final class GlowServer implements Server {
         return config.getBoolean(ServerConfig.Key.PROXY_SUPPORT);
     }
 
+    /**
+     * Get whether to use color codes in RCon responses
+     * @return True is color codes will be present in RCon responses
+     */
+    public boolean useRConColors() {
+        return config.getBoolean(ServerConfig.Key.RCON_COLOR);
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Static server properties
 
