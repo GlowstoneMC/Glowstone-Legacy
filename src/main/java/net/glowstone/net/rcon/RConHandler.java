@@ -21,7 +21,7 @@ public class RConHandler extends SimpleChannelInboundHandler<ByteBuf> {
     private boolean loggedIn = false;
 
     /**
-     * The {@link net.glowstone.net.query.QueryServer} this handler belongs to.
+     * The {@link net.glowstone.net.rcon.RConServer} this handler belongs to.
      */
     private RConServer rconServer;
 
