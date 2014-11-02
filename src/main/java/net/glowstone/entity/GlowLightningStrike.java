@@ -32,7 +32,7 @@ public class GlowLightningStrike extends GlowWeather implements LightningStrike 
     public GlowLightningStrike(Random random, Location location, boolean effect) {
         super(location);
         this.effect = effect;
-        this.ticksToLive = random.nextInt(3) + 1;
+        this.ticksToLive = 30;
         this.random = random;
     }
 
@@ -56,9 +56,6 @@ public class GlowLightningStrike extends GlowWeather implements LightningStrike 
             location.getWorld().playSound(location, Sound.AMBIENCE_THUNDER, 10000, 0.8F + random.nextFloat() * 0.2F);
             location.getWorld().playSound(location, Sound.EXPLODE, 2, 0.5F + random.nextFloat() * 0.2F);
         }
-        if (getTicksLived() >= 3 && getTicksLived() - 2 >= random.nextInt(10)) {
-            setTicksLived(1);
-        }
     }
 
     @Override
@@ -73,5 +70,5 @@ public class GlowLightningStrike extends GlowWeather implements LightningStrike 
     public List<Message> createUpdateMessage() {
         return Arrays.asList();
     }
-    
+
 }

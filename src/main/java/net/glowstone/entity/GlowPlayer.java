@@ -403,7 +403,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
             GlowEntity entity = it.next();
             boolean withinDistance = !entity.isDead() && isWithinDistance(entity);
 
-            if (withinDistance) {
+            if (withinDistance || entity instanceof GlowLightningStrike) {
                 for (Message msg : entity.createUpdateMessage()) {
                     session.send(msg);
                 }
