@@ -873,6 +873,7 @@ public final class GlowServer implements Server {
         return consoleManager.getSender();
     }
 
+    @Override
     public PluginCommand getPluginCommand(String name) {
         Command command = commandMap.getCommand(name);
         if (command instanceof PluginCommand) {
