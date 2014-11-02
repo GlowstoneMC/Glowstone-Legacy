@@ -22,7 +22,7 @@ public class RConCommandSender implements RemoteConsoleCommandSender {
 
     @Override
     public void sendMessage(String message) {
-        buffer.append(message);
+        buffer.append(message + "\n");
     }
 
     public void clearLog() {
