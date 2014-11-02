@@ -6,6 +6,7 @@ import io.netty.buffer.Unpooled;
 import net.glowstone.*;
 import net.glowstone.block.entity.TileEntity;
 import net.glowstone.constants.GlowAchievement;
+import net.glowstone.constants.GlowBlockEntity;
 import net.glowstone.constants.GlowEffect;
 import net.glowstone.constants.GlowParticle;
 import net.glowstone.constants.GlowSound;
@@ -27,6 +28,7 @@ import net.glowstone.net.message.play.player.PlayerAbilitiesMessage;
 import net.glowstone.net.protocol.ProtocolType;
 import net.glowstone.util.StatisticMap;
 import net.glowstone.util.TextMessage;
+import net.glowstone.util.nbt.CompoundTag;
 import org.apache.commons.lang.Validate;
 import org.bukkit.*;
 import org.bukkit.World.Environment;
@@ -1413,6 +1415,18 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         Validate.isTrue(lines.length == 4, "lines.length must equal 4");
 
         afterBlockChanges.add(UpdateSignMessage.fromPlainText(location.getBlockX(), location.getBlockY(), location.getBlockZ(), lines));
+    }
+
+    public void sendBlockEntityChange(Location location, CompoundTag nbt, GlowBlockEntity type)  {
+        Validate.notNull(location, "Location cannot be null");
+        Validate.notNull(nbt, "NBT cannot be null");
+        Validate.notNull(type, "Type cannot be null");
+
+        afterBlockChanges.add(new UpdateBlockEntityMessage(location.getBlockX(), location.getBlockY(), location.getBlockZ(), type.getValue(), nbt));
+    }
+
+    public void sendBannerChange(Location location, CompoundTag nbt) {
+        sendBlockEntityChange(location, nbt, GlowBlockEntity.BANNER);
     }
 
     @Override
