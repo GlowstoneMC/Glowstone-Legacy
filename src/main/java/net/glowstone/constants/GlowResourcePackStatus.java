@@ -31,9 +31,9 @@ public final class GlowResourcePackStatus {
         return statuses[code];
     }
 
-    private static void set(int code, Status Status) {
-        codes[Status.ordinal()] = code;
-        statuses[code] = Status;
+    private static void set(int code, Status status) {
+        codes[status.ordinal()] = code;
+        statuses[code] = status;
     }
 
     static {

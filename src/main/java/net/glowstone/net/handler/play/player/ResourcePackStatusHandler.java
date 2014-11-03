@@ -2,7 +2,6 @@ package net.glowstone.net.handler.play.player;
 
 import com.flowpowered.networking.MessageHandler;
 import net.glowstone.EventFactory;
-import net.glowstone.GlowServer;
 import net.glowstone.constants.GlowResourcePackStatus;
 import net.glowstone.net.GlowSession;
 import net.glowstone.net.message.play.player.ResourcePackStatusMessage;
