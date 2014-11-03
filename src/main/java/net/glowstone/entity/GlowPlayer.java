@@ -1417,11 +1417,16 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         afterBlockChanges.add(UpdateSignMessage.fromPlainText(location.getBlockX(), location.getBlockY(), location.getBlockZ(), lines));
     }
 
-    public void sendSkullChange(Location location, CompoundTag nbt) throws IllegalArgumentException {
-        Validate.notNull(location, "location cannot be null");
-        Validate.notNull(nbt, "nbt cannot be null");
+    public void sendBlockEntityChange(Location location, CompoundTag nbt, GlowBlockEntity type) {
+        Validate.notNull(location, "Location cannot be null");
+        Validate.notNull(nbt, "NBT cannot be null");
+        Validate.notNull(type, "Type cannot be null");
 
-        afterBlockChanges.add(new UpdateBlockEntityMessage((int) location.getX(), (int) location.getY(), (int) location.getZ(), GlowBlockEntity.SKULL.getValue(), nbt));
+        afterBlockChanges.add(new UpdateBlockEntityMessage((int) location.getX(), (int) location.getY(), (int) location.getZ(), type.getValue(), nbt));
+    }
+
+    public void sendSkullChange(Location location, CompoundTag nbt) {
+        sendBlockEntityChange(location, nbt, GlowBlockEntity.SKULL);
     }
 
     @Override
