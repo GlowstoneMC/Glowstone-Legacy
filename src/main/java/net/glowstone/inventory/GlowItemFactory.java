@@ -111,6 +111,10 @@ public final class GlowItemFactory implements ItemFactory {
             case BOOK_AND_QUILL:
             case WRITTEN_BOOK:
                 return new GlowMetaBook(meta);
+            case FIREWORK:
+                return new GlowMetaFirework(meta);
+            case FIREWORK_CHARGE:
+                return new GlowMetaCharge(meta);
             default:
                 return new GlowMetaItem(meta);
         }
