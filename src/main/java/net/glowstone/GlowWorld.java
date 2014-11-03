@@ -773,10 +773,6 @@ public final class GlowWorld implements World {
         return type.isSolid(block);
     }
 
-    public boolean isBlockSolidOnTop(GlowBlock block) {
-        return isBlockSideSolid(block, BlockFace.UP);
-    }
-
     ////////////////////////////////////////////////////////////////////////////
     // get block, chunk, id, highest methods with coords
 
@@ -813,10 +809,6 @@ public final class GlowWorld implements World {
         return isBlockSolid(getBlockAt(x, y, z));
     }
 
-    public boolean isBlockSolidOnTop(int x, int y, int z) {
-        return isBlockSideSolid(getBlockAt(x, y, z), BlockFace.UP);
-    }
-
     ////////////////////////////////////////////////////////////////////////////
     // get block, chunk, id, highest with locations
 
@@ -826,10 +818,6 @@ public final class GlowWorld implements World {
 
     public boolean isBlockSolid(Location location) {
         return isBlockSolid(getBlockAt(location));
-    }
-
-    public boolean isBlockSolidOnTop(Location location) {
-        return isBlockSideSolid(getBlockAt(location), BlockFace.UP);
     }
 
 
