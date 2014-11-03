@@ -311,7 +311,7 @@ public final class ServerConfig {
         RCON_ENABLED("extras.rcon-enabled", false, Migrate.PROPS, "enable-rcon"),
         RCON_PASSWORD("extras.rcon-password", "glowstone", Migrate.PROPS, "rcon.password"),
         RCON_PORT("extras.rcon-port", 25575, Migrate.PROPS, "rcon.port"),
-        RCON_COLOR("extras.rcon-color", true),
+        RCON_COLORS("extras.rcon-colors", true),
 
         // level props
         LEVEL_NAME("world.name", "world", Migrate.PROPS, "level-name"),

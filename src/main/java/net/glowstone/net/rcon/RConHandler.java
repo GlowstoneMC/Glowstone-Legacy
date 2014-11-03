@@ -105,7 +105,7 @@ public class RConHandler extends SimpleChannelInboundHandler<ByteBuf> {
     }
 
     private void createResponse(ByteBuf buf, int requestId, int type, String payload) throws IOException {
-        buf.order(ByteOrder.LITTLE_ENDIAN).writeInt(10 + payload.length());
+        buf.order(ByteOrder.LITTLE_ENDIAN).writeInt(10 + payload.getBytes(StandardCharsets.UTF_8).length);
         buf.order(ByteOrder.LITTLE_ENDIAN).writeInt(requestId);
         buf.order(ByteOrder.LITTLE_ENDIAN).writeInt(type);
         buf.writeBytes(payload.getBytes(StandardCharsets.UTF_8));

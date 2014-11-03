@@ -786,7 +786,7 @@ public final class GlowServer implements Server {
      * @return True is color codes will be present in RCon responses
      */
     public boolean useRConColors() {
-        return config.getBoolean(ServerConfig.Key.RCON_COLOR);
+        return config.getBoolean(ServerConfig.Key.RCON_COLORS);
     }
 
     ////////////////////////////////////////////////////////////////////////////
