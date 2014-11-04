@@ -2,7 +2,6 @@ package net.glowstone.inventory;
 
 import com.google.common.primitives.Ints;
 import net.glowstone.util.nbt.CompoundTag;
-import net.glowstone.util.nbt.TagType;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
