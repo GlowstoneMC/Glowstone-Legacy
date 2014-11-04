@@ -3,13 +3,15 @@ package net.glowstone.inventory;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import net.glowstone.util.nbt.CompoundTag;
-import net.glowstone.util.nbt.TagType;
 import org.apache.commons.lang.Validate;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.inventory.meta.FireworkMeta;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class GlowMetaFirework extends GlowMetaItem implements FireworkMeta {
 
