@@ -1323,7 +1323,6 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     }
 
     @Override
-    @Deprecated
     public void setResourcePack(String url) {
         setResourcePack(url, "");
     }
