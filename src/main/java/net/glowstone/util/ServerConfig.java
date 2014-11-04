@@ -64,6 +64,37 @@ public final class ServerConfig {
     }
 
     ////////////////////////////////////////////////////////////////////////////
+    // Value setters
+
+    private void set(String path, Object value) {
+        config.set(path, value);
+        try {
+            config.save(configFile);
+        } catch (IOException e) {
+            GlowServer.logger.log(Level.SEVERE, "Failed to write config: " + configFile, e);
+            return;
+        }
+    }
+
+    public void setString(Key key, String value) {
+        Validate.notNull(value);
+        parameters.put(key, value);
+        set(key.path, value);
+    }
+
+    public void setInt(Key key, int value) {
+        Validate.notNull(value);
+        parameters.put(key, value);
+        set(key.path, value);
+    }
+
+    public void setBoolean(Key key, boolean value) {
+        Validate.notNull(value);
+        parameters.put(key, value);
+        set(key.path, value);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
     // Value getters
 
     public String getString(Key key) {
