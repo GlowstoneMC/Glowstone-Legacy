@@ -78,19 +78,16 @@ public final class ServerConfig {
 
     public void setString(Key key, String value) {
         Validate.notNull(value);
-        parameters.put(key, value);
         set(key.path, value);
     }
 
     public void setInt(Key key, int value) {
         Validate.notNull(value);
-        parameters.put(key, value);
         set(key.path, value);
     }
 
     public void setBoolean(Key key, boolean value) {
         Validate.notNull(value);
-        parameters.put(key, value);
         set(key.path, value);
     }
 
