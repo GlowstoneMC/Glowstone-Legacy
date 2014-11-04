@@ -55,23 +55,26 @@ public class GlowMetaFirework extends GlowMetaItem implements FireworkMeta {
 
     @Override
     void writeNbt(CompoundTag tag) {
-        tag.putByte("Flight", power);
+        CompoundTag firework = new CompoundTag();
+        tag.putCompound("Fireworks", firework);
+        firework.putByte("Flight", power);
 
         if (hasEffects()) {
             List<CompoundTag> explosions = new ArrayList<>();
             for (FireworkEffect effect : effects) {
                 explosions.add(GlowMetaCharge.toExplosion(effect));
             }
-            tag.putCompoundList("Explosions", explosions);
+            firework.putCompoundList("Explosions", explosions);
         }
     }
 
     @Override
     void readNbt(CompoundTag tag) {
-        power = tag.getByte("Flight");
+        CompoundTag firework = tag.getCompound("Fireworks");
+        power = firework.getByte("Flight");
 
-        if (tag.isList("Explosions", TagType.COMPOUND)) {
-            List<CompoundTag> explosions = tag.getCompoundList("Explosions");
+        if (firework.isList("Explosions", TagType.COMPOUND)) {
+            List<CompoundTag> explosions = firework.getCompoundList("Explosions");
             for (CompoundTag explosion : explosions) {
                 effects.add(GlowMetaCharge.toEffect(explosion));
             }

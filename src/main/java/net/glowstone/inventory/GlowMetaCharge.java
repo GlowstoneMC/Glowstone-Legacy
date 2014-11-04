@@ -87,12 +87,12 @@ public class GlowMetaCharge extends GlowMetaItem implements FireworkEffectMeta {
         List<Color> colors = new ArrayList<>();
         List<Color> fadeColors = new ArrayList<>();
 
-        List<Integer> colorInts = explosion.getList("Colors", TagType.INT);
+        int[] colorInts = explosion.getIntArray("Colors");
         for (int color : colorInts) {
             colors.add(Color.fromRGB(color));
         }
 
-        type = FireworkEffect.Type.values()[explosion.getInt("Type")];
+        type = FireworkEffect.Type.values()[explosion.getByte("Type")];
 
         if (explosion.isByte("Flicker")) flicker = explosion.getBool("Flicker");
         if (explosion.isByte("Trail")) trail = explosion.getBool("Trail");
