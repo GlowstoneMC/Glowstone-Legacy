@@ -7,7 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
@@ -67,10 +66,6 @@ public final class EventFactory {
     ////////////////////////////////////////////////////////////////////////////
     // Player Events
 
-    public static PlayerDropItemEvent onPlayerDropItem(Player player, Item droppedItem) {
-        return callEvent(new PlayerDropItemEvent(player, droppedItem));
-    }
-    
     public static AsyncPlayerPreLoginEvent onPlayerPreLogin(String name, InetSocketAddress address, UUID uuid) {
         // call async event
         final AsyncPlayerPreLoginEvent event = new AsyncPlayerPreLoginEvent(name, address.getAddress(), uuid);
