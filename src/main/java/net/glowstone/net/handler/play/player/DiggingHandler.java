@@ -5,24 +5,19 @@ import net.glowstone.EventFactory;
 import net.glowstone.GlowWorld;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.entity.GlowPlayer;
-import net.glowstone.entity.objects.GlowItem;
 import net.glowstone.net.GlowSession;
 import net.glowstone.net.message.play.player.DiggingMessage;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.EnchantmentTarget;
-import org.bukkit.entity.Item;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
 
 public final class DiggingHandler implements MessageHandler<GlowSession, DiggingMessage> {
     @Override
@@ -76,10 +71,10 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
             // because a player's digging status isn't yet tracked. this is bad.
             blockBroken = true;
         } else if (message.getState() == DiggingMessage.STATE_DROP_ITEM) {
-            drop(player, true);
+            player.dropItemInHand(false);
             return;
         } else if (message.getState() == DiggingMessage.STATE_DROP_ITEMSTACK) {
-            drop(player, false);
+            player.dropItemInHand(true);
             return;
         } else {
             return;
@@ -105,35 +100,6 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
         } else if (revert) {
             // replace the block that wasn't really dug
             BlockPlacementHandler.revert(player, block);
-        }
-    }
-
-    private void drop(GlowPlayer player, boolean onlyOneItem) {
-        ItemStack itemInHand = player.getItemInHand();
-        if (itemInHand == null || itemInHand.getAmount() == 0)
-            return;
-
-        ItemStack dropItemStack = itemInHand.clone();
-        if (onlyOneItem)
-            dropItemStack.setAmount(1);
-
-        Location dropLocation = player.getLocation().clone();
-        dropLocation.add(0, -0.3D + player.getEyeHeight(true), 0);
-        Item dropItem = new GlowItem(dropLocation, dropItemStack);
-        Vector vel = player.getLocation().getDirection().multiply(0.3f);
-        vel.setY(vel.getY() + 0.1F);
-        dropItem.setVelocity(vel);
-
-        PlayerDropItemEvent event = EventFactory.onPlayerDropItem(player, dropItem);
-        if (event.isCancelled()) {
-            dropItem.remove();
-        } else {
-            if (!onlyOneItem || itemInHand.getAmount() == 1) {
-                player.setItemInHand(null);
-            } else {
-                itemInHand.setAmount(itemInHand.getAmount() - 1);
-                player.setItemInHand(itemInHand);
-            }
         }
     }
 }

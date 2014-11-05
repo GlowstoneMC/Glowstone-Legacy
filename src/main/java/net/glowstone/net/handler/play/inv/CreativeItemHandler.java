@@ -6,6 +6,7 @@ import net.glowstone.inventory.GlowInventoryView;
 import net.glowstone.net.GlowSession;
 import net.glowstone.net.message.play.inv.CreativeItemMessage;
 import org.bukkit.GameMode;
+import org.bukkit.inventory.ItemStack;
 
 public final class CreativeItemHandler implements MessageHandler<GlowSession, CreativeItemMessage> {
     @Override
@@ -25,7 +26,8 @@ public final class CreativeItemHandler implements MessageHandler<GlowSession, Cr
         }
 
         if (message.getSlot() < 0) {
-            // todo: drop outside
+            ItemStack dropping = message.getItem();
+            player.drop(dropping);
             return;
         }
 

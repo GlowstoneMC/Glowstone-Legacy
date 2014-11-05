@@ -1,6 +1,7 @@
 package net.glowstone.entity;
 
 import com.flowpowered.networking.Message;
+import net.glowstone.entity.objects.GlowItem;
 import net.glowstone.inventory.*;
 import net.glowstone.entity.meta.profile.PlayerProfile;
 import net.glowstone.net.message.play.entity.EntityEquipmentMessage;
@@ -22,6 +23,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -365,7 +367,9 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
 
     @Override
     public void closeInventory() {
-        // todo: drop item on cursor to ground
+        if (getGameMode() != GameMode.CREATIVE && getItemOnCursor() != null) {
+            drop(getItemOnCursor());
+        }
         setItemOnCursor(null);
         openInventory(new GlowInventoryView(this));
     }
@@ -380,5 +384,53 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
         if (inventory instanceof GlowInventory) {
             ((GlowInventory) inventory).removeViewer(this);
         }
+    }
+
+    /**
+     * Drops the item this entity has currently in it's hands and remove the item from the HumanEntity's inventory.
+     * @param wholeStack Whether the whole stack or a single item should be dropped
+     */
+    public void dropItemInHand(boolean wholeStack) {
+        ItemStack stack = getItemInHand();
+        if (stack == null || stack.getType() == Material.AIR || stack.getAmount() < 1)
+            return;
+
+        ItemStack dropping = stack.clone();
+        if (!wholeStack) {
+            dropping.setAmount(1);
+        }
+
+        GlowItem dropped = drop(dropping);
+        if (dropped == null)
+            return;
+
+        if (stack.getAmount() == 1 || wholeStack) {
+            setItemInHand(null);
+        } else {
+            ItemStack now = stack.clone();
+            now.setAmount(now.getAmount() - 1);
+            setItemInHand(now);
+        }
+    }
+
+    /**
+     *  Spawns a new {@link net.glowstone.entity.objects.GlowItem} in the world, as if this HumanEntity had dropped it.
+     *  Note that this does NOT remove the item from the entity's inventory.
+     * @param stack The item to drop
+     * @return the GlowItem that was spawned by this method or null, if the spawning was cancelled
+     * @throws java.lang.NullPointerException if stack is null
+     * @throws java.lang.IllegalArgumentException if the stack's amount is less than one
+     */
+    public GlowItem drop(ItemStack stack) {
+        if (stack == null) throw new NullPointerException("Stack must not be null.");
+        if (stack.getAmount() < 1) throw new IllegalArgumentException("The stack's amount must be greater than zero.");
+
+        Location dropLocation = location.clone();
+        dropLocation.add(0, -0.3D + getEyeHeight(true), 0);
+        GlowItem dropItem = new GlowItem(dropLocation, stack);
+        Vector vel = location.getDirection().multiply(0.3f);
+        vel.setY(vel.getY() + 0.1F);
+        dropItem.setVelocity(vel);
+        return dropItem;
     }
 }
