@@ -301,6 +301,8 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         setCompassTarget(world.getSpawnLocation()); // set our compass target
         sendTime();
         sendWeather();
+        sendRainDensity();
+        sendSkyDarkness();
         sendAbilities();
 
         invMonitor = new InventoryMonitor(getOpenInventory());
@@ -399,7 +401,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
             GlowEntity entity = it.next();
             boolean withinDistance = !entity.isDead() && isWithinDistance(entity);
 
-            if (withinDistance) {
+            if (withinDistance || entity instanceof GlowLightningStrike) {
                 for (Message msg : entity.createUpdateMessage()) {
                     session.send(msg);
                 }
@@ -418,7 +420,8 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
                 continue;
             boolean withinDistance = !entity.isDead() && isWithinDistance(entity);
 
-            if (withinDistance && !knownEntities.contains(entity) && !hiddenEntities.contains(entity.getUniqueId())) {
+            if ((withinDistance || entity instanceof GlowLightningStrike) &&
+                    !knownEntities.contains(entity) && !hiddenEntities.contains(entity.getUniqueId())) {
                 knownEntities.add(entity);
                 for (Message msg : entity.createSpawnMessage()) {
                     session.send(msg);
@@ -595,6 +598,8 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         setCompassTarget(world.getSpawnLocation()); // set our compass target
         session.send(new PositionRotationMessage(location));
         sendWeather();
+        sendRainDensity();
+        sendSkyDarkness();
         sendTime();
         updateInventory();
 
@@ -1686,11 +1691,21 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     public void resetPlayerWeather() {
         playerWeather = null;
         sendWeather();
+        sendRainDensity();
+        sendSkyDarkness();
     }
 
     public void sendWeather() {
         boolean stormy = playerWeather == null ? getWorld().hasStorm() : playerWeather == WeatherType.DOWNFALL;
         session.send(new StateChangeMessage(stormy ? 2 : 1, 0));
+    }
+
+    public void sendRainDensity() {
+        session.send(new StateChangeMessage(7, getWorld().getRainDensity()));
+    }
+
+    public void sendSkyDarkness() {
+        session.send(new StateChangeMessage(8, getWorld().getSkyDarkness()));
     }
 
     ////////////////////////////////////////////////////////////////////////////
