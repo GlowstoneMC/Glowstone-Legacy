@@ -116,6 +116,10 @@ public final class GlowItemFactory implements ItemFactory {
             case LEATHER_LEGGINGS:
             case LEATHER_BOOTS:
                 return new GlowMetaLeatherArmor(meta);
+            case SKULL_ITEM:
+                return new GlowMetaSkull(meta);
+            case BANNER:
+                return new GlowMetaBanner(meta);
             default:
                 return new GlowMetaItem(meta);
         }
