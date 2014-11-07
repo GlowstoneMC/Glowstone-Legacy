@@ -1298,6 +1298,7 @@ public final class GlowServer implements Server {
     public void setWhitelist(boolean enabled) {
         whitelistEnabled = enabled;
         config.setBoolean(ServerConfig.Key.WHITELIST, whitelistEnabled);
+        config.save();
     }
 
     @Override
