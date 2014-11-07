@@ -285,6 +285,9 @@ public final class GlowSession extends BasicSession {
             return;
         }
 
+        //joins the player
+        player.join(this, reader);
+
         // Kick other players with the same UUID
         for (GlowPlayer other : getServer().getOnlinePlayers()) {
             if (other != player && other.getUniqueId().equals(player.getUniqueId())) {
