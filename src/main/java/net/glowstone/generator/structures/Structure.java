@@ -12,16 +12,19 @@ import org.bukkit.util.Vector;
 
 public class Structure {
 
-    protected final Random random;
     protected final Location location;
     protected final BlockStateDelegate delegate;
-    private final BlockFace facing;
-    private Cuboid cuboid;
+    private BlockFace facing;
+    protected Cuboid cuboid;
 
-    public Structure(Random random, Location location, BlockStateDelegate delegate) {
-        this.random = random;
+    public Structure(Location location, BlockStateDelegate delegate) {
         this.location = location;
         this.delegate = delegate;
+        facing = BlockFace.NORTH;
+    }
+
+    public Structure(Random random, Location location, BlockStateDelegate delegate) {
+        this(location, delegate);
         facing = getFacingFromOrdinal(random.nextInt(4));
     }
 
@@ -188,8 +191,8 @@ public class Structure {
 
     public class Cuboid {
 
-        private final Vector min;
-        private final Vector max;
+        private Vector min;
+        private Vector max;
 
         public Cuboid(Vector min, Vector max) {
             this.min = min;
@@ -205,8 +208,8 @@ public class Structure {
         }
 
         public void offset(Vector offset) {
-            min.add(offset);
-            max.add(offset);
+            min = min.add(offset);
+            max = max.add(offset);
         }
     }
 }
