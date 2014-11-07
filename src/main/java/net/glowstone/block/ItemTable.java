@@ -39,6 +39,7 @@ public final class ItemTable {
     private void registerBuiltins() {
         reg(Material.NOTE_BLOCK, new BlockNote());
         reg(Material.MOB_SPAWNER, new BlockMobSpawner());
+        reg(Material.DRAGON_EGG, new BlockFalling(Material.DRAGON_EGG));
         reg(Material.SIGN_POST, new BlockSign());
         reg(Material.WALL_SIGN, new BlockSign());
         reg(Material.WORKBENCH, new BlockWorkbench());
