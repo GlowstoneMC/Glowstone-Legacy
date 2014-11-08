@@ -1,5 +1,6 @@
 package net.glowstone.block.blocktype;
 
+import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.entity.GlowPlayer;
 import org.bukkit.block.BlockFace;
@@ -26,5 +27,10 @@ public class BlockStairs extends BlockType {
         } else {
             warnMaterialData(Stairs.class, data);
         }
+    }
+
+    @Override
+    public boolean isSolid(GlowBlock block) {
+        return false;
     }
 }

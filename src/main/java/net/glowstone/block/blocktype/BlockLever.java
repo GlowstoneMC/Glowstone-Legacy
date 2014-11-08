@@ -48,4 +48,9 @@ public class BlockLever extends BlockAttachable {
         lever.setFacingDirection(face == BlockFace.UP || face == BlockFace.DOWN ? player.getDirection() : face);
 
     }
+
+    @Override
+    public boolean canPlaceAt(GlowBlock block, BlockFace against) {
+        return block.getWorld().isBlockSideSolid(block.getRelative(against.getOppositeFace()), against);
+    }
 }

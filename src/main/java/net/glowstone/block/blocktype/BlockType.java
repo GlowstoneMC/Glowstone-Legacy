@@ -193,6 +193,30 @@ public class BlockType extends ItemType {
     }
 
     ////////////////////////////////////////////////////////////////////////////
+    // State
+
+
+    /**
+     * Is the block a solid 1m cube.
+     * @param block The block being checked for opacity.
+     * @return Whether this block is a solid 1m cube.
+     */
+    public boolean isSolid(GlowBlock block) {
+        return getMaterial().isSolid();
+    }
+
+    /**
+     * Is a side of this block solid (can support signs and torches)
+     * @param block The block being checked for opacity
+     * @param face The side to check for opacity
+     * @return Whether this block is solid on a specified side
+     */
+    public boolean isSideSolid(GlowBlock block, BlockFace face) {
+        return isSolid(block);
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////
     // Helper methods
 
     /**
