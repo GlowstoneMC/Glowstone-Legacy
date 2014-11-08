@@ -34,7 +34,7 @@ public class TreasureChest {
         this.type = type;
     }
 
-    protected void addTreasure(Treasure treasure, int weight) {
+    public void addTreasure(Treasure treasure, int weight) {
         content.put(treasure, weight);
     }
 
