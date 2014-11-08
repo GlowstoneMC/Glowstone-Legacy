@@ -1,5 +1,6 @@
 package net.glowstone.util;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import net.glowstone.GlowServer;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
@@ -74,26 +75,13 @@ public final class ServerConfig {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Value setters
-
-    private void set(String path, Object value) {
-        config.set(path, value);
-    }
-
-    public void setString(Key key, String value) {
-        Validate.notNull(value);
-        set(key.path, value);
-    }
-
-    public void setInt(Key key, int value) {
-        Validate.notNull(value);
-        set(key.path, value);
-    }
-
-    public void setBoolean(Key key, boolean value) {
-        Validate.notNull(value);
-        set(key.path, value);
+    /**
+     * Function call sets runtime config information. For saving config to glowstone.yml, see {@link ServerConfig#save()}
+     * @param key the config key to write the value to
+     * @param value value to write to config key
+     */
+    public void set(Key key, Object value) {
+        config.set(key.path, value);
     }
 
     ////////////////////////////////////////////////////////////////////////////
