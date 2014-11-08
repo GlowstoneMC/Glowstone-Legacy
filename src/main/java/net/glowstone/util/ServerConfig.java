@@ -1,6 +1,5 @@
 package net.glowstone.util;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import net.glowstone.GlowServer;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
