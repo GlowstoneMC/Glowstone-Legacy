@@ -4,20 +4,21 @@ import java.util.Random;
 
 import net.glowstone.util.BlockStateDelegate;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 
 public class DarkOakTree extends GenericTree {
 
-    public DarkOakTree(Random random, BlockStateDelegate delegate) {
-        super(random, delegate);
+    public DarkOakTree(Random random, Location location, BlockStateDelegate delegate) {
+        super(random, location, delegate);
         setHeight(random.nextInt(2) + random.nextInt(3) + 6);
     }
 
     @Override
-    public boolean canPlaceOn(World world, int x, int y, int z) {
-        final BlockState state = delegate.getBlockState(world, x, y, z);
+    public boolean canPlaceOn() {
+        final BlockState state = delegate.getBlockState(loc.getBlock().getRelative(BlockFace.DOWN).getLocation());
         if (state.getType() != Material.GRASS
                 && state.getType() != Material.DIRT) {
             return false;
@@ -26,20 +27,20 @@ public class DarkOakTree extends GenericTree {
     }
 
     @Override
-    public boolean generate(World world, int sourceX, int sourceY, int sourceZ) {
+    public boolean generate() {
 
         // check height range
-        if (!canHeightFitAt(sourceY)) {
+        if (!canHeightFit()) {
             return false;
         }
 
         // check below block
-        if (!canPlaceOn(world, sourceX, sourceY - 1, sourceZ)) {
+        if (!canPlaceOn()) {
             return false;
         }
 
         // check for sufficient space around
-        if (!canPlaceAt(world, sourceX, sourceY, sourceZ)) {
+        if (!canPlace()) {
             return false;
         }
 
@@ -55,7 +56,7 @@ public class DarkOakTree extends GenericTree {
         }
         int twistHeight = height - random.nextInt(4);
         int twistCount = random.nextInt(3);
-        int centerX = sourceX, centerZ = sourceZ;
+        int centerX = loc.getBlockX(), centerZ = loc.getBlockZ();
         int trunkTopY = 0;
 
         // generates the trunk
@@ -68,14 +69,14 @@ public class DarkOakTree extends GenericTree {
                 twistCount--;
             }
 
-            final Material material = delegate.getBlockState(world, centerX, sourceY + y, centerZ).getType();
+            final Material material = delegate.getBlockState(loc.getWorld(), centerX, loc.getBlockY() + y, centerZ).getType();
             if (material == Material.AIR || material == Material.LEAVES) {
-                trunkTopY = sourceY + y;
+                trunkTopY = loc.getBlockY() + y;
                 // SELF, SOUTH, EAST, SOUTH EAST
-                delegate.setTypeAndRawData(world, centerX, sourceY + y, centerZ, Material.LOG_2, 1);
-                delegate.setTypeAndRawData(world, centerX, sourceY + y, centerZ + 1, Material.LOG_2, 1);
-                delegate.setTypeAndRawData(world, centerX + 1, sourceY + y, centerZ, Material.LOG_2, 1);
-                delegate.setTypeAndRawData(world, centerX + 1, sourceY + y, centerZ + 1, Material.LOG_2, 1);
+                delegate.setTypeAndRawData(loc.getWorld(), centerX, loc.getBlockY() + y, centerZ, Material.LOG_2, 1);
+                delegate.setTypeAndRawData(loc.getWorld(), centerX, loc.getBlockY() + y, centerZ + 1, Material.LOG_2, 1);
+                delegate.setTypeAndRawData(loc.getWorld(), centerX + 1, loc.getBlockY() + y, centerZ, Material.LOG_2, 1);
+                delegate.setTypeAndRawData(loc.getWorld(), centerX + 1, loc.getBlockY() + y, centerZ + 1, Material.LOG_2, 1);
             }
         }
 
@@ -83,15 +84,15 @@ public class DarkOakTree extends GenericTree {
         for (int x = -2; x <= 0; x++) {
             for (int z = -2; z <= 0; z++) {
                 if ((x != -1 || z != -2) && (x > -2 || z > -1)) {
-                    setLeaveAt(world, centerX + x, trunkTopY + 1, centerZ + z);
-                    setLeaveAt(world, 1 + centerX - x, trunkTopY + 1, centerZ + z);
-                    setLeaveAt(world, centerX + x, trunkTopY + 1, 1 + centerZ - z);
-                    setLeaveAt(world, 1 + centerX - x, trunkTopY + 1, 1 + centerZ - z);
+                    setLeaveAt(centerX + x, trunkTopY + 1, centerZ + z);
+                    setLeaveAt(1 + centerX - x, trunkTopY + 1, centerZ + z);
+                    setLeaveAt(centerX + x, trunkTopY + 1, 1 + centerZ - z);
+                    setLeaveAt(1 + centerX - x, trunkTopY + 1, 1 + centerZ - z);
                 }
-                setLeaveAt(world, centerX + x, trunkTopY - 1, centerZ + z);
-                setLeaveAt(world, 1 + centerX - x, trunkTopY - 1, centerZ + z);
-                setLeaveAt(world, centerX + x, trunkTopY - 1, 1 + centerZ - z);
-                setLeaveAt(world, 1 + centerX - x, trunkTopY - 1, 1 + centerZ - z);                
+                setLeaveAt(centerX + x, trunkTopY - 1, centerZ + z);
+                setLeaveAt(1 + centerX - x, trunkTopY - 1, centerZ + z);
+                setLeaveAt(centerX + x, trunkTopY - 1, 1 + centerZ - z);
+                setLeaveAt(1 + centerX - x, trunkTopY - 1, 1 + centerZ - z);
             }
         }
 
@@ -99,7 +100,7 @@ public class DarkOakTree extends GenericTree {
         for (int x = -3; x <= 4; x++) {
             for (int z = -3; z <= 4; z++) {
                 if (Math.abs(x) < 3 || Math.abs(z) < 3) {
-                    setLeaveAt(world, centerX + x, trunkTopY, centerZ + z);
+                    setLeaveAt(centerX + x, trunkTopY, centerZ + z);
                 }
             }
         }
@@ -109,22 +110,22 @@ public class DarkOakTree extends GenericTree {
             for (int z = -1; z <= 2; z++) {
                 if ((x == -1 || z == -1 || x == 2 || z == 2) && random.nextInt(3) == 0) {
                     for (int y = 0; y < random.nextInt(3) + 2; y++) {
-                        final Material material = delegate.getBlockState(world, sourceX + x, trunkTopY - y - 1, sourceZ + z).getType();
+                        final Material material = delegate.getBlockState(loc.getWorld(), loc.getBlockX() + x, trunkTopY - y - 1, loc.getBlockZ() + z).getType();
                         if (material == Material.AIR || material == Material.LEAVES) {
-                            delegate.setTypeAndRawData(world, sourceX + x, trunkTopY - y - 1, sourceZ + z, Material.LOG_2, 1);
+                            delegate.setTypeAndRawData(loc.getWorld(), loc.getBlockX() + x, trunkTopY - y - 1, loc.getBlockZ() + z, Material.LOG_2, 1);
                         }
                     }
 
                     // leaves below the canopy
                     for (int i = -1; i <= 1; i++) {
                         for (int j = -1; j <= 1; j++) {
-                            setLeaveAt(world, centerX + x + i, trunkTopY, centerZ + z + j);
+                            setLeaveAt(centerX + x + i, trunkTopY, centerZ + z + j);
                         }
                     }
                     for (int i = -2; i <= 2; i++) {
                         for (int j = -2; j <= 2; j++) {
                             if ((Math.abs(i) < 2) || (Math.abs(j) < 2)) {
-                                setLeaveAt(world, centerX + x + i, trunkTopY - 1, centerZ + z + j);
+                                setLeaveAt(centerX + x + i, trunkTopY - 1, centerZ + z + j);
                             }
                         }
                     }
@@ -134,24 +135,24 @@ public class DarkOakTree extends GenericTree {
 
         // 50% chance to have a 4 leaves cap on the center of the canopy
         if (random.nextInt(2) == 0) {
-            setLeaveAt(world, centerX, trunkTopY + 2, centerZ);
-            setLeaveAt(world, centerX + 1, trunkTopY + 2, centerZ);
-            setLeaveAt(world, centerX + 1, trunkTopY + 2, centerZ + 1);
-            setLeaveAt(world, centerX, trunkTopY + 2, centerZ + 1);
+            setLeaveAt(centerX, trunkTopY + 2, centerZ);
+            setLeaveAt(centerX + 1, trunkTopY + 2, centerZ);
+            setLeaveAt(centerX + 1, trunkTopY + 2, centerZ + 1);
+            setLeaveAt(centerX, trunkTopY + 2, centerZ + 1);
         }
 
         // block below trunk is always dirt (SELF, SOUTH, EAST, SOUTH EAST)
-        delegate.setTypeAndRawData(world, sourceX, sourceY - 1, sourceZ, Material.DIRT, 0);
-        delegate.setTypeAndRawData(world, sourceX, sourceY - 1, sourceZ + 1, Material.DIRT, 0);
-        delegate.setTypeAndRawData(world, sourceX + 1, sourceY - 1, sourceZ, Material.DIRT, 0);
-        delegate.setTypeAndRawData(world, sourceX + 1, sourceY - 1, sourceZ + 1, Material.DIRT, 0);
+        delegate.setTypeAndRawData(loc.getWorld(), loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ(), Material.DIRT, 0);
+        delegate.setTypeAndRawData(loc.getWorld(), loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ() + 1, Material.DIRT, 0);
+        delegate.setTypeAndRawData(loc.getWorld(), loc.getBlockX() + 1, loc.getBlockY() - 1, loc.getBlockZ(), Material.DIRT, 0);
+        delegate.setTypeAndRawData(loc.getWorld(), loc.getBlockX() + 1, loc.getBlockY() - 1, loc.getBlockZ() + 1, Material.DIRT, 0);
 
         return true;
     }
 
-    private void setLeaveAt(World world, int x, int y, int z) {
-        if (delegate.getBlockState(world, x, y, z).getType() == Material.AIR) {
-            delegate.setTypeAndRawData(world, x, y, z, Material.LEAVES_2, 1);
+    private void setLeaveAt(int x, int y, int z) {
+        if (delegate.getBlockState(loc.getWorld(), x, y, z).getType() == Material.AIR) {
+            delegate.setTypeAndRawData(loc.getWorld(), x, y, z, Material.LEAVES_2, 1);
         }
     }
 }

@@ -1,8 +1,9 @@
 package net.glowstone.generator.objects.trees;
 
 import net.glowstone.util.BlockStateDelegate;
+
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 
 import java.util.Random;
 
@@ -11,8 +12,8 @@ public class RedwoodTree extends GenericTree {
     protected int maxRadius;
     protected int leavesHeight;
 
-    public RedwoodTree(Random random, BlockStateDelegate delegate) {
-        super(random, delegate);
+    public RedwoodTree(Random random, Location location, BlockStateDelegate delegate) {
+        super(random, location, delegate);
         setOverridables(
                 Material.AIR,
                 Material.LEAVES
@@ -32,21 +33,21 @@ public class RedwoodTree extends GenericTree {
     }
 
     @Override
-    public boolean canPlaceAt(World world, int sourceX, int sourceY, int sourceZ) {
-        for (int y = sourceY; y <= sourceY + 1 + height; y++) {
+    public boolean canPlace() {
+        for (int y = loc.getBlockY(); y <= loc.getBlockY() + 1 + height; y++) {
             // Space requirement
             int radius; // default radius if above first block
-            if (y - sourceY < leavesHeight) {
+            if (y - loc.getBlockY() < leavesHeight) {
                 radius = 0; // radius is 0 for trunk below leaves
             } else {
                 radius = maxRadius;
             }
             // check for block collision on horizontal slices
-            for (int x = sourceX - radius; x <= sourceX + radius; x++) {
-                for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
+            for (int x = loc.getBlockX() - radius; x <= loc.getBlockX() + radius; x++) {
+                for (int z = loc.getBlockZ() - radius; z <= loc.getBlockZ() + radius; z++) {
                     if (y >= 0 && y < 256) {
                         // we can overlap some blocks around
-                        final Material type = delegate.getBlockState(world, x, y, z).getType();
+                        final Material type = delegate.getBlockState(loc.getWorld(), x, y, z).getType();
                         if (!overridables.contains(type)) {
                             return false;
                         }
@@ -60,19 +61,19 @@ public class RedwoodTree extends GenericTree {
     }
 
     @Override
-    public boolean generate(World world, int sourceX, int sourceY, int sourceZ) {
+    public boolean generate() {
         // check height range
-        if (!canHeightFitAt(sourceY)) {
+        if (!canHeightFit()) {
             return false;
         }
 
         // check below block
-        if (!canPlaceOn(world, sourceX, sourceY - 1, sourceZ)) {
+        if (!canPlaceOn()) {
             return false;
         }
 
         // check for sufficient space around
-        if (!canPlaceAt(world, sourceX, sourceY, sourceZ)) {
+        if (!canPlace()) {
             return false;
         }
 
@@ -80,13 +81,13 @@ public class RedwoodTree extends GenericTree {
         int radius = random.nextInt(2);
         int peakRadius = 1;
         int minRadius = 0;
-        for (int y = sourceY + height; y >= sourceY + leavesHeight; y--) {
+        for (int y = loc.getBlockY() + height; y >= loc.getBlockY() + leavesHeight; y--) {
             // leaves are built from top to bottom
-            for (int x = sourceX - radius; x <= sourceX + radius; x++) {
-                for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
-                    if ((Math.abs(x - sourceX) != radius || Math.abs(z - sourceZ) != radius || radius <= 0) &&
-                            delegate.getBlockState(world, x, y, z).getType() == Material.AIR) {
-                        delegate.setTypeAndRawData(world, x, y, z, Material.LEAVES, leavesType);
+            for (int x = loc.getBlockX() - radius; x <= loc.getBlockX() + radius; x++) {
+                for (int z = loc.getBlockZ() - radius; z <= loc.getBlockZ() + radius; z++) {
+                    if ((Math.abs(x - loc.getBlockX()) != radius || Math.abs(z - loc.getBlockZ()) != radius || radius <= 0) &&
+                            delegate.getBlockState(loc.getWorld(), x, y, z).getType() == Material.AIR) {
+                        delegate.setTypeAndRawData(loc.getWorld(), x, y, z, Material.LEAVES, leavesType);
                     }
                 }
             }
@@ -104,14 +105,14 @@ public class RedwoodTree extends GenericTree {
 
         // generate the trunk
         for (int y = 0; y < height - random.nextInt(3); y++) {
-            final Material type = delegate.getBlockState(world, sourceX, sourceY + y, sourceZ).getType();
+            final Material type = delegate.getBlockState(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + y, loc.getBlockZ()).getType();
             if (overridables.contains(type)) {
-                delegate.setTypeAndRawData(world, sourceX, sourceY + y, sourceZ, Material.LOG, logType);
+                delegate.setTypeAndRawData(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + y, loc.getBlockZ(), Material.LOG, logType);
             }
         }
 
         // block below trunk is always dirt
-        delegate.setTypeAndRawData(world, sourceX, sourceY - 1, sourceZ, Material.DIRT, 0);
+        delegate.setTypeAndRawData(loc.getWorld(), loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ(), Material.DIRT, 0);
 
         return true;
     }

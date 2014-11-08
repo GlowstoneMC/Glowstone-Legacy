@@ -2,16 +2,17 @@ package net.glowstone.generator.objects.trees;
 
 import java.util.Random;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 
 import net.glowstone.util.BlockStateDelegate;
 
 public class SwampTree extends CocoaTree {
 
-    public SwampTree(Random random, BlockStateDelegate delegate) {
-        super(random, delegate);
+    public SwampTree(Random random, Location location, BlockStateDelegate delegate) {
+        super(random, location, delegate);
         setOverridables(
                 Material.AIR,
                 Material.LEAVES
@@ -21,8 +22,8 @@ public class SwampTree extends CocoaTree {
     }
 
     @Override
-    public boolean canPlaceOn(World world, int x, int y, int z) {
-        final BlockState state = delegate.getBlockState(world, x, y, z);
+    public boolean canPlaceOn() {
+        final BlockState state = delegate.getBlockState(loc.getBlock().getRelative(BlockFace.DOWN).getLocation());
         if (state.getType() != Material.GRASS
                 && state.getType() != Material.DIRT) {
             return false;
@@ -31,25 +32,25 @@ public class SwampTree extends CocoaTree {
     }
 
     @Override
-    public boolean canPlaceAt(World world, int sourceX, int sourceY, int sourceZ) {
-        for (int y = sourceY; y <= sourceY + 1 + height; y++) {
+    public boolean canPlace() {
+        for (int y = loc.getBlockY(); y <= loc.getBlockY() + 1 + height; y++) {
             // Space requirement
             int radius = 1; // default radius if above first block
-            if (y == sourceY) {
+            if (y == loc.getBlockY()) {
                 radius = 0; // radius at source block y is 0 (only trunk)
-            } else if (y >= sourceY + 1 + height - 2) {
+            } else if (y >= loc.getBlockY() + 1 + height - 2) {
                 radius = 3; // max radius starting at leaves bottom
             }
             // check for block collision on horizontal slices
-            for (int x = sourceX - radius; x <= sourceX + radius; x++) {
-                for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
+            for (int x = loc.getBlockX() - radius; x <= loc.getBlockX() + radius; x++) {
+                for (int z = loc.getBlockZ() - radius; z <= loc.getBlockZ() + radius; z++) {
                     if (y >= 0 && y < 256) {
                         // we can overlap some blocks around
-                        final Material type = delegate.getBlockState(world, x, y, z).getType();
+                        final Material type = delegate.getBlockState(loc.getWorld(), x, y, z).getType();
                         if (!overridables.contains(type)) {
                             // the trunk can be immersed by 1 block of water
                             if (type == Material.WATER || type == Material.STATIONARY_WATER) {
-                                if (y > sourceY) {
+                                if (y > loc.getBlockY()) {
                                     return false;
                                 }
                             } else {
@@ -66,39 +67,40 @@ public class SwampTree extends CocoaTree {
     }
 
     @Override
-    public boolean generate(World world, int sourceX, int sourceY, int sourceZ) {
+    public boolean generate() {
 
-        while ((world.getBlockAt(sourceX, sourceY - 1, sourceZ).getType() == Material.WATER ||
-                world.getBlockAt(sourceX, sourceY - 1, sourceZ).getType() == Material.STATIONARY_WATER)) {
-            sourceY--;
+        Location l = loc;
+        while ((l.getBlock().getRelative(BlockFace.DOWN).getType() == Material.WATER ||
+                l.getBlock().getRelative(BlockFace.DOWN).getType() == Material.STATIONARY_WATER)) {
+            l = l.subtract(0, 1, 0);
         }
 
         // check height range
-        if (!canHeightFitAt(sourceY)) {
+        if (!canHeightFit()) {
             return false;
         }
 
         // check below block
-        if (!canPlaceOn(world, sourceX, sourceY - 1, sourceZ)) {
+        if (!canPlaceOn()) {
             return false;
         }
 
         // check for sufficient space around
-        if (!canPlaceAt(world, sourceX, sourceY, sourceZ)) {
+        if (!canPlace()) {
             return false;
         }
 
         // generate the leaves
-        for (int y = sourceY + height - 3; y <= sourceY + height; y++) {
-            int n = y - (sourceY + height);
+        for (int y = l.getBlockY() + height - 3; y <= l.getBlockY() + height; y++) {
+            int n = y - (l.getBlockY() + height);
             int radius = 2 - n / 2;
-            for (int x = sourceX - radius; x <= sourceX + radius; x++) {
-                for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
-                    if (Math.abs(x - sourceX) != radius || Math.abs(z - sourceZ) != radius
+            for (int x = l.getBlockX() - radius; x <= l.getBlockX() + radius; x++) {
+                for (int z = l.getBlockZ() - radius; z <= l.getBlockZ() + radius; z++) {
+                    if (Math.abs(x - l.getBlockX()) != radius || Math.abs(z - l.getBlockZ()) != radius
                             || (random.nextBoolean() && n != 0)) {
-                        final Material material = delegate.getBlockState(world, x, y, z).getType();
+                        final Material material = delegate.getBlockState(l.getWorld(), x, y, z).getType();
                         if (material == Material.AIR || material == Material.LEAVES) {
-                            delegate.setTypeAndRawData(world, x, y, z, Material.LEAVES, leavesType);
+                            delegate.setTypeAndRawData(l.getWorld(), x, y, z, Material.LEAVES, leavesType);
                         }
                     }
                 }
@@ -107,18 +109,18 @@ public class SwampTree extends CocoaTree {
 
         // generate the trunk
         for (int y = 0; y < height; y++) {
-            final Material material = delegate.getBlockState(world, sourceX, sourceY + y, sourceZ).getType();
+            final Material material = delegate.getBlockState(l.getWorld(), l.getBlockX(), l.getBlockY() + y, l.getBlockZ()).getType();
             if (material == Material.AIR || material == Material.LEAVES ||
                     material == Material.WATER || material == Material.STATIONARY_WATER) {
-                delegate.setTypeAndRawData(world, sourceX, sourceY + y, sourceZ, Material.LOG, logType);
+                delegate.setTypeAndRawData(l.getWorld(), l.getBlockX(), l.getBlockY() + y, l.getBlockZ(), Material.LOG, logType);
             }
         }
 
         // add some vines on the leaves
-        addVinesOnLeaves(world, sourceX, sourceY, sourceZ);
+        addVinesOnLeaves();
 
         // block below trunk is always dirt
-        delegate.setTypeAndRawData(world, sourceX, sourceY - 1, sourceZ, Material.DIRT, 0);
+        delegate.setTypeAndRawData(l.getWorld(), l.getBlockX(), l.getBlockY() - 1, l.getBlockZ(), Material.DIRT, 0);
 
         return true;
     }

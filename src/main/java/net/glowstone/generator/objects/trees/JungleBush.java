@@ -2,22 +2,23 @@ package net.glowstone.generator.objects.trees;
 
 import java.util.Random;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 
 import net.glowstone.util.BlockStateDelegate;
 
 public class JungleBush extends GenericTree {
 
-    public JungleBush(Random random, BlockStateDelegate delegate) {
-        super(random, delegate);
+    public JungleBush(Random random, Location location, BlockStateDelegate delegate) {
+        super(random, location, delegate);
         setTypes(3, 0);
     }
 
     @Override
-    public boolean canPlaceOn(World world, int x, int y, int z) {
-        final BlockState state = delegate.getBlockState(world, x, y, z);
+    public boolean canPlaceOn() {
+        final BlockState state = delegate.getBlockState(loc.getBlock().getRelative(BlockFace.DOWN).getLocation());
         if (state.getType() != Material.GRASS
                 && state.getType() != Material.DIRT) {
             return false;
@@ -26,31 +27,32 @@ public class JungleBush extends GenericTree {
     }
 
     @Override
-    public boolean generate(World world, int sourceX, int sourceY, int sourceZ) {
+    public boolean generate() {
 
-        while ((world.getBlockAt(sourceX, sourceY, sourceZ).getType() == Material.AIR ||
-                world.getBlockAt(sourceX, sourceY, sourceZ).getType() == Material.LEAVES) &&
-                sourceY > 0) {
-            sourceY--;
+        Location l = loc;
+        while ((l.getBlock().getType() == Material.AIR ||
+                l.getBlock().getType() == Material.LEAVES) &&
+                l.getBlockY() > 0) {
+            l = l.subtract(0, 1, 0);
         }
 
         // check below block
-        if (!canPlaceOn(world, sourceX, sourceY, sourceZ)) {
+        if (!canPlaceOn()) {
             return false;
         }
 
         // generates the trunk
-        delegate.setTypeAndRawData(world, sourceX, sourceY + 1, sourceZ, Material.LOG, logType);
+        delegate.setTypeAndRawData(l.getWorld(), l.getBlockX(), l.getBlockY() + 1, l.getBlockZ(), Material.LOG, logType);
 
         // generates the leaves
-        for (int y = sourceY + 1; y <= sourceY + 3; y++) {
-            int radius = 3 - (y - sourceY);
+        for (int y = l.getBlockY() + 1; y <= l.getBlockY() + 3; y++) {
+            int radius = 3 - (y - l.getBlockY());
 
-            for (int x = sourceX - radius; x <= sourceX + radius; x++) {
-                for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
-                    if ((Math.abs(x - sourceX) != radius || Math.abs(z - sourceZ) != radius || random.nextBoolean()) &&
-                            !delegate.getBlockState(world, x, y, z).getType().isSolid()) {
-                        delegate.setTypeAndRawData(world, x, y, z, Material.LEAVES, leavesType);
+            for (int x = l.getBlockX() - radius; x <= l.getBlockX() + radius; x++) {
+                for (int z = l.getBlockZ() - radius; z <= l.getBlockZ() + radius; z++) {
+                    if ((Math.abs(x - l.getBlockX()) != radius || Math.abs(z - l.getBlockZ()) != radius || random.nextBoolean()) &&
+                            !delegate.getBlockState(l.getWorld(), x, y, z).getType().isSolid()) {
+                        delegate.setTypeAndRawData(l.getWorld(), x, y, z, Material.LEAVES, leavesType);
                     }
                 }
             }

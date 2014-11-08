@@ -4,31 +4,31 @@ import java.util.Random;
 
 import net.glowstone.util.BlockStateDelegate;
 
-import org.bukkit.World;
+import org.bukkit.Location;
 
 public class MegaRedwoodTree extends MegaJungleTree {
 
-    public MegaRedwoodTree(Random random, BlockStateDelegate delegate) {
-        super(random, delegate);
+    public MegaRedwoodTree(Random random, Location location, BlockStateDelegate delegate) {
+        super(random, location, delegate);
         setHeight(random.nextInt(15) + random.nextInt(3) + 13);
         setTypes(1, 1);
     }
 
     @Override
-    public boolean generate(World world, int sourceX, int sourceY, int sourceZ) {
+    public boolean generate() {
 
         // check height range
-        if (!canHeightFitAt(sourceY)) {
+        if (!canHeightFit()) {
             return false;
         }
 
         // check below block
-        if (!canPlaceOn(world, sourceX, sourceY - 1, sourceZ)) {
+        if (!canPlaceOn()) {
             return false;
         }
 
         // check for sufficient space around
-        if (!canPlaceAt(world, sourceX, sourceY, sourceZ)) {
+        if (!canPlace()) {
             return false;
         }
 
@@ -40,21 +40,21 @@ public class MegaRedwoodTree extends MegaJungleTree {
             leavesHeight += 13;
         }
         int previousRadius = 0;
-        for (int y = sourceY + height - leavesHeight; y <= sourceY + height; y++) {
-            int n = sourceY + height - y;
+        for (int y = loc.getBlockY() + height - leavesHeight; y <= loc.getBlockY() + height; y++) {
+            int n = loc.getBlockY() + height - y;
             int radius = (int) Math.floor(((float) n / (float) leavesHeight) * 3.5F);
             if (radius == previousRadius && n > 0 && y % 2 == 0) {
                 radius++;
             }
-            generateLeaves(world, sourceX, y, sourceZ, radius, false);
+            generateLeaves(loc.getBlockX(), y, loc.getBlockZ(), radius, false);
             previousRadius = radius;
         }
 
         // generates the trunk
-        generateTrunk(world, sourceX, sourceY, sourceZ);
+        generateTrunk();
 
         // blocks below trunk are always dirt
-        generateDirtBelowTrunk(world, sourceX, sourceY, sourceZ);
+        generateDirtBelowTrunk();
 
         return true;
     }
