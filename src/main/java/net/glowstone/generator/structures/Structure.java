@@ -52,12 +52,16 @@ public class Structure {
 
     protected final void setBlock(Vector pos, Material type, int data) {
         final Vector vec = translate(pos);
-        delegate.setTypeAndRawData(location.getWorld(), vec.getBlockX(), vec.getBlockY(), vec.getBlockZ(), type, data);
+        if (cuboid.isVectorInside(vec)) {
+            delegate.setTypeAndRawData(location.getWorld(), vec.getBlockX(), vec.getBlockY(), vec.getBlockZ(), type, data);
+        }
     }
 
     protected final void setBlock(Vector pos, Material type, MaterialData data) {
         final Vector vec = translate(pos);
-        delegate.setTypeAndData(location.getWorld(), vec.getBlockX(), vec.getBlockY(), vec.getBlockZ(), type, data);
+        if (cuboid.isVectorInside(vec)) {
+            delegate.setTypeAndData(location.getWorld(), vec.getBlockX(), vec.getBlockY(), vec.getBlockZ(), type, data);
+        }
     }
 
     protected final void fill(Vector min, Vector max, Material type) {
@@ -205,6 +209,15 @@ public class Structure {
 
         public Vector getMax() {
             return max;
+        }
+
+        public boolean isVectorInside(Vector vec) {
+            if (vec.getBlockX() >= min.getBlockX() && vec.getBlockX() <= max.getBlockX() &&
+                    vec.getBlockY() >= min.getBlockY() && vec.getBlockY() <= max.getBlockY() &&
+                    vec.getBlockZ() >= min.getBlockZ() && vec.getBlockZ() <= max.getBlockZ()) {
+                return true;
+            }
+            return false;
         }
 
         public void offset(Vector offset) {
