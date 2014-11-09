@@ -105,4 +105,9 @@ public class TaxicabBlockIterator implements Iterator<Block> {
 
         return nextValidBlocks.remove();
     }
+
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
 }
