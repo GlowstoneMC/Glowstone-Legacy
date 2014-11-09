@@ -21,10 +21,6 @@ public class BlockSponge extends BlockType {
 
     private static final Set<Material> WATER_MATERIALS = Sets.immutableEnumSet(Material.WATER, Material.STATIONARY_WATER);
 
-    public BlockSponge() {
-        setDrops(new ItemStack(Material.SPONGE));
-    }
-
     @Override
     public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {
         // TODO: Move this to a new method when physics works and run this on neighbour change too.
