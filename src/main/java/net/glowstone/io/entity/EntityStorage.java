@@ -2,6 +2,8 @@ package net.glowstone.io.entity;
 
 import net.glowstone.GlowWorld;
 import net.glowstone.entity.GlowEntity;
+import net.glowstone.entity.monsters.*;
+import net.glowstone.entity.passive.*;
 import net.glowstone.io.nbt.NbtSerialization;
 import net.glowstone.util.nbt.CompoundTag;
 import org.bukkit.Location;
@@ -16,27 +18,68 @@ import java.util.Map;
  */
 public final class EntityStorage {
 
-    private EntityStorage() {
-    }
-
     /**
      * A table which maps entity ids to compound readers. This is generally used to map
      * stored entities to actual entities.
      */
     private static final Map<String, EntityStore<?>> idTable = new HashMap<>();
-
     /**
      * A table which maps entities to stores. This is generally used to map
      * entities being stored.
      */
     private static final Map<Class<? extends GlowEntity>, EntityStore<?>> classTable = new HashMap<>();
-
     /**
      * Populates the maps with stores.
      */
     static {
+
+        // LivingEntities - General
         bind(new PlayerStore());
+
+        // LivingEntities - Passive Entities
+        bind(new BatStore());
+        bind(new AgeableStore<>(GlowChicken.class, "Chicken"));
+        bind(new AgeableStore<>(GlowCow.class, "Cow"));
+        bind(new HorseStore());
+        bind(new IronGolemStore());
+        bind(new AgeableStore<>(GlowMushroomCow.class, "MushroomCow"));
+        bind(new OcelotStore());
+        bind(new PigStore());
+        bind(new RabbitStore());
+        bind(new SheepStore());
+        bind(new SnowmanStore());
+        bind(new SquidStore());
+        bind(new VillagerStore());
+        bind(new WolfStore());
+
+        // LivingEntities - Monsters
+        bind(new MonsterStore<>(GlowBlaze.class, "Blaze"));
+        bind(new MonsterStore<>(GlowCaveSpider.class, "CaveSpider"));
+        bind(new CreeperStore());
+        bind(new EndermanStore());
+        bind(new EndermiteStorage());
+        bind(new GhastStore());
+        bind(new GuardianStore());
+        bind(new MonsterStore<>(GlowGiant.class, "Giant"));
+        bind(new SlimeStore<>(GlowMagmaCube.class, "MagmaCube"));
+        bind(new PigZombieStore());
+        bind(new MonsterStore<>(GlowSilverfish.class, "Silverfish"));
+        bind(new SkeletonStore());
+        bind(new SlimeStore<>(GlowSlime.class, "Slime"));
+        bind(new MonsterStore<>(GlowSpider.class, "Spider"));
+        bind(new MonsterStore<>(GlowWitch.class, "Witch"));
+        bind(new WitherStore());
+        bind(new ZombieStore<>(GlowZombie.class, "Zombie"));
+        // Projectiles
+
+        // Minecarts
+
+        // Various
         bind(new ItemStore());
+        bind(new PaintingStore());
+    }
+
+    private EntityStorage() {
     }
 
     /**

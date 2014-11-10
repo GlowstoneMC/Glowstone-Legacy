@@ -45,7 +45,7 @@ public class BlockLever extends BlockAttachable {
 
         final Lever lever = (Lever) data;
         setAttachedFace(state, face.getOppositeFace());
-        lever.setFacingDirection(face == BlockFace.UP || face == BlockFace.DOWN ? player.getDirection() : face);
+        lever.setFacingDirection(face == BlockFace.UP || face == BlockFace.DOWN ? player.getFacingDirection() : face);
 
     }
 }

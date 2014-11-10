@@ -177,6 +177,8 @@ public final class ItemTable {
         reg(Material.FLOWER_POT_ITEM, new ItemPlaceAs(Material.FLOWER_POT));
         reg(Material.SKULL_ITEM, new ItemPlaceAs(Material.SKULL));
         reg(Material.REDSTONE_COMPARATOR, new ItemPlaceAs(Material.REDSTONE_COMPARATOR_OFF));
+        reg(Material.MONSTER_EGG, new ItemMonsterEgg());
+        reg(Material.PAINTING, new ItemPainting());
         reg(Material.BED, new ItemPlaceAs(Material.BED_BLOCK));
         reg(Material.BUCKET, new ItemBucket());
         reg(Material.WATER_BUCKET, new ItemFilledBucket(Material.WATER));
