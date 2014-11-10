@@ -21,8 +21,7 @@ public class MegaJungleTree extends GenericTree {
     @Override
     public boolean canPlaceOn() {
         final BlockState state = delegate.getBlockState(loc.getBlock().getRelative(BlockFace.DOWN).getLocation());
-        if (state.getType() != Material.GRASS
-                && state.getType() != Material.DIRT) {
+        if (state.getType() != Material.GRASS && state.getType() != Material.DIRT) {
             return false;
         }
         return true;
@@ -59,18 +58,7 @@ public class MegaJungleTree extends GenericTree {
     @Override
     public boolean generate() {
 
-        // check height range
-        if (!canHeightFit()) {
-            return false;
-        }
-
-        // check below block
-        if (!canPlaceOn()) {
-            return false;
-        }
-
-        // check for sufficient space around
-        if (!canPlace()) {
+        if (!canHeightFit() || !canPlaceOn() || !canPlace()) {
             return false;
         }
 

@@ -58,9 +58,7 @@ public class GenericTree {
 
     public boolean canPlaceOn() {
         final BlockState state = delegate.getBlockState(loc.getBlock().getRelative(BlockFace.DOWN).getLocation());
-        return state.getType() == Material.GRASS ||
-                state.getType() == Material.DIRT ||
-                state.getType() == Material.SOIL;
+        return state.getType() == Material.GRASS || state.getType() == Material.DIRT || state.getType() == Material.SOIL;
     }
 
     public boolean canPlace() {
@@ -91,18 +89,8 @@ public class GenericTree {
     }
 
     public boolean generate() {
-        // check height range
-        if (!canHeightFit()) {
-            return false;
-        }
 
-        // check below block
-        if (!canPlaceOn()) {
-            return false;
-        }
-
-        // check for sufficient space around
-        if (!canPlace()) {
+        if (!canHeightFit() || !canPlaceOn() || !canPlace()) {
             return false;
         }
 
@@ -112,8 +100,7 @@ public class GenericTree {
             int radius = 1 - n / 2;
             for (int x = loc.getBlockX() - radius; x <= loc.getBlockX() + radius; x++) {
                 for (int z = loc.getBlockZ() - radius; z <= loc.getBlockZ() + radius; z++) {
-                    if (Math.abs(x - loc.getBlockX()) != radius || Math.abs(z - loc.getBlockZ()) != radius
-                            || (random.nextBoolean() && n != 0)) {
+                    if (Math.abs(x - loc.getBlockX()) != radius || Math.abs(z - loc.getBlockZ()) != radius || (random.nextBoolean() && n != 0)) {
                         final Material material = delegate.getBlockState(loc.getWorld(), x, y, z).getType();
                         if (material == Material.AIR || material == Material.LEAVES) {
                             delegate.setTypeAndRawData(loc.getWorld(), x, y, z, Material.LEAVES, leavesType);

@@ -36,7 +36,7 @@ public class JungleBush extends GenericTree {
             l = l.subtract(0, 1, 0);
         }
 
-        // check below block
+        // check only below block
         if (!canPlaceOn()) {
             return false;
         }

@@ -24,8 +24,7 @@ public class SwampTree extends CocoaTree {
     @Override
     public boolean canPlaceOn() {
         final BlockState state = delegate.getBlockState(loc.getBlock().getRelative(BlockFace.DOWN).getLocation());
-        if (state.getType() != Material.GRASS
-                && state.getType() != Material.DIRT) {
+        if (state.getType() != Material.GRASS && state.getType() != Material.DIRT) {
             return false;
         }
         return true;
@@ -75,18 +74,7 @@ public class SwampTree extends CocoaTree {
             l = l.subtract(0, 1, 0);
         }
 
-        // check height range
-        if (!canHeightFit()) {
-            return false;
-        }
-
-        // check below block
-        if (!canPlaceOn()) {
-            return false;
-        }
-
-        // check for sufficient space around
-        if (!canPlace()) {
+        if (!canHeightFit() || !canPlaceOn() || !canPlace()) {
             return false;
         }
 

@@ -19,8 +19,7 @@ public class AcaciaTree extends GenericTree {
     @Override
     public boolean canPlaceOn() {
         final BlockState state = delegate.getBlockState(loc.getBlock().getRelative(BlockFace.DOWN).getLocation());
-        if (state.getType() != Material.GRASS
-                && state.getType() != Material.DIRT) {
+        if (state.getType() != Material.GRASS && state.getType() != Material.DIRT) {
             return false;
         }
         return true;
@@ -29,18 +28,7 @@ public class AcaciaTree extends GenericTree {
     @Override
     public boolean generate() {
 
-        // check height range
-        if (!canHeightFit()) {
-            return false;
-        }
-
-        // check below block
-        if (!canPlaceOn()) {
-            return false;
-        }
-
-        // check for sufficient space around
-        if (!canPlace()) {
+        if (!canHeightFit() || !canPlaceOn() || !canPlace()) {
             return false;
         }
 
@@ -80,13 +68,13 @@ public class AcaciaTree extends GenericTree {
         for (int x = -3; x <= 3; x++) {
             for (int z = -3; z <= 3; z++) {
                 if (Math.abs(x) < 3 || Math.abs(z) < 3) {
-                    setLeaveAt(centerX + x, trunkTopY, centerZ + z);
+                    setLeaves(centerX + x, trunkTopY, centerZ + z);
                 }
                 if (Math.abs(x) < 2 && Math.abs(z) < 2) {
-                    setLeaveAt(centerX + x, trunkTopY + 1, centerZ + z);
+                    setLeaves(centerX + x, trunkTopY + 1, centerZ + z);
                 }
                 if ((Math.abs(x) == 2 && Math.abs(z) == 0) || (Math.abs(x) == 0 && Math.abs(z) == 2)) {
-                    setLeaveAt(centerX + x, trunkTopY + 1, centerZ + z);
+                    setLeaves(centerX + x, trunkTopY + 1, centerZ + z);
                 }
             }
         }
@@ -127,13 +115,13 @@ public class AcaciaTree extends GenericTree {
                 for (int x = -2; x <= 2; x++) {
                     for (int z = -2; z <= 2; z++) {
                         if ((Math.abs(x) < 2) || (Math.abs(z) < 2)) {
-                            setLeaveAt(centerX + x, trunkTopY, centerZ + z);
+                            setLeaves(centerX + x, trunkTopY, centerZ + z);
                         }
                     }
                 }
                 for (int x = -1; x <= 1; x++) {
                     for (int z = -1; z <= 1; z++) {
-                        setLeaveAt(centerX + x, trunkTopY + 1, centerZ + z);
+                        setLeaves(centerX + x, trunkTopY + 1, centerZ + z);
                     }
                 }
             }
@@ -145,7 +133,7 @@ public class AcaciaTree extends GenericTree {
         return true;
     }
 
-    private void setLeaveAt(int x, int y, int z) {
+    private void setLeaves(int x, int y, int z) {
         if (delegate.getBlockState(loc.getWorld(), x, y, z).getType() == Material.AIR) {
             delegate.setTypeAndRawData(loc.getWorld(), x, y, z, Material.LEAVES_2, 0);
         }

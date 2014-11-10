@@ -17,18 +17,7 @@ public class MegaRedwoodTree extends MegaJungleTree {
     @Override
     public boolean generate() {
 
-        // check height range
-        if (!canHeightFit()) {
-            return false;
-        }
-
-        // check below block
-        if (!canPlaceOn()) {
-            return false;
-        }
-
-        // check for sufficient space around
-        if (!canPlace()) {
+        if (!canHeightFit() || !canPlaceOn() || !canPlace()) {
             return false;
         }
 

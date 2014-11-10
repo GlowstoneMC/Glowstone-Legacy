@@ -29,9 +29,7 @@ public class HugeMushroom extends GenericTree {
     @Override
     public boolean canPlaceOn() {
         final BlockState state = delegate.getBlockState(loc.getBlock().getRelative(BlockFace.DOWN).getLocation());
-        return state.getType() == Material.GRASS ||
-                state.getType() == Material.DIRT ||
-                state.getType() == Material.MYCEL;
+        return state.getType() == Material.GRASS || state.getType() == Material.DIRT || state.getType() == Material.MYCEL;
     }
 
     @Override
@@ -69,18 +67,8 @@ public class HugeMushroom extends GenericTree {
 
     @Override
     public boolean generate() {
-        // check height range
-        if (!canHeightFit()) {
-            return false;
-        }
 
-        // check below block
-        if (!canPlaceOn()) {
-            return false;
-        }
-
-        // check for sufficient space around
-        if (!canPlace()) {
+        if (!canHeightFit() || !canPlaceOn() || !canPlace()) {
             return false;
         }
 
