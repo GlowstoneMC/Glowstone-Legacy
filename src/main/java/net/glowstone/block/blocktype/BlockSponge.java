@@ -37,11 +37,8 @@ public class BlockSponge extends BlockType {
 
             TaxicabBlockIterator iterator = new TaxicabBlockIterator(block);
             iterator.setMaxDistance(7);
-            iterator.setMaxBlocks(64);
-            iterator.setValidator(new BlockMaterialValidator(WATER_MATERIALS, block));
-
-            // Discard first block (itself)
-            iterator.next();
+            iterator.setMaxBlocks(65);
+            iterator.setValidator(new BlockMaterialValidator(WATER_MATERIALS));
 
             if (iterator.hasNext()) {
                 sponge = sponge.clone();

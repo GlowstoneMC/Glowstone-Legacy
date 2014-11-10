@@ -15,10 +15,10 @@ public class TaxicabBlockIterator implements Iterator<Block> {
         BlockFace.DOWN, BlockFace.UP, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST
     };
 
-    private final Queue<Block> pendingAnalysis = new LinkedList<>();
+    private final Queue<Object> pendingAnalysis = new LinkedList<>();
     private final Queue<Block> nextValidBlocks = new LinkedList<>();
     private final Set<Block> usedBlocks = new HashSet<>();
-    private int currentDistance = 0;
+    private int currentDistance = 1;
     private int validBlockCount = 0;
 
     private int maxDistance = Integer.MAX_VALUE;
@@ -27,6 +27,7 @@ public class TaxicabBlockIterator implements Iterator<Block> {
 
     public TaxicabBlockIterator(Block origin) {
         pendingAnalysis.add(origin);
+        pendingAnalysis.add(DistanceMarker.INSTANCE);
         usedBlocks.add(origin);
     }
 
@@ -42,57 +43,40 @@ public class TaxicabBlockIterator implements Iterator<Block> {
         this.validator = validator;
     }
 
+    private boolean isValid(Block block) {
+        return validator == null || validator.isValid(block);
+    }
+
     @Override
     public boolean hasNext() {
-        if (!nextValidBlocks.isEmpty()) {
-            return true;
-        }
-
-        // If we've surpassed the distance limit, return false.
-        if (currentDistance > maxDistance) {
+        if (validBlockCount >= maxBlocks) {
             return false;
         }
 
-        // We'll cache the current amount of pending blocks since we'll be appending stuff for the next iteration.
-        int pendingCount = pendingAnalysis.size();
-        if (pendingCount == 0) {
-            return false;
-        }
+        // Keep going till the valid block queue contains something, we reach the distance limit, or we empty the pending analysis queue.
+        // Note that the pending analysis queue will always contain at least one element: the end of distance marker.
+        while (nextValidBlocks.isEmpty() && currentDistance <= maxDistance && pendingAnalysis.size() >= 2) {
+            Object object = pendingAnalysis.remove();
 
-        // Keep going till we've processed all the pending blocks.
-        while (pendingCount > 0) {
-            Block block = pendingAnalysis.remove();
-            pendingCount--;
-
-            // If we've reached the valid block limit, just pop this value off the pending block list.
-            if (validBlockCount >= maxBlocks) {
+            // If we find the end of distance marker, we'll increase the distance, and then we'll re-add it to the end.
+            if (object == DistanceMarker.INSTANCE) {
+                pendingAnalysis.add(object);
+                currentDistance++;
                 continue;
             }
 
-            // Check if the validator likes this block.
-            if (validator != null && !validator.isValid(block)) {
-                continue;
-            }
+            // If it wasn't the EoD marker, it must be a block. We'll look now for valid blocks around it.
+            Block block = (Block) object;
+            for (int i = 0; i < VALID_FACES.length; i++) {
+                Block near = block.getRelative(VALID_FACES[i]);
 
-            nextValidBlocks.add(block);
-            validBlockCount++;
-
-            // Only add blocks to pending analysis list if we really need to.
-            if (currentDistance < maxDistance && validBlockCount < maxBlocks) {
-                for (int i = 0; i < VALID_FACES.length; i++) {
-                    Block near = block.getRelative(VALID_FACES[i]);
-
-                    // Only analyse file if we haven't checked it yet.
-                    if (!usedBlocks.contains(near)) {
-                        pendingAnalysis.add(near);
-                        usedBlocks.add(near);
-                    }
+                // Only analyse the block if we haven't checked it yet.
+                if (usedBlocks.add(near) && isValid(near)) {
+                    nextValidBlocks.add(near);
+                    pendingAnalysis.add(near);
                 }
             }
         }
-
-        // We've finished checking all blocks in a certain distance, so we'll increase the counter now.
-        currentDistance++;
 
         return !nextValidBlocks.isEmpty();
     }
@@ -102,12 +86,17 @@ public class TaxicabBlockIterator implements Iterator<Block> {
         if (!hasNext()) {
             throw new NoSuchElementException();
         }
-
+        validBlockCount++;
         return nextValidBlocks.remove();
     }
 
     @Override
     public void remove() {
         throw new UnsupportedOperationException();
+    }
+
+    private static final class DistanceMarker {
+        public static final DistanceMarker INSTANCE = new DistanceMarker();
+        private DistanceMarker() { }
     }
 }
