@@ -30,9 +30,7 @@ public class JungleBush extends GenericTree {
     public boolean generate() {
 
         Location l = loc;
-        while ((l.getBlock().getType() == Material.AIR ||
-                l.getBlock().getType() == Material.LEAVES) &&
-                l.getBlockY() > 0) {
+        while ((l.getBlock().getType() == Material.AIR || l.getBlock().getType() == Material.LEAVES) && l.getBlockY() > 0) {
             l = l.subtract(0, 1, 0);
         }
 

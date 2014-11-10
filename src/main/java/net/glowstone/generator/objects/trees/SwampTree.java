@@ -69,8 +69,7 @@ public class SwampTree extends CocoaTree {
     public boolean generate() {
 
         Location l = loc;
-        while ((l.getBlock().getRelative(BlockFace.DOWN).getType() == Material.WATER ||
-                l.getBlock().getRelative(BlockFace.DOWN).getType() == Material.STATIONARY_WATER)) {
+        while ((l.getBlock().getRelative(BlockFace.DOWN).getType() == Material.WATER || l.getBlock().getRelative(BlockFace.DOWN).getType() == Material.STATIONARY_WATER)) {
             l = l.subtract(0, 1, 0);
         }
 
