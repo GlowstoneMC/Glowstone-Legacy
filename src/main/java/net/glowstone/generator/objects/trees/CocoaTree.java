@@ -34,27 +34,6 @@ public class CocoaTree extends JungleTree {
         return true;
     }
 
-    private void addVinesOnTrunk() {
-        for (int y = 1; y < height; y++) {
-            if (random.nextInt(3) != 0
-                    && delegate.getBlockState(loc.getWorld(), loc.getBlockX() - 1, loc.getBlockY() + y, loc.getBlockZ()).getType() == Material.AIR) {
-                delegate.setTypeAndData(loc.getWorld(), loc.getBlockX() - 1, loc.getBlockY() + y, loc.getBlockZ(), Material.VINE, new Vine(BlockFace.EAST));
-            }
-            if (random.nextInt(3) != 0
-                    && delegate.getBlockState(loc.getWorld(), loc.getBlockX() + 1, loc.getBlockY() + y, loc.getBlockZ()).getType() == Material.AIR) {
-                delegate.setTypeAndData(loc.getWorld(), loc.getBlockX() + 1, loc.getBlockY() + y, loc.getBlockZ(), Material.VINE, new Vine(BlockFace.WEST));
-            }
-            if (random.nextInt(3) != 0
-                    && delegate.getBlockState(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + y, loc.getBlockZ() - 1).getType() == Material.AIR) {
-                delegate.setTypeAndData(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + y, loc.getBlockZ() - 1, Material.VINE, new Vine(BlockFace.SOUTH));
-            }
-            if (random.nextInt(3) != 0
-                    && delegate.getBlockState(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + y, loc.getBlockZ() + 1).getType() == Material.AIR) {
-                delegate.setTypeAndData(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + y, loc.getBlockZ() + 1, Material.VINE, new Vine(BlockFace.NORTH));
-            }
-        }
-    }
-
     protected void addVinesOnLeaves() {
         for (int y = loc.getBlockY() - 3 + height; y <= loc.getBlockY() + height; y++) {
             int nY = y - (loc.getBlockY() + height);
@@ -80,6 +59,27 @@ public class CocoaTree extends JungleTree {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private void addVinesOnTrunk() {
+        for (int y = 1; y < height; y++) {
+            if (random.nextInt(3) != 0
+                    && delegate.getBlockState(loc.getWorld(), loc.getBlockX() - 1, loc.getBlockY() + y, loc.getBlockZ()).getType() == Material.AIR) {
+                delegate.setTypeAndData(loc.getWorld(), loc.getBlockX() - 1, loc.getBlockY() + y, loc.getBlockZ(), Material.VINE, new Vine(BlockFace.EAST));
+            }
+            if (random.nextInt(3) != 0
+                    && delegate.getBlockState(loc.getWorld(), loc.getBlockX() + 1, loc.getBlockY() + y, loc.getBlockZ()).getType() == Material.AIR) {
+                delegate.setTypeAndData(loc.getWorld(), loc.getBlockX() + 1, loc.getBlockY() + y, loc.getBlockZ(), Material.VINE, new Vine(BlockFace.WEST));
+            }
+            if (random.nextInt(3) != 0
+                    && delegate.getBlockState(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + y, loc.getBlockZ() - 1).getType() == Material.AIR) {
+                delegate.setTypeAndData(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + y, loc.getBlockZ() - 1, Material.VINE, new Vine(BlockFace.SOUTH));
+            }
+            if (random.nextInt(3) != 0
+                    && delegate.getBlockState(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + y, loc.getBlockZ() + 1).getType() == Material.AIR) {
+                delegate.setTypeAndData(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + y, loc.getBlockZ() + 1, Material.VINE, new Vine(BlockFace.NORTH));
             }
         }
     }
