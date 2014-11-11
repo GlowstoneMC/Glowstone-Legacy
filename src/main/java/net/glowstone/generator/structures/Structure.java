@@ -1,5 +1,7 @@
 package net.glowstone.generator.structures;
 
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import net.glowstone.util.BlockStateDelegate;
@@ -46,6 +48,25 @@ public class Structure {
                            location.getBlockZ() + size.getBlockZ() - 1));
     }
 
+    protected final void addRandomMaterial(Map<RandomMaterial, Integer> materials, int weigth, Material type, int data) {
+        materials.put(new RandomMaterial(type,  data), weigth);
+    }
+
+    protected final RandomMaterial getRandomMaterial(Random random, Map<RandomMaterial, Integer> materials) {
+        int totalWeight = 0;
+        for (int weigth : materials.values()) {
+            totalWeight += weigth;
+        }
+        int weight = random.nextInt(totalWeight);
+        for (Entry<RandomMaterial, Integer> entry : materials.entrySet()) {
+            weight -= entry.getValue();
+            if (weight < 0) {
+                return entry.getKey();
+            }
+        }
+        return new RandomMaterial(Material.AIR);
+    }
+
     protected final void setBlock(Vector pos, Material type) {
         setBlock(pos, type, 0);
     }
@@ -84,6 +105,11 @@ public class Structure {
             delegate.setTypeAndData(location.getWorld(), vec.getBlockX(), y, vec.getBlockZ(), type, data);
             y--;
         }
+    }
+
+    protected final void setBlockWithRandomMaterial(Vector pos, Random random, Map<RandomMaterial, Integer> materials) {
+        final RandomMaterial material = getRandomMaterial(random, materials);
+        setBlock(pos, material.getType(), material.getData());
     }
 
     protected final void fill(Vector min, Vector max, Material type) {
@@ -168,6 +194,17 @@ public class Structure {
         }
     }
 
+    protected final void fillWithRandomMaterial(Vector min, Vector max, Random random, Map<RandomMaterial, Integer> materials) {
+        for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+            for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+                for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+                    final RandomMaterial material = getRandomMaterial(random, materials);
+                    setBlock(new Vector(x, y, z), material.getType(), material.getData());
+                }
+            }
+        }
+    }
+
     protected final BlockFace getFacingFromOrdinal(int n) {
         switch (n) {
             case 1:
@@ -245,6 +282,29 @@ public class Structure {
         public void offset(Vector offset) {
             min = min.add(offset);
             max = max.add(offset);
+        }
+    }
+
+    public class RandomMaterial {
+
+        private Material type;
+        private int data;
+
+        public RandomMaterial(Material type) {
+            this(type, 0);
+        }
+
+        public RandomMaterial(Material type, int data) {
+            this.type = type;
+            this.data = data;
+        }
+
+        public Material getType() {
+            return type;
+        }
+
+        public int getData() {
+            return data;
         }
     }
 }

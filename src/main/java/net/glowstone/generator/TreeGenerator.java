@@ -4,6 +4,7 @@ import java.util.Random;
 
 import net.glowstone.generator.objects.trees.*;
 import net.glowstone.generator.structures.DesertWell;
+import net.glowstone.generator.structures.JungleTemple;
 import net.glowstone.generator.structures.WitchHut;
 import net.glowstone.util.BlockStateDelegate;
 import org.bukkit.Location;
@@ -87,6 +88,11 @@ public class TreeGenerator {
         } else if (type == TreeType.MEGA_REDWOOD) {
             DesertWell well = new DesertWell(loc, delegate);
             well.generate();
+            delegate.updateBlockStates();
+            return false;
+        } else if (type == TreeType.DARK_OAK) {
+            JungleTemple temple = new JungleTemple(random, loc, delegate);
+            temple.generate();
             delegate.updateBlockStates();
             return false;
         }
