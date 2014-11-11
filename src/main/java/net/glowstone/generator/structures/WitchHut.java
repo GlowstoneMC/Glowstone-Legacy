@@ -20,6 +20,15 @@ public class WitchHut extends Structure {
     @Override
     public boolean generate() {
 
+        int sumY = 0, blockCount = 0;
+        for (int x = cuboid.getMin().getBlockX(); x <= cuboid.getMax().getBlockX(); x++) {
+            for (int z = cuboid.getMin().getBlockZ(); z <= cuboid.getMax().getBlockZ(); z++) {
+                sumY += Math.max(64, location.getWorld().getHighestBlockYAt(x, z));
+                blockCount++;
+            }
+        }
+        cuboid.offset(new Vector(0, (sumY / blockCount) - cuboid.getMin().getBlockY(), 0));
+
         fill(new Vector(1, 1, 2), new Vector(5, 4, 7), Material.WOOD, 1, Material.AIR); // hut body
         fill(new Vector(1, 1, 1), new Vector(5, 1, 1), Material.WOOD, 1); // hut steps
         fill(new Vector(2, 1, 0), new Vector(4, 1, 0), Material.WOOD, 1); // hut steps
@@ -53,6 +62,11 @@ public class WitchHut extends Structure {
 
         setBlock(new Vector(4, 2, 6), Material.CAULDRON);
         setBlock(new Vector(3, 2, 6), Material.WORKBENCH);
+
+        setBlockDownward(new Vector(1, -1, 2), Material.LOG);
+        setBlockDownward(new Vector(5, -1, 2), Material.LOG);
+        setBlockDownward(new Vector(1, -1, 7), Material.LOG);
+        setBlockDownward(new Vector(5, -1, 7), Material.LOG);
 
         return true;
     }

@@ -64,6 +64,28 @@ public class Structure {
         }
     }
 
+    protected final void setBlockDownward(Vector pos, Material type) {
+        setBlockDownward(pos, type, 0);
+    }
+
+    protected final void setBlockDownward(Vector pos, Material type, int data) {
+        final Vector vec = translate(pos);
+        int y = vec.getBlockY();
+        while (!location.getWorld().getBlockAt(vec.getBlockX(), y, vec.getBlockZ()).getType().isSolid() && y > 1) {
+            delegate.setTypeAndRawData(location.getWorld(), vec.getBlockX(), y, vec.getBlockZ(), type, data);
+            y--;
+        }
+    }
+
+    protected final void setBlockDownward(Vector pos, Material type, MaterialData data) {
+        final Vector vec = translate(pos);
+        int y = vec.getBlockY();
+        while (!location.getWorld().getBlockAt(vec.getBlockX(), y, vec.getBlockZ()).getType().isSolid() && y > 1) {
+            delegate.setTypeAndData(location.getWorld(), vec.getBlockX(), y, vec.getBlockZ(), type, data);
+            y--;
+        }
+    }
+
     protected final void fill(Vector min, Vector max, Material type) {
         fill(min, max, type, 0);
     }
