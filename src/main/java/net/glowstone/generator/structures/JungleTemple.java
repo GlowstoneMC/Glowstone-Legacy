@@ -94,20 +94,12 @@ public class JungleTemple extends Structure {
         fillWithRandomMaterial(new Vector(7, 8, 0), new Vector(7, 9, 0), random, stones);
         fillWithRandomMaterial(new Vector(9, 8, 0), new Vector(9, 9, 0), random, stones);
         fillWithRandomMaterial(new Vector(5, 10, 0), new Vector(6, 10, 0), random, stones);
-        fillWithRandomMaterial(new Vector(11, 8, 2), new Vector(11, 9, 2), random, stones);
-        fillWithRandomMaterial(new Vector(11, 8, 4), new Vector(11, 9, 4), random, stones);
-        fillWithRandomMaterial(new Vector(11, 8, 6), new Vector(11, 9, 6), random, stones);
-        fillWithRandomMaterial(new Vector(11, 8, 8), new Vector(11, 9, 8), random, stones);
-        fillWithRandomMaterial(new Vector(11, 8, 10), new Vector(11, 9, 10), random, stones);
-        fillWithRandomMaterial(new Vector(11, 8, 12), new Vector(11, 9, 12), random, stones);
+        for (int i = 0; i < 6; i++) {
+            fillWithRandomMaterial(new Vector(11, 8, 2 + i * 2), new Vector(11, 9, 2 + i * 2), random, stones);
+            fillWithRandomMaterial(new Vector(0, 8, 2 + i * 2), new Vector(0, 9, 2 + i * 2), random, stones);
+        }
         setBlockWithRandomMaterial(new Vector(11, 10, 5), random, stones);
         setBlockWithRandomMaterial(new Vector(11, 10, 9), random, stones);
-        fillWithRandomMaterial(new Vector(0, 8, 2), new Vector(0, 9, 2), random, stones);
-        fillWithRandomMaterial(new Vector(0, 8, 4), new Vector(0, 9, 4), random, stones);
-        fillWithRandomMaterial(new Vector(0, 8, 6), new Vector(0, 9, 6), random, stones);
-        fillWithRandomMaterial(new Vector(0, 8, 8), new Vector(0, 9, 8), random, stones);
-        fillWithRandomMaterial(new Vector(0, 8, 10), new Vector(0, 9, 10), random, stones);
-        fillWithRandomMaterial(new Vector(0, 8, 12), new Vector(0, 9, 12), random, stones);
         setBlockWithRandomMaterial(new Vector(0, 10, 5), random, stones);
         setBlockWithRandomMaterial(new Vector(0, 10, 9), random, stones);
         fillWithRandomMaterial(new Vector(2, 8, 14), new Vector(2, 9, 14), random, stones);
@@ -131,6 +123,34 @@ public class JungleTemple extends Structure {
         final Stairs roofStairsS = new Stairs(Material.COBBLESTONE_STAIRS);
         roofStairsS.setFacingDirection(getRelativeFacing(BlockFace.NORTH));
         fill(new Vector(5, 13, 8), new Vector(6, 13, 8), roofStairsS.getItemType(), roofStairsS);       
+
+        // 1st floor inside
+        for (int i = 0; i < 6; i++) {
+            fillWithRandomMaterial(new Vector(1, 3, 2 + i * 2), new Vector(3, 3, 2 + i * 2), random, stones);
+        }
+        for (int i = 0; i < 7; i++) {
+            fillWithRandomMaterial(new Vector(1, 1, 1 + i * 2), new Vector(1, 2, 1 + i * 2), random, stones);
+        }
+        setBlockWithRandomMaterial(new Vector(2, 2, 1), random, stones);
+        setBlockWithRandomMaterial(new Vector(3, 1, 1), random, stones);
+        fillWithRandomMaterial(new Vector(4, 2, 1), new Vector(5, 2, 1), random, stones);
+        setBlockWithRandomMaterial(new Vector(6, 1, 1), random, stones);
+        setBlockWithRandomMaterial(new Vector(6, 3, 1), random, stones);
+        fillWithRandomMaterial(new Vector(7, 2, 1), new Vector(9, 2, 1), random, stones);
+        setBlockWithRandomMaterial(new Vector(8, 1, 1), random, stones);
+        fillWithRandomMaterial(new Vector(10, 1, 1), new Vector(10, 3, 7), random, stones);
+        fillWithRandomMaterial(new Vector(9, 3, 1), new Vector(9, 3, 7), random, stones);
+        setBlockWithRandomMaterial(new Vector(9, 1, 2), random, stones);
+        setBlockWithRandomMaterial(new Vector(9, 1, 4), random, stones);
+        setBlockWithRandomMaterial(new Vector(8, 1, 5), random, stones);
+        // // //
+        setBlockWithRandomMaterial(new Vector(4, 1, 5), random, stones);
+
+        fillWithRandomMaterial(new Vector(7, 1, 6), new Vector(7, 3, 11), random, stones);
+        fillWithRandomMaterial(new Vector(4, 1, 6), new Vector(4, 3, 11), random, stones);
+        fillWithRandomMaterial(new Vector(5, 3, 11), new Vector(6, 3, 11), random, stones);
+        fillWithRandomMaterial(new Vector(8, 3, 11), new Vector(10, 3, 11), random, stones);
+        fillWithRandomMaterial(new Vector(8, 1, 11), new Vector(10, 1, 11), random, stones);
 
         // 2nd floor inside
         fillWithRandomMaterial(new Vector(4, 5, 10), new Vector(7, 6, 10), random, stones);
