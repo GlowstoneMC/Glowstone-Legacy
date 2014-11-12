@@ -139,7 +139,7 @@ public class BlockTorch extends BlockType {
     }
 
     @Override
-    public Collection<ItemStack> getDrops(GlowBlock block) {
+    public Collection<ItemStack> getDrops(GlowBlock block, ItemStack tool) {
         return Collections.unmodifiableList(Arrays.asList(new ItemStack(matType, 1, (byte) 0)));
     }
 }

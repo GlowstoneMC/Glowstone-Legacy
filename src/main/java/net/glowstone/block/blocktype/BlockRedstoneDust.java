@@ -212,7 +212,7 @@ public class BlockRedstoneDust extends BlockType {
     }
 
     @Override
-    public Collection<ItemStack> getDrops(GlowBlock block) {
+    public Collection<ItemStack> getDrops(GlowBlock block, ItemStack tool) {
         return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.REDSTONE, 1, (short) 0)));
     }
 } 
