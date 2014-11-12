@@ -6,13 +6,13 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
 
 public class BlockSugarCane extends BlockNeedsAttached {
     private static final BlockFace[] direct_faces = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH};
+
+    public BlockSugarCane() {
+        setDrops(new ItemStack(Material.SUGAR_CANE));
+    }
 
     @Override
     public void onNearBlockChanged(GlowBlock block, BlockFace position, GlowBlock changedBlock, Material oldType, byte oldData, Material newType, byte newData) {
@@ -45,10 +45,5 @@ public class BlockSugarCane extends BlockNeedsAttached {
         }
 
         return false;
-    }
-
-    @Override
-    public Collection<ItemStack> getDrops(GlowBlock me) {
-        return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.SUGAR_CANE)));
     }
 }

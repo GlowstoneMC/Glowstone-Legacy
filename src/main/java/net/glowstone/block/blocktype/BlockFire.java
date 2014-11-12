@@ -14,7 +14,7 @@ public class BlockFire extends BlockNeedsAttached {
     }
 
     @Override
-    public Collection<ItemStack> getDrops(GlowBlock block) {
+    public Collection<ItemStack> getDrops(GlowBlock block, ItemStack tool) {
         return BlockDropless.EMPTY_STACK;
     }
 }

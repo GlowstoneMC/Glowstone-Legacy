@@ -7,7 +7,7 @@ import java.util.Collection;
 
 public class BlockDeadBush extends BlockNeedsAttached {
     @Override
-    public Collection<ItemStack> getDrops(GlowBlock me) {
+    public Collection<ItemStack> getDrops(GlowBlock me, ItemStack tool) {
         return BlockDropless.EMPTY_STACK;
     }
 }
