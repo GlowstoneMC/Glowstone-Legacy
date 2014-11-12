@@ -9,7 +9,13 @@ import net.glowstone.util.BlockStateDelegate;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.material.Diode;
+import org.bukkit.material.Dispenser;
+import org.bukkit.material.Lever;
+import org.bukkit.material.PistonBaseMaterial;
 import org.bukkit.material.Stairs;
+import org.bukkit.material.TripwireHook;
+import org.bukkit.material.Vine;
 import org.bukkit.util.Vector;
 
 public class JungleTemple extends Structure {
@@ -52,7 +58,7 @@ public class JungleTemple extends Structure {
         fill(new Vector(5, 4, 7), new Vector(6, 4, 9), Material.AIR);
 
         // 2nd floor
-        fillWithRandomMaterial(new Vector(2, 5, 2), new Vector(9, 6, 2), random, stones);        
+        fillWithRandomMaterial(new Vector(2, 5, 2), new Vector(9, 6, 2), random, stones);
         fillWithRandomMaterial(new Vector(9, 5, 3), new Vector(9, 6, 11), random, stones);
         fillWithRandomMaterial(new Vector(2, 5, 12), new Vector(9, 6, 12), random, stones);
         fillWithRandomMaterial(new Vector(2, 5, 3), new Vector(2, 6, 11), random, stones);
@@ -111,18 +117,18 @@ public class JungleTemple extends Structure {
         fillWithRandomMaterial(new Vector(2, 11, 2), new Vector(2, 13, 2), random, stones);
         fillWithRandomMaterial(new Vector(9, 11, 2), new Vector(9, 13, 2), random, stones);
         fillWithRandomMaterial(new Vector(9, 11, 12), new Vector(9, 13, 12), random, stones);
-        fillWithRandomMaterial(new Vector(2, 11, 12), new Vector(2, 13, 12), random, stones);       
+        fillWithRandomMaterial(new Vector(2, 11, 12), new Vector(2, 13, 12), random, stones);
         setBlockWithRandomMaterial(new Vector(4, 13, 4), random, stones);
         setBlockWithRandomMaterial(new Vector(7, 13, 4), random, stones);
         setBlockWithRandomMaterial(new Vector(7, 13, 10), random, stones);
         setBlockWithRandomMaterial(new Vector(4, 13, 10), random, stones);
         final Stairs roofStairsN = new Stairs(Material.COBBLESTONE_STAIRS);
         roofStairsN.setFacingDirection(getRelativeFacing(BlockFace.SOUTH));
-        fill(new Vector(5, 13, 6), new Vector(6, 13, 6), roofStairsN.getItemType(), roofStairsN);       
+        fill(new Vector(5, 13, 6), new Vector(6, 13, 6), roofStairsN.getItemType(), roofStairsN);
         fillWithRandomMaterial(new Vector(5, 13, 7), new Vector(6, 13, 7), random, stones);
         final Stairs roofStairsS = new Stairs(Material.COBBLESTONE_STAIRS);
         roofStairsS.setFacingDirection(getRelativeFacing(BlockFace.NORTH));
-        fill(new Vector(5, 13, 8), new Vector(6, 13, 8), roofStairsS.getItemType(), roofStairsS);       
+        fill(new Vector(5, 13, 8), new Vector(6, 13, 8), roofStairsS.getItemType(), roofStairsS);
 
         // 1st floor inside
         for (int i = 0; i < 6; i++) {
@@ -132,27 +138,86 @@ public class JungleTemple extends Structure {
             fillWithRandomMaterial(new Vector(1, 1, 1 + i * 2), new Vector(1, 2, 1 + i * 2), random, stones);
         }
         setBlockWithRandomMaterial(new Vector(2, 2, 1), random, stones);
-        setBlockWithRandomMaterial(new Vector(3, 1, 1), random, stones);
+        setBlock(new Vector(3, 1, 1), Material.MOSSY_COBBLESTONE);
         fillWithRandomMaterial(new Vector(4, 2, 1), new Vector(5, 2, 1), random, stones);
         setBlockWithRandomMaterial(new Vector(6, 1, 1), random, stones);
         setBlockWithRandomMaterial(new Vector(6, 3, 1), random, stones);
         fillWithRandomMaterial(new Vector(7, 2, 1), new Vector(9, 2, 1), random, stones);
-        setBlockWithRandomMaterial(new Vector(8, 1, 1), random, stones);
+        setBlock(new Vector(8, 1, 1), Material.MOSSY_COBBLESTONE);
         fillWithRandomMaterial(new Vector(10, 1, 1), new Vector(10, 3, 7), random, stones);
         fillWithRandomMaterial(new Vector(9, 3, 1), new Vector(9, 3, 7), random, stones);
-        setBlockWithRandomMaterial(new Vector(9, 1, 2), random, stones);
-        setBlockWithRandomMaterial(new Vector(9, 1, 4), random, stones);
-        setBlockWithRandomMaterial(new Vector(8, 1, 5), random, stones);
-        // // //
-        setBlockWithRandomMaterial(new Vector(4, 1, 5), random, stones);
-
+        setBlock(new Vector(9, 1, 2), Material.MOSSY_COBBLESTONE);
+        setBlock(new Vector(9, 1, 4), Material.MOSSY_COBBLESTONE);
+        setBlock(new Vector(8, 1, 5), Material.MOSSY_COBBLESTONE);
+        fill(new Vector(7, 2, 5), new Vector(7, 3, 5), Material.MOSSY_COBBLESTONE);
+        setBlock(new Vector(6, 1, 5), Material.MOSSY_COBBLESTONE);
+        setBlockWithRandomMaterial(new Vector(6, 2, 5), random, stones);
+        fill(new Vector(5, 2, 5), new Vector(5, 3, 5), Material.MOSSY_COBBLESTONE);
+        setBlock(new Vector(4, 1, 5), Material.MOSSY_COBBLESTONE);
         fillWithRandomMaterial(new Vector(7, 1, 6), new Vector(7, 3, 11), random, stones);
         fillWithRandomMaterial(new Vector(4, 1, 6), new Vector(4, 3, 11), random, stones);
         fillWithRandomMaterial(new Vector(5, 3, 11), new Vector(6, 3, 11), random, stones);
         fillWithRandomMaterial(new Vector(8, 3, 11), new Vector(10, 3, 11), random, stones);
         fillWithRandomMaterial(new Vector(8, 1, 11), new Vector(10, 1, 11), random, stones);
+        fillWithRandomMaterial(new Vector(5, 1, 8), new Vector(6, 1, 8), random, stones);
+        fillWithRandomMaterial(new Vector(6, 1, 7), new Vector(6, 2, 7), random, stones);
+        setBlockWithRandomMaterial(new Vector(5, 2, 7), random, stones);
+        fillWithRandomMaterial(new Vector(6, 1, 6), new Vector(6, 3, 6), random, stones);
+        fillWithRandomMaterial(new Vector(5, 2, 6), new Vector(5, 3, 6), random, stones);
+        fillWithRandomMaterial(new Vector(8, 2, 6), new Vector(9, 2, 6), random, stones);
+        setBlockWithRandomMaterial(new Vector(8, 3, 6), random, stones);
+        fillWithRandomMaterial(new Vector(9, 1, 7), new Vector(9, 2, 7), random, stones);
+        fillWithRandomMaterial(new Vector(8, 1, 7), new Vector(8, 3, 7), random, stones);       
+        fillWithRandomMaterial(new Vector(10, 1, 8), new Vector(10, 1, 10), random, stones);
+        setBlock(new Vector(10, 2, 9), Material.MOSSY_COBBLESTONE);
+        fillWithRandomMaterial(new Vector(8, 1, 8), new Vector(8, 1, 10), random, stones);
+        fill(new Vector(8, 2, 11), new Vector(10, 2, 11), Material.SMOOTH_BRICK, 3);
+        final Lever lever = new Lever(Material.LEVER, (byte) 4); // workaround for bukkit, can't set an attached BlockFace
+        lever.setFacingDirection(getRelativeFacing(BlockFace.SOUTH));
+        fill(new Vector(8, 2, 12), new Vector(10, 2, 12), lever.getItemType(), lever);
+        setBlock(new Vector(3, 2, 1), Material.DISPENSER, new Dispenser(getRelativeFacing(BlockFace.SOUTH)));
+        setBlock(new Vector(9, 2, 3), Material.DISPENSER, new Dispenser(getRelativeFacing(BlockFace.WEST)));
+        final Vine vine = new Vine(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST);
+        setBlock(new Vector(3, 2, 2), vine.getItemType(), vine);
+        fill(new Vector(8, 2, 3), new Vector(8, 3, 3), vine.getItemType(), vine);        
+        fill(new Vector(2, 1, 8), new Vector(3, 1, 8), Material.TRIPWIRE);
+        final TripwireHook hookE = new TripwireHook(getRelativeFacing(BlockFace.WEST));
+        hookE.setConnected(true);
+        setBlock(new Vector(4, 1, 8), hookE.getItemType(), hookE);
+        final TripwireHook hookW = new TripwireHook(getRelativeFacing(BlockFace.EAST));
+        hookW.setConnected(true);
+        setBlock(new Vector(1, 1, 8), hookW.getItemType(), hookW);
+        fill(new Vector(5, 1, 1), new Vector(5, 1, 7), Material.REDSTONE_WIRE);
+        setBlock(new Vector(4, 1, 1), Material.REDSTONE_WIRE);
+        fill(new Vector(7, 1, 2), new Vector(7, 1, 4), Material.TRIPWIRE);
+        final TripwireHook hookN = new TripwireHook(getRelativeFacing(BlockFace.SOUTH));
+        hookN.setConnected(true);
+        setBlock(new Vector(7, 1, 1), hookN.getItemType(), hookN);
+        final TripwireHook hookS = new TripwireHook(getRelativeFacing(BlockFace.NORTH));
+        hookS.setConnected(true);
+        setBlock(new Vector(7, 1, 5), hookS.getItemType(), hookS);
+        fill(new Vector(8, 1, 6), new Vector(9, 1, 6), Material.REDSTONE_WIRE);
+        setBlock(new Vector(9, 1, 5), Material.REDSTONE_WIRE);
+        setBlock(new Vector(9, 2, 4), Material.REDSTONE_WIRE);
+        final PistonBaseMaterial pistonE = new PistonBaseMaterial(Material.PISTON_STICKY_BASE);
+        pistonE.setFacingDirection(getRelativeFacing(BlockFace.WEST));
+        fill(new Vector(10, 2, 8), new Vector(10, 3, 8), pistonE.getItemType(), pistonE);
+        final PistonBaseMaterial pistonUp = new PistonBaseMaterial(Material.PISTON_STICKY_BASE);
+        pistonUp.setFacingDirection(BlockFace.UP);
+        setBlock(new Vector(9, 2, 8), pistonUp.getItemType(), pistonUp);
+        setBlock(new Vector(10, 3, 9), Material.REDSTONE_WIRE);
+        fill(new Vector(8, 2, 9), new Vector(8, 2, 10), Material.REDSTONE_WIRE);
+        final Diode repeater = new Diode(Material.DIODE_BLOCK_OFF);
+        repeater.setDelay(1);
+        repeater.setFacingDirection(getRelativeFacing(BlockFace.SOUTH));
+        setBlock(new Vector(10, 2, 10), repeater.getItemType(), repeater);
 
         // 2nd floor inside
+        for (int i = 0; i < 4; i++) {
+            final Stairs stairsS = new Stairs(Material.COBBLESTONE_STAIRS);
+            stairsS.setFacingDirection(getRelativeFacing(BlockFace.NORTH));
+            fill(new Vector(5, 4 - i, 6 + i), new Vector(6, 4 - i, 6 + i), stairsS.getItemType(), stairsS);
+        }
         fillWithRandomMaterial(new Vector(4, 5, 10), new Vector(7, 6, 10), random, stones);
         setBlockWithRandomMaterial(new Vector(4, 5, 9), random, stones);
         setBlockWithRandomMaterial(new Vector(7, 5, 9), random, stones);
