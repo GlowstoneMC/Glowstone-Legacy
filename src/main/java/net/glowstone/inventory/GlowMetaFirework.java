@@ -64,7 +64,7 @@ public class GlowMetaFirework extends GlowMetaItem implements FireworkMeta {
         List<CompoundTag> explosions = new ArrayList<>();
         if (hasEffects()) {
             for (FireworkEffect effect : effects) {
-                explosions.add(GlowMetaCharge.toExplosion(effect));
+                explosions.add(GlowMetaFireworkEffect.toExplosion(effect));
             }
         }
         firework.putCompoundList("Explosions", explosions);
@@ -77,7 +77,7 @@ public class GlowMetaFirework extends GlowMetaItem implements FireworkMeta {
 
         List<CompoundTag> explosions = firework.getCompoundList("Explosions");
         for (CompoundTag explosion : explosions) {
-            effects.add(GlowMetaCharge.toEffect(explosion));
+            effects.add(GlowMetaFireworkEffect.toEffect(explosion));
         }
     }
 
