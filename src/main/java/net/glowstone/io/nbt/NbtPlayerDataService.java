@@ -3,11 +3,13 @@ package net.glowstone.io.nbt;
 import net.glowstone.GlowOfflinePlayer;
 import net.glowstone.GlowServer;
 import net.glowstone.entity.GlowPlayer;
+import net.glowstone.entity.meta.profile.ProfileCache;
 import net.glowstone.io.PlayerDataService;
 import net.glowstone.io.entity.EntityStorage;
 import net.glowstone.util.nbt.CompoundTag;
 import net.glowstone.util.nbt.NBTInputStream;
 import net.glowstone.util.nbt.NBTOutputStream;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -82,10 +84,20 @@ public class NbtPlayerDataService implements PlayerDataService {
     public UUID lookupUUID(String name) {
         // todo: caching or something
         for (OfflinePlayer player : getOfflinePlayers()) {
-            if (player.getName().equalsIgnoreCase(name)) {
+            if (name.equalsIgnoreCase(player.getName())) {
                 return player.getUniqueId();
             }
         }
+
+        // In online mode, find the Mojang UUID if possible
+        if (Bukkit.getServer().getOnlineMode() || ((GlowServer) Bukkit.getServer()).getProxySupport()) {
+            UUID uuid = ProfileCache.getUUID(name);
+            if (uuid != null) {
+                return uuid;
+            }
+        }
+
+        // Fall back to the offline-mode UUID
         return UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
     }
 

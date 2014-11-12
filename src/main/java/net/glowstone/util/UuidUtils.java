@@ -7,7 +7,8 @@ import java.util.UUID;
  */
 public final class UuidUtils {
 
-    private UuidUtils() {}
+    private UuidUtils() {
+    }
 
     public static UUID fromFlatString(String str) {
         // xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
