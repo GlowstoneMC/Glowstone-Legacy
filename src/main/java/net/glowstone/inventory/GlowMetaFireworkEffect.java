@@ -11,16 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class GlowMetaCharge extends GlowMetaItem implements FireworkEffectMeta {
+public class GlowMetaFireworkEffect extends GlowMetaItem implements FireworkEffectMeta {
 
     FireworkEffect effect;
 
-    public GlowMetaCharge(GlowMetaItem meta) {
+    public GlowMetaFireworkEffect(GlowMetaItem meta) {
         super(meta);
 
-        if (meta == null || !(meta instanceof GlowMetaCharge)) return;
+        if (meta == null || !(meta instanceof GlowMetaFireworkEffect)) return;
 
-        GlowMetaCharge effect = (GlowMetaCharge) meta;
+        GlowMetaFireworkEffect effect = (GlowMetaFireworkEffect) meta;
         this.effect = effect.effect;
     }
 
@@ -30,8 +30,8 @@ public class GlowMetaCharge extends GlowMetaItem implements FireworkEffectMeta {
     }
 
     @Override
-    public GlowMetaCharge clone() {
-        return new GlowMetaCharge(this);
+    public GlowMetaFireworkEffect clone() {
+        return new GlowMetaFireworkEffect(this);
     }
 
     @Override
