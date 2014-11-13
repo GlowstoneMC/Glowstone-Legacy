@@ -150,7 +150,14 @@ public class Dungeon {
                     face = BlockFace.NORTH;
                 }
                 if (solidBlocksCount == 1) {
-                    chestContent.fillContainer(new Location(loc.getWorld(), x, loc.getBlockY(), z), new Chest(face), 8);
+                    final BlockState chestState = loc.getWorld().getBlockAt(x, loc.getBlockY(), z).getState();
+
+                    final Chest chest = new Chest(face);
+                    chestState.setType(Material.CHEST);
+                    chestState.setData(chest);
+                    chestState.update(true);
+
+                    chestContent.fillContainer(chest, chestState, 8);
                     chestCount++;
                 }
             }

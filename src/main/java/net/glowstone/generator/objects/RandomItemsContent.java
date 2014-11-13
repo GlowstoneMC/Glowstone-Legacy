@@ -8,9 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -30,15 +28,9 @@ public class RandomItemsContent {
         content.put(item, weight);
     }
 
-    public boolean fillContainer(Location location, DirectionalContainer container, int maxStacks) {
-
-        final Block block = location.getBlock();
-        block.setType(container.getItemType());
-        final BlockState state = block.getState();
-        state.setData(container);
-        state.update(true);
-        if (state instanceof InventoryHolder) {
-            Inventory inventory = ((InventoryHolder) state).getInventory();
+    public boolean fillContainer(DirectionalContainer container, BlockState state, int maxStacks) {
+        if (state.getBlock().getState() instanceof InventoryHolder) {
+            final Inventory inventory = ((InventoryHolder) state.getBlock().getState()).getInventory();
             final int size = inventory.getSize();
             for (int i = 0; i < maxStacks; i++) {
                 final WeightedItem item = getRandomItem();
@@ -49,6 +41,8 @@ public class RandomItemsContent {
                     }
                 }
             }
+        } else {
+            throw new IllegalArgumentException("Bad container type");
         }
 
         return true;
