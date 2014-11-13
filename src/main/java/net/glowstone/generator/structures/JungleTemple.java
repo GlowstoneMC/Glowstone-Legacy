@@ -4,11 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import net.glowstone.generator.objects.RandomItemsContent;
+import net.glowstone.generator.objects.RandomItemsContent.WeightedItem;
 import net.glowstone.util.BlockStateDelegate;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.material.Chest;
 import org.bukkit.material.Diode;
 import org.bukkit.material.Dispenser;
 import org.bukkit.material.Lever;
@@ -22,6 +25,8 @@ public class JungleTemple extends Structure {
 
     private final Map<RandomMaterial, Integer> stones = new HashMap<RandomMaterial, Integer>();
     private final Random random;
+    private final RandomItemsContent chestContent;
+    private final RandomItemsContent dispenserContent;
 
     public JungleTemple(Random random, Location location, BlockStateDelegate delegate) {
         super(random, location, delegate);
@@ -29,6 +34,21 @@ public class JungleTemple extends Structure {
         setSize(new Vector(12, 14, 15));
         addRandomMaterial(stones, 4, Material.COBBLESTONE, 0);
         addRandomMaterial(stones, 6, Material.MOSSY_COBBLESTONE, 0);
+
+        chestContent = new RandomItemsContent(random);
+        chestContent.addItem(new WeightedItem(Material.DIAMOND, 1, 3), 3);
+        chestContent.addItem(new WeightedItem(Material.IRON_INGOT, 1, 5), 10);
+        chestContent.addItem(new WeightedItem(Material.GOLD_INGOT, 2, 7), 15);
+        chestContent.addItem(new WeightedItem(Material.EMERALD, 1, 3), 2);
+        chestContent.addItem(new WeightedItem(Material.BONE, 4, 6), 20);
+        chestContent.addItem(new WeightedItem(Material.ROTTEN_FLESH, 3, 7), 16);
+        chestContent.addItem(new WeightedItem(Material.SADDLE, 1, 1), 3);
+        chestContent.addItem(new WeightedItem(Material.IRON_BARDING, 1, 1), 1);
+        chestContent.addItem(new WeightedItem(Material.GOLD_BARDING, 1, 1), 1);
+        chestContent.addItem(new WeightedItem(Material.DIAMOND_BARDING, 1, 1), 1);
+
+        dispenserContent = new RandomItemsContent(random);
+        dispenserContent.addItem(new WeightedItem(Material.ARROW, 2, 7), 30);
     }
 
     @Override
@@ -175,8 +195,8 @@ public class JungleTemple extends Structure {
         final Lever lever = new Lever(Material.LEVER, (byte) 4); // workaround for bukkit, can't set an attached BlockFace
         lever.setFacingDirection(getRelativeFacing(BlockFace.SOUTH));
         fill(new Vector(8, 2, 12), new Vector(10, 2, 12), lever.getItemType(), lever);
-        setBlock(new Vector(3, 2, 1), Material.DISPENSER, new Dispenser(getRelativeFacing(BlockFace.SOUTH)));
-        setBlock(new Vector(9, 2, 3), Material.DISPENSER, new Dispenser(getRelativeFacing(BlockFace.WEST)));
+        createRandomItemsContainer(new Vector(3, 2, 1), dispenserContent, new Dispenser(getRelativeFacing(BlockFace.SOUTH)), 2);
+        createRandomItemsContainer(new Vector(9, 2, 3), dispenserContent, new Dispenser(getRelativeFacing(BlockFace.WEST)), 2);
         final Vine vine = new Vine(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST);
         setBlock(new Vector(3, 2, 2), vine.getItemType(), vine);
         fill(new Vector(8, 2, 3), new Vector(8, 3, 3), vine.getItemType(), vine);        
@@ -211,6 +231,8 @@ public class JungleTemple extends Structure {
         repeater.setDelay(1);
         repeater.setFacingDirection(getRelativeFacing(BlockFace.SOUTH));
         setBlock(new Vector(10, 2, 10), repeater.getItemType(), repeater);
+        createRandomItemsContainer(new Vector(8, 1, 3), chestContent, new Chest(getRelativeFacing(BlockFace.WEST)), random.nextInt(5) + 2);
+        createRandomItemsContainer(new Vector(9, 1, 10), chestContent, new Chest(getRelativeFacing(BlockFace.NORTH)), random.nextInt(5) + 2);
 
         // 2nd floor inside
         for (int i = 0; i < 4; i++) {

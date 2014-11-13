@@ -65,6 +65,14 @@ public class BlockStateDelegate {
         blockStateMap.put(world.getBlockAt(x, y, z).getLocation(), state);
     }
 
+    public void trackBlockState(BlockState state) {
+        blockStateMap.remove(state.getLocation());
+        // TODO
+        // track original blockstate and add a rollback method
+        // the rollback method will be called everywhere the states
+        // are not updated (events cancellation)
+    }
+
     /**
      * Returns the BlockState list
      * @return A list with all {@link BlockState}.

@@ -4,11 +4,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import net.glowstone.generator.objects.RandomItemsContent;
 import net.glowstone.util.BlockStateDelegate;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
+import org.bukkit.material.DirectionalContainer;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
@@ -202,6 +205,20 @@ public class Structure {
                     setBlock(new Vector(x, y, z), material.getType(), material.getData());
                 }
             }
+        }
+    }
+
+    protected final void createRandomItemsContainer(Vector pos, RandomItemsContent content, DirectionalContainer container, int maxStacks) {
+        final Vector vec = translate(pos);
+        if (cuboid.isVectorInside(vec)) {
+            final BlockState state = delegate.getBlockState(location.getWorld(), vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
+            delegate.trackBlockState(state);
+
+            state.setType(container.getItemType());
+            state.setData(container);
+            state.update(true);
+
+            content.fillContainer(container, state, maxStacks);
         }
     }
 
