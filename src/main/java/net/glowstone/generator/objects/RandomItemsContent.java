@@ -4,65 +4,57 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.DirectionalContainer;
 
-public class TreasureChest {
+public class RandomItemsContent {
 
     private final Random random;
-    private final Material type;
-    private final HashMap<Treasure, Integer> content = new HashMap<Treasure, Integer>();
+    private final Map<WeightedItem, Integer> content = new HashMap<WeightedItem, Integer>();
 
-    public TreasureChest(Random random) {
-        this(random, Material.CHEST);
-    }
-
-    public TreasureChest(Random random, Material type) {
-        if (type != Material.CHEST && type != Material.TRAPPED_CHEST) {
-            throw new IllegalArgumentException("Invalid chest material !");
-        }
+    public RandomItemsContent(Random random) {
         this.random = random;
-        this.type = type;
     }
 
-    public void addTreasure(Treasure treasure, int weight) {
-        content.put(treasure, weight);
+    public void addItem(WeightedItem item, int weight) {
+        content.put(item, weight);
     }
 
-    public boolean generate(Location location, BlockFace facing, int maxStacks) {
+    public boolean fillContainer(Location location, DirectionalContainer container, int maxStacks) {
 
         final Block block = location.getBlock();
-        block.setType(type);
+        block.setType(container.getItemType());
         final BlockState state = block.getState();
-        state.setData(new org.bukkit.material.Chest(facing));
+        state.setData(container);
         state.update(true);
-        //if (state instanceof Chest) {
-            Inventory inventory = ((Chest) state).getBlockInventory();
+        if (state instanceof InventoryHolder) {
+            Inventory inventory = ((InventoryHolder) state).getInventory();
             final int size = inventory.getSize();
             for (int i = 0; i < maxStacks; i++) {
-                final Treasure treasure = getRandomTreasure();
-                if (treasure != null) {
-                    for (ItemStack stack: treasure.getItemStacks(random)) {
+                final WeightedItem item = getRandomItem();
+                if (item != null) {
+                    for (ItemStack stack: item.getItemStacks(random)) {
                         // slot can be overriden hence maxStacks can be less than what's expected
                         inventory.setItem(random.nextInt(size), stack);
                     }
                 }
             }
-        //}
+        }
 
         return true;
     }
 
-    public Treasure getRandomTreasure() {
+    public WeightedItem getRandomItem() {
         int totalWeight = 0;
         for (int i : content.values()) {
             totalWeight += i;
@@ -71,7 +63,7 @@ public class TreasureChest {
             return null;
         }
         int weight = random.nextInt(totalWeight);
-        for (Entry<Treasure, Integer> entry : content.entrySet()) {
+        for (Entry<WeightedItem, Integer> entry : content.entrySet()) {
             weight -= entry.getValue();
             if (weight < 0) {
                 return entry.getKey();
@@ -80,16 +72,16 @@ public class TreasureChest {
         return null;
     }
 
-    public static class Treasure {
+    public static class WeightedItem {
 
         private final int maxAmount;
         private final ItemStack stack;
 
-        public Treasure(Material type, int minAmount, int maxAmount) {
+        public WeightedItem(Material type, int minAmount, int maxAmount) {
             this(type, 0, minAmount, maxAmount);
         }
 
-        public Treasure(Material type, int data, int minAmount, int maxAmount) {
+        public WeightedItem(Material type, int data, int minAmount, int maxAmount) {
             stack = new ItemStack(type, minAmount, (short) data);
             this.maxAmount = maxAmount;
         }
