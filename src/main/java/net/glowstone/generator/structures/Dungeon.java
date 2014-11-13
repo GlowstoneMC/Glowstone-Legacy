@@ -3,8 +3,8 @@ package net.glowstone.generator.structures;
 import java.util.Random;
 
 import net.glowstone.GlowServer;
-import net.glowstone.generator.objects.TreasureChest;
-import net.glowstone.generator.objects.TreasureChest.Treasure;
+import net.glowstone.generator.objects.RandomItemsContent;
+import net.glowstone.generator.objects.RandomItemsContent.WeightedItem;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,6 +13,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.EntityType;
+import org.bukkit.material.Chest;
 
 public class Dungeon {
 
@@ -22,7 +23,7 @@ public class Dungeon {
     private static final int MIN_RADIUS = 2;
     private final int radiusX;
     private final int radiusZ;
-    private final TreasureChest chest;
+    private final RandomItemsContent chestContent;
     private final EntityType[] mobTypes = new EntityType[] {
         EntityType.SKELETON, EntityType.ZOMBIE,
         EntityType.ZOMBIE, EntityType.SPIDER
@@ -35,22 +36,22 @@ public class Dungeon {
         radiusX = random.nextInt(2) + MIN_RADIUS;
         radiusZ = random.nextInt(2) + MIN_RADIUS;
 
-        chest = new TreasureChest(random);
-        chest.addTreasure(new Treasure(Material.SADDLE, 1, 1), 10);
-        chest.addTreasure(new Treasure(Material.IRON_INGOT, 1, 4), 10);
-        chest.addTreasure(new Treasure(Material.BREAD, 1, 1), 10);
-        chest.addTreasure(new Treasure(Material.WHEAT, 1, 4), 10);
-        chest.addTreasure(new Treasure(Material.SULPHUR, 1, 4), 10);
-        chest.addTreasure(new Treasure(Material.STRING, 1, 4), 10);
-        chest.addTreasure(new Treasure(Material.BUCKET, 1, 1), 10);
-        chest.addTreasure(new Treasure(Material.GOLDEN_APPLE, 1, 1), 1);
-        chest.addTreasure(new Treasure(Material.REDSTONE, 1, 1), 10);
-        chest.addTreasure(new Treasure(Material.GOLD_RECORD, 1, 1), 10);
-        chest.addTreasure(new Treasure(Material.GREEN_RECORD, 1, 1), 10);
-        chest.addTreasure(new Treasure(Material.NAME_TAG, 1, 1), 10);
-        chest.addTreasure(new Treasure(Material.GOLD_BARDING, 1, 1), 2);
-        chest.addTreasure(new Treasure(Material.IRON_BARDING, 1, 1), 5);
-        chest.addTreasure(new Treasure(Material.DIAMOND_BARDING, 1, 1), 1);
+        chestContent = new RandomItemsContent(random);
+        chestContent.addItem(new WeightedItem(Material.SADDLE, 1, 1), 10);
+        chestContent.addItem(new WeightedItem(Material.IRON_INGOT, 1, 4), 10);
+        chestContent.addItem(new WeightedItem(Material.BREAD, 1, 1), 10);
+        chestContent.addItem(new WeightedItem(Material.WHEAT, 1, 4), 10);
+        chestContent.addItem(new WeightedItem(Material.SULPHUR, 1, 4), 10);
+        chestContent.addItem(new WeightedItem(Material.STRING, 1, 4), 10);
+        chestContent.addItem(new WeightedItem(Material.BUCKET, 1, 1), 10);
+        chestContent.addItem(new WeightedItem(Material.GOLDEN_APPLE, 1, 1), 1);
+        chestContent.addItem(new WeightedItem(Material.REDSTONE, 1, 1), 10);
+        chestContent.addItem(new WeightedItem(Material.GOLD_RECORD, 1, 1), 10);
+        chestContent.addItem(new WeightedItem(Material.GREEN_RECORD, 1, 1), 10);
+        chestContent.addItem(new WeightedItem(Material.NAME_TAG, 1, 1), 10);
+        chestContent.addItem(new WeightedItem(Material.GOLD_BARDING, 1, 1), 2);
+        chestContent.addItem(new WeightedItem(Material.IRON_BARDING, 1, 1), 5);
+        chestContent.addItem(new WeightedItem(Material.DIAMOND_BARDING, 1, 1), 1);
     }
 
     public boolean canPlace() {
@@ -149,7 +150,7 @@ public class Dungeon {
                     face = BlockFace.NORTH;
                 }
                 if (solidBlocksCount == 1) {
-                    chest.generate(new Location(loc.getWorld(), x, loc.getBlockY(), z), face, 8);
+                    chestContent.fillContainer(new Location(loc.getWorld(), x, loc.getBlockY(), z), new Chest(face), 8);
                     chestCount++;
                 }
             }
