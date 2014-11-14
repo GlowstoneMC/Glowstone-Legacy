@@ -295,6 +295,9 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         reader.readData(this);
         reader.close();
 
+        // Add player to list of online players
+        getServer().setPlayerOnline(this);
+
         // save data back out
         saveData();
 
@@ -370,6 +373,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         getInventory().removeViewer(this);
         getInventory().getCraftingInventory().removeViewer(this);
         permissions.clearPermissions();
+        getServer().setPlayerOffline(this);
         super.remove();
     }
 

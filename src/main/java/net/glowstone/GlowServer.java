@@ -22,6 +22,7 @@ import net.glowstone.scheduler.WorldScheduler;
 import net.glowstone.util.*;
 import net.glowstone.util.bans.GlowBanList;
 import net.glowstone.util.bans.UuidListFile;
+import org.apache.commons.lang.Validate;
 import org.bukkit.*;
 import org.bukkit.World.Environment;
 import org.bukkit.command.*;
@@ -368,6 +369,15 @@ public final class GlowServer implements Server {
      * The server port.
      */
     private int port;
+    /**
+     * A set of all online players.
+     */
+    private final Set<GlowPlayer> onlinePlayers = new HashSet<>();
+
+    /**
+     * A view of all online players.
+     */
+    private final Set<GlowPlayer> onlineView = Collections.unmodifiableSet(onlinePlayers);
 
     /**
      * Creates a new server.
@@ -886,6 +896,20 @@ public final class GlowServer implements Server {
         return config.getBoolean(ServerConfig.Key.ANNOUNCE_ACHIEVEMENTS);
     }
 
+    /**
+     * Sets a player as being online internally
+     * @param player
+     */
+    public void setPlayerOnline(GlowPlayer player) {
+        Validate.notNull(player);
+        onlinePlayers.add(player);
+    }
+
+    public void setPlayerOffline(GlowPlayer player) {
+        Validate.notNull(player);
+        onlinePlayers.remove(player);
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Static server properties
 
@@ -1037,14 +1061,7 @@ public final class GlowServer implements Server {
 
     @Override
     public Collection<GlowPlayer> getOnlinePlayers() {
-        // todo: provide a view instead of reassembling the list each time
-        ArrayList<GlowPlayer> result = new ArrayList<>();
-        for (GlowWorld world : worlds.getWorlds()) {
-            for (GlowPlayer player : world.getRawPlayers()) {
-                result.add(player);
-            }
-        }
-        return result;
+        return onlineView;
     }
 
     @Override
