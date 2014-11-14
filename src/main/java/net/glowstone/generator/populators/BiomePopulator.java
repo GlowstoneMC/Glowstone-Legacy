@@ -24,6 +24,11 @@ public class BiomePopulator extends BlockPopulator {
                 .setBiomeAmount(2, Biome.OCEAN) // fix for lack of biomes
                 .setBiomeAmount(1, Biome.DESERT, Biome.DESERT_HILLS));
 
+        addDecorator(new WitchHutDecorator()
+                .setDefaultAmount(0)
+                .setBiomeAmount(2, Biome.OCEAN) // fix for lack of biomes
+                .setBiomeAmount(1, Biome.SWAMPLAND));
+
         addDecorator(new FlowerDecorator()
                 .setDefaultFlowerWeight(2, FlowerDecorator.Flower.DANDELION)
                 .setDefaultFlowerWeight(1, FlowerDecorator.Flower.POPPY)
@@ -48,7 +53,7 @@ public class BiomePopulator extends BlockPopulator {
                 .setBiomeAmount(25, Biome.JUNGLE, Biome.JUNGLE_HILLS, Biome.JUNGLE_EDGE)
                 .setBiomeAmount(10, Biome.PLAINS)
                 .setBiomeAmount(20, Biome.SAVANNA, Biome.SAVANNA_PLATEAU)
-                .setBiomeAmount(5, Biome.SWAMPLAND)
+                .setBiomeAmount(5, Biome.SWAMPLAND, Biome.SWAMPLAND_MOUNTAINS)
                 .setBiomeAmount(7, Biome.TAIGA, Biome.TAIGA_HILLS, Biome.COLD_TAIGA,
                         Biome.COLD_TAIGA_HILLS, Biome.MEGA_TAIGA, Biome.MEGA_TAIGA_HILLS));
 
