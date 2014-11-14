@@ -22,6 +22,7 @@ public class Structure {
     protected final Location location;
     protected final BlockStateDelegate delegate;
     private BlockFace facing;
+    private Vector size;
     protected Cuboid cuboid;
 
     public Structure(Location location, BlockStateDelegate delegate) {
@@ -44,6 +45,7 @@ public class Structure {
             default:
                 break;
         }
+        this.size = size;
         cuboid = new Cuboid(
                 new Vector(location.getBlockX(),
                            location.getBlockY(),
@@ -51,6 +53,10 @@ public class Structure {
                 new Vector(location.getBlockX() + size.getBlockX() - 1,
                            location.getBlockY() + size.getBlockY() - 1,
                            location.getBlockZ() + size.getBlockZ() - 1));
+    }
+
+    protected final Vector getSize() {
+        return size;
     }
 
     protected final void addRandomMaterial(Map<RandomMaterial, Integer> materials, int weigth, Material type, int data) {

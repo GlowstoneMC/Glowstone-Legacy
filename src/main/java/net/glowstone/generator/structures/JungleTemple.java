@@ -55,9 +55,9 @@ public class JungleTemple extends Structure {
     public boolean generate() {
 
         int sumY = 0, blockCount = 0;
-        for (int x = cuboid.getMin().getBlockX(); x <= cuboid.getMax().getBlockX(); x++) {
-            for (int z = cuboid.getMin().getBlockZ(); z <= cuboid.getMax().getBlockZ(); z++) {
-                sumY += Math.max(64, location.getWorld().getHighestBlockYAt(x, z));
+        for (int x = 0; x < getSize().getBlockX(); x++) {
+            for (int z = 0; z < getSize().getBlockZ(); z++) {
+                sumY += Math.max(64, location.getWorld().getHighestBlockYAt(cuboid.getMin().getBlockX() + x, cuboid.getMin().getBlockZ() + z));
                 blockCount++;
             }
         }
