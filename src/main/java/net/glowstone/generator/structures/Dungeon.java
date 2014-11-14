@@ -65,17 +65,17 @@ public class Dungeon extends Structure {
         }
 
         int i = 0;
-        for (int x = 0; x <= radiusX * 2; x++) {
-            for (int z = 0; z <= radiusZ * 2; z++) {
-                for (int y = 0; y <= HEIGHT - 1; y++) {
+        for (int x = 0; x < getSize().getBlockX(); x++) {
+            for (int z = 0; z < getSize().getBlockZ(); z++) {
+                for (int y = 0; y < getSize().getBlockY(); y++) {
                     final Material type = getBlockState(new Vector(x, y, z)).getType();
                     // checks we are between 2 solid material layers
-                    if ((y == 0 || y == HEIGHT - 1) && !type.isSolid()) {
+                    if ((y == 0 || y == getSize().getBlockY() - 1) && !type.isSolid()) {
                         return false;
                     }
                     // checks a few blocks at bottom of walls are opened to air
                     // in order to have a natural door like access
-                    if ((x == 0 || x == radiusX * 2 || z == 0 || z == radiusZ * 2)
+                    if ((x == 0 || x == getSize().getBlockX() - 1 || z == 0 || z == getSize().getBlockZ() - 1)
                             && y == 1 && type == Material.AIR
                             && getBlockState(new Vector(x, y + 1, z)).getType() == Material.AIR) {
                         i++;
@@ -103,11 +103,11 @@ public class Dungeon extends Structure {
             return false;
         }
 
-        for (int x = 0; x <= radiusX * 2; x++) {
-            for (int z = 0; z <= radiusZ * 2; z++) {
-                for (int y = HEIGHT - 2; y >= 0; y--) {
+        for (int x = 0; x < getSize().getBlockX(); x++) {
+            for (int z = 0; z < getSize().getBlockZ(); z++) {
+                for (int y = getSize().getBlockY() - 2; y >= 0; y--) {
                     final BlockState state = getBlockState(new Vector(x, y, z));
-                    if (y > 0 && x > 0 && z > 0  && x < radiusX * 2 && z < radiusZ * 2) {
+                    if (y > 0 && x > 0 && z > 0  && x < getSize().getBlockX() - 1 && z < getSize().getBlockZ() - 1) {
                         // empty space inside
                         setBlock(new Vector(x, y, z), Material.AIR);
                     } else if (!getBlockState(new Vector(x, y - 1, z)).getType().isSolid()) {

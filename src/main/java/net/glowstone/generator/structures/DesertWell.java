@@ -18,20 +18,18 @@ public class DesertWell extends Structure {
 
         cuboid.offset(new Vector(-2, -2, -2));
 
-        while (location.getWorld().getBlockAt(cuboid.getMin().getBlockX() + 2, cuboid.getMin().getBlockY() + 1,
-                cuboid.getMin().getBlockZ() + 2).getType() == Material.AIR && cuboid.getMin().getBlockY() > 0) {
+        while (getBlockState(new Vector(2, 1, 2)).getType() == Material.AIR && cuboid.getMin().getBlockY() > 0) {
             cuboid.offset(new Vector(0, -1, 0));
         }
 
-        if (location.getWorld().getBlockAt(cuboid.getMin().getBlockX() + 2, cuboid.getMin().getBlockY() + 1,
-                cuboid.getMin().getBlockZ() + 2).getType() != Material.SAND) {
+        if (getBlockState(new Vector(2, 1, 2)).getType() != Material.SAND) {
             return false;
         }
 
-        for (int x = cuboid.getMin().getBlockX(); x <= cuboid.getMax().getBlockX(); x++) {
-            for (int z = cuboid.getMin().getBlockZ(); z <= cuboid.getMax().getBlockZ(); z++) {
-                if (location.getWorld().getBlockAt(x, cuboid.getMin().getBlockY(), z).getType() == Material.AIR
-                        && location.getWorld().getBlockAt(x, cuboid.getMin().getBlockY() - 1, z).getType() == Material.AIR) {
+        for (int x = 0; x < getSize().getBlockX(); x++) {
+            for (int z = 0; z < getSize().getBlockZ(); z++) {
+                if (getBlockState(new Vector(x, 0, z)).getType() == Material.AIR
+                        && getBlockState(new Vector(x, -1, z)).getType() == Material.AIR) {
                     return false;
                 }
             }
