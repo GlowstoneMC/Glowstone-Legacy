@@ -11,6 +11,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.CreatureSpawner;
+import org.bukkit.entity.EntityType;
 import org.bukkit.material.DirectionalContainer;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
@@ -68,6 +70,11 @@ public class Structure {
             }
         }
         return new RandomMaterial(Material.AIR);
+    }
+
+    protected final BlockState getBlockState(Vector pos) {
+        final Vector vec = translate(pos);
+        return delegate.getBlockState(location.getWorld(), vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
     }
 
     protected final void setBlock(Vector pos, Material type) {
@@ -219,6 +226,22 @@ public class Structure {
             state.update(true);
 
             content.fillContainer(container, state, maxStacks);
+        }
+    }
+
+    protected final void createMobSpawner(Vector pos, EntityType entityType) {
+        final Vector vec = translate(pos);
+        if (cuboid.isVectorInside(vec)) {
+            BlockState state = location.getWorld().getBlockAt(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ()).getState();
+            delegate.backupBlockState(state.getBlock());
+
+            state.setType(Material.MOB_SPAWNER);
+            state.update(true);
+
+            state = location.getWorld().getBlockAt(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ()).getState();
+            if (state instanceof CreatureSpawner) {
+                ((CreatureSpawner) state).setSpawnedType(entityType);
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package net.glowstone.generator.populators;
 
 import net.glowstone.generator.structures.Dungeon;
+import net.glowstone.util.BlockStateDelegate;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -27,7 +28,9 @@ public class DungeonPopulator extends BlockPopulator {
             int x = (source.getX() << 4) + random.nextInt(16);
             int z = (source.getZ() << 4) + random.nextInt(16);
             int y = random.nextInt(256);
-            new Dungeon(random, new Location(world, x, y, z)).generate();
+            BlockStateDelegate delegate = new BlockStateDelegate();
+            new Dungeon(random, new Location(world, x, y, z), delegate).generate();
+            delegate.updateBlockStates();
         //}
         }
     }

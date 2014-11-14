@@ -18,13 +18,13 @@ import org.bukkit.material.DirectionalContainer;
 public class RandomItemsContent {
 
     private final Random random;
-    private final Map<WeightedItem, Integer> content = new HashMap<WeightedItem, Integer>();
+    private final Map<RandomAmountItem, Integer> content = new HashMap<RandomAmountItem, Integer>();
 
     public RandomItemsContent(Random random) {
         this.random = random;
     }
 
-    public void addItem(WeightedItem item, int weight) {
+    public void addItem(RandomAmountItem item, int weight) {
         content.put(item, weight);
     }
 
@@ -33,7 +33,7 @@ public class RandomItemsContent {
             final Inventory inventory = ((InventoryHolder) state.getBlock().getState()).getInventory();
             final int size = inventory.getSize();
             for (int i = 0; i < maxStacks; i++) {
-                final WeightedItem item = getRandomItem();
+                final RandomAmountItem item = getRandomItem();
                 if (item != null) {
                     for (ItemStack stack: item.getItemStacks(random)) {
                         // slot can be overriden hence maxStacks can be less than what's expected
@@ -48,7 +48,7 @@ public class RandomItemsContent {
         return true;
     }
 
-    public WeightedItem getRandomItem() {
+    public RandomAmountItem getRandomItem() {
         int totalWeight = 0;
         for (int i : content.values()) {
             totalWeight += i;
@@ -57,7 +57,7 @@ public class RandomItemsContent {
             return null;
         }
         int weight = random.nextInt(totalWeight);
-        for (Entry<WeightedItem, Integer> entry : content.entrySet()) {
+        for (Entry<RandomAmountItem, Integer> entry : content.entrySet()) {
             weight -= entry.getValue();
             if (weight < 0) {
                 return entry.getKey();
@@ -66,16 +66,16 @@ public class RandomItemsContent {
         return null;
     }
 
-    public static class WeightedItem {
+    public static class RandomAmountItem {
 
         private final int maxAmount;
         private final ItemStack stack;
 
-        public WeightedItem(Material type, int minAmount, int maxAmount) {
+        public RandomAmountItem(Material type, int minAmount, int maxAmount) {
             this(type, 0, minAmount, maxAmount);
         }
 
-        public WeightedItem(Material type, int data, int minAmount, int maxAmount) {
+        public RandomAmountItem(Material type, int data, int minAmount, int maxAmount) {
             stack = new ItemStack(type, minAmount, (short) data);
             this.maxAmount = maxAmount;
         }

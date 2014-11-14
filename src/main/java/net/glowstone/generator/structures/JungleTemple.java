@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Random;
 
 import net.glowstone.generator.objects.RandomItemsContent;
-import net.glowstone.generator.objects.RandomItemsContent.WeightedItem;
+import net.glowstone.generator.objects.RandomItemsContent.RandomAmountItem;
 import net.glowstone.util.BlockStateDelegate;
 
 import org.bukkit.Location;
@@ -36,19 +36,19 @@ public class JungleTemple extends Structure {
         addRandomMaterial(stones, 6, Material.MOSSY_COBBLESTONE, 0);
 
         chestContent = new RandomItemsContent(random);
-        chestContent.addItem(new WeightedItem(Material.DIAMOND, 1, 3), 3);
-        chestContent.addItem(new WeightedItem(Material.IRON_INGOT, 1, 5), 10);
-        chestContent.addItem(new WeightedItem(Material.GOLD_INGOT, 2, 7), 15);
-        chestContent.addItem(new WeightedItem(Material.EMERALD, 1, 3), 2);
-        chestContent.addItem(new WeightedItem(Material.BONE, 4, 6), 20);
-        chestContent.addItem(new WeightedItem(Material.ROTTEN_FLESH, 3, 7), 16);
-        chestContent.addItem(new WeightedItem(Material.SADDLE, 1, 1), 3);
-        chestContent.addItem(new WeightedItem(Material.IRON_BARDING, 1, 1), 1);
-        chestContent.addItem(new WeightedItem(Material.GOLD_BARDING, 1, 1), 1);
-        chestContent.addItem(new WeightedItem(Material.DIAMOND_BARDING, 1, 1), 1);
+        chestContent.addItem(new RandomAmountItem(Material.DIAMOND, 1, 3), 3);
+        chestContent.addItem(new RandomAmountItem(Material.IRON_INGOT, 1, 5), 10);
+        chestContent.addItem(new RandomAmountItem(Material.GOLD_INGOT, 2, 7), 15);
+        chestContent.addItem(new RandomAmountItem(Material.EMERALD, 1, 3), 2);
+        chestContent.addItem(new RandomAmountItem(Material.BONE, 4, 6), 20);
+        chestContent.addItem(new RandomAmountItem(Material.ROTTEN_FLESH, 3, 7), 16);
+        chestContent.addItem(new RandomAmountItem(Material.SADDLE, 1, 1), 3);
+        chestContent.addItem(new RandomAmountItem(Material.IRON_BARDING, 1, 1), 1);
+        chestContent.addItem(new RandomAmountItem(Material.GOLD_BARDING, 1, 1), 1);
+        chestContent.addItem(new RandomAmountItem(Material.DIAMOND_BARDING, 1, 1), 1);
 
         dispenserContent = new RandomItemsContent(random);
-        dispenserContent.addItem(new WeightedItem(Material.ARROW, 2, 7), 30);
+        dispenserContent.addItem(new RandomAmountItem(Material.ARROW, 2, 7), 30);
     }
 
     @Override
