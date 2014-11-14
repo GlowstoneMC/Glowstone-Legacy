@@ -211,8 +211,8 @@ public class Structure {
     protected final void createRandomItemsContainer(Vector pos, RandomItemsContent content, DirectionalContainer container, int maxStacks) {
         final Vector vec = translate(pos);
         if (cuboid.isVectorInside(vec)) {
-            final BlockState state = delegate.getBlockState(location.getWorld(), vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
-            delegate.trackBlockState(state);
+            final BlockState state = location.getWorld().getBlockAt(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ()).getState();
+            delegate.backupBlockState(state.getBlock());
 
             state.setType(container.getItemType());
             state.setData(container);
