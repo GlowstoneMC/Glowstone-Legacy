@@ -19,6 +19,11 @@ public class BiomePopulator extends BlockPopulator {
 
         // the order is important
 
+        addDecorator(new DesertWellDecorator()
+                .setDefaultAmount(0)
+                .setBiomeAmount(2, Biome.OCEAN) // fix for lack of biomes
+                .setBiomeAmount(1, Biome.DESERT, Biome.DESERT_HILLS));
+
         addDecorator(new FlowerDecorator()
                 .setDefaultFlowerWeight(2, FlowerDecorator.Flower.DANDELION)
                 .setDefaultFlowerWeight(1, FlowerDecorator.Flower.POPPY)

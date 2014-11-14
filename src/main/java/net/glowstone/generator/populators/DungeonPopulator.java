@@ -29,8 +29,7 @@ public class DungeonPopulator extends BlockPopulator {
             int z = (source.getZ() << 4) + random.nextInt(16);
             int y = random.nextInt(256);
 
-            StructureGenerator structure = new StructureGenerator();
-            structure.generate(random, new Location(world, x, y, z), GlowStructure.DUNGEON);
+            new StructureGenerator().generate(random, new Location(world, x, y, z), GlowStructure.DUNGEON);
         //}
         }
     }
