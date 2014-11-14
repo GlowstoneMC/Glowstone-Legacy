@@ -22,16 +22,16 @@ public class ItemMonsterEgg extends ItemType {
                 target.getWorld().spawnEntity(target.getLocation().add(0.5, -1.0, 0.5), type);
                 break;
             case NORTH:
-                target.getWorld().spawnEntity(target.getLocation().add(0.5, -1.0, -0.5), type);
+                target.getWorld().spawnEntity(target.getLocation().add(0.5, 0, -0.5), type);
                 break;
             case SOUTH:
-                target.getWorld().spawnEntity(target.getLocation().add(0.5, -1.0, 1.5), type);
+                target.getWorld().spawnEntity(target.getLocation().add(0.5, 0, 1.5), type);
                 break;
             case EAST:
-                target.getWorld().spawnEntity(target.getLocation().add(1.5, -1.0, 0.5), type);
+                target.getWorld().spawnEntity(target.getLocation().add(1.5, 0, 0.5), type);
                 break;
             case WEST:
-                target.getWorld().spawnEntity(target.getLocation().add(-0.5, -1.0, 0.5), type);
+                target.getWorld().spawnEntity(target.getLocation().add(-0.5, 0, 0.5), type);
                 break;
             default:
                 target.getWorld().spawnEntity(target.getLocation().add(0.5, 1.0, 0.5), type);
