@@ -72,7 +72,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     /**
      * The entities that the client knows about.
      */
-    private final Set<GlowEntity> knownEntities = new HashSet<>();
+    private final Map<GlowEntity, Integer> knownEntities = new HashMap<>();
 
     /**
      * The entities that are hidden from the client.
@@ -402,14 +402,15 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
         // update or remove entities
         List<Integer> destroyIds = new LinkedList<>();
-        for (Iterator<GlowEntity> it = knownEntities.iterator(); it.hasNext(); ) {
-            GlowEntity entity = it.next();
+        for (Iterator<Map.Entry<GlowEntity, Integer>> it = knownEntities.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<GlowEntity, Integer> entry = it.next();
+            GlowEntity entity = entry.getKey();
             if (isWithinDistance(entity)) {
                 for (Message msg : entity.createUpdateMessage()) {
                     session.send(msg);
                 }
             } else {
-                destroyIds.add(entity.getEntityId());
+                destroyIds.add(entry.getValue());
                 it.remove();
             }
         }
@@ -420,8 +421,8 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         // add entities
         for (GlowEntity entity : world.getEntityManager()) {
             if (entity != this && isWithinDistance(entity) &&
-                    !knownEntities.contains(entity) && !hiddenEntities.contains(entity.getUniqueId())) {
-                knownEntities.add(entity);
+                    !knownEntities.containsKey(entity) && !hiddenEntities.contains(entity.getUniqueId())) {
+                knownEntities.put(entity, entity.getEntityId());
                 for (Message msg : entity.createSpawnMessage()) {
                     session.send(msg);
                 }
@@ -648,7 +649,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
      * @return If the entity is known to the player's client.
      */
     public boolean canSeeEntity(GlowEntity entity) {
-        return knownEntities.contains(entity);
+        return knownEntities.containsKey(entity);
     }
 
     /**
@@ -1723,8 +1724,9 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         if (hiddenEntities.contains(player.getUniqueId())) return;
 
         hiddenEntities.add(player.getUniqueId());
-        if (knownEntities.remove(player)) {
-            session.send(new DestroyEntitiesMessage(Arrays.asList(player.getEntityId())));
+        Integer entityId = knownEntities.remove(player);
+        if (entityId != null) {
+            session.send(new DestroyEntitiesMessage(Arrays.asList(entityId)));
         }
         session.send(UserListItemMessage.removeOne(player.getUniqueId()));
     }
