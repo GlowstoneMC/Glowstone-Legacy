@@ -405,7 +405,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         for (Iterator<Map.Entry<GlowEntity, Integer>> it = knownEntities.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<GlowEntity, Integer> entry = it.next();
             GlowEntity entity = entry.getKey();
-            if (isWithinDistance(entity)) {
+            if (isWithinDistance(entity) && entity.getEntityId() == entry.getValue()) {
                 for (Message msg : entity.createUpdateMessage()) {
                     session.send(msg);
                 }
