@@ -130,6 +130,8 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
             airTicks = maximumAir;
         }
 
+        takeCactusDamage();
+
         // potion effects
         List<PotionEffect> effects = new ArrayList<>(potionEffects.values());
         for (PotionEffect effect : effects) {
@@ -395,6 +397,8 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         // invincibility timer
         if (noDamageTicks > 0 || health <= 0) {
             return;
+        } else {
+            noDamageTicks = maxNoDamageTicks;
         }
 
         // fire resistance
@@ -468,6 +472,35 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     @Override
     public void setLastDamage(double damage) {
         lastDamage = damage;
+    }
+
+
+    public boolean canTakeCactusDamage() {
+        return true;
+    }
+
+    public void takeCactusDamage() {
+
+        // Gets the block the are standing on and the location of it
+        Material blockBelow = getLocation().getBlock().getType();
+        Location blockLocationX = getLocation().getBlock().getLocation();
+        Location blockLocationNegX = getLocation().getBlock().getLocation();
+        Location blockLocationZ = getLocation().getBlock().getLocation();
+        Location blockLocationNegZ = getLocation().getBlock().getLocation();
+
+        // sets the location to its respective cord
+        blockLocationX.setX(blockLocationX.getX() + 1);
+        blockLocationNegX.setX(blockLocationNegX.getX() - 1);
+        blockLocationZ.setZ(blockLocationZ.getZ() + 1);
+        blockLocationNegZ.setZ(blockLocationNegZ.getZ() - 1);
+
+        //Checks if the living entity is near a cactus or is on top of a cactus and hurts them
+        if ((blockBelow == Material.CACTUS || blockLocationX.getBlock().getType() == Material.CACTUS ||
+                blockLocationNegX.getBlock().getType() == Material.CACTUS || blockLocationZ.getBlock().getType() == Material.CACTUS ||
+                blockLocationNegZ.getBlock().getType() == Material.CACTUS) && canTakeCactusDamage()) {
+            damage(1, EntityDamageEvent.DamageCause.CONTACT);
+        }
+
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -614,4 +647,5 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     public boolean setLeashHolder(Entity holder) {
         return false;
     }
+
 }

@@ -381,4 +381,9 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
             ((GlowInventory) inventory).removeViewer(this);
         }
     }
+
+    @Override
+    public boolean canTakeCactusDamage() {
+        return gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE;
+    }
 }
