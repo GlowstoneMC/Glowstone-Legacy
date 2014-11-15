@@ -23,7 +23,8 @@ public class WitchHut extends Structure {
         int sumY = 0, blockCount = 0;
         for (int x = 0; x < getSize().getBlockX(); x++) {
             for (int z = 0; z < getSize().getBlockZ(); z++) {
-                sumY += Math.max(64, location.getWorld().getHighestBlockYAt(cuboid.getMin().getBlockX() + x, cuboid.getMin().getBlockZ() + z));
+                sumY += Math.max(location.getWorld().getSeaLevel(),
+                        location.getWorld().getHighestBlockYAt(cuboid.getMin().getBlockX() + x, cuboid.getMin().getBlockZ() + z) + 1);
                 blockCount++;
             }
         }
