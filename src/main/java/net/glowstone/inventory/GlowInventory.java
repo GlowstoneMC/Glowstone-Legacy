@@ -235,7 +235,7 @@ public class GlowInventory implements Inventory {
                     ItemStack curItem = getItem(available);
                     int fill = item.getAmount();
                     if (curItem == null) {
-                        ItemStack temp = item.clone();
+                        ItemStack temp = new ItemStack(item);
                         fill = item.getAmount() >= getMaxStackSize() ? getMaxStackSize() : item.getAmount();
                         temp.setAmount(fill);
                         setItem(available, temp);
