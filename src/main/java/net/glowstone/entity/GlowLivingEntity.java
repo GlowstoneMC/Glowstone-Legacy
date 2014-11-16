@@ -647,5 +647,4 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     public boolean setLeashHolder(Entity holder) {
         return false;
     }
-
 }
