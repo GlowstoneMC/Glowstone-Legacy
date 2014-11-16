@@ -483,16 +483,16 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
 
         // Gets the block the are standing on and the location of it
         Material blockBelow = getLocation().getBlock().getType();
-        Location blockLocationX = getLocation().getBlock().getLocation();
-        Location blockLocationNegX = getLocation().getBlock().getLocation();
-        Location blockLocationZ = getLocation().getBlock().getLocation();
-        Location blockLocationNegZ = getLocation().getBlock().getLocation();
+        Location blockLocationX = getLocation();
+        Location blockLocationNegX = getLocation();
+        Location blockLocationZ = getLocation();
+        Location blockLocationNegZ = getLocation();
 
         // sets the location to its respective cord
-        blockLocationX.setX(blockLocationX.getX() + 1);
-        blockLocationNegX.setX(blockLocationNegX.getX() - 1);
-        blockLocationZ.setZ(blockLocationZ.getZ() + 1);
-        blockLocationNegZ.setZ(blockLocationNegZ.getZ() - 1);
+        blockLocationX.add(1, 0, 0);
+        blockLocationNegX.subtract(1, 0, 0);
+        blockLocationZ.add(0, 0, 1);
+        blockLocationNegZ.subtract(0, 0, 1);
 
         //Checks if the living entity is near a cactus or is on top of a cactus and hurts them
         if ((blockBelow == Material.CACTUS || blockLocationX.getBlock().getType() == Material.CACTUS ||
