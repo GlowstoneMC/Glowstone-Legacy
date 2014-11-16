@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -476,24 +477,16 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
 
     public void takeCactusDamage() {
 
-        // Gets the block the are standing on and the location of it
-        Material blockBelow = getLocation().getBlock().getType();
-        Location blockLocationX = getLocation();
-        Location blockLocationNegX = getLocation();
-        Location blockLocationZ = getLocation();
-        Location blockLocationNegZ = getLocation();
-
-        // sets the location to its respective cord
-        blockLocationX.add(1, 0, 0);
-        blockLocationNegX.subtract(1, 0, 0);
-        blockLocationZ.add(0, 0, 1);
-        blockLocationNegZ.subtract(0, 0, 1);
+        BlockFace[] sides = {BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.NORTH, BlockFace.UP, BlockFace.SELF};
 
         //Checks if the living entity is near a cactus or is on top of a cactus and hurts them
-        if ((blockBelow == Material.CACTUS || blockLocationX.getBlock().getType() == Material.CACTUS ||
-                blockLocationNegX.getBlock().getType() == Material.CACTUS || blockLocationZ.getBlock().getType() == Material.CACTUS ||
-                blockLocationNegZ.getBlock().getType() == Material.CACTUS) && canTakeDamage()) {
-            damage(1, EntityDamageEvent.DamageCause.CONTACT);
+        for (BlockFace face : sides) {
+            if (getLocation().getBlock().getRelative(face).getType() == Material.CACTUS && canTakeDamage()) {
+
+                damage(1, EntityDamageEvent.DamageCause.CONTACT);
+
+            }
+
         }
 
     }
