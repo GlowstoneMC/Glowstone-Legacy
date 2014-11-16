@@ -273,7 +273,7 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
     // Health
 
     @Override
-    protected boolean canDrown() {
+    protected boolean canTakeDamage() {
         return gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE;
     }
 
@@ -380,10 +380,5 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
         if (inventory instanceof GlowInventory) {
             ((GlowInventory) inventory).removeViewer(this);
         }
-    }
-
-    @Override
-    public boolean canTakeCactusDamage() {
-        return gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE;
     }
 }

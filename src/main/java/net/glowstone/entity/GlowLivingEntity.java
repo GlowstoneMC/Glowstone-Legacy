@@ -119,7 +119,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         Material mat = getEyeLocation().getBlock().getType();
         // breathing
         if (mat == Material.WATER || mat == Material.STATIONARY_WATER) {
-            if (canDrown()) {
+            if (canTakeDamage()) {
                 --airTicks;
                 if (airTicks <= -20) {
                     airTicks = 0;
@@ -282,7 +282,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
      * Get whether this entity should take drowning damage.
      * @return whether this entity can drown
      */
-    protected boolean canDrown() {
+    protected boolean canTakeDamage() {
         return true;
     }
 
@@ -474,11 +474,6 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         lastDamage = damage;
     }
 
-
-    public boolean canTakeCactusDamage() {
-        return true;
-    }
-
     public void takeCactusDamage() {
 
         // Gets the block the are standing on and the location of it
@@ -497,7 +492,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         //Checks if the living entity is near a cactus or is on top of a cactus and hurts them
         if ((blockBelow == Material.CACTUS || blockLocationX.getBlock().getType() == Material.CACTUS ||
                 blockLocationNegX.getBlock().getType() == Material.CACTUS || blockLocationZ.getBlock().getType() == Material.CACTUS ||
-                blockLocationNegZ.getBlock().getType() == Material.CACTUS) && canTakeCactusDamage()) {
+                blockLocationNegZ.getBlock().getType() == Material.CACTUS) && canTakeDamage()) {
             damage(1, EntityDamageEvent.DamageCause.CONTACT);
         }
 
