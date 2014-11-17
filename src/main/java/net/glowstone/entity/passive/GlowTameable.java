@@ -14,9 +14,7 @@ import java.util.UUID;
 public abstract class GlowTameable extends GlowAnimal implements Tameable {
 
     private AnimalTamer owner;
-
     private UUID ownerUUId;
-
     private boolean tamed;
 
     public GlowTameable(Location location, EntityType type) {

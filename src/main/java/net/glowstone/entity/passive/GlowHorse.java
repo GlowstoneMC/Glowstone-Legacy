@@ -19,27 +19,16 @@ import java.util.UUID;
 public class GlowHorse extends GlowTameable implements Horse {
 
     private Variant variant;
-
     private Color horseColor;
-
     private Style horseStyle;
-
     private boolean hasChest;
-
     private int domestication;
-
     private int maxDomestication;
-
     private double jumpStrength;
-
     private boolean eatingHay;
-
     private boolean hasReproduced;
-
     private int temper;
-
     private UUID ownerUUID;
-
     private HorseInventory inventory = new GlowHorseInventory(this);
 
     public GlowHorse(Location location) {

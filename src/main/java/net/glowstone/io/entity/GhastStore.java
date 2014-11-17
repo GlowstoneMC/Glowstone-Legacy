@@ -19,7 +19,6 @@ public class GhastStore extends LivingEntityStore<GlowGhast> {
     public void load(GlowGhast entity, CompoundTag compound) {
         super.load(entity, compound);
         entity.setExplosionPower(compound.getInt("ExplosionPower"));
-
     }
 
     @Override

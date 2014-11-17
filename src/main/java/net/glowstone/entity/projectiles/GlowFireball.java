@@ -10,7 +10,6 @@ import org.bukkit.util.Vector;
 public abstract class GlowFireball extends GlowProjectile implements Fireball {
 
     private boolean isIncendiary;
-
     private float yield;
 
     public GlowFireball(Location location, EntityType type, ProjectileSource shooter) {

@@ -15,7 +15,6 @@ class IronGolemStore extends CreatureStore<GlowIronGolem> {
     public void load(GlowIronGolem entity, CompoundTag compound) {
         super.load(entity, compound);
         entity.setPlayerCreated(compound.getBool(PLAYER_CREATED_TAG));
-
     }
 
     public void save(GlowIronGolem entity, CompoundTag tag) {

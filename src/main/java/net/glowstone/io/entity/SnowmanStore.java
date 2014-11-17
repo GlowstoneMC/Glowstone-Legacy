@@ -12,7 +12,6 @@ class SnowmanStore extends CreatureStore<GlowSnowman> {
 
     public void load(GlowSnowman entity, CompoundTag compound) {
         super.load(entity, compound);
-
     }
 
     public void save(GlowSnowman entity, CompoundTag tag) {

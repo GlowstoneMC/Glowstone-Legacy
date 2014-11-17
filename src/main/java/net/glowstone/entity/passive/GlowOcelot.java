@@ -14,7 +14,6 @@ import java.util.List;
 public class GlowOcelot extends GlowTameable implements Ocelot {
 
     private boolean isSitting = false;
-
     private Type ocelotType = Type.WILD_OCELOT;
 
     public GlowOcelot(Location location) {
