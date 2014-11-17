@@ -119,7 +119,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         Material mat = getEyeLocation().getBlock().getType();
         // breathing
         if (mat == Material.WATER || mat == Material.STATIONARY_WATER) {
-            if (canDrown()) {
+            if (canTakeDamage()) {
                 --airTicks;
                 if (airTicks <= -20) {
                     airTicks = 0;
@@ -129,6 +129,11 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         } else {
             airTicks = maximumAir;
         }
+
+        if (isTouchingMaterial(Material.CACTUS) && canTakeDamage())
+            damage(1, EntityDamageEvent.DamageCause.CONTACT);
+
+
 
         // potion effects
         List<PotionEffect> effects = new ArrayList<>(potionEffects.values());
@@ -146,6 +151,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
             }
         }
     }
+
 
     @Override
     public void reset() {
@@ -277,10 +283,10 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     }
 
     /**
-     * Get whether this entity should take drowning damage.
-     * @return whether this entity can drown
+     * Get whether this entity can take damage.
+     * @return whether this entity can take damage
      */
-    protected boolean canDrown() {
+    protected boolean canTakeDamage() {
         return true;
     }
 
@@ -395,6 +401,8 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         // invincibility timer
         if (noDamageTicks > 0 || health <= 0) {
             return;
+        } else {
+            noDamageTicks = maxNoDamageTicks;
         }
 
         // fire resistance
