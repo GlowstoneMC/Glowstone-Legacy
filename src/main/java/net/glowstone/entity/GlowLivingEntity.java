@@ -131,7 +131,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
             airTicks = maximumAir;
         }
 
-        takeCactusDamage();
+        takeDamageWhenHugged(Material.CACTUS);
 
         // potion effects
         List<PotionEffect> effects = new ArrayList<>(potionEffects.values());
@@ -475,17 +475,17 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         lastDamage = damage;
     }
 
-    public void takeCactusDamage() {
+    public void takeDamageWhenHugged(Material material) {
 
         BlockFace[] sides = {BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.NORTH, BlockFace.UP, BlockFace.SELF,
                 BlockFace.NORTH_EAST, BlockFace.NORTH_WEST,  BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST};
 
-
         //Checks if the living entity is near a cactus or is on top of a cactus and hurts them
         for (BlockFace face : sides) {
-            if (getLocation().getBlock().getRelative(face).getType() == Material.CACTUS && canTakeDamage()) {
+            if (getLocation().getBlock().getRelative(face).getType() == material && canTakeDamage()) {
 
                 damage(1, EntityDamageEvent.DamageCause.CONTACT);
+
 
             }
 
