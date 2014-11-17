@@ -303,7 +303,7 @@ public abstract class GlowEntity implements Entity {
     public boolean isTouchingMaterial(Material material) {
 
         /*todo: This isn't the most accurate way to do it. Once entity support is added I can make it more precise
-        use the bounding box
+        use a bounding box
         */
         BlockFace[] sides = {BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.NORTH, BlockFace.UP, BlockFace.SELF,
                 BlockFace.NORTH_EAST, BlockFace.NORTH_WEST,  BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST};
