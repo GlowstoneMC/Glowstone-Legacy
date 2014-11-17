@@ -10,7 +10,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -474,19 +473,6 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     @Override
     public void setLastDamage(double damage) {
         lastDamage = damage;
-    }
-
-    public boolean isTouchingMaterial(Material material) {
-
-        BlockFace[] sides = {BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.NORTH, BlockFace.UP, BlockFace.SELF,
-                BlockFace.NORTH_EAST, BlockFace.NORTH_WEST,  BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST};
-
-        //Checks if the living entity is near a cactus or is on top of a cactus and hurts them
-        for (BlockFace face : sides) {
-            if (getLocation().getBlock().getRelative(face).getType() == material)
-            return true;
-        }
-        return false;
     }
 
     ////////////////////////////////////////////////////////////////////////////
