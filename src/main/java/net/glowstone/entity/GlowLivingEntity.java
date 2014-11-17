@@ -477,7 +477,9 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
 
     public void takeCactusDamage() {
 
-        BlockFace[] sides = {BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.NORTH, BlockFace.UP, BlockFace.SELF};
+        BlockFace[] sides = {BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.NORTH, BlockFace.UP, BlockFace.SELF,
+                BlockFace.NORTH_EAST, BlockFace.NORTH_WEST,  BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST};
+
 
         //Checks if the living entity is near a cactus or is on top of a cactus and hurts them
         for (BlockFace face : sides) {
