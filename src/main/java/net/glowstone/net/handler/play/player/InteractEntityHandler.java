@@ -66,10 +66,10 @@ public final class InteractEntityHandler implements MessageHandler<GlowSession, 
                     }
                 }
             }
-        } else if (message.getAction() == InteractEntityMessage.Action.ATTACK_AT.ordinal()) {
-            // TODO: Interaction with entity (right click)
+        } else if (message.getAction() == InteractEntityMessage.Action.INTERACT_AT.ordinal()) {
+            // TODO: Interaction with entity at a specified location (X, Y, and Z are present in the message)
         } else if (message.getAction() == InteractEntityMessage.Action.INTERACT.ordinal()) {
-            // TODO: Handle something (unknown cause for this action)
+            // TODO: Interaction with something (X, Y, and Z are NOT present in the message)
         } else {
             GlowServer.logger.info("Player " + player + " sent unknown interact action: " + message.getAction());
         }
