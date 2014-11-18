@@ -69,17 +69,27 @@ public final class TextMessage {
      * @param json The encoded representation.
      * @return The decoded TextMessage.
      */
-    public static TextMessage decode(String json) {
+    public static TextMessage decode(String json) throws ParseException {
         JSONParser parser = new JSONParser();
+        Object o = parser.parse(json);
+        if (o instanceof JSONObject) {
+            return new TextMessage((JSONObject) o);
+        } else {
+            return new TextMessage(o.toString());
+        }
+    }
+
+    /**
+     * Decode a chat message from its textual JSON representation if possible.
+     * @param json The encoded representation.
+     * @param fallback The string to return on parse error.
+     * @return The decoded TextMessage.
+     */
+    public static TextMessage decode(String json, String fallback) {
         try {
-            Object o = parser.parse(json);
-            if (o instanceof JSONObject) {
-                return new TextMessage((JSONObject) o);
-            } else {
-                return new TextMessage(o.toString());
-            }
+            return decode(json);
         } catch (ParseException e) {
-            return new TextMessage("parse error");
+            return new TextMessage(fallback);
         }
     }
 
