@@ -15,9 +15,7 @@ import java.util.List;
 public class GlowWolf extends GlowTameable implements Wolf {
 
     private boolean angry = false;
-
     private boolean sitting = false;
-
     private DyeColor collarColor = DyeColor.RED;
 
     public GlowWolf(Location location) {

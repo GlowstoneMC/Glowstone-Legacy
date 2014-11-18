@@ -13,9 +13,7 @@ import java.util.List;
 public class GlowProjectile extends GlowEntity implements Projectile {
 
     private final EntityType type;
-
     private boolean doesBounce = true;
-
     private ProjectileSource shooter;
 
     public GlowProjectile(Location location, EntityType type) {

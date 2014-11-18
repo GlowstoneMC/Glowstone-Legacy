@@ -12,7 +12,6 @@ class SquidStore extends LivingEntityStore<GlowSquid> {
 
     public void load(GlowSquid entity, CompoundTag compound) {
         super.load(entity, compound);
-
     }
 
     public void save(GlowSquid entity, CompoundTag tag) {

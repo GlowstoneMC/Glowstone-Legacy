@@ -8,11 +8,8 @@ import org.bukkit.entity.Zombie;
 public class GlowZombie extends GlowMonster implements Zombie {
 
     private boolean isBaby = false;
-
     private boolean isVillager = false;
-
     private boolean canBreakDoors = true;
-
     private int conversionTime;
 
     public GlowZombie(Location location) {

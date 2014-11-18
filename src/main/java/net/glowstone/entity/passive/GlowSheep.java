@@ -15,7 +15,6 @@ import java.util.List;
 public class GlowSheep extends GlowAnimal implements Sheep {
 
     private boolean sheared = false;
-
     private DyeColor color = DyeColor.WHITE;
 
     public GlowSheep(Location location) {

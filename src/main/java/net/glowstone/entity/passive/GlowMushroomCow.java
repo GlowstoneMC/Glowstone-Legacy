@@ -4,7 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.MushroomCow;
 
-
 public class GlowMushroomCow extends GlowCow implements MushroomCow {
 
     public GlowMushroomCow(Location location) {

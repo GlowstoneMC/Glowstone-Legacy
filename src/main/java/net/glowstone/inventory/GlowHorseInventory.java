@@ -11,7 +11,6 @@ import org.bukkit.inventory.ItemStack;
 public class GlowHorseInventory extends GlowInventory implements HorseInventory {
 
     private ItemStack saddle;
-
     private ItemStack armor;
 
     public GlowHorseInventory(Horse owner) {

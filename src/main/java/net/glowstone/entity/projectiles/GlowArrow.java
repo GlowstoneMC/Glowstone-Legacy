@@ -9,7 +9,6 @@ import org.bukkit.projectiles.ProjectileSource;
 public class GlowArrow extends GlowProjectile implements Arrow {
 
     private boolean critical;
-
     private int knockbackStrength;
 
     public GlowArrow(Location location) {
