@@ -74,6 +74,8 @@ public final class TextMessage {
         Object o = parser.parse(json);
         if (o instanceof JSONObject) {
             return new TextMessage((JSONObject) o);
+        } else if (o == null) {
+            return new TextMessage("");
         } else {
             return new TextMessage(o.toString());
         }
