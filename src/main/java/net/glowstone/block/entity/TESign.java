@@ -7,7 +7,6 @@ import net.glowstone.entity.GlowPlayer;
 import net.glowstone.util.nbt.CompoundTag;
 import net.glowstone.util.TextMessage;
 import org.bukkit.Material;
-import org.json.simple.parser.ParseException;
 
 import java.util.Arrays;
 
@@ -38,12 +37,8 @@ public class TESign extends TileEntity {
             String key = "Text" + (i + 1);
             if (tag.isString(key)) {
                 String value = tag.getString(key);
-                try {
-                    TextMessage message = TextMessage.decode(value);
-                    lines[i] = message.asPlaintext();
-                } catch (ParseException e) {
-                    lines[i] = value;
-                }
+                TextMessage message = TextMessage.decode(value, value);
+                lines[i] = message.asPlaintext();
             }
         }
     }
