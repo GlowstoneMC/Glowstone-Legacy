@@ -20,10 +20,9 @@ public class BlockDoor extends BlockType {
 
     /**
      * Removes the adjacent door block to the door
-     * 
-     * @Override
      */
-    public void blockDestroy(GlowPlayer player, GlowBlock block, BlockFace face, Vector blockLoc) {
+    @Override
+    public void blockDestroy(GlowPlayer player, GlowBlock block, BlockFace face) {
         GlowBlockState state = block.getState();
         MaterialData data = state.getData();
 
