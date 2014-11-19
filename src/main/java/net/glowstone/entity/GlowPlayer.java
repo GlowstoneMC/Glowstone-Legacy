@@ -629,7 +629,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         // fire event and perform spawn
         PlayerRespawnEvent event = new PlayerRespawnEvent(this, dest, spawnAtBed);
         EventFactory.callEvent(event);
-        if (event.getRespawnLocation().getWorld() == location.getWorld() && knownEntities.size() > 0) {
+        if (event.getRespawnLocation().getWorld().equals(getWorld()) && knownEntities.size() > 0) {
             // we need to manually reset all known entities if the player respawns in the same world
             List<Integer> entityIds = new ArrayList<>(knownEntities.size());
             for (GlowEntity e : knownEntities) {
