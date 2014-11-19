@@ -5,6 +5,7 @@ import io.netty.channel.ChannelFuture;
 import net.glowstone.command.ColorCommand;
 import net.glowstone.command.TellrawCommand;
 import net.glowstone.constants.GlowPotionEffect;
+import net.glowstone.entity.EntityIdManager;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.inventory.CraftingManager;
 import net.glowstone.inventory.GlowInventory;
@@ -271,6 +272,11 @@ public final class GlowServer implements Server {
      * The BanList for IP addresses.
      */
     private final GlowBanList ipBans;
+
+    /**
+     * The EntityIdManager for this server.
+     */
+    private final EntityIdManager entityIdManager = new EntityIdManager();
 
     /**
      * The world this server is managing.
@@ -694,6 +700,14 @@ public final class GlowServer implements Server {
      */
     public SessionRegistry getSessionRegistry() {
         return sessions;
+    }
+
+    /**
+     * Gets the entity id manager.
+     * @return The {@link EntityIdManager}.
+     */
+    public EntityIdManager getEntityIdManager() {
+        return entityIdManager;
     }
 
     /**

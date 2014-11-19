@@ -141,7 +141,8 @@ public abstract class GlowEntity implements Entity {
         this.location = location.clone();
         this.world = (GlowWorld) location.getWorld();
         this.server = world.getServer();
-        world.getEntityManager().allocate(this);
+        server.getEntityIdManager().allocate(this);
+        world.getEntityManager().register(this);
         previousLocation = location.clone();
     }
 
@@ -246,9 +247,9 @@ public abstract class GlowEntity implements Entity {
     @Override
     public boolean teleport(Location location) {
         if (location.getWorld() != world) {
-            world.getEntityManager().deallocate(this);
+            world.getEntityManager().unregister(this);
             world = (GlowWorld) location.getWorld();
-            world.getEntityManager().allocate(this);
+            world.getEntityManager().register(this);
         }
         setRawLocation(location);
         teleported = true;
@@ -576,7 +577,8 @@ public abstract class GlowEntity implements Entity {
     @Override
     public void remove() {
         active = false;
-        world.getEntityManager().deallocate(this);
+        world.getEntityManager().unregister(this);
+        server.getEntityIdManager().deallocate(this);
     }
 
     @Override
