@@ -258,7 +258,7 @@ public final class GlowBufUtils {
      * @throws IOException on read failure.
      */
     public static TextMessage readChat(ByteBuf buf) throws IOException {
-        return TextMessage.decode(ByteBufUtils.readUTF8(buf));
+        return TextMessage.decode(ByteBufUtils.readUTF8(buf), "parse error");
     }
 
     /**

@@ -5,6 +5,7 @@ import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.state.GlowSign;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.util.nbt.CompoundTag;
+import net.glowstone.util.TextMessage;
 import org.bukkit.Material;
 
 import java.util.Arrays;
@@ -35,7 +36,9 @@ public class TESign extends TileEntity {
         for (int i = 0; i < lines.length; ++i) {
             String key = "Text" + (i + 1);
             if (tag.isString(key)) {
-                lines[i] = tag.getString(key);
+                String value = tag.getString(key);
+                TextMessage message = TextMessage.decode(value, value);
+                lines[i] = message.asPlaintext();
             }
         }
     }
