@@ -12,6 +12,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
@@ -273,8 +274,8 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
     // Health
 
     @Override
-    protected boolean canTakeDamage() {
-        return gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE;
+    protected boolean canTakeDamage(EntityDamageEvent.DamageCause damageCause) {
+        return gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE && super.canTakeDamage(damageCause);
     }
 
     ////////////////////////////////////////////////////////////////////////////

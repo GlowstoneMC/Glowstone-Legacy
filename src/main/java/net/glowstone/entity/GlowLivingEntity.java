@@ -119,7 +119,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         Material mat = getEyeLocation().getBlock().getType();
         // breathing
         if (mat == Material.WATER || mat == Material.STATIONARY_WATER) {
-            if (canTakeDamage()) {
+            if (canTakeDamage(EntityDamageEvent.DamageCause.DROWNING)) {
                 --airTicks;
                 if (airTicks <= -20) {
                     airTicks = 0;
@@ -130,7 +130,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
             airTicks = maximumAir;
         }
 
-        if (isTouchingMaterial(Material.CACTUS) && canTakeDamage())
+        if (isTouchingMaterial(Material.CACTUS) && canTakeDamage(EntityDamageEvent.DamageCause.CONTACT))
             damage(1, EntityDamageEvent.DamageCause.CONTACT);
 
         // potion effects
@@ -283,7 +283,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
      * Get whether this entity should take damage.
      * @return whether this entity can take damage.
      */
-    protected boolean canTakeDamage() {
+    protected boolean canTakeDamage(EntityDamageEvent.DamageCause damageCause) {
         return true;
     }
 
