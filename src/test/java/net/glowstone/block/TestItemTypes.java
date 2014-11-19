@@ -58,7 +58,7 @@ public class TestItemTypes {
         assertEquals("ItemType returned wrong material", material, type.getMaterial());
 
         // check that max stack size matches
-        assertEquals("Maximum stack size was incorrect", material.getMaxStackSize(), type.getMaxStackSize());
+        assertEquals("Maximum stack size was incorrect", (long) material.getMaxStackSize(), (long) type.getMaxStackSize());
     }
 
 }

@@ -3,6 +3,7 @@ package net.glowstone.block.blocktype;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.inventory.GlowAnvilInventory;
+import net.glowstone.inventory.MaterialMatcher;
 import net.glowstone.inventory.ToolType;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;

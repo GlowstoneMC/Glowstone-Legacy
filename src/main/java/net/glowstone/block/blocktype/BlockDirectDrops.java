@@ -14,13 +14,11 @@ public class BlockDirectDrops extends BlockNeedsTool {
     private final short data;
     private final int amount;
 
-    private final MaterialMatcher neededTool;
-
     public BlockDirectDrops(Material dropType, int data, int amount, MaterialMatcher neededTool) {
+        super(neededTool);
         this.dropType = dropType;
         this.amount = amount;
         this.data = (short) data;
-        this.neededTool = neededTool;
     }
 
     public BlockDirectDrops(MaterialMatcher neededTool) {
@@ -46,11 +44,6 @@ public class BlockDirectDrops extends BlockNeedsTool {
     @Override
     public Collection<ItemStack> getMinedDrops(GlowBlock block, ItemStack tool) {
         return Collections.unmodifiableList(Arrays.asList(getDrops(block)));
-    }
-
-    @Override
-    protected MaterialMatcher getNeededMiningTool(GlowBlock block) {
-        return neededTool;
     }
 
     private ItemStack getDrops(GlowBlock block) {

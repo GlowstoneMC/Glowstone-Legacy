@@ -15,13 +15,13 @@ import java.util.Collection;
 public class BlockSnow extends BlockNeedsAttached {
 
     @Override
-    public boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack holding) {
+    public Boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack holding) {
         // can absorb snow layers if non-full, or all blocks if single layer
         return (holding.getType() == Material.SNOW && block.getData() < 7) || block.getData() == 0;
     }
 
     @Override
-    public boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
+    public Boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
         // can always be overridden by more snow or any other block
         return true;
     }

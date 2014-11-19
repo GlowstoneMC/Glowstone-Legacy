@@ -16,12 +16,7 @@ import org.bukkit.util.BlockIterator;
 
 import java.util.Iterator;
 
-public class ItemBucket extends ItemType {
-
-    public ItemBucket() {
-        setMaxStackSize(16);
-    }
-
+public class ItemBucket extends DefaultItemType {
     @Override
     public void rightClickAir(GlowPlayer player, ItemStack holding) {
         Iterator<Block> itr = new BlockIterator(player, 5);

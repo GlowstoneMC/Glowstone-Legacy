@@ -1,38 +1,40 @@
 package net.glowstone.block.blocktype;
 
+import net.glowstone.block.GlowBlockState;
+import net.glowstone.entity.GlowPlayer;
 import net.glowstone.block.GlowBlock;
 import org.bukkit.block.BlockFace;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Attachable;
+import org.bukkit.material.MaterialData;
+import org.bukkit.util.Vector;
 import org.bukkit.block.BlockState;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.SimpleAttachableMaterialData;
 
 public class BlockAttachable extends BlockNeedsAttached {
+    private final boolean inverted;
 
-    public void setAttachedFace(BlockState state, BlockFace attachedFace) {
-        byte data = state.getRawData();
-        switch (attachedFace) {
-            case UP:
-                data |= 0;
-                break;
-            case WEST:
-                data |= 1;
-                break;
-            case EAST:
-                data |= 2;
-                break;
-            case NORTH:
-                data |= 3;
-                break;
-            case SOUTH:
-                data |= 4;
-                break;
-            case DOWN:
-                data |= 5;
-                break;
-        }
-        state.setRawData(data);
+    public BlockAttachable() {
+        this(false);
     }
 
+    public BlockAttachable(boolean inverted) {
+        this.inverted = inverted;
+    }
+
+    @Override
+    public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {
+        MaterialData data = state.getData();
+
+        if (!(data instanceof Attachable)) {
+            warnMaterialData(Attachable.class, data);
+            return;
+        }
+
+        Attachable attachable = (Attachable) data;
+        attachable.setFacingDirection(inverted ? face.getOppositeFace() : face);
+    }
     @Override
     protected BlockFace getAttachedFace(GlowBlock me) {
         MaterialData data = me.getState().getData();

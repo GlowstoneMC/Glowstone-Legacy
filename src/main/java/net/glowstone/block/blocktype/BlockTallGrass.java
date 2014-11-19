@@ -22,12 +22,12 @@ public class BlockTallGrass extends BlockNeedsAttached {
     }
 
     @Override
-    public boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack holding) {
+    public Boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack holding) {
         return true;
     }
 
     @Override
-    public boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
+    public Boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
         return true;
     }
 }

@@ -25,7 +25,11 @@ public enum ToolType implements MaterialMatcher {
     IRON_SWORD(Material.IRON_SWORD, DIAMOND_SWORD),
     STONE_SWORD(Material.STONE_SWORD, IRON_SWORD),
     GOLD_SWORD(Material.GOLD_SWORD, STONE_SWORD),
-    SWORD(Material.WOOD_SWORD, GOLD_SWORD);
+    SWORD(Material.WOOD_SWORD, GOLD_SWORD),
+
+    // Other
+    SHEARS(Material.SHEARS, null),
+    SHEARS_SWORDS(Material.SHEARS, SWORD);
 
     private final Material bukkitMaterial;
     private final ToolType better;

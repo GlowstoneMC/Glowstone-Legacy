@@ -7,8 +7,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-public abstract class BlockLiquid extends BlockType {
-
+public abstract class BlockLiquid extends AbstractBlockType {
     private final Material bucketType;
 
     protected BlockLiquid(Material bucketType) {
@@ -43,5 +42,4 @@ public abstract class BlockLiquid extends BlockType {
         state.setType(getMaterial());
         state.setRawData((byte) 0);
     }
-
 }

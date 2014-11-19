@@ -23,11 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class BlockBanner extends BlockType {
-
-    public BlockBanner() {
-        setDrops(new ItemStack(Material.BANNER));
-    }
+public class BlockBanner extends DefaultBlockType {
 
     @Override
     public Collection<ItemStack> getDrops(GlowBlock block, ItemStack tool) {

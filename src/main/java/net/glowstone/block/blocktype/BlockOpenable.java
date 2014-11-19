@@ -12,10 +12,10 @@ import org.bukkit.util.Vector;
  * Represents blocks that can be opened through a right-click. A block can be
  * opened if its {@link MaterialData} implements {@link Openable}.
  */
-public class BlockOpenable extends BlockType {
+public class BlockOpenable extends AbstractBlockType {
 
     @Override
-    public boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
+    public Boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
         GlowBlockState blockState = block.getState();
         MaterialData materialData = blockState.getData();
         if (materialData instanceof Openable) {

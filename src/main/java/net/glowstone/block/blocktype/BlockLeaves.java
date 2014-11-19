@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-public class BlockLeaves extends BlockType {
+public class BlockLeaves extends DefaultBlockType {
     private final Random random = new Random();
 
     @Override

@@ -3,16 +3,17 @@ package net.glowstone.block.blocktype;
 import net.glowstone.block.GlowBlockState;
 import org.bukkit.Material;
 
-public class BlockLava extends BlockLiquid {
+public class BlockLava extends DefaultBlockType {
 
     public BlockLava() {
-        super(Material.LAVA_BUCKET);
+        super(
+                new BlockLiquid(Material.LAVA_BUCKET) {
+                    @Override
+                    public boolean isCollectible(GlowBlockState target) {
+                        return (target.getType() == Material.LAVA || target.getType() == Material.STATIONARY_LAVA) &&
+                                (target.getRawData() == 0 || target.getRawData() == 8); // 8 for backwards compatibility
+                    }
+                }
+        );
     }
-
-    @Override
-    public boolean isCollectible(GlowBlockState target) {
-        return (target.getType() == Material.LAVA || target.getType() == Material.STATIONARY_LAVA) &&
-                (target.getRawData() == 0 || target.getRawData() == 8); // 8 for backwards compatibility
-    }
-
 }

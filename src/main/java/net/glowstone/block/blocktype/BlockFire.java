@@ -12,7 +12,7 @@ import java.util.Collection;
 public class BlockFire extends BlockNeedsAttached {
 
     @Override
-    public boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
+    public Boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
         return true;
     }
 

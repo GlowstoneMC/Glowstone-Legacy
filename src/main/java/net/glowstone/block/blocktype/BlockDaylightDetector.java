@@ -6,10 +6,10 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 
-public class BlockDaylightDetector extends BlockType {
+public class BlockDaylightDetector extends DefaultBlockType {
 
     @Override
-    public boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
+    public Boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
         if (block.getType() == Material.DAYLIGHT_DETECTOR) {
             block.setType(Material.DAYLIGHT_DETECTOR_INVERTED);
         } else {

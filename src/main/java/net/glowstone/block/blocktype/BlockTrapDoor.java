@@ -8,16 +8,9 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.TrapDoor;
 import org.bukkit.util.Vector;
 
-/**
- * Helper for trapdoor blocks.
- */
-public class BlockTrapDoor {
-    private BlockType parent;
+public class BlockTrapDoor extends AbstractBlockType {
 
-    public BlockTrapDoor(BlockType parent) {
-        this.parent = parent;
-    }
-
+    @Override
     public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {
         MaterialData materialData = state.getData();
         if (materialData instanceof TrapDoor) {
@@ -30,7 +23,7 @@ public class BlockTrapDoor {
             }
             state.update(true);
         } else {
-            parent.warnMaterialData(TrapDoor.class, materialData);
+            warnMaterialData(TrapDoor.class, materialData);
         }
     }
 }
