@@ -63,35 +63,35 @@ public class SurfaceGenerator extends GlowChunkGenerator {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 int deep = 0;
-                for (int y = (int) Math.min(baseHeight
-                        + noiseHeight.noise(x + chunkX, z + chunkZ, 0.7, 0.6, true)
-                        * terrainHeight
-                        + noiseJitter.noise(x + chunkX, z + chunkZ, 0.5, 0.5)
-                        * 1.5, WORLD_DEPTH - 1); y > 0; y--) {
-                    double terrainType = noiseType.noise(x + chunkX, y, z + chunkZ, 0.5, 0.5);
-                    Material ground = matTop;
-                    if (Math.abs(terrainType) < random.nextDouble() / 3 && !noDirt) {
-                        ground = matMain;
-                    } else if (deep != 0 || y < waterLevel) {
-                        ground = matMain;
-                    }
 
-                    if (Math.abs(y - waterLevel) < 5 - random.nextInt(2) && deep < 7) {
-                        if (terrainType < random.nextDouble() / 2) {
-                            if (terrainType < random.nextDouble() / 4) {
-                                ground = matShore;
-                            } else {
-                                ground = matShore2;
+                for (int y = 127; y > 0; y--) {
+                    double value = noiseHeight.noise(x + chunkX, y, z + chunkZ, 2, 1.1, true);
+                    if(value > (double) (y - 64) / 32 - 1) {
+                        double terrainType = noiseType.noise(x + chunkX * 16, y, z + chunkZ & 16, 0.5, 0.5);
+                        Material ground = matTop;
+                        if (Math.abs(terrainType) < random.nextDouble() / 3 && !noDirt) {
+                            ground = matMain;
+                        } else if (deep != 0 || y < waterLevel) {
+                            ground = matMain;
+                        }
+
+                        if (Math.abs(y - waterLevel) < 5 - random.nextInt(2) && deep < 7) {
+                            if (terrainType < random.nextDouble() / 2) {
+                                if (terrainType < random.nextDouble() / 4) {
+                                    ground = matShore;
+                                } else {
+                                    ground = matShore2;
+                                }
                             }
                         }
-                    }
 
-                    if (deep > random.nextInt(3) + 6) {
-                        ground = matUnder;
-                    }
+                        if (deep > random.nextInt(3) + 6) {
+                            ground = matUnder;
+                        }
 
-                    set(buf, x, y, z, ground);
-                    deep++;
+                        set(buf, x, y, z, ground);
+                        deep++;
+                    }
                 }
                 set(buf, x, 0, z, Material.BEDROCK);
             }
