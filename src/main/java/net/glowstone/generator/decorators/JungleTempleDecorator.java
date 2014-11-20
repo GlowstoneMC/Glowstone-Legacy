@@ -2,8 +2,8 @@ package net.glowstone.generator.decorators;
 
 import java.util.Random;
 
-import net.glowstone.constants.GlowStructure;
-import net.glowstone.generator.StructureGenerator;
+import net.glowstone.generator.structures.GlowJungleTemple;
+import net.glowstone.util.BlockStateDelegate;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -17,7 +17,12 @@ public class JungleTempleDecorator extends BlockDecorator {
             int x = (source.getX() << 4) + random.nextInt(16);
             int z = (source.getZ() << 4) + random.nextInt(16);
             int y = world.getHighestBlockYAt(x, z);
-            new StructureGenerator().generate(random, new Location(world, x, y, z), GlowStructure.JUNGLE_TEMPLE);
+
+            final GlowJungleTemple temple = new GlowJungleTemple(random, new Location(world, x, y, z));
+            final BlockStateDelegate delegate = new BlockStateDelegate();
+            if (temple.generate(world, random, delegate)) {
+                delegate.updateBlockStates();
+            }
         }
     }
 }
