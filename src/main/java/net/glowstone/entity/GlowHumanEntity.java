@@ -275,7 +275,7 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
 
     @Override
     protected boolean canTakeDamage(EntityDamageEvent.DamageCause damageCause) {
-        return gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE && super.canTakeDamage(damageCause);
+        return (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) && super.canTakeDamage(damageCause);
     }
 
     ////////////////////////////////////////////////////////////////////////////

@@ -66,7 +66,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     /**
      * The default length of the invincibility period.
      */
-    private int maxNoDamageTicks = 20;
+    private int maxNoDamageTicks = 10;
 
     /**
      * A custom overhead name to be shown for non-Players.
