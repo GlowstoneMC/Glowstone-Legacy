@@ -22,7 +22,6 @@ import org.bukkit.util.Vector;
 
 public class GlowDungeon extends GlowStructurePiece {
 
-    private final Map<StructureMaterial, Integer> stones = new HashMap<StructureMaterial, Integer>();
     private static final int HEIGHT = 6;
     private static final int MIN_RADIUS = 3;
     private final int radiusX;
@@ -94,6 +93,7 @@ public class GlowDungeon extends GlowStructurePiece {
             return false;
         }
 
+        final Map<StructureMaterial, Integer> stones = new HashMap<StructureMaterial, Integer>();
         builder.addRandomMaterial(stones, 1, Material.COBBLESTONE, 0);
         builder.addRandomMaterial(stones, 3, Material.MOSSY_COBBLESTONE, 0);
 

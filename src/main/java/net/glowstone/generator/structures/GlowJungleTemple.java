@@ -26,8 +26,49 @@ import org.bukkit.util.Vector;
 
 public class GlowJungleTemple extends GlowTemplePiece {
 
+    private boolean placedTrap1;
+    private boolean placedTrap2;
+    private boolean placedMainChest;
+    private boolean placedHiddenChest;
+
+    public GlowJungleTemple() {
+        super();
+    }
+
     public GlowJungleTemple(Random random, Location location) {
         super(random, location, new Vector(12, 14, 15));
+    }
+
+    public void setHasPlacedTrap1(boolean placedTrap) {
+        this.placedTrap1 = placedTrap;
+    }
+
+    public boolean getHasPlacedTrap1() {
+        return placedTrap1;
+    }
+
+    public void setHasPlacedTrap2(boolean placedTrap) {
+        this.placedTrap2 = placedTrap;
+    }
+
+    public boolean getHasPlacedTrap2() {
+        return placedTrap2;
+    }
+
+    public void setHasPlacedMainChest(boolean placedChest) {
+        this.placedMainChest = placedChest;
+    }
+
+    public boolean getHasPlacedMainChest() {
+        return placedMainChest;
+    }
+
+    public void setHasPlacedHiddenChest(boolean placedChest) {
+        this.placedHiddenChest = placedChest;
+    }
+
+    public boolean getHasPlacedHiddenChest() {
+        return placedHiddenChest;
     }
 
     @Override
@@ -41,7 +82,6 @@ public class GlowJungleTemple extends GlowTemplePiece {
         boundingBox.offset(new Vector(0, -4, 0));
 
         final StructureBuilder builder = new StructureBuilder(world, this, delegate);
-
         final Map<StructureMaterial, Integer> stones = new HashMap<StructureMaterial, Integer>();
         builder.addRandomMaterial(stones, 4, Material.COBBLESTONE, 0);
         builder.addRandomMaterial(stones, 6, Material.MOSSY_COBBLESTONE, 0);
@@ -192,8 +232,12 @@ public class GlowJungleTemple extends GlowTemplePiece {
         final Lever lever = new Lever(Material.LEVER, (byte) 4); // workaround for bukkit, can't set an attached BlockFace
         lever.setFacingDirection(getRelativeFacing(BlockFace.SOUTH));
         builder.fill(new Vector(8, 2, 12), new Vector(10, 2, 12), lever.getItemType(), lever);
-        builder.createRandomItemsContainer(new Vector(3, 2, 1), random, dispenserContent, new Dispenser(getRelativeFacing(BlockFace.SOUTH)), 2);
-        builder.createRandomItemsContainer(new Vector(9, 2, 3), random, dispenserContent, new Dispenser(getRelativeFacing(BlockFace.WEST)), 2);
+        if (!placedTrap1) {
+            placedTrap1 = builder.createRandomItemsContainer(new Vector(3, 2, 1), random, dispenserContent, new Dispenser(getRelativeFacing(BlockFace.SOUTH)), 2);
+        }
+        if (!placedTrap2) {
+            placedTrap2 = builder.createRandomItemsContainer(new Vector(9, 2, 3), random, dispenserContent, new Dispenser(getRelativeFacing(BlockFace.WEST)), 2);
+        }
         final Vine vine = new Vine(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST);
         builder.setBlock(new Vector(3, 2, 2), vine.getItemType(), vine);
         builder.fill(new Vector(8, 2, 3), new Vector(8, 3, 3), vine.getItemType(), vine);        
@@ -228,8 +272,12 @@ public class GlowJungleTemple extends GlowTemplePiece {
         repeater.setDelay(1);
         repeater.setFacingDirection(getRelativeFacing(BlockFace.SOUTH));
         builder.setBlock(new Vector(10, 2, 10), repeater.getItemType(), repeater);
-        builder.createRandomItemsContainer(new Vector(8, 1, 3), random, chestContent, new Chest(getRelativeFacing(BlockFace.WEST)), random.nextInt(5) + 2);
-        builder.createRandomItemsContainer(new Vector(9, 1, 10), random, chestContent, new Chest(getRelativeFacing(BlockFace.NORTH)), random.nextInt(5) + 2);
+        if (!placedMainChest) {
+            placedMainChest = builder.createRandomItemsContainer(new Vector(8, 1, 3), random, chestContent, new Chest(getRelativeFacing(BlockFace.WEST)), random.nextInt(5) + 2);
+        }
+        if (!placedHiddenChest) {
+            placedHiddenChest = builder.createRandomItemsContainer(new Vector(9, 1, 10), random, chestContent, new Chest(getRelativeFacing(BlockFace.NORTH)), random.nextInt(5) + 2);
+        }
 
         // 2nd floor inside
         for (int i = 0; i < 4; i++) {

@@ -7,6 +7,7 @@ import net.glowstone.constants.GlowParticle;
 import net.glowstone.entity.*;
 import net.glowstone.entity.objects.GlowItem;
 import net.glowstone.generator.TreeGenerator;
+import net.glowstone.generator.structures.GlowStructure;
 import net.glowstone.io.WorldMetadataService.WorldFinalValues;
 import net.glowstone.io.WorldStorageProvider;
 import net.glowstone.io.anvil.AnvilWorldStorageProvider;
@@ -14,6 +15,7 @@ import net.glowstone.net.message.play.entity.EntityStatusMessage;
 import net.glowstone.net.message.play.player.ServerDifficultyMessage;
 import net.glowstone.util.BlockStateDelegate;
 import net.glowstone.util.GameRuleManager;
+
 import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
@@ -230,6 +232,8 @@ public final class GlowWorld implements World {
      */
     private int monsterLimit, animalLimit, waterAnimalLimit, ambientLimit;
 
+    private Map<Integer, GlowStructure> structures;
+
     /**
      * Creates a new world from the options in the given WorldCreator.
      * @param server The server for the world.
@@ -277,6 +281,12 @@ public final class GlowWorld implements World {
         } else {
             this.seed = creator.seed();
             this.uid = UUID.randomUUID();
+        }
+
+        try {
+            structures = storageProvider.getStructureDataService().readStructuresData();
+        } catch (IOException e) {
+            server.getLogger().log(Level.SEVERE, "Error reading structure data for world " + getName(), e);
         }
 
         // begin loading spawn area
@@ -792,6 +802,10 @@ public final class GlowWorld implements World {
             }
         }
         return false;
+    }
+
+    public Map<Integer, GlowStructure> getStructures() {
+        return structures;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1357,6 +1371,13 @@ public final class GlowWorld implements World {
                     storageProvider.getMetadataService().writeWorldData();
                 } catch (IOException e) {
                     server.getLogger().severe("Could not save metadata for world: " + getName());
+                    e.printStackTrace();
+                }
+
+                try {
+                    storageProvider.getStructureDataService().writeStructuresData(structures);
+                } catch (IOException e) {
+                    server.getLogger().severe("Could not save structures data for world: " + getName());
                     e.printStackTrace();
                 }
             }

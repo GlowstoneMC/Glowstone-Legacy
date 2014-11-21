@@ -12,8 +12,11 @@ import org.bukkit.util.Vector;
 
 public abstract class GlowStructurePiece {
 
-    private final BlockFace orientation;
+    private BlockFace orientation;
     protected StructureBoundingBox boundingBox;
+    private int unknownGD;
+
+    public GlowStructurePiece() { }
 
     public GlowStructurePiece(Location location, Vector size) {
         orientation = BlockFace.NORTH;
@@ -33,8 +36,37 @@ public abstract class GlowStructurePiece {
         createNewBoundingBox(location, size);
     }
 
+    public void setBoundingBox(StructureBoundingBox boundingBox) {
+        this.boundingBox = boundingBox;
+    }
+
     public StructureBoundingBox getBoundingBox() {
         return boundingBox;
+    }
+
+    public void setGD(int gd) {
+        this.unknownGD = gd;
+    }
+
+    public int getGD() {
+        return unknownGD;
+    }
+
+    public void setNumericOrientation(int orientation) {
+        this.orientation = getOrientationFromOrdinal(orientation);
+    }
+
+    public int getNumericOrientation() {
+        switch (orientation) {
+            case EAST:
+                return 1;
+            case SOUTH:
+                return 2;
+            case WEST:
+                return 3;
+            default:
+                return 0;
+        }
     }
 
     public BlockFace getOrientation() {

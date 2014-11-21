@@ -14,8 +14,22 @@ import org.bukkit.util.Vector;
 
 public class GlowWitchHut extends GlowTemplePiece {
 
+    private boolean hasWitch;
+
+    public GlowWitchHut() {
+        super();
+    }
+
     public GlowWitchHut(Random random, Location location) {
         super(random, location, new Vector(7, 5, 9));
+    }
+
+    public void setHasWitch(boolean hasWitch) {
+        this.hasWitch = hasWitch;
+    }
+
+    public boolean getHasWitch() {
+        return hasWitch;
     }
 
     @Override
@@ -65,6 +79,12 @@ public class GlowWitchHut extends GlowTemplePiece {
         builder.setBlockDownward(new Vector(5, -1, 2), Material.LOG);
         builder.setBlockDownward(new Vector(1, -1, 7), Material.LOG);
         builder.setBlockDownward(new Vector(5, -1, 7), Material.LOG);
+
+        if (!hasWitch) {
+            // TODO: uncomment this later
+            // hasWitch = builder.spawnMob(new Vector(2, 2, 5), EntityType.WITCH);
+            // I believe vanilla 1.8 tries to spawn the witch on different floor levels
+        }
 
         return true;
     }
