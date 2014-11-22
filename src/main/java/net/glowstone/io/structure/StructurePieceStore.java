@@ -6,6 +6,10 @@ import net.glowstone.generator.structures.GlowStructurePiece;
 import net.glowstone.generator.structures.util.StructureBoundingBox;
 import net.glowstone.util.nbt.CompoundTag;
 
+/**
+ * The base for structure piece store classes.
+ * @param <T> The type of structure piece being stored.
+ */
 public abstract class StructurePieceStore<T extends GlowStructurePiece> {
     private final String id;
     private final Class<T> clazz;
@@ -23,8 +27,18 @@ public abstract class StructurePieceStore<T extends GlowStructurePiece> {
         return clazz;
     }
 
+    /**
+     * Create a structure piece of this store's type. The load method will
+     * be called separately.
+     * @return The structure piece.
+     */
     public abstract T createStructurePiece();
 
+    /**
+     * Load structure piece data of the appropriate type from the given compound tag.
+     * @param structurePiece The target structure piece.
+     * @param compound The structure piece's tag.
+     */
     public void load(T structurePiece, CompoundTag compound) {
         if (compound.isInt("GD")) {
             structurePiece.setGD(compound.getInt("GD"));
@@ -41,6 +55,11 @@ public abstract class StructurePieceStore<T extends GlowStructurePiece> {
         }
     }
 
+    /**
+     * Save information about this structure piece to the given tag.
+     * @param structurePiece The structure piece to save.
+     * @param compound The target tag.
+     */
     public void save(T structurePiece, CompoundTag compound) {
         compound.putInt("GD", structurePiece.getGD());
         compound.putInt("O", structurePiece.getNumericOrientation());
