@@ -24,16 +24,6 @@ public class BiomePopulator extends BlockPopulator {
                 .setBiomeAmount(2, Biome.OCEAN) // fix for lack of biomes
                 .setBiomeAmount(1, Biome.DESERT, Biome.DESERT_HILLS));
 
-        addDecorator(new WitchHutDecorator()
-                .setDefaultAmount(0)
-                .setBiomeAmount(2, Biome.OCEAN) // fix for lack of biomes
-                .setBiomeAmount(1, Biome.SWAMPLAND));
-
-        addDecorator(new JungleTempleDecorator()
-                .setDefaultAmount(0)
-                .setBiomeAmount(2, Biome.OCEAN) // fix for lack of biomes
-                .setBiomeAmount(1, Biome.JUNGLE, Biome.JUNGLE_MOUNTAINS));
-
         addDecorator(new FlowerDecorator()
                 .setDefaultFlowerWeight(2, FlowerDecorator.Flower.DANDELION)
                 .setDefaultFlowerWeight(1, FlowerDecorator.Flower.POPPY)
