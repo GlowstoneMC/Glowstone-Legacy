@@ -29,7 +29,6 @@ public class GlowDungeon extends GlowStructurePiece {
     private final int radiusZ;
     private final int sizeX;
     private final int sizeZ;
-    private final RandomItemsContent chestContent;
     private final EntityType[] mobTypes = new EntityType[] {
         EntityType.SKELETON, EntityType.ZOMBIE,
         EntityType.ZOMBIE, EntityType.SPIDER
@@ -44,23 +43,6 @@ public class GlowDungeon extends GlowStructurePiece {
         sizeX = radiusX * 2 + 1;
         sizeZ = radiusZ * 2 + 1;
         loc = location;
-
-        chestContent = new RandomItemsContent(random);
-        chestContent.addItem(new RandomAmountItem(Material.SADDLE, 1, 1), 10);
-        chestContent.addItem(new RandomAmountItem(Material.IRON_INGOT, 1, 4), 10);
-        chestContent.addItem(new RandomAmountItem(Material.BREAD, 1, 1), 10);
-        chestContent.addItem(new RandomAmountItem(Material.WHEAT, 1, 4), 10);
-        chestContent.addItem(new RandomAmountItem(Material.SULPHUR, 1, 4), 10);
-        chestContent.addItem(new RandomAmountItem(Material.STRING, 1, 4), 10);
-        chestContent.addItem(new RandomAmountItem(Material.BUCKET, 1, 1), 10);
-        chestContent.addItem(new RandomAmountItem(Material.GOLDEN_APPLE, 1, 1), 1);
-        chestContent.addItem(new RandomAmountItem(Material.REDSTONE, 1, 1), 10);
-        chestContent.addItem(new RandomAmountItem(Material.GOLD_RECORD, 1, 1), 10);
-        chestContent.addItem(new RandomAmountItem(Material.GREEN_RECORD, 1, 1), 10);
-        chestContent.addItem(new RandomAmountItem(Material.NAME_TAG, 1, 1), 10);
-        chestContent.addItem(new RandomAmountItem(Material.GOLD_BARDING, 1, 1), 2);
-        chestContent.addItem(new RandomAmountItem(Material.IRON_BARDING, 1, 1), 5);
-        chestContent.addItem(new RandomAmountItem(Material.DIAMOND_BARDING, 1, 1), 1);
     }
 
     public boolean canPlace(StructureBuilder builder) {
@@ -138,7 +120,22 @@ public class GlowDungeon extends GlowStructurePiece {
             }
         }
 
-        builder.createMobSpawner(new Vector(radiusX, 1, radiusZ), mobTypes[random.nextInt(mobTypes.length)]);
+        final RandomItemsContent chestContent = new RandomItemsContent(random);
+        chestContent.addItem(new RandomAmountItem(Material.SADDLE, 1, 1), 10);
+        chestContent.addItem(new RandomAmountItem(Material.IRON_INGOT, 1, 4), 10);
+        chestContent.addItem(new RandomAmountItem(Material.BREAD, 1, 1), 10);
+        chestContent.addItem(new RandomAmountItem(Material.WHEAT, 1, 4), 10);
+        chestContent.addItem(new RandomAmountItem(Material.SULPHUR, 1, 4), 10);
+        chestContent.addItem(new RandomAmountItem(Material.STRING, 1, 4), 10);
+        chestContent.addItem(new RandomAmountItem(Material.BUCKET, 1, 1), 10);
+        chestContent.addItem(new RandomAmountItem(Material.GOLDEN_APPLE, 1, 1), 1);
+        chestContent.addItem(new RandomAmountItem(Material.REDSTONE, 1, 1), 10);
+        chestContent.addItem(new RandomAmountItem(Material.GOLD_RECORD, 1, 1), 10);
+        chestContent.addItem(new RandomAmountItem(Material.GREEN_RECORD, 1, 1), 10);
+        chestContent.addItem(new RandomAmountItem(Material.NAME_TAG, 1, 1), 10);
+        chestContent.addItem(new RandomAmountItem(Material.GOLD_BARDING, 1, 1), 2);
+        chestContent.addItem(new RandomAmountItem(Material.IRON_BARDING, 1, 1), 5);
+        chestContent.addItem(new RandomAmountItem(Material.DIAMOND_BARDING, 1, 1), 1);
 
         int chestCount = 0;
         for (int i = 0; i < 6 && chestCount < 2; i++) {
@@ -169,6 +166,8 @@ public class GlowDungeon extends GlowStructurePiece {
                 }
             }
         }
+
+        builder.createMobSpawner(new Vector(radiusX, 1, radiusZ), mobTypes[random.nextInt(mobTypes.length)]);
 
         GlowServer.logger.info("dungeon generated: " + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ());
 
