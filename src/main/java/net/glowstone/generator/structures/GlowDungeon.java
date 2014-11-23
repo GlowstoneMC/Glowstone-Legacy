@@ -137,32 +137,33 @@ public class GlowDungeon extends GlowStructurePiece {
         chestContent.addItem(new RandomAmountItem(Material.IRON_BARDING, 1, 1), 5);
         chestContent.addItem(new RandomAmountItem(Material.DIAMOND_BARDING, 1, 1), 1);
 
-        int chestCount = 0;
-        for (int i = 0; i < 6 && chestCount < 2; i++) {
-            int x = random.nextInt(radiusX * 2 - 1) + 1;
-            int z = random.nextInt(radiusZ * 2 - 1) + 1;
-            if (builder.getBlockState(new Vector(x, 1, z)).getType() == Material.AIR) {
-                BlockFace face = null;
-                int solidBlocksCount = 0;
-                if (builder.getBlockState(new Vector(x - 1, 1, z)).getType().isSolid()) {
-                    solidBlocksCount++;
-                    face = BlockFace.EAST;
-                }
-                if (builder.getBlockState(new Vector(x + 1, 1, z)).getType().isSolid()) {
-                    solidBlocksCount++;
-                    face = BlockFace.WEST;
-                }
-                if (builder.getBlockState(new Vector(x, 1, z - 1)).getType().isSolid()) {
-                    solidBlocksCount++;
-                    face = BlockFace.SOUTH;
-                }
-                if (builder.getBlockState(new Vector(x, 1, z + 1)).getType().isSolid()) {
-                    solidBlocksCount++;
-                    face = BlockFace.NORTH;
-                }
-                if (solidBlocksCount == 1) {
-                    builder.createRandomItemsContainer(new Vector(x, 1, z), chestContent, new Chest(face), 8);
-                    chestCount++;
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 3; j++) {
+                int x = random.nextInt(radiusX * 2 - 1) + 1;
+                int z = random.nextInt(radiusZ * 2 - 1) + 1;
+                if (builder.getBlockState(new Vector(x, 1, z)).getType() == Material.AIR) {
+                    BlockFace face = null;
+                    int solidBlocksCount = 0;
+                    if (builder.getBlockState(new Vector(x - 1, 1, z)).getType().isSolid()) {
+                        solidBlocksCount++;
+                        face = BlockFace.EAST;
+                    }
+                    if (builder.getBlockState(new Vector(x + 1, 1, z)).getType().isSolid()) {
+                        solidBlocksCount++;
+                        face = BlockFace.WEST;
+                    }
+                    if (builder.getBlockState(new Vector(x, 1, z - 1)).getType().isSolid()) {
+                        solidBlocksCount++;
+                        face = BlockFace.SOUTH;
+                    }
+                    if (builder.getBlockState(new Vector(x, 1, z + 1)).getType().isSolid()) {
+                        solidBlocksCount++;
+                        face = BlockFace.NORTH;
+                    }
+                    if (solidBlocksCount == 1) {
+                        builder.createRandomItemsContainer(new Vector(x, 1, z), chestContent, new Chest(face), 8);
+                        break;
+                    }
                 }
             }
         }
