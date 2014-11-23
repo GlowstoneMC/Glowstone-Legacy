@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 public class DefaultBlockType extends DefaultItemType implements BlockType {
@@ -103,7 +104,7 @@ public class DefaultBlockType extends DefaultItemType implements BlockType {
             drops = throwDouble(drops, feature.getDrops(block, tool));
         }
 
-        return drops;
+        return drops == null ? Arrays.asList(new ItemStack(block.getType(), 1, block.getData())) : drops;
     }
 
     @Override
