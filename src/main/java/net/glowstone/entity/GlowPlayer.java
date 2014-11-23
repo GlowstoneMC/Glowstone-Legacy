@@ -889,6 +889,11 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
             session.send(new StateChangeMessage(StateChangeMessage.Reason.GAMEMODE, mode.getValue()));
         }
         setAllowFlight(mode == GameMode.CREATIVE || mode == GameMode.SPECTATOR);
+        updateInvisibility();
+    }
+
+    private void updateInvisibility() {
+        metadata.setBit(MetadataIndex.STATUS, MetadataIndex.StatusFlags.INVISIBLE, getGameMode() == GameMode.SPECTATOR);
     }
 
     ////////////////////////////////////////////////////////////////////////////
