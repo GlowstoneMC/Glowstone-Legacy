@@ -120,7 +120,7 @@ public class GlowDungeon extends GlowStructurePiece {
             }
         }
 
-        final RandomItemsContent chestContent = new RandomItemsContent(random);
+        final RandomItemsContent chestContent = new RandomItemsContent();
         chestContent.addItem(new RandomAmountItem(Material.SADDLE, 1, 1), 10);
         chestContent.addItem(new RandomAmountItem(Material.IRON_INGOT, 1, 4), 10);
         chestContent.addItem(new RandomAmountItem(Material.BREAD, 1, 1), 10);
@@ -129,9 +129,9 @@ public class GlowDungeon extends GlowStructurePiece {
         chestContent.addItem(new RandomAmountItem(Material.STRING, 1, 4), 10);
         chestContent.addItem(new RandomAmountItem(Material.BUCKET, 1, 1), 10);
         chestContent.addItem(new RandomAmountItem(Material.GOLDEN_APPLE, 1, 1), 1);
-        chestContent.addItem(new RandomAmountItem(Material.REDSTONE, 1, 1), 10);
-        chestContent.addItem(new RandomAmountItem(Material.GOLD_RECORD, 1, 1), 10);
-        chestContent.addItem(new RandomAmountItem(Material.GREEN_RECORD, 1, 1), 10);
+        chestContent.addItem(new RandomAmountItem(Material.REDSTONE, 1, 4), 10);
+        chestContent.addItem(new RandomAmountItem(Material.GOLD_RECORD, 1, 1), 4);
+        chestContent.addItem(new RandomAmountItem(Material.GREEN_RECORD, 1, 1), 4);
         chestContent.addItem(new RandomAmountItem(Material.NAME_TAG, 1, 1), 10);
         chestContent.addItem(new RandomAmountItem(Material.GOLD_BARDING, 1, 1), 2);
         chestContent.addItem(new RandomAmountItem(Material.IRON_BARDING, 1, 1), 5);
@@ -161,7 +161,7 @@ public class GlowDungeon extends GlowStructurePiece {
                         face = BlockFace.NORTH;
                     }
                     if (solidBlocksCount == 1) {
-                        builder.createRandomItemsContainer(new Vector(x, 1, z), chestContent, new Chest(face), 8);
+                        builder.createRandomItemsContainer(new Vector(x, 1, z), random, chestContent, new Chest(face), 8);
                         break;
                     }
                 }
