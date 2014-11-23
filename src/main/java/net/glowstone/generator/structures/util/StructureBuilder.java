@@ -195,7 +195,7 @@ public class StructureBuilder {
         }
     }
 
-    public void createRandomItemsContainer(Vector pos, RandomItemsContent content, DirectionalContainer container, int maxStacks) {
+    public void createRandomItemsContainer(Vector pos, Random random, RandomItemsContent content, DirectionalContainer container, int maxStacks) {
         final Vector vec = translate(pos);
         if (boundingBox.isVectorInside(vec)) {
             final BlockState state = world.getBlockAt(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ()).getState();
@@ -205,7 +205,7 @@ public class StructureBuilder {
             state.setData(container);
             state.update(true);
 
-            content.fillContainer(container, state, maxStacks);
+            content.fillContainer(random, container, state, maxStacks);
         }
     }
 

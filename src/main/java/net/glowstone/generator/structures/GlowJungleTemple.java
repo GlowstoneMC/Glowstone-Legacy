@@ -26,27 +26,8 @@ import org.bukkit.util.Vector;
 
 public class GlowJungleTemple extends GlowTemplePiece {
 
-    private final Map<StructureMaterial, Integer> stones = new HashMap<StructureMaterial, Integer>();
-    private final RandomItemsContent chestContent;
-    private final RandomItemsContent dispenserContent;
-
     public GlowJungleTemple(Random random, Location location) {
         super(random, location, new Vector(12, 14, 15));
-
-        chestContent = new RandomItemsContent(random);
-        chestContent.addItem(new RandomAmountItem(Material.DIAMOND, 1, 3), 3);
-        chestContent.addItem(new RandomAmountItem(Material.IRON_INGOT, 1, 5), 10);
-        chestContent.addItem(new RandomAmountItem(Material.GOLD_INGOT, 2, 7), 15);
-        chestContent.addItem(new RandomAmountItem(Material.EMERALD, 1, 3), 2);
-        chestContent.addItem(new RandomAmountItem(Material.BONE, 4, 6), 20);
-        chestContent.addItem(new RandomAmountItem(Material.ROTTEN_FLESH, 3, 7), 16);
-        chestContent.addItem(new RandomAmountItem(Material.SADDLE, 1, 1), 3);
-        chestContent.addItem(new RandomAmountItem(Material.IRON_BARDING, 1, 1), 1);
-        chestContent.addItem(new RandomAmountItem(Material.GOLD_BARDING, 1, 1), 1);
-        chestContent.addItem(new RandomAmountItem(Material.DIAMOND_BARDING, 1, 1), 1);
-
-        dispenserContent = new RandomItemsContent(random);
-        dispenserContent.addItem(new RandomAmountItem(Material.ARROW, 2, 7), 30);
     }
 
     @Override
@@ -60,8 +41,25 @@ public class GlowJungleTemple extends GlowTemplePiece {
         boundingBox.offset(new Vector(0, -4, 0));
 
         final StructureBuilder builder = new StructureBuilder(world, this, delegate);
+
+        final Map<StructureMaterial, Integer> stones = new HashMap<StructureMaterial, Integer>();
         builder.addRandomMaterial(stones, 4, Material.COBBLESTONE, 0);
         builder.addRandomMaterial(stones, 6, Material.MOSSY_COBBLESTONE, 0);
+
+        final RandomItemsContent chestContent = new RandomItemsContent();
+        chestContent.addItem(new RandomAmountItem(Material.DIAMOND, 1, 3), 3);
+        chestContent.addItem(new RandomAmountItem(Material.IRON_INGOT, 1, 5), 10);
+        chestContent.addItem(new RandomAmountItem(Material.GOLD_INGOT, 2, 7), 15);
+        chestContent.addItem(new RandomAmountItem(Material.EMERALD, 1, 3), 2);
+        chestContent.addItem(new RandomAmountItem(Material.BONE, 4, 6), 20);
+        chestContent.addItem(new RandomAmountItem(Material.ROTTEN_FLESH, 3, 7), 16);
+        chestContent.addItem(new RandomAmountItem(Material.SADDLE, 1, 1), 3);
+        chestContent.addItem(new RandomAmountItem(Material.IRON_BARDING, 1, 1), 1);
+        chestContent.addItem(new RandomAmountItem(Material.GOLD_BARDING, 1, 1), 1);
+        chestContent.addItem(new RandomAmountItem(Material.DIAMOND_BARDING, 1, 1), 1);
+
+        final RandomItemsContent dispenserContent = new RandomItemsContent();
+        dispenserContent.addItem(new RandomAmountItem(Material.ARROW, 2, 7), 30);
 
         // 1st floor
         builder.fillWithRandomMaterial(new Vector(0, 0, 0), new Vector(11, 0, 14), random, stones);
@@ -194,8 +192,8 @@ public class GlowJungleTemple extends GlowTemplePiece {
         final Lever lever = new Lever(Material.LEVER, (byte) 4); // workaround for bukkit, can't set an attached BlockFace
         lever.setFacingDirection(getRelativeFacing(BlockFace.SOUTH));
         builder.fill(new Vector(8, 2, 12), new Vector(10, 2, 12), lever.getItemType(), lever);
-        builder.createRandomItemsContainer(new Vector(3, 2, 1), dispenserContent, new Dispenser(getRelativeFacing(BlockFace.SOUTH)), 2);
-        builder.createRandomItemsContainer(new Vector(9, 2, 3), dispenserContent, new Dispenser(getRelativeFacing(BlockFace.WEST)), 2);
+        builder.createRandomItemsContainer(new Vector(3, 2, 1), random, dispenserContent, new Dispenser(getRelativeFacing(BlockFace.SOUTH)), 2);
+        builder.createRandomItemsContainer(new Vector(9, 2, 3), random, dispenserContent, new Dispenser(getRelativeFacing(BlockFace.WEST)), 2);
         final Vine vine = new Vine(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST);
         builder.setBlock(new Vector(3, 2, 2), vine.getItemType(), vine);
         builder.fill(new Vector(8, 2, 3), new Vector(8, 3, 3), vine.getItemType(), vine);        
@@ -230,8 +228,8 @@ public class GlowJungleTemple extends GlowTemplePiece {
         repeater.setDelay(1);
         repeater.setFacingDirection(getRelativeFacing(BlockFace.SOUTH));
         builder.setBlock(new Vector(10, 2, 10), repeater.getItemType(), repeater);
-        builder.createRandomItemsContainer(new Vector(8, 1, 3), chestContent, new Chest(getRelativeFacing(BlockFace.WEST)), random.nextInt(5) + 2);
-        builder.createRandomItemsContainer(new Vector(9, 1, 10), chestContent, new Chest(getRelativeFacing(BlockFace.NORTH)), random.nextInt(5) + 2);
+        builder.createRandomItemsContainer(new Vector(8, 1, 3), random, chestContent, new Chest(getRelativeFacing(BlockFace.WEST)), random.nextInt(5) + 2);
+        builder.createRandomItemsContainer(new Vector(9, 1, 10), random, chestContent, new Chest(getRelativeFacing(BlockFace.NORTH)), random.nextInt(5) + 2);
 
         // 2nd floor inside
         for (int i = 0; i < 4; i++) {

@@ -3,7 +3,7 @@ package net.glowstone.generator.objects;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -17,23 +17,18 @@ import org.bukkit.material.DirectionalContainer;
 
 public class RandomItemsContent {
 
-    private final Random random;
-    private final Map<RandomAmountItem, Integer> content = new HashMap<RandomAmountItem, Integer>();
-
-    public RandomItemsContent(Random random) {
-        this.random = random;
-    }
+    private final Map<RandomAmountItem, Integer> content = new LinkedHashMap<RandomAmountItem, Integer>();
 
     public void addItem(RandomAmountItem item, int weight) {
         content.put(item, weight);
     }
 
-    public boolean fillContainer(DirectionalContainer container, BlockState state, int maxStacks) {
+    public boolean fillContainer(Random random, DirectionalContainer container, BlockState state, int maxStacks) {
         if (state.getBlock().getState() instanceof InventoryHolder) {
             final Inventory inventory = ((InventoryHolder) state.getBlock().getState()).getInventory();
             final int size = inventory.getSize();
             for (int i = 0; i < maxStacks; i++) {
-                final RandomAmountItem item = getRandomItem();
+                final RandomAmountItem item = getRandomItem(random);
                 if (item != null) {
                     for (ItemStack stack: item.getItemStacks(random)) {
                         // slot can be overriden hence maxStacks can be less than what's expected
@@ -48,7 +43,7 @@ public class RandomItemsContent {
         return true;
     }
 
-    public RandomAmountItem getRandomItem() {
+    public RandomAmountItem getRandomItem(Random random) {
         int totalWeight = 0;
         for (int i : content.values()) {
             totalWeight += i;
