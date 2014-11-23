@@ -2,6 +2,7 @@ package net.glowstone.block.blocktype;
 
 import net.glowstone.EventFactory;
 import net.glowstone.GlowChunk;
+import net.glowstone.GlowServer;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.ItemTable;
@@ -30,9 +31,15 @@ public class DefaultBlockType extends DefaultItemType implements BlockType {
         return (BlockType[]) super.getFeatures();
     }
 
-    protected void warnMaterialData(Class<? extends MaterialData> enderPortalFrameClass, MaterialData data) {
-        //TODO
+    /**
+     * Display the warning for finding the wrong MaterialData subclass.
+     * @param clazz The expected subclass of MaterialData.
+     * @param data The actual MaterialData found.
+     */
+    protected void warnMaterialData(Class<?> clazz, MaterialData data) {
+        GlowServer.logger.warning("Wrong MaterialData for " + getMaterial() + " (" + getClass().getSimpleName() + "): expected " + clazz.getSimpleName() + ", got " + data);
     }
+
     //////////////////////
     // Actions
 
