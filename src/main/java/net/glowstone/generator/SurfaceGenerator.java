@@ -37,10 +37,11 @@ public class SurfaceGenerator extends GlowChunkGenerator {
         );
     }
 
+    private OctaveGenerator height;
+
     private OctaveGenerator density;
     private OctaveGenerator roughness;
     private OctaveGenerator detail;
-    private OctaveGenerator type;
 
     @Override
     public byte[] generate(World world, Random random, int chunkX, int chunkZ) {
@@ -64,52 +65,44 @@ public class SurfaceGenerator extends GlowChunkGenerator {
         boolean noDirt = true;
         int waterLevel = WORLD_DEPTH / 2;
 
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
+        for (int ix = 0; ix < 16; ix++) {
+            for (int iz = 0; iz < 16; iz++) {
                 int deep = 0;
-                int fx = x + chunkX;
-                int fz = z + chunkZ;
-                for (int y = 127; y > 0; y--) {
-                    double finalDensity = density.noise(fx, y, fz, 0.7, 0.6, true)
-                                    - roughness.noise(fx, y, fz, 0.7, 0.6, true)
-                                    * detail.noise(fx, y, fz, 0.7, 0.6, true) + (64 - y) / 14.0;
-                    if(finalDensity > 0) {
-                        double terrainType = type.noise(x + chunkX, y, z + chunkZ, 0.5, 0.5);
-                        Material ground = matTop;
-                        if (Math.abs(terrainType) < random.nextDouble() / 3 && !noDirt) {
-                            ground = matMain;
-                        } else if (deep != 0 || y < waterLevel) {
-                            ground = matMain;
-                        }
-                        if (Math.abs(y - waterLevel) < 5 - random.nextInt(2) && deep < 7) {
-                            if (terrainType < random.nextDouble() / 2) {
-                                if (terrainType < random.nextDouble() / 4) {
-                                    ground = matShore;
+                int x = ix + chunkX;
+                int z = iz + chunkZ;
+
+                double h = height.noise(x, z, 2, 1.1, true);
+                if(h > 0) {
+                    int top = 0;
+                    for (int y = 127; y > 0; y--) {
+                        double finalDensity = density.noise(x, y, z, 1.2, 0.6, true)
+                                - roughness.noise(x, y, z, 1.2, 0.6, true)
+                                * detail.noise(x, y, z, 1.2, 0.6, true) + (64 - y) / 6.0;
+                        if(h < 0.15 && y > 60) finalDensity -= 0.1 / h;
+                        if (finalDensity > 0) {
+                            if(y > top) top = y;
+
+                            if (y == top) {
+                                if(h < 0.15) {
+                                    set(buf, ix, y, iz, Material.SAND);
                                 } else {
-                                    ground = matShore2;
+                                    set(buf, ix, y, iz, Material.GRASS);
                                 }
+
+                            } else if (y > top - 4) {
+                                set(buf, ix, y, iz, Material.DIRT);
+                            } else {
+                                set(buf, ix, y, iz, Material.STONE);
                             }
                         }
-
-                        if (deep > random.nextInt(3) + 6) {
-                            ground = matUnder;
-                        }
-
-                        set(buf, x, y, z, ground);
-                        deep++;
+                    }
+                } else {
+                    for(int y = 60; y > 0; y--) {
+                        set(buf, ix, y, iz, Material.WATER);
                     }
                 }
-                set(buf, x, 0, z, Material.BEDROCK);
-            }
-        }
 
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                for (int y = 0; y < waterLevel; y++) {
-                    if (get(buf, x, y, z) == Material.AIR) {
-                        set(buf, x, y, z, matLiquid);
-                    }
-                }
+                set(buf, ix, 0, iz, Material.BEDROCK);
             }
         }
 
@@ -140,8 +133,10 @@ public class SurfaceGenerator extends GlowChunkGenerator {
 
 
         octaves.put("density", gen);*/
-        type = new SimplexOctaveGenerator(seed, 1);
-        type.setScale(1 / WORLD_DEPTH);
+
+        // we don't care about y for the height so we set the scale overall
+        height = new SimplexOctaveGenerator(seed, 4);
+        height.setScale(LARGE_SCALE / 4 / 8);
 
         density = new SimplexOctaveGenerator(seed, 1);
         density.setXScale(LARGE_SCALE / 1 / 8);
