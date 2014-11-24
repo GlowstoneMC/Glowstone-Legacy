@@ -275,7 +275,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
             gameMode |= 0x8;
         }
         session.send(new JoinGameMessage(SELF_ID, gameMode, world.getEnvironment().getId(), world.getDifficulty().getValue(), session.getServer().getMaxPlayers(), type, false));
-        setAllowFlight(getGameMode() == GameMode.CREATIVE);
+        setAllowFlight(getGameMode() == GameMode.CREATIVE || getGameMode() == GameMode.SPECTATOR);
 
         // send server brand and supported plugin channels
         session.send(PluginMessage.fromString("MC|Brand", server.getName()));
@@ -690,6 +690,14 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         return UserListItemMessage.add(getProfile(), getGameMode().getValue(), 0, displayName);
     }
 
+    private void updateUserListEntries(UserListItemMessage updateMessage) {
+        for (GlowPlayer player : server.getOnlinePlayers()) {
+            if (player.canSee(this)) {
+                player.getSession().send(updateMessage);
+            }
+        }
+    }
+
     @Override
     public void setVelocity(Vector velocity) {
         PlayerVelocityEvent event = EventFactory.callEvent(new PlayerVelocityEvent(this, velocity));
@@ -833,12 +841,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         if (playerListName != null && !playerListName.isEmpty()) {
             displayName = new TextMessage(playerListName);
         }
-        Message updateMessage = UserListItemMessage.displayNameOne(getUniqueId(), displayName);
-        for (GlowPlayer player : server.getOnlinePlayers()) {
-            if (player.canSee(this)) {
-                player.getSession().send(updateMessage);
-            }
-        }
+        updateUserListEntries(UserListItemMessage.displayNameOne(getUniqueId(), displayName));
     }
 
     @Override
@@ -881,11 +884,16 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     public void setGameMode(GameMode mode) {
         boolean changed = getGameMode() != mode;
         super.setGameMode(mode);
+        updateUserListEntries(UserListItemMessage.gameModeOne(getUniqueId(), mode.getValue()));
         if (changed) {
             session.send(new StateChangeMessage(StateChangeMessage.Reason.GAMEMODE, mode.getValue()));
         }
+        setAllowFlight(mode == GameMode.CREATIVE || mode == GameMode.SPECTATOR);
+        updateInvisibility();
+    }
 
-        setAllowFlight(mode == GameMode.CREATIVE);
+    private void updateInvisibility() {
+        metadata.setBit(MetadataIndex.STATUS, MetadataIndex.StatusFlags.INVISIBLE, getGameMode() == GameMode.SPECTATOR);
     }
 
     ////////////////////////////////////////////////////////////////////////////
