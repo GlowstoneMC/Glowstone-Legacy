@@ -1,6 +1,8 @@
 Glowstone
 ==========
 
+**Please note** - GitHub is not for user support. Please go to [the forums](https://forums.glowstone.net) for that instead!
+
 Introduction
 ------------
 Glowstone is a lightweight, from scratch, open source
