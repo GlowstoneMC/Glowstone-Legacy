@@ -5,7 +5,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
+import org.bukkit.util.noise.NoiseGenerator;
 import org.bukkit.util.noise.OctaveGenerator;
+import org.bukkit.util.noise.SimplexNoiseGenerator;
 import org.bukkit.util.noise.SimplexOctaveGenerator;
 
 import java.util.Map;
@@ -23,7 +25,7 @@ public class SurfaceGenerator extends GlowChunkGenerator {
                 // On-ground
                 // Desert is before tree and mushroom but snow is after so trees have snow on top
                 new DesertPopulator(),
-                new TreePopulator(),
+                //new TreePopulator(),
                 new MushroomPopulator(),
                 new SnowPopulator(),
                 new FlowerPopulator(),
@@ -35,12 +37,14 @@ public class SurfaceGenerator extends GlowChunkGenerator {
         );
     }
 
+    private OctaveGenerator density;
+    private OctaveGenerator roughness;
+    private OctaveGenerator detail;
+    private OctaveGenerator type;
+
     @Override
     public byte[] generate(World world, Random random, int chunkX, int chunkZ) {
-        Map<String, OctaveGenerator> octaves = getWorldOctaves(world);
-        OctaveGenerator noiseHeight = octaves.get("height");
-        OctaveGenerator noiseJitter = octaves.get("jitter");
-        OctaveGenerator noiseType = octaves.get("type");
+        /*if(density == null)*/ createWorldOctaves(world, null);
 
         chunkX <<= 4;
         chunkZ <<= 4;
@@ -63,18 +67,20 @@ public class SurfaceGenerator extends GlowChunkGenerator {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 int deep = 0;
-
+                int fx = x + chunkX;
+                int fz = z + chunkZ;
                 for (int y = 127; y > 0; y--) {
-                    double value = noiseHeight.noise(x + chunkX, y, z + chunkZ, 2, 1.1, true);
-                    if(value > (double) (y - 64) / 32 - 1) {
-                        double terrainType = noiseType.noise(x + chunkX * 16, y, z + chunkZ & 16, 0.5, 0.5);
+                    double finalDensity = density.noise(fx, y, fz, 0.7, 0.6, true)
+                                    - roughness.noise(fx, y, fz, 0.7, 0.6, true)
+                                    * detail.noise(fx, y, fz, 0.7, 0.6, true) + (64 - y) / 14.0;
+                    if(finalDensity > 0) {
+                        double terrainType = type.noise(x + chunkX, y, z + chunkZ, 0.5, 0.5);
                         Material ground = matTop;
                         if (Math.abs(terrainType) < random.nextDouble() / 3 && !noDirt) {
                             ground = matMain;
                         } else if (deep != 0 || y < waterLevel) {
                             ground = matMain;
                         }
-
                         if (Math.abs(y - waterLevel) < 5 - random.nextInt(2) && deep < 7) {
                             if (terrainType < random.nextDouble() / 2) {
                                 if (terrainType < random.nextDouble() / 4) {
@@ -113,12 +119,13 @@ public class SurfaceGenerator extends GlowChunkGenerator {
     @Override
     protected void createWorldOctaves(World world, Map<String, OctaveGenerator> octaves) {
         Random seed = new Random(world.getSeed());
+        double LARGE_SCALE = 1 / 8.0;
 
         /* With default settings, this is 5 octaves. With tscale=256,terrainheight=50,
          * this comes out to 14 octaves, which makes more complex terrain at the cost
          * of more complex generation. Without this, the terrain looks bad, especially
          * on higher tscale/terrainheight pairs. */
-        double value = Math.round(Math.sqrt(50 * 256.0 / (128 - 50)) * 1.1 - 0.2);
+        /*double value = Math.round(Math.sqrt(50 * 256.0 / (128 - 50)) * 1.1 - 0.2);
         OctaveGenerator gen = new SimplexOctaveGenerator(seed, Math.max((int) value, 5));
         gen.setScale(1 / 256.0);
         octaves.put("height", gen);
@@ -130,6 +137,26 @@ public class SurfaceGenerator extends GlowChunkGenerator {
         gen = new SimplexOctaveGenerator(seed, 2);
         gen.setScale(1 / WORLD_DEPTH);
         octaves.put("type", gen);
+
+
+        octaves.put("density", gen);*/
+        type = new SimplexOctaveGenerator(seed, 1);
+        type.setScale(1 / WORLD_DEPTH);
+
+        density = new SimplexOctaveGenerator(seed, 1);
+        density.setXScale(LARGE_SCALE / 1 / 8);
+        density.setYScale(LARGE_SCALE / 1 / 4);
+        density.setZScale(LARGE_SCALE / 1 / 8);
+
+        roughness = new SimplexOctaveGenerator(seed, 1);
+        roughness.setXScale(LARGE_SCALE / 1 / 8);
+        roughness.setYScale(LARGE_SCALE / 1 / 4);
+        roughness.setZScale(LARGE_SCALE / 1 / 8);
+
+        detail = new SimplexOctaveGenerator(seed, 1);
+        detail.setXScale(LARGE_SCALE * 3 / 8);
+        detail.setYScale(LARGE_SCALE * 3 / 4);
+        detail.setZScale(LARGE_SCALE * 3 / 8);
     }
 
     @Override
