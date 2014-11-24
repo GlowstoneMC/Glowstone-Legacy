@@ -71,34 +71,59 @@ public class SurfaceGenerator extends GlowChunkGenerator {
                 int x = ix + chunkX;
                 int z = iz + chunkZ;
 
-                double h = height.noise(x, z, 2, 1.1, true);
+                // height is sea or noise
+                double h = height.noise(x, z, 2.5, 0.9, true);
                 if(h > 0) {
                     int top = 0;
                     for (int y = 127; y > 0; y--) {
-                        double finalDensity = density.noise(x, y, z, 1.2, 0.6, true)
-                                - roughness.noise(x, y, z, 1.2, 0.6, true)
-                                * detail.noise(x, y, z, 1.2, 0.6, true) + (64 - y) / 6.0;
-                        if(h < 0.15 && y > 60) finalDensity -= 0.1 / h;
+                        double finalDensity;
+                        if(h < 0.15) {
+                            // linear interpolation
+                            finalDensity =
+                                    (h * (20 / 3.0)) * grasslandDensity(x, y, z) +
+                                    (1 - (20 / 3.0) * h) * seaDensity(x, y, z);
+                        } else {
+                            finalDensity = grasslandDensity(x, y, z);
+                        }
                         if (finalDensity > 0) {
                             if(y > top) top = y;
 
                             if (y == top) {
-                                if(h < 0.15) {
-                                    set(buf, ix, y, iz, Material.SAND);
+                                if(y <= 60) {
+                                    set(buf, ix, y, iz, Material.DIRT);
                                 } else {
-                                    set(buf, ix, y, iz, Material.GRASS);
+                                    if(h < 0.15) {
+                                        set(buf, ix, y, iz, Material.SAND);
+                                    } else {
+                                        set(buf, ix, y, iz, Material.GRASS);
+                                    }
                                 }
-
                             } else if (y > top - 4) {
                                 set(buf, ix, y, iz, Material.DIRT);
                             } else {
                                 set(buf, ix, y, iz, Material.STONE);
                             }
+                        } else if(y <= 60) {
+                            set(buf, ix, y, iz, Material.WATER);
                         }
                     }
                 } else {
+                    int top = 0;
                     for(int y = 60; y > 0; y--) {
-                        set(buf, ix, y, iz, Material.WATER);
+                        double finalDensity = seaDensity(x, y, z);
+                        if(finalDensity > 0) {
+                            if(y > top) top = y;
+
+                            if (y == top) {
+                                set(buf, ix, y, iz, Material.GRAVEL);
+                            } else if (y > top - 4) {
+                                set(buf, ix, y, iz, Material.DIRT);
+                            } else {
+                                set(buf, ix, y, iz, Material.STONE);
+                            }
+                        } else {
+                            set(buf, ix, y, iz, Material.WATER);
+                        }
                     }
                 }
 
@@ -107,6 +132,18 @@ public class SurfaceGenerator extends GlowChunkGenerator {
         }
 
         return buf;
+    }
+
+    private double grasslandDensity(int x, int y, int z) {
+        return density.noise(x, y, z, 1.2, 0.6, true)
+                - roughness.noise(x, y, z, 1.2, 0.6, true)
+                * detail.noise(x, y, z, 1.2, 0.6, true) + 50.0 / 3 - (5.0 / 24) * y ;
+    }
+
+    private double seaDensity(int x, int y, int z) {
+        return density.noise(x, y, z, 1.2, 0.6, true)
+                - roughness.noise(x, y, z, 1.2, 0.6, true)
+                * detail.noise(x, y, z, 1.2, 0.6, true) + (54 - y) / 3;
     }
 
     @Override
@@ -135,8 +172,8 @@ public class SurfaceGenerator extends GlowChunkGenerator {
         octaves.put("density", gen);*/
 
         // we don't care about y for the height so we set the scale overall
-        height = new SimplexOctaveGenerator(seed, 4);
-        height.setScale(LARGE_SCALE / 4 / 8);
+        height = new SimplexOctaveGenerator(seed, 5);
+        height.setScale(LARGE_SCALE / 32 / 8);
 
         density = new SimplexOctaveGenerator(seed, 1);
         density.setXScale(LARGE_SCALE / 1 / 8);
@@ -156,7 +193,7 @@ public class SurfaceGenerator extends GlowChunkGenerator {
 
     @Override
     public Location getFixedSpawnLocation(World world, Random random) {
-        return new Location(world, 0, 2 + world.getHighestBlockYAt(0, 0), 0);
+        return new Location(world, 0, 128, 0);
     }
 
 }
