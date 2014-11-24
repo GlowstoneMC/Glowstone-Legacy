@@ -23,7 +23,7 @@ import org.bukkit.util.Vector;
 public class GlowDungeon extends GlowStructurePiece {
 
     private final Map<StructureMaterial, Integer> stones = new HashMap<StructureMaterial, Integer>();
-    private static final int HEIGHT = 5;
+    private static final int HEIGHT = 6;
     private static final int MIN_RADIUS = 3;
     private final int radiusX;
     private final int radiusZ;
