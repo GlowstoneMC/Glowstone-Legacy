@@ -348,6 +348,11 @@ public final class GlowServer implements Server {
     private GlowServerIcon defaultIcon;
 
     /**
+     * The server port, if set to 0 in the config.
+     */
+    private int port = 0;
+
+    /**
      * Creates a new server.
      */
     public GlowServer(ServerConfig config) {
@@ -434,6 +439,12 @@ public final class GlowServer implements Server {
         logger.info("Binding to address: " + address + "...");
         ChannelFuture future = networkServer.bind(address);
         Channel channel = future.awaitUninterruptibly().channel();
+        logger.info("Successfully bound to address: " + channel.localAddress());
+
+        if (getPort() == 0) {
+            port = ((InetSocketAddress) channel.localAddress()).getPort();
+        }
+
         if (!channel.isActive()) {
             throw new RuntimeException("Failed to bind to address. Maybe it is already in use?");
         }
@@ -1402,7 +1413,7 @@ public final class GlowServer implements Server {
 
     @Override
     public int getPort() {
-        return config.getInt(ServerConfig.Key.SERVER_PORT);
+        return port == 0 ? config.getInt(ServerConfig.Key.SERVER_PORT) : port;
     }
 
     @Override
