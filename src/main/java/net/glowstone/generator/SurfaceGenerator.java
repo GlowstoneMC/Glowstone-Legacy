@@ -21,6 +21,7 @@ public class SurfaceGenerator extends GlowChunkGenerator {
                 // In-ground
                 new LakePopulator(),
                 // On-ground
+                new StructurePopulator(),
                 // Desert is before tree and mushroom but snow is after so trees have snow on top
                 new DesertPopulator(),
                 new TreePopulator(),
@@ -55,10 +56,10 @@ public class SurfaceGenerator extends GlowChunkGenerator {
 
         byte[] buf = start(Material.AIR);
 
-        int baseHeight = WORLD_DEPTH / 2;
+        int baseHeight = world.getSeaLevel();
         double terrainHeight = 50;
         boolean noDirt = true;
-        int waterLevel = WORLD_DEPTH / 2;
+        int waterLevel = world.getSeaLevel();
 
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
@@ -99,7 +100,7 @@ public class SurfaceGenerator extends GlowChunkGenerator {
 
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                for (int y = 0; y < waterLevel; y++) {
+                for (int y = 0; y < waterLevel - 1; y++) {
                     if (get(buf, x, y, z) == Material.AIR) {
                         set(buf, x, y, z, matLiquid);
                     }
