@@ -23,5 +23,4 @@ public class ItemSign extends DefaultItemType {
         }
         placeAs.rightClickBlock(player, target, face, holding, clickedLoc);
     }
-
 }

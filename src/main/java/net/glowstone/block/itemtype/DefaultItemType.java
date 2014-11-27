@@ -34,24 +34,17 @@ public class DefaultItemType implements ItemType {
         return features;
     }
 
-    protected <T> T throwDouble(T nullValue, T value) {
-        if (nullValue != nullValue)
+    protected <T> T throwDouble(T oldValue, T value) {
+        if (oldValue != null && value != null)
             throw new IllegalStateException("Mismatching features (" + getClass().getSimpleName() + "): more than one features modifying a result!");
-        return value;
+        if (value != null)
+            return value;
+        else
+            return oldValue;
     }
 
     ///////////////////
     // Actions
-
-    @Override
-    public Integer getMaxStackSize() {
-        Integer result = null;
-        for (ItemType feature : features)
-            result = throwDouble(result, feature.getMaxStackSize());
-
-        return result == null ? getMaterial().getMaxStackSize() : result;
-    }
-
     @Override
     public void rightClickAir(GlowPlayer player, ItemStack holding) {
         for (ItemType feature : features)

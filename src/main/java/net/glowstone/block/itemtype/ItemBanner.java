@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 public class ItemBanner extends DefaultItemType {
+
     @Override
     public void rightClickBlock(GlowPlayer player, GlowBlock target, BlockFace face, ItemStack holding, Vector clickedLoc) {
         BlockType placeAs;

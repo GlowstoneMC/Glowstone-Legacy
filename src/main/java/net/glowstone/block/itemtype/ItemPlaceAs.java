@@ -21,8 +21,6 @@ public class ItemPlaceAs extends AbstractItemType {
 
     @Override
     public void rightClickBlock(GlowPlayer player, GlowBlock target, BlockFace face, ItemStack holding, Vector clickedLoc) {
-        if (placeAs != null) {
-            placeAs.rightClickBlock(player, target, face, holding, clickedLoc);
-        }
+        placeAs.rightClickBlock(player, target, face, holding, clickedLoc);
     }
 }

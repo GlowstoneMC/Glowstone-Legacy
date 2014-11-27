@@ -23,12 +23,6 @@ public interface ItemType {
     Material getMaterial();
 
     /**
-     * Get the maximum stack size of the item.
-     * @return The maximum stack size.
-     */
-    Integer getMaxStackSize();
-
-    /**
      * Called when a player right-clicks in midair while holding this item.
      * Also called by default if rightClickBlock is not overridden.
      * @param player The player

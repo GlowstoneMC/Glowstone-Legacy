@@ -28,13 +28,13 @@ public class AbstractBlockType extends AbstractItemType implements BlockType {
         GlowServer.logger.warning("Wrong MaterialData for " + getMaterial() + " (" + getClass().getSimpleName() + "): expected " + clazz.getSimpleName() + ", got " + data);
     }
 
+    @Override
     protected BlockType getBase() {
         return (BlockType) super.getBase();
     }
 
     //////////////////////
     // Stubs
-
     @Override
     public Collection<ItemStack> getDrops(GlowBlock block, ItemStack tool) {
         return null;
@@ -75,18 +75,5 @@ public class AbstractBlockType extends AbstractItemType implements BlockType {
     @Override
     public Boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
         return null;
-    }
-
-    @Override
-    public Integer getMaxStackSize() {
-        return null;
-    }
-
-    @Override
-    public void rightClickAir(GlowPlayer player, ItemStack holding) {
-    }
-
-    @Override
-    public void rightClickBlock(GlowPlayer player, GlowBlock target, BlockFace face, ItemStack holding, Vector clickedLoc) {
     }
 }

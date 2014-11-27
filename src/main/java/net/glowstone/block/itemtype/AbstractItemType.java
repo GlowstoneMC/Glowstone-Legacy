@@ -33,11 +33,6 @@ public class AbstractItemType implements ItemType {
     // Actions
 
     @Override
-    public Integer getMaxStackSize() {
-        return null;
-    }
-
-    @Override
     public void rightClickAir(GlowPlayer player, ItemStack holding) {
 
     }
@@ -46,5 +41,4 @@ public class AbstractItemType implements ItemType {
     public void rightClickBlock(GlowPlayer player, GlowBlock target, BlockFace face, ItemStack holding, Vector clickedLoc) {
 
     }
-
 }

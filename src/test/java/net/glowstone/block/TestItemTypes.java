@@ -56,9 +56,6 @@ public class TestItemTypes {
         assertTrue("Block status mismatch between " + material + "(" + material.isBlock() + ") and " + type, (type instanceof BlockType) == material.isBlock());
         // check that material returned matches
         assertEquals("ItemType returned wrong material", material, type.getMaterial());
-
-        // check that max stack size matches
-        assertEquals("Maximum stack size was incorrect", (long) material.getMaxStackSize(), (long) type.getMaxStackSize());
     }
 
 }
