@@ -3,6 +3,7 @@ package net.glowstone.generator.structures;
 import java.util.Random;
 
 import net.glowstone.generator.objects.RandomItemsContent;
+import net.glowstone.generator.structures.util.StructureBoundingBox;
 import net.glowstone.generator.structures.util.StructureBuilder;
 import net.glowstone.util.BlockStateDelegate;
 
@@ -27,7 +28,7 @@ public class GlowDesertTemple extends GlowTemplePiece {
     }
 
     public GlowDesertTemple(Random random, Location location) {
-        super(random, location, new Vector(21, 29, 21));
+        super(random, location.add(0, -18, 0), new Vector(21, 29, 21));
     }
 
     public void setHasPlacedChest0(boolean placedChest) {
@@ -63,20 +64,18 @@ public class GlowDesertTemple extends GlowTemplePiece {
     }
 
     @Override
-    public boolean generate(World world, Random random, BlockStateDelegate delegate) {
-        if (!super.generate(world, random, delegate)) {
+    public boolean generate(World world, Random random, StructureBoundingBox genBoundingBox, BlockStateDelegate delegate) {
+        if (!super.generate(world, random, boundingBox, delegate)) {
             return false;
         }
 
-        boundingBox.offset(new Vector(0, -18, 0));
-
-        final StructureBuilder builder = new StructureBuilder(world, this, delegate);
+        final StructureBuilder builder = new StructureBuilder(world, this, genBoundingBox, delegate);
         for (int x = 0; x < 21; x++) {
             for (int z = 0; z < 21; z++) {
                 builder.setBlockDownward(new Vector(x, 13, z), Material.SANDSTONE);
             }
         }
-        builder.fill(new Vector(0, 14, 0), new Vector(21, 18, 21), Material.SANDSTONE);
+        builder.fill(new Vector(0, 14, 0), new Vector(20, 18, 20), Material.SANDSTONE);
         for (int i = 1; i <= 9; i++) {
            builder.fill(new Vector(i, i + 18, i), new Vector(20 - i, i + 18, 20 - i), Material.SANDSTONE);
            builder.fill(new Vector(i + 1, i + 18, i + 1), new Vector(19 - i, i + 18, 19 - i), Material.AIR);
@@ -224,16 +223,16 @@ public class GlowDesertTemple extends GlowTemplePiece {
         builder.fill(new Vector(9, 3, 9), new Vector(11, 17, 11), Material.AIR);
         builder.fill(new Vector(9, 1, 9), new Vector(11, 1, 11), Material.TNT);
         builder.fill(new Vector(9, 2, 9), new Vector(11, 2, 11), Material.SANDSTONE, 2);
-        builder.setBlock(new Vector(10, 4, 8), Material.AIR);
+        builder.fill(new Vector(10, 3, 8), new Vector(10, 4, 8), Material.AIR);
         builder.setBlock(new Vector(10, 3, 7), Material.SANDSTONE, 2);
         builder.setBlock(new Vector(10, 4, 7), Material.SANDSTONE, 1);
-        builder.setBlock(new Vector(12, 4, 10), Material.AIR);
+        builder.fill(new Vector(12, 3, 10), new Vector(12, 4, 10), Material.AIR);
         builder.setBlock(new Vector(13, 3, 10), Material.SANDSTONE, 2);
         builder.setBlock(new Vector(13, 4, 10), Material.SANDSTONE, 1);
-        builder.setBlock(new Vector(10, 4, 12), Material.AIR);
+        builder.fill(new Vector(10, 3, 12), new Vector(10, 4, 12), Material.AIR);
         builder.setBlock(new Vector(10, 3, 13), Material.SANDSTONE, 2);
         builder.setBlock(new Vector(10, 4, 13), Material.SANDSTONE, 1);
-        builder.setBlock(new Vector(8, 4, 10), Material.AIR);
+        builder.fill(new Vector(8, 3, 10), new Vector(8, 4, 10), Material.AIR);
         builder.setBlock(new Vector(7, 3, 10), Material.SANDSTONE, 2);
         builder.setBlock(new Vector(7, 4, 10), Material.SANDSTONE, 1);
         builder.setBlock(new Vector(10, 3, 10), Material.STONE_PLATE);

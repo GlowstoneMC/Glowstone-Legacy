@@ -2,6 +2,7 @@ package net.glowstone.generator.structures;
 
 import java.util.Random;
 
+import net.glowstone.generator.structures.util.StructureBoundingBox;
 import net.glowstone.generator.structures.util.StructureBuilder;
 import net.glowstone.util.BlockStateDelegate;
 
@@ -33,14 +34,14 @@ public class GlowWitchHut extends GlowTemplePiece {
     }
 
     @Override
-    public boolean generate(World world, Random random, BlockStateDelegate delegate) {
-        if (!super.generate(world, random, delegate)) {
+    public boolean generate(World world, Random random, StructureBoundingBox genBoundingBox, BlockStateDelegate delegate) {
+        if (!super.generate(world, random, boundingBox, delegate)) {
             return false;
         }
 
-        adjustHorizontalPosition(world);
+        adjustHPos(world);
 
-        final StructureBuilder builder = new StructureBuilder(world, this, delegate);
+        final StructureBuilder builder = new StructureBuilder(world, this, genBoundingBox, delegate);
         builder.fill(new Vector(1, 1, 2), new Vector(5, 4, 7), Material.WOOD, 1, Material.AIR); // hut body
         builder.fill(new Vector(1, 1, 1), new Vector(5, 1, 1), Material.WOOD, 1); // hut steps
         builder.fill(new Vector(2, 1, 0), new Vector(4, 1, 0), Material.WOOD, 1); // hut steps

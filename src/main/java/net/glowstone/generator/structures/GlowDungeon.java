@@ -7,6 +7,7 @@ import java.util.Random;
 import net.glowstone.GlowServer;
 import net.glowstone.generator.objects.RandomItemsContent;
 import net.glowstone.generator.objects.RandomItemsContent.RandomAmountItem;
+import net.glowstone.generator.structures.util.StructureBoundingBox;
 import net.glowstone.generator.structures.util.StructureBuilder;
 import net.glowstone.generator.structures.util.StructureBuilder.StructureMaterial;
 import net.glowstone.util.BlockStateDelegate;
@@ -80,14 +81,14 @@ public class GlowDungeon extends GlowStructurePiece {
     }
 
     @Override
-    public boolean generate(World world, Random random, BlockStateDelegate delegate) {
-        if (!super.generate(world, random, delegate)) {
+    public boolean generate(World world, Random random, StructureBoundingBox genBoundingBox, BlockStateDelegate delegate) {
+        if (!super.generate(world, random, boundingBox, delegate)) {
             return false;
         }
 
         boundingBox.offset(new Vector(-radiusX, -1, -radiusZ));
 
-        final StructureBuilder builder = new StructureBuilder(world, this, delegate);
+        final StructureBuilder builder = new StructureBuilder(world, this, genBoundingBox, delegate);
 
         if (!canPlace(builder)) {
             return false;

@@ -82,7 +82,7 @@ public abstract class GlowStructurePiece {
         return f;
     }
 
-    public boolean generate(World world, Random random, BlockStateDelegate delegate) {
+    public boolean generate(World world, Random random, StructureBoundingBox boundingBox, BlockStateDelegate delegate) {
         if (boundingBox == null) {
             return false;
         }

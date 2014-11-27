@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
 
+import net.glowstone.generator.structures.util.StructureBoundingBox;
 import net.glowstone.generator.structures.util.StructureBuilder;
 import net.glowstone.util.BlockStateDelegate;
 
@@ -17,14 +18,14 @@ public class GlowDesertWell extends GlowStructurePiece {
     }
 
     @Override
-    public boolean generate(World world, Random random, BlockStateDelegate delegate) {
-        if (!super.generate(world, random, delegate)) {
+    public boolean generate(World world, Random random, StructureBoundingBox genBoundingBox, BlockStateDelegate delegate) {
+        if (!super.generate(world, random, boundingBox, delegate)) {
             return false;
         }
 
         boundingBox.offset(new Vector(-2, -2, -2));
 
-        final StructureBuilder builder = new StructureBuilder(world, this, delegate);
+        final StructureBuilder builder = new StructureBuilder(world, this, genBoundingBox, delegate);
         while (builder.getBlockState(new Vector(2, 1, 2)).getType() == Material.AIR && boundingBox.getMin().getBlockY() > 0) {
             boundingBox.offset(new Vector(0, -1, 0));
         }

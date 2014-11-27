@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.EntityType;
@@ -24,13 +23,13 @@ public class StructureBuilder {
     private final World world;
     private final BlockStateDelegate delegate;
     private final StructureBoundingBox boundingBox;
-    private final BlockFace orientation;
+    private final GlowStructurePiece structure;
 
-    public StructureBuilder(World world, GlowStructurePiece structure, BlockStateDelegate delegate) {
+    public StructureBuilder(World world, GlowStructurePiece structure, StructureBoundingBox boundingBox, BlockStateDelegate delegate) {
         this.world = world;
         this.delegate = delegate;
-        boundingBox = structure.getBoundingBox();
-        orientation = structure.getOrientation();
+        this.boundingBox = boundingBox;
+        this.structure = structure;
     }
 
     public void addRandomMaterial(Map<StructureMaterial, Integer> materials, int weigth, Material type, int data) {
@@ -81,19 +80,23 @@ public class StructureBuilder {
 
     public void setBlockDownward(Vector pos, Material type, int data) {
         final Vector vec = translate(pos);
-        int y = vec.getBlockY();
-        while (!world.getBlockAt(vec.getBlockX(), y, vec.getBlockZ()).getType().isSolid() && y > 1) {
-            delegate.setTypeAndRawData(world, vec.getBlockX(), y, vec.getBlockZ(), type, data);
-            y--;
+        if (boundingBox.isVectorInside(vec)) {
+            int y = vec.getBlockY();
+            while (!world.getBlockAt(vec.getBlockX(), y, vec.getBlockZ()).getType().isSolid() && y > 1) {
+                delegate.setTypeAndRawData(world, vec.getBlockX(), y, vec.getBlockZ(), type, data);
+                y--;
+            }
         }
     }
 
     public void setBlockDownward(Vector pos, Material type, MaterialData data) {
         final Vector vec = translate(pos);
-        int y = vec.getBlockY();
-        while (!world.getBlockAt(vec.getBlockX(), y, vec.getBlockZ()).getType().isSolid() && y > 1) {
-            delegate.setTypeAndData(world, vec.getBlockX(), y, vec.getBlockZ(), type, data);
-            y--;
+        if (boundingBox.isVectorInside(vec)) {
+            int y = vec.getBlockY();
+            while (!world.getBlockAt(vec.getBlockX(), y, vec.getBlockZ()).getType().isSolid() && y > 1) {
+                delegate.setTypeAndData(world, vec.getBlockX(), y, vec.getBlockZ(), type, data);
+                y--;
+            }
         }
     }
 
@@ -228,11 +231,15 @@ public class StructureBuilder {
 
     public boolean spawnMob(Vector pos, EntityType entityType) {
         final Vector vec = translate(pos);
-        return world.spawnEntity(new Location(world, vec.getBlockX(), vec.getBlockY(), vec.getBlockZ()), entityType) != null;
+        if (boundingBox.isVectorInside(vec)) {
+            return world.spawnEntity(new Location(world, vec.getBlockX(), vec.getBlockY(), vec.getBlockZ()), entityType) != null;
+        }
+        return false;
     }
 
     private Vector translate(Vector pos) {
-        switch (orientation) {
+        final StructureBoundingBox boundingBox = structure.getBoundingBox();
+        switch (structure.getOrientation()) {
             case EAST:
                 return new Vector(boundingBox.getMax().getBlockX() - pos.getBlockZ(),
                         boundingBox.getMin().getBlockY() + pos.getBlockY(),

@@ -3,11 +3,13 @@ package net.glowstone.generator.decorators;
 import java.util.Random;
 
 import net.glowstone.generator.structures.GlowDesertWell;
+import net.glowstone.generator.structures.util.StructureBoundingBox;
 import net.glowstone.util.BlockStateDelegate;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.util.Vector;
 
 public class DesertWellDecorator extends BlockDecorator {
 
@@ -20,7 +22,7 @@ public class DesertWellDecorator extends BlockDecorator {
 
             final GlowDesertWell well = new GlowDesertWell(new Location(world, x, y, z));
             final BlockStateDelegate delegate = new BlockStateDelegate();
-            if (well.generate(world, random, delegate)) {
+            if (well.generate(world, random, new StructureBoundingBox(new Vector(x - 15, 1, z - 15), new Vector(x + 15, 511, z + 15)), delegate)) {
                 delegate.updateBlockStates();
             }
         }

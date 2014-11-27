@@ -72,7 +72,7 @@ public abstract class GlowStructure {
         }
     }
 
-    public boolean generate(Random random, BlockStateDelegate delegate) {
+    public boolean generate(Random random, int x, int z, BlockStateDelegate delegate) {
         if (boundingBox == null) {
             return false;
         }
@@ -80,7 +80,8 @@ public abstract class GlowStructure {
         final Iterator<GlowStructurePiece> it = children.iterator();
         while (it.hasNext()) {
             final GlowStructurePiece piece = it.next();
-            if (!piece.generate(world, random, delegate)) {
+            if (piece.getBoundingBox().intersectsWith(x, z, x + 15, z + 15) &&
+                    !piece.generate(world, random, new StructureBoundingBox(new Vector(x, 1, z), new Vector(x + 15, 511, z + 15)), delegate)) {
                 it.remove();
             }
         }

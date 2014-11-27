@@ -60,7 +60,7 @@ public abstract class GlowTemplePiece extends GlowStructurePiece {
         return hPos;
     }
 
-    protected void adjustHorizontalPosition(World world) {
+    protected void adjustHPos(World world) {
         if (hPos >= 0) {
             return;
         }
