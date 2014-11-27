@@ -2,6 +2,9 @@ package net.glowstone.generator.structures;
 
 import java.util.Random;
 
+import net.glowstone.generator.objects.RandomItemsContent;
+import net.glowstone.generator.objects.RandomItemsContent.RandomAmountItem;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -78,5 +81,20 @@ public abstract class GlowTemplePiece extends GlowStructurePiece {
         }
         hPos = sumY / blockCount;
         boundingBox.offset(new Vector(0, hPos - boundingBox.getMin().getBlockY(), 0));
+    }
+
+    protected RandomItemsContent getChestContent() {
+        final RandomItemsContent chestContent = new RandomItemsContent();
+        chestContent.addItem(new RandomAmountItem(Material.DIAMOND, 1, 3), 3);
+        chestContent.addItem(new RandomAmountItem(Material.IRON_INGOT, 1, 5), 10);
+        chestContent.addItem(new RandomAmountItem(Material.GOLD_INGOT, 2, 7), 15);
+        chestContent.addItem(new RandomAmountItem(Material.EMERALD, 1, 3), 2);
+        chestContent.addItem(new RandomAmountItem(Material.BONE, 4, 6), 20);
+        chestContent.addItem(new RandomAmountItem(Material.ROTTEN_FLESH, 3, 7), 16);
+        chestContent.addItem(new RandomAmountItem(Material.SADDLE, 1, 1), 3);
+        chestContent.addItem(new RandomAmountItem(Material.IRON_BARDING, 1, 1), 1);
+        chestContent.addItem(new RandomAmountItem(Material.GOLD_BARDING, 1, 1), 1);
+        chestContent.addItem(new RandomAmountItem(Material.DIAMOND_BARDING, 1, 1), 1);
+        return chestContent;
     }
 }

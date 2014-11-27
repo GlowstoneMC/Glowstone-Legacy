@@ -86,18 +86,7 @@ public class GlowJungleTemple extends GlowTemplePiece {
         builder.addRandomMaterial(stones, 4, Material.COBBLESTONE, 0);
         builder.addRandomMaterial(stones, 6, Material.MOSSY_COBBLESTONE, 0);
 
-        final RandomItemsContent chestContent = new RandomItemsContent();
-        chestContent.addItem(new RandomAmountItem(Material.DIAMOND, 1, 3), 3);
-        chestContent.addItem(new RandomAmountItem(Material.IRON_INGOT, 1, 5), 10);
-        chestContent.addItem(new RandomAmountItem(Material.GOLD_INGOT, 2, 7), 15);
-        chestContent.addItem(new RandomAmountItem(Material.EMERALD, 1, 3), 2);
-        chestContent.addItem(new RandomAmountItem(Material.BONE, 4, 6), 20);
-        chestContent.addItem(new RandomAmountItem(Material.ROTTEN_FLESH, 3, 7), 16);
-        chestContent.addItem(new RandomAmountItem(Material.SADDLE, 1, 1), 3);
-        chestContent.addItem(new RandomAmountItem(Material.IRON_BARDING, 1, 1), 1);
-        chestContent.addItem(new RandomAmountItem(Material.GOLD_BARDING, 1, 1), 1);
-        chestContent.addItem(new RandomAmountItem(Material.DIAMOND_BARDING, 1, 1), 1);
-
+        final RandomItemsContent chestContent = getChestContent();
         final RandomItemsContent dispenserContent = new RandomItemsContent();
         dispenserContent.addItem(new RandomAmountItem(Material.ARROW, 2, 7), 30);
 
