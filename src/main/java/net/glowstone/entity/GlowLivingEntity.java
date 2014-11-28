@@ -119,19 +119,14 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         Material mat = getEyeLocation().getBlock().getType();
         // breathing
         if (mat == Material.WATER || mat == Material.STATIONARY_WATER) {
-            if (canTakeDamage()) {
+            if (canDrown()) {
                 --airTicks;
                 if (airTicks <= -20) {
                     airTicks = 0;
                     damage(1, EntityDamageEvent.DamageCause.DROWNING);
                 }
             }
-        } else {
-            airTicks = maximumAir;
         }
-
-        if (isTouchingMaterial(Material.CACTUS) && canTakeDamage())
-            damage(1, EntityDamageEvent.DamageCause.CONTACT);
 
         if(isDeepInVoid())
             damage(4, EntityDamageEvent.DamageCause.VOID);
@@ -285,10 +280,10 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     }
 
     /**
-     * Get whether this entity can take damage.
-     * @return whether this entity can take damage
+     * Get whether this entity should take drowning damage.
+     * @return whether this entity can drown
      */
-    protected boolean canTakeDamage() {
+    protected boolean canDrown() {
         return true;
     }
 

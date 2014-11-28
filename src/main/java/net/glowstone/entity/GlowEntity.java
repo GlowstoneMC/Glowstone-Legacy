@@ -296,27 +296,6 @@ public abstract class GlowEntity implements Entity {
     }
 
     /**
-     *
-     * @param material
-     * @return if the player is within 1 block of the material
-     */
-    public boolean isTouchingMaterial(Material material) {
-
-        /*todo: This isn't the most accurate way to do it. Once entity support is added I can make it more precise
-        use a bounding box
-        */
-        BlockFace[] sides = {BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.NORTH, BlockFace.UP, BlockFace.SELF,
-                BlockFace.NORTH_EAST, BlockFace.NORTH_WEST,  BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST};
-
-        //Checks if the living entity is near a cactus or is on top of a cactus and hurts them
-        for (BlockFace face : sides) {
-            if (getLocation().getBlock().getRelative(face).getType() == material)
-                return true;
-        }
-        return false;
-    }
-
-    /**
      * Checks whether this entity should be saved as part of the world.
      * @return True if the entity should be saved.
      */
