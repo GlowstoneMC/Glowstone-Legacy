@@ -131,7 +131,6 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         if(isDeepInVoid())
             damage(4, EntityDamageEvent.DamageCause.VOID);
 
-
         // potion effects
         List<PotionEffect> effects = new ArrayList<>(potionEffects.values());
         for (PotionEffect effect : effects) {
@@ -148,7 +147,6 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
             }
         }
     }
-
 
     @Override
     public void reset() {
@@ -198,6 +196,10 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     @Override
     public EntityEquipment getEquipment() {
         return null;
+    }
+
+    public boolean isDeepInVoid() {
+        return location.getY() <= -64;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -618,9 +620,5 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     @Override
     public boolean setLeashHolder(Entity holder) {
         return false;
-    }
-
-    public boolean isDeepInVoid() {
-        return location.getY() <= -64;
     }
 }
