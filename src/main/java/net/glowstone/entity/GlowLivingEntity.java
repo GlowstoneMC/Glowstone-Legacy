@@ -130,7 +130,7 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
             airTicks = maximumAir;
         }
 
-        if(isDeepInVoid())
+        if (isDeepInVoid())
             damage(4, EntityDamageEvent.DamageCause.VOID);
 
         // potion effects
