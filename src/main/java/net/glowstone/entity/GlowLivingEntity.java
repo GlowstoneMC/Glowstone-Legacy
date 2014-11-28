@@ -133,6 +133,8 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         if (isTouchingMaterial(Material.CACTUS) && canTakeDamage())
             damage(1, EntityDamageEvent.DamageCause.CONTACT);
 
+        if(isDeepInVoid())
+            damage(4, EntityDamageEvent.DamageCause.VOID);
 
 
         // potion effects
@@ -621,5 +623,9 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
     @Override
     public boolean setLeashHolder(Entity holder) {
         return false;
+    }
+
+    public boolean isDeepInVoid() {
+        return location.getY() <= -64;
     }
 }
