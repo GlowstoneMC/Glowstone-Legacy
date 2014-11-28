@@ -124,10 +124,10 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
                 if (airTicks <= -20) {
                     airTicks = 0;
                     damage(1, EntityDamageEvent.DamageCause.DROWNING);
-                } else {
-                    airTicks = maximumAir;
                 }
             }
+        } else {
+            airTicks = maximumAir;
         }
 
         if(isDeepInVoid())
