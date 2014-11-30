@@ -33,7 +33,7 @@ public class FlowerPopulator extends BlockPopulator {
                         } else if (n < 4) {
                             block.setType(Material.YELLOW_FLOWER);
                         }*/
-                        if(n < 12) {
+                        if (n < 12) {
                             block.setType(Material.LONG_GRASS);
                             block.setData((byte) 1);
                         }

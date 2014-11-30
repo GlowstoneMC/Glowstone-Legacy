@@ -5,9 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
-import org.bukkit.util.noise.NoiseGenerator;
 import org.bukkit.util.noise.OctaveGenerator;
-import org.bukkit.util.noise.SimplexNoiseGenerator;
 import org.bukkit.util.noise.SimplexOctaveGenerator;
 
 import java.util.Map;
@@ -45,7 +43,7 @@ public class SurfaceGenerator extends GlowChunkGenerator {
 
     @Override
     public byte[] generate(World world, Random random, int chunkX, int chunkZ) {
-        /*if(density == null)*/ createWorldOctaves(world, null);
+        /*if (density == null)*/ createWorldOctaves(world, null);
 
         chunkX <<= 4;
         chunkZ <<= 4;
@@ -73,11 +71,11 @@ public class SurfaceGenerator extends GlowChunkGenerator {
 
                 // height is sea or noise
                 double h = height.noise(x, z, 2.5, 0.9, true);
-                if(h > 0) {
+                if (h > 0) {
                     int top = 0;
                     for (int y = 127; y > 0; y--) {
                         double finalDensity;
-                        if(h < 0.15) {
+                        if (h < 0.15) {
                             // linear interpolation
                             finalDensity =
                                     (h * (20 / 3.0)) * grasslandDensity(x, y, z) +
@@ -86,13 +84,13 @@ public class SurfaceGenerator extends GlowChunkGenerator {
                             finalDensity = grasslandDensity(x, y, z);
                         }
                         if (finalDensity > 0) {
-                            if(y > top) top = y;
+                            if (y > top) top = y;
 
                             if (y == top) {
-                                if(y <= 60) {
+                                if (y <= 60) {
                                     set(buf, ix, y, iz, Material.DIRT);
                                 } else {
-                                    if(h < 0.15) {
+                                    if (h < 0.15) {
                                         set(buf, ix, y, iz, Material.SAND);
                                     } else {
                                         set(buf, ix, y, iz, Material.GRASS);
@@ -103,16 +101,16 @@ public class SurfaceGenerator extends GlowChunkGenerator {
                             } else {
                                 set(buf, ix, y, iz, Material.STONE);
                             }
-                        } else if(y <= 60) {
+                        } else if (y <= 60) {
                             set(buf, ix, y, iz, Material.WATER);
                         }
                     }
                 } else {
                     int top = 0;
-                    for(int y = 60; y > 0; y--) {
+                    for (int y = 60; y > 0; y--) {
                         double finalDensity = seaDensity(x, y, z);
-                        if(finalDensity > 0) {
-                            if(y > top) top = y;
+                        if (finalDensity > 0) {
+                            if (y > top) top = y;
 
                             if (y == top) {
                                 set(buf, ix, y, iz, Material.GRAVEL);
@@ -137,7 +135,7 @@ public class SurfaceGenerator extends GlowChunkGenerator {
     private double grasslandDensity(int x, int y, int z) {
         return density.noise(x, y, z, 1.2, 0.6, true)
                 - roughness.noise(x, y, z, 1.2, 0.6, true)
-                * detail.noise(x, y, z, 1.2, 0.6, true) + 50.0 / 3 - (5.0 / 24) * y ;
+                * detail.noise(x, y, z, 1.2, 0.6, true) + 50.0 / 3 - (5.0 / 24) * y;
     }
 
     private double seaDensity(int x, int y, int z) {
@@ -149,7 +147,7 @@ public class SurfaceGenerator extends GlowChunkGenerator {
     @Override
     protected void createWorldOctaves(World world, Map<String, OctaveGenerator> octaves) {
         Random seed = new Random(world.getSeed());
-        double LARGE_SCALE = 1 / 8.0;
+        double largeScale = 1 / 8.0;
 
         /* With default settings, this is 5 octaves. With tscale=256,terrainheight=50,
          * this comes out to 14 octaves, which makes more complex terrain at the cost
@@ -173,22 +171,22 @@ public class SurfaceGenerator extends GlowChunkGenerator {
 
         // we don't care about y for the height so we set the scale overall
         height = new SimplexOctaveGenerator(seed, 5);
-        height.setScale(LARGE_SCALE / 32 / 8);
+        height.setScale(largeScale / 32 / 8);
 
         density = new SimplexOctaveGenerator(seed, 1);
-        density.setXScale(LARGE_SCALE / 1 / 8);
-        density.setYScale(LARGE_SCALE / 1 / 4);
-        density.setZScale(LARGE_SCALE / 1 / 8);
+        density.setXScale(largeScale / 1 / 8);
+        density.setYScale(largeScale / 1 / 4);
+        density.setZScale(largeScale / 1 / 8);
 
         roughness = new SimplexOctaveGenerator(seed, 1);
-        roughness.setXScale(LARGE_SCALE / 1 / 8);
-        roughness.setYScale(LARGE_SCALE / 1 / 4);
-        roughness.setZScale(LARGE_SCALE / 1 / 8);
+        roughness.setXScale(largeScale / 1 / 8);
+        roughness.setYScale(largeScale / 1 / 4);
+        roughness.setZScale(largeScale / 1 / 8);
 
         detail = new SimplexOctaveGenerator(seed, 1);
-        detail.setXScale(LARGE_SCALE * 3 / 8);
-        detail.setYScale(LARGE_SCALE * 3 / 4);
-        detail.setZScale(LARGE_SCALE * 3 / 8);
+        detail.setXScale(largeScale * 3 / 8);
+        detail.setYScale(largeScale * 3 / 4);
+        detail.setZScale(largeScale * 3 / 8);
     }
 
     @Override
