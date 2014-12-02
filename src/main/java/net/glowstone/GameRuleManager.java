@@ -32,7 +32,7 @@ public final class GameRuleManager {
     }
 
     public String getGameRuleValue(String rule) {
-        if (rule != null && gameRules.containsKey(rule)) {
+        if (rule != null && isGameRule(rule)) {
             return get(rule).getValue();
         }
         return null;
@@ -51,12 +51,12 @@ public final class GameRuleManager {
     }
 
     public boolean isGameRule(String rule) {
-        return gameRules.containsKey(rule);
+        return get(rule) != null;
     }
 
     public boolean getGameRuleBooleanValue(GlowGameRule rule) {
         if (isGameRule(rule.toString())) {
-            final GameRuleValue ruleValue = gameRules.get(rule.toString());
+            final GameRuleValue ruleValue = get(rule.toString());
             if (ruleValue.getType() == GameRuleValueType.BOOLEAN) {
                 return Boolean.parseBoolean(ruleValue.getValue());
             } else {
@@ -68,7 +68,7 @@ public final class GameRuleManager {
 
     public int getGameRuleNumericValue(GlowGameRule rule) {
         if (isGameRule(rule.toString())) {
-            final GameRuleValue ruleValue = gameRules.get(rule.toString());
+            final GameRuleValue ruleValue = get(rule.toString());
             if (ruleValue.getType() == GameRuleValueType.NUMERIC) {
                 try {
                     return Integer.parseInt(ruleValue.getValue());
