@@ -3,7 +3,6 @@ package net.glowstone;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.constants.GlowBiome;
 import net.glowstone.constants.GlowEffect;
-import net.glowstone.constants.GlowGameRule;
 import net.glowstone.constants.GlowParticle;
 import net.glowstone.entity.*;
 import net.glowstone.entity.objects.GlowItem;
@@ -392,7 +391,7 @@ public final class GlowWorld implements World {
         // Tick the world age and time of day
         // Modulus by 24000, the tick length of a day
         worldAge++;
-        if (gameRules.getGameRuleBooleanValue(GlowGameRule.DO_DAYLIGHT_CYCLE)) {
+        if (gameRules.getBoolean("doDaylightCycle")) {
             time = (time + 1) % DAY_LENGTH;
         }
         if (worldAge % (30 * 20) == 0) {

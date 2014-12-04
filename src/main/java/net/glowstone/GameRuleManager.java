@@ -3,28 +3,26 @@ package net.glowstone;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.glowstone.constants.GlowGameRule;
-
 public final class GameRuleManager {
 
     private final Map<String, GameRuleValue> gameRules = new HashMap<>();
 
     public GameRuleManager() {
-        set(GlowGameRule.COMMAND_BLOCK_OUTPUT, true);
-        set(GlowGameRule.DO_DAYLIGHT_CYCLE, true);
-        set(GlowGameRule.DO_ENTITY_DROPS, true);
-        set(GlowGameRule.DO_FIRE_TICK, true);
-        set(GlowGameRule.DO_MOB_LOOT, true);
-        set(GlowGameRule.DO_MOB_SPAWNING, true);
-        set(GlowGameRule.DO_TILE_DROPS, true);
-        set(GlowGameRule.KEEP_INVENTORY, false);
-        set(GlowGameRule.LOG_ADMIN_COMMANDS, true);
-        set(GlowGameRule.MOB_GRIEFING, true);
-        set(GlowGameRule.NATURAL_REGENERATION, true);
-        set(GlowGameRule.RANDOM_TICK_SPEED, 3);
-        set(GlowGameRule.REDUCED_DEBUG_INFO, false);
-        set(GlowGameRule.SEND_COMMAND_FEEDBACK, true);
-        set(GlowGameRule.SHOW_DEATH_MESSAGES, true);
+        set("commandBlockOutput", true);
+        set("doDaylightCycle", true);
+        set("doEntityDrops", true);
+        set("doFireTick", true);
+        set("doMobLoot", true);
+        set("doMobSpawning", true);
+        set("doTileDrops", true);
+        set("keepInventory", false);
+        set("logAdminCommands", true);
+        set("mobGriefing", true);
+        set("naturalRegeneration", true);
+        set("randomTickSpeed", 3);
+        set("reducedDebugInfo", false);
+        set("sendCommandFeedback", true);
+        set("showDeathMessages", true);
     }
 
     public String[] getGameRules() {
@@ -54,9 +52,9 @@ public final class GameRuleManager {
         return get(rule) != null;
     }
 
-    public boolean getGameRuleBooleanValue(GlowGameRule rule) {
-        if (isGameRule(rule.toString())) {
-            final GameRuleValue ruleValue = get(rule.toString());
+    public boolean getBoolean(String rule) {
+        if (isGameRule(rule)) {
+            final GameRuleValue ruleValue = get(rule);
             if (ruleValue.getType() == GameRuleValueType.BOOLEAN) {
                 return Boolean.parseBoolean(ruleValue.getValue());
             } else {
@@ -66,9 +64,9 @@ public final class GameRuleManager {
         return false;
     }
 
-    public int getGameRuleNumericValue(GlowGameRule rule) {
-        if (isGameRule(rule.toString())) {
-            final GameRuleValue ruleValue = get(rule.toString());
+    public int getNumeric(String rule) {
+        if (isGameRule(rule)) {
+            final GameRuleValue ruleValue = get(rule);
             if (ruleValue.getType() == GameRuleValueType.NUMERIC) {
                 try {
                     return Integer.parseInt(ruleValue.getValue());
@@ -90,12 +88,12 @@ public final class GameRuleManager {
         gameRules.put(rule, new GameRuleValue(GameRuleValueType.ANY, value));
     }
 
-    private void set(GlowGameRule rule, boolean value) {
-        gameRules.put(rule.toString(), new GameRuleValue(GameRuleValueType.BOOLEAN, Boolean.toString(value)));
+    private void set(String rule, boolean value) {
+        gameRules.put(rule, new GameRuleValue(GameRuleValueType.BOOLEAN, Boolean.toString(value)));
     }
 
-    private void set(GlowGameRule rule, int value) {
-        gameRules.put(rule.toString(), new GameRuleValue(GameRuleValueType.NUMERIC, Integer.toString(value)));
+    private void set(String rule, int value) {
+        gameRules.put(rule, new GameRuleValue(GameRuleValueType.NUMERIC, Integer.toString(value)));
     }
 
     private static class GameRuleValue {
