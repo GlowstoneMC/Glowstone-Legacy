@@ -19,6 +19,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Represents a single block in a world.
@@ -301,6 +302,28 @@ public final class GlowBlock implements Block {
     ////////////////////////////////////////////////////////////////////////////
     // Drops and breaking
 
+    public boolean breakNaturally(float yield) {
+        return breakNaturally(null, yield);    
+    }
+    
+    public boolean breakNaturally(ItemStack tool, float yield) {
+        if (getType() == Material.AIR) {
+            return false;
+        }
+
+        Random r = new Random();
+        
+        Location location = getLocation();
+        for (ItemStack stack : getDrops(tool)) {
+            if (r.nextFloat() < yield) {
+                getWorld().dropItemNaturally(location, stack);
+            }
+        }
+
+        setType(Material.AIR);
+        return true;
+    }
+    
     @Override
     public boolean breakNaturally() {
         return breakNaturally(null);
@@ -308,17 +331,7 @@ public final class GlowBlock implements Block {
 
     @Override
     public boolean breakNaturally(ItemStack tool) {
-        if (getType() == Material.AIR) {
-            return false;
-        }
-
-        Location location = getLocation();
-        for (ItemStack stack : getDrops(tool)) {
-            getWorld().dropItemNaturally(location, stack);
-        }
-
-        setType(Material.AIR);
-        return true;
+       return breakNaturally(tool, 1.0f);
     }
 
     @Override

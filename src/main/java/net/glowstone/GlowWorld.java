@@ -38,6 +38,7 @@ import java.util.logging.Level;
 
 /**
  * A class which represents the in-game world.
+ *
  * @author Graham Edgecombe
  */
 public final class GlowWorld implements World {
@@ -229,6 +230,7 @@ public final class GlowWorld implements World {
 
     /**
      * Creates a new world from the options in the given WorldCreator.
+     *
      * @param server The server for the world.
      * @param creator The WorldCreator to use.
      */
@@ -341,6 +343,7 @@ public final class GlowWorld implements World {
 
     /**
      * Get the world chunk manager.
+     *
      * @return The ChunkManager for the world.
      */
     public ChunkManager getChunkManager() {
@@ -349,6 +352,7 @@ public final class GlowWorld implements World {
 
     /**
      * Get the world's parent server.
+     *
      * @return The GlowServer for the world.
      */
     public GlowServer getServer() {
@@ -357,6 +361,7 @@ public final class GlowWorld implements World {
 
     /**
      * Get a new chunk lock object a player or other party can use to keep chunks loaded.
+     *
      * @return The ChunkLock.
      */
     public ChunkManager.ChunkLock newChunkLock(String desc) {
@@ -437,7 +442,26 @@ public final class GlowWorld implements World {
     }
 
     /**
+     * Calculates how much the rays from the location to the entity's bounding box is blocked.
+     *
+     * @param location The location for the rays to start
+     * @param entity The entity that's bounding box is the ray's end point
+     * @return a value between 0 and 1, where 0 = all rays blocked and 1 = all rays unblocked
+     */
+    public float rayTrace(Location location, GlowEntity entity) {
+        //TODO calculate how much of the entity is visible (not blocked by blocks) from the location
+
+        /**
+         * To calculate this step through the entity's bounding box and check whether the ray to the point in the bounding box is blocked.
+         * Return (unblockedRays / allRays)
+         */
+        return 1;
+    }
+
+
+    /**
      * Gets the entity manager.
+     *
      * @return The entity manager.
      */
     public EntityManager getEntityManager() {
@@ -976,6 +1000,16 @@ public final class GlowWorld implements World {
 
     @Override
     public <T extends Entity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException {
+        T entity = null;
+
+        if (TNTPrimed.class.isAssignableFrom(clazz)) {
+            entity = (T) new GlowTNTPrimed(location, null);
+        }
+
+        if (entity != null) {
+            return entity;
+        }
+
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -1218,9 +1252,13 @@ public final class GlowWorld implements World {
 
     @Override
     public boolean createExplosion(double x, double y, double z, float power, boolean setFire, boolean breakBlocks) {
-        return false;
+        return createExplosion(null, x, y, z, power, setFire, breakBlocks);
     }
 
+    public boolean createExplosion(Entity source, double x, double y, double z, float power, boolean incendiary, boolean breakBlocks) {
+        Explosion explosion = new Explosion(source, this, x, y, z, power, incendiary, breakBlocks);
+        return explosion.explodeWithEvent();
+    }
     ////////////////////////////////////////////////////////////////////////////
     // Effects
 
@@ -1298,6 +1336,7 @@ public final class GlowWorld implements World {
 
     /**
      * Save the world data using the metadata service.
+     *
      * @param async Whether to write asynchronously.
      */
     private void writeWorldData(boolean async) {
@@ -1316,6 +1355,7 @@ public final class GlowWorld implements World {
 
     /**
      * Execute a runnable, optionally asynchronously.
+     *
      * @param async Whether to run the runnable in an asynchronous task.
      * @param runnable The runnable to run.
      */
@@ -1329,6 +1369,7 @@ public final class GlowWorld implements World {
 
     /**
      * Unloads the world
+     *
      * @return true if successful
      */
     public boolean unload() {
@@ -1343,6 +1384,7 @@ public final class GlowWorld implements World {
 
     /**
      * Get the storage provider for the world.
+     *
      * @return The {@link WorldStorageProvider}.
      */
     public WorldStorageProvider getStorage() {
@@ -1351,6 +1393,7 @@ public final class GlowWorld implements World {
 
     /**
      * Get the world folder.
+     *
      * @return world folder
      */
     @Override
