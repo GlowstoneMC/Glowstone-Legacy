@@ -5,7 +5,10 @@ import net.glowstone.constants.GlowBiome;
 import net.glowstone.constants.GlowEffect;
 import net.glowstone.constants.GlowParticle;
 import net.glowstone.entity.*;
-import net.glowstone.entity.objects.GlowItem;
+import net.glowstone.entity.monsters.*;
+import net.glowstone.entity.passive.*;
+import net.glowstone.entity.objects.*;
+import net.glowstone.entity.projectiles.*;
 import net.glowstone.generator.TreeGenerator;
 import net.glowstone.io.WorldMetadataService.WorldFinalValues;
 import net.glowstone.io.WorldStorageProvider;
@@ -66,6 +69,8 @@ public final class GlowWorld implements World {
      * The length in ticks between autosaves (5 minutes).
      */
     private static final int AUTOSAVE_TIME = 20 * 60 * 5;
+
+    private static final Map<Class<? extends Entity>, Class<? extends GlowEntity>> ENTITY_REGISTRY = new HashMap<>();
 
     /**
      * The server of this world.
@@ -226,6 +231,57 @@ public final class GlowWorld implements World {
      * Per-chunk spawn limits on various types of entities.
      */
     private int monsterLimit, animalLimit, waterAnimalLimit, ambientLimit;
+
+    static {
+        registerEntity(Blaze.class, GlowBlaze.class);
+        registerEntity(CaveSpider.class, GlowCaveSpider.class);
+        registerEntity(Creeper.class, GlowCreeper.class);
+        registerEntity(Enderman.class, GlowEnderman.class);
+        registerEntity(Endermite.class, GlowEndermite.class);
+        registerEntity(Ghast.class, GlowGhast.class);
+        registerEntity(Giant.class, GlowGiant.class);
+        registerEntity(Guardian.class, GlowGuardian.class);
+        registerEntity(MagmaCube.class, GlowMagmaCube.class);
+        registerEntity(PigZombie.class, GlowPigZombie.class);
+        registerEntity(Silverfish.class, GlowSilverfish.class);
+        registerEntity(Skeleton.class, GlowSkeleton.class);
+        registerEntity(Slime.class, GlowSlime.class);
+        registerEntity(Spider.class, GlowSpider.class);
+        registerEntity(Witch.class, GlowWitch.class);
+        registerEntity(Wither.class, GlowWither.class);
+        registerEntity(Zombie.class, GlowZombie.class);
+
+        registerEntity(Item.class, GlowItem.class);
+        registerEntity(Painting.class, GlowPainting.class);
+
+        registerEntity(Bat.class, GlowBat.class);
+        registerEntity(Chicken.class, GlowChicken.class);
+        registerEntity(Cow.class, GlowCow.class);
+        registerEntity(Horse.class, GlowHorse.class);
+        registerEntity(IronGolem.class, GlowIronGolem.class);
+        registerEntity(MushroomCow.class, GlowMushroomCow.class);
+        registerEntity(Ocelot.class, GlowOcelot.class);
+        registerEntity(Pig.class, GlowPig.class);
+        registerEntity(Rabbit.class, GlowRabbit.class);
+        registerEntity(Sheep.class, GlowSheep.class);
+        registerEntity(Snowman.class, GlowSnowman.class);
+        registerEntity(Squid.class, GlowSquid.class);
+        registerEntity(Villager.class, GlowVillager.class);
+        registerEntity(Wolf.class, GlowWolf.class);
+
+        // TODO Implement storages for these projectiles.
+//        registerEntity(Arrow.class, GlowArrow.class);
+//        registerEntity(Egg.class, GlowEgg.class);
+//        registerEntity(LargeFireball.class, GlowLargeFireball.class);
+//        registerEntity(SmallFireball.class, GlowSmallFireball.class);
+//        registerEntity(Snowball.class, GlowSnowball.class);
+//        registerEntity(WitherSkull.class, GlowWitherSkull.class);
+
+    }
+
+    private static void registerEntity(Class<? extends Entity> apiClazz, Class<? extends GlowEntity> glowClazz) {
+        ENTITY_REGISTRY.put(apiClazz, glowClazz);
+    }
 
     /**
      * Creates a new world from the options in the given WorldCreator.
@@ -974,9 +1030,21 @@ public final class GlowWorld implements World {
     ////////////////////////////////////////////////////////////////////////////
     // Entity spawning
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Entity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (location == null || clazz == null) {
+            throw new IllegalArgumentException("Location or entity class cannot be null");
+        }
+        Entity entity = null;
+        Class<? extends GlowEntity> entityClass = ENTITY_REGISTRY.get(clazz);
+        try {
+            entity = entityClass.getConstructor(Location.class).newInstance(location);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Cannot spawn an entity for " + clazz.getName(), e);
+        }
+
+        return (T) entity;
     }
 
     @Override

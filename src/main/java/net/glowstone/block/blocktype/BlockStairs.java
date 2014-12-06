@@ -22,7 +22,7 @@ public class BlockStairs extends BlockType {
 
         MaterialData data = state.getData();
         if (data instanceof Stairs) {
-            ((Stairs) data).setFacingDirection(player.getDirection());
+            ((Stairs) data).setFacingDirection(player.getFacingDirection());
 
             if (face == BlockFace.DOWN || face != BlockFace.UP && clickedLoc.getY() >= 8) {
                 ((Stairs) data).setInverted(true);

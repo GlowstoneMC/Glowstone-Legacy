@@ -70,5 +70,5 @@ public class GlowLightningStrike extends GlowWeather implements LightningStrike 
     public List<Message> createUpdateMessage() {
         return Arrays.asList();
     }
-
+    
 }
