@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 
-public class BlockPumpkinStem extends BlockType {
+public class BlockPumpkinStem extends BlockNeedsAttached {
     private final Random random = new Random();
 
     @Override

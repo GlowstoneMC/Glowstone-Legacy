@@ -11,6 +11,7 @@ import net.glowstone.block.itemtype.ItemType;
 import net.glowstone.entity.GlowPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.BlockCanBuildEvent;
@@ -43,6 +44,7 @@ public class BlockType extends ItemType {
 
     /**
      * Get the items that will be dropped by digging the block.
+     *
      * @param block The block being dug.
      * @param tool The tool used or {@code null} if fists or no tool was used.
      * @return The drops that should be returned.
@@ -61,6 +63,7 @@ public class BlockType extends ItemType {
 
     /**
      * Create a new tile entity at the given location.
+     *
      * @param chunk The chunk to create the tile entity at.
      * @param cx The x coordinate in the chunk.
      * @param cy The y coordinate in the chunk.
@@ -73,6 +76,7 @@ public class BlockType extends ItemType {
 
     /**
      * Check whether the block can be placed at the given location.
+     *
      * @param block The location the block is being placed at.
      * @param against The face the block is being placed against.
      * @return Whether the placement is valid.
@@ -83,6 +87,7 @@ public class BlockType extends ItemType {
 
     /**
      * Called when a block is placed to calculate what the block will become.
+     *
      * @param player the player who placed the block
      * @param state the BlockState to edit
      * @param holding the ItemStack that was being held
@@ -96,6 +101,7 @@ public class BlockType extends ItemType {
 
     /**
      * Called after a block has been placed by a player.
+     *
      * @param player the player who placed the block
      * @param block the block that was placed
      * @param holding the the ItemStack that was being held
@@ -107,6 +113,7 @@ public class BlockType extends ItemType {
     /**
      * Called when a player attempts to interact with (right-click) a block of
      * this type already in the world.
+     *
      * @param player the player interacting
      * @param block the block interacted with
      * @param face the clicked face
@@ -132,6 +139,7 @@ public class BlockType extends ItemType {
      * this type. Used to determine if the placement should occur into the air
      * adjacent to the block (normal behavior), or absorbed into the block
      * clicked on.
+     *
      * @param block The block the player right-clicked
      * @param face The face on which the click occurred
      * @param holding The ItemStack the player was holding
@@ -144,6 +152,7 @@ public class BlockType extends ItemType {
     /**
      * Called to check if this block can be overridden by a block place
      * which would occur inside it.
+     *
      * @param block The block being targeted by the placement
      * @param face The face on which the click occurred
      * @param holding The ItemStack the player was holding
@@ -151,6 +160,45 @@ public class BlockType extends ItemType {
      */
     public boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
         return block.isLiquid();
+    }
+
+    /**
+     * Called when a near block changed it's type or data and physics should be applied.
+     *
+     * @param block The block near the changed one
+     * @param position The position where the changed block is (so BlockFace.DOWN = below block) or NULL if BlockFace doesn't cover the position
+     * @param changedBlock The block that changed its type and/or data
+     * @param oldType The old type of the changed block
+     * @param oldData The old data of the changed block
+     * @param newType The new type of the changed block
+     * @param newData The new data of the changed block
+     */
+    public void onNearBlockChanged(GlowBlock block, BlockFace position, GlowBlock changedBlock, Material oldType, byte oldData, Material newType, byte newData) {
+
+    }
+
+    /**
+     * Called when this block was changed and physics should be applied.
+     * This is called whenever {@link net.glowstone.block.GlowBlock#setTypeIdAndData(int, byte, boolean) GlowBlock#setType or #setData} is called with physics enabled.
+     * So this is also called from plugins and other intern methods.
+     *
+     * @param block The block that was changed
+     * @param oldType The old Material
+     * @param oldData The old data
+     * @param newType The new Material
+     * @param data The new data
+     */
+    public void onBlockChanged(GlowBlock block, Material oldType, byte oldData, Material newType, byte data) {
+
+    }
+
+    /**
+     * Called when the BlockType should calculate the current physics.
+     *
+     * @param me The block
+     */
+    public void updatePhysics(GlowBlock me) {
+
     }
 
     @Override
@@ -208,6 +256,7 @@ public class BlockType extends ItemType {
 
     /**
      * Display the warning for finding the wrong MaterialData subclass.
+     *
      * @param clazz The expected subclass of MaterialData.
      * @param data The actual MaterialData found.
      */
@@ -218,6 +267,7 @@ public class BlockType extends ItemType {
     /**
      * Gets the BlockFace opposite of the direction the location is facing.
      * Usually used to set the way container blocks face when being placed.
+     *
      * @param location Location to get opposite of
      * @param inverted If up/down should be used
      * @return Opposite BlockFace or EAST if yaw is invalid
