@@ -151,7 +151,6 @@ public final class ItemTable {
         reg(Material.WOOD_BUTTON, new BlockButton(Material.WOOD_BUTTON));
         reg(Material.BED_BLOCK, new BlockBed());
         reg(Material.SKULL, new BlockSkull());
-        reg(Material.TORCH, new BlockTorch());
         reg(Material.GOLD_PLATE, new BlockDirectDrops(Material.GOLD_PLATE, ToolType.PICKAXE));
         reg(Material.IRON_PLATE, new BlockDirectDrops(Material.IRON_PLATE, ToolType.PICKAXE));
         reg(Material.STONE_PLATE, new BlockDirectDrops(Material.STONE_PLATE, ToolType.PICKAXE));
@@ -167,6 +166,10 @@ public final class ItemTable {
         reg(Material.CAULDRON, new BlockDirectDrops(Material.CAULDRON_ITEM, ToolType.PICKAXE));
         reg(Material.STANDING_BANNER, new BlockBanner());
         reg(Material.WALL_BANNER, new BlockBanner());
+        reg(Material.TORCH, new BlockTorch(Material.TORCH));
+        reg(Material.REDSTONE_TORCH_ON, new BlockRedstoneTorch(true));
+        reg(Material.REDSTONE_TORCH_OFF, new BlockRedstoneTorch(false));
+        reg(Material.REDSTONE_WIRE, new BlockRedstoneDust());
 
         reg(Material.SIGN, new ItemSign());
         reg(Material.REDSTONE, new ItemPlaceAs(Material.REDSTONE_WIRE));
