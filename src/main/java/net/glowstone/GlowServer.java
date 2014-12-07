@@ -42,6 +42,8 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.util.CachedServerIcon;
 import org.bukkit.util.permissions.DefaultPermissions;
 
+import java.awt.Desktop;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.InetSocketAddress;
@@ -79,11 +81,11 @@ public final class GlowServer implements Server {
      */
     public static void main(String[] args) {
         try {
-            // check for console
-            /*if (System.console() == null) {
+            // check for console and desktop environment
+            if (System.console() == null && !GraphicsEnvironment.isHeadless() && Desktop.isDesktopSupported()) {
                 ConsoleMissing.display();
                 return;
-            }*/
+            }
 
             ConfigurationSerialization.registerClass(GlowOfflinePlayer.class);
             GlowPotionEffect.register();
