@@ -5,122 +5,120 @@ import java.util.Map;
 
 public final class GameRuleManager {
 
-    private final Map<String, GameRuleValue> gameRules = new HashMap<>();
+    private final Map<String, String> gameRules = new HashMap<>();
 
     public GameRuleManager() {
-        set("commandBlockOutput", true);
-        set("doDaylightCycle", true);
-        set("doEntityDrops", true);
-        set("doFireTick", true);
-        set("doMobLoot", true);
-        set("doMobSpawning", true);
-        set("doTileDrops", true);
-        set("keepInventory", false);
-        set("logAdminCommands", true);
-        set("mobGriefing", true);
-        set("naturalRegeneration", true);
-        set("randomTickSpeed", 3);
-        set("reducedDebugInfo", false);
-        set("sendCommandFeedback", true);
-        set("showDeathMessages", true);
+        setValue("commandBlockOutput", true);
+        setValue("doDaylightCycle", true);
+        setValue("doEntityDrops", true);
+        setValue("doFireTick", true);
+        setValue("doMobLoot", true);
+        setValue("doMobSpawning", true);
+        setValue("doTileDrops", true);
+        setValue("keepInventory", false);
+        setValue("logAdminCommands", true);
+        setValue("mobGriefing", true);
+        setValue("naturalRegeneration", true);
+        setValue("randomTickSpeed", 3);
+        setValue("reducedDebugInfo", false);
+        setValue("sendCommandFeedback", true);
+        setValue("showDeathMessages", true);
     }
 
+    /**
+     * Gets all of the game rules defined
+     *
+     * @return the game rules defined, may be empty
+     */
     public String[] getGameRules() {
         return gameRules.keySet().toArray(new String[gameRules.size()]);
     }
 
-    public String getGameRuleValue(String rule) {
-        if (rule != null && isGameRule(rule)) {
-            return get(rule).getValue();
-        }
-        return null;
-    }
-
-    public boolean setGameRuleValue(String rule, String value) {
-        if (rule != null && value != null) {
-            if (isGameRule(rule)) {
-                get(rule).setValue(value);
-            } else {
-                set(rule, value);
-            }
+    /**
+     * Sets the value of a game rule. The supplied value cannot be null. If the
+     * value is not a string, the string representation of the object will be
+     * used instead, which must also not return null. If the value is null, or
+     * is converted to null through toString(), then this will return false.
+     * <p/>
+     * The actual object value is never stored, only the string value. The
+     * helper methods provided in this class may be used to retrieve the value,
+     * such as {@link #getAsBoolean(String)}.
+     *
+     * @param rule  the rule to set, cannot be null
+     * @param value the value to set, cannot be null or be represented as null
+     *
+     * @return true if set, false otherwise
+     */
+    public boolean setValue(String rule, Object value) {
+        if (rule != null && value != null && value.toString() != null) {
+            gameRules.put(rule, value.toString());
             return true;
         }
         return false;
     }
 
+    /**
+     * Gets whether or not the supplied rule is defined
+     *
+     * @param rule the rule to lookup
+     *
+     * @return true if defined, false otherwise
+     */
     public boolean isGameRule(String rule) {
-        return get(rule) != null;
+        if (rule == null) return false;
+        return gameRules.containsKey(rule);
     }
 
-    public boolean getBoolean(String rule) {
+    /**
+     * Gets the game rule value as a string. If the value does not exist, then
+     * this will return null.
+     *
+     * @param rule the rule to lookup, must be defined
+     *
+     * @return the string value, or null if not defined
+     */
+    public String getAsString(String rule) {
+        if (rule != null && isGameRule(rule)) {
+            return gameRules.get(rule);
+        }
+        return null;
+    }
+
+    /**
+     * Gets the game rule value as a boolean. If the value cannot be parsed or
+     * does not exist, then this will return false.
+     *
+     * @param rule the rule to lookup, must be defined
+     *
+     * @return the boolean value
+     */
+    public boolean getAsBoolean(String rule) {
         if (isGameRule(rule)) {
-            final GameRuleValue ruleValue = get(rule);
-            if (ruleValue.getType() == GameRuleValueType.BOOLEAN) {
-                return Boolean.parseBoolean(ruleValue.getValue());
-            } else {
-                throw new IllegalArgumentException("This GlowGameRule isn't BOOLEAN");
-            }
+            String value = getAsString(rule);
+            if (value != null)
+                return Boolean.parseBoolean(value); // Defaults to 'false'
         }
         return false;
     }
 
-    public int getNumeric(String rule) {
+    /**
+     * Gets the game rule value as an integer. If the value cannot be parsed or
+     * does not exist then this will raise an IllegalStateException to indicate
+     * as such.
+     *
+     * @param rule the rule to lookup, must be defined
+     *
+     * @return the integer value of the rule
+     */
+    public int getAsInteger(String rule) {
         if (isGameRule(rule)) {
-            final GameRuleValue ruleValue = get(rule);
-            if (ruleValue.getType() == GameRuleValueType.NUMERIC) {
-                try {
-                    return Integer.parseInt(ruleValue.getValue());
-                } catch (NumberFormatException ex) {
-                    throw new IllegalArgumentException("This GlowGameRule isn't NUMERIC");
-                }
-            } else {
-                throw new IllegalArgumentException("This GlowGameRule isn't NUMERIC");
+            String value = getAsString(rule);
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException ignored) {
+                // Ignored exception: fall through to final throw
             }
         }
-        return -1;
-    }
-
-    private GameRuleValue get(String rule) {
-        return gameRules.get(rule);
-    }
-
-    private void set(String rule, String value) {
-        gameRules.put(rule, new GameRuleValue(GameRuleValueType.ANY, value));
-    }
-
-    private void set(String rule, boolean value) {
-        gameRules.put(rule, new GameRuleValue(GameRuleValueType.BOOLEAN, Boolean.toString(value)));
-    }
-
-    private void set(String rule, int value) {
-        gameRules.put(rule, new GameRuleValue(GameRuleValueType.NUMERIC, Integer.toString(value)));
-    }
-
-    private static class GameRuleValue {
-        private final GameRuleValueType type;
-        private String value;
-
-        public GameRuleValue(GameRuleValueType type, String value) {
-            this.type = type;
-            this.value = value;
-        }
-
-        public GameRuleValueType getType() {
-            return type;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-    }
-
-    private static enum GameRuleValueType {
-        ANY,
-        BOOLEAN,
-        NUMERIC
+        throw new IllegalStateException("Value not set or cannot be parsed");
     }
 }

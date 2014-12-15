@@ -391,7 +391,7 @@ public final class GlowWorld implements World {
         // Tick the world age and time of day
         // Modulus by 24000, the tick length of a day
         worldAge++;
-        if (gameRules.getBoolean("doDaylightCycle")) {
+        if (gameRules.getAsBoolean("doDaylightCycle")) {
             time = (time + 1) % DAY_LENGTH;
         }
         if (worldAge % (30 * 20) == 0) {
@@ -1370,12 +1370,12 @@ public final class GlowWorld implements World {
 
     @Override
     public String getGameRuleValue(String rule) {
-        return gameRules.getGameRuleValue(rule);
+        return gameRules.getAsString(rule);
     }
 
     @Override
     public boolean setGameRuleValue(String rule, String value) {
-        return gameRules.setGameRuleValue(rule, value);
+        return gameRules.setValue(rule, value);
     }
 
     @Override
