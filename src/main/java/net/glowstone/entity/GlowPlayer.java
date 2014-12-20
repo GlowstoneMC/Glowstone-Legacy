@@ -275,7 +275,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
             gameMode |= 0x8;
         }
         session.send(new JoinGameMessage(SELF_ID, gameMode, world.getEnvironment().getId(), world.getDifficulty().getValue(), session.getServer().getMaxPlayers(), type, false));
-        setAllowFlight(getGameMode() == GameMode.CREATIVE);
+        setGameModeDefaults();
 
         // send server brand and supported plugin channels
         session.send(PluginMessage.fromString("MC|Brand", server.getName()));
@@ -690,6 +690,18 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         return UserListItemMessage.add(getProfile(), getGameMode().getValue(), 0, displayName);
     }
 
+    /**
+     * Send a UserListItemMessage to every player that can see this player.
+     * @param updateMessage The message to send.
+     */
+    private void updateUserListEntries(UserListItemMessage updateMessage) {
+        for (GlowPlayer player : server.getOnlinePlayers()) {
+            if (player.canSee(this)) {
+                player.getSession().send(updateMessage);
+            }
+        }
+    }
+
     @Override
     public void setVelocity(Vector velocity) {
         PlayerVelocityEvent event = EventFactory.callEvent(new PlayerVelocityEvent(this, velocity));
@@ -833,12 +845,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         if (playerListName != null && !playerListName.isEmpty()) {
             displayName = new TextMessage(playerListName);
         }
-        Message updateMessage = UserListItemMessage.displayNameOne(getUniqueId(), displayName);
-        for (GlowPlayer player : server.getOnlinePlayers()) {
-            if (player.canSee(this)) {
-                player.getSession().send(updateMessage);
-            }
-        }
+        updateUserListEntries(UserListItemMessage.displayNameOne(getUniqueId(), displayName));
     }
 
     @Override
@@ -879,13 +886,23 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
     @Override
     public void setGameMode(GameMode mode) {
-        boolean changed = getGameMode() != mode;
-        super.setGameMode(mode);
-        if (changed) {
+        if (getGameMode() != mode) {
+            PlayerGameModeChangeEvent event = new PlayerGameModeChangeEvent(this, mode);
+            if (EventFactory.callEvent(event).isCancelled()) {
+                return;
+            }
+
+            super.setGameMode(mode);
+            updateUserListEntries(UserListItemMessage.gameModeOne(getUniqueId(), mode.getValue()));
             session.send(new StateChangeMessage(StateChangeMessage.Reason.GAMEMODE, mode.getValue()));
         }
+        setGameModeDefaults();
+    }
 
-        setAllowFlight(mode == GameMode.CREATIVE);
+    private void setGameModeDefaults() {
+        GameMode mode = getGameMode();
+        setAllowFlight(mode == GameMode.CREATIVE || mode == GameMode.SPECTATOR);
+        metadata.setBit(MetadataIndex.STATUS, MetadataIndex.StatusFlags.INVISIBLE, mode == GameMode.SPECTATOR);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1137,11 +1154,6 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     ////////////////////////////////////////////////////////////////////////////
     // Actions
 
-    /**
-     * Teleport the player.
-     * @param location The destination to teleport to.
-     * @return Whether the teleport was a success.
-     */
     @Override
     public boolean teleport(Location location) {
         return teleport(location, TeleportCause.UNKNOWN);
@@ -1149,6 +1161,10 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
     @Override
     public boolean teleport(Location location, TeleportCause cause) {
+        Validate.notNull(location, "location cannot be null");
+        Validate.notNull(location.getWorld(), "location's world cannot be null");
+        Validate.notNull(cause, "cause cannot be null");
+
         if (this.location != null && this.location.getWorld() != null) {
             PlayerTeleportEvent event = new PlayerTeleportEvent(this, this.location, location, cause);
             if (EventFactory.callEvent(event).isCancelled()) {
@@ -1424,6 +1440,22 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     }
 
     /**
+     * Send a sign change, similar to {@link #sendSignChange(Location, String[])},
+     * but using complete TextMessages instead of strings.
+     * @param location the location of the sign
+     * @param lines the new text on the sign or null to clear it
+     * @throws IllegalArgumentException if location is null
+     * @throws IllegalArgumentException if lines is non-null and has a length less than 4
+     */
+    public void sendSignChange(Location location, TextMessage[] lines) {
+        Validate.notNull(location, "location cannot be null");
+        Validate.notNull(lines, "lines cannot be null");
+        Validate.isTrue(lines.length == 4, "lines.length must equal 4");
+
+        afterBlockChanges.add(new UpdateSignMessage(location.getBlockX(), location.getBlockY(), location.getBlockZ(), lines));
+    }
+
+    /**
      * Send a block entity change to the given location.
      * @param location The location of the block entity.
      * @param type The type of block entity being sent.
@@ -1460,8 +1492,8 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
      * otherwise does nothing. If {@code awardParents} is true, award the player all
      * parent achievements and the given achievement, making this method equivalent
      * to {@link #awardAchievement(Achievement)}.
-     * @param achievement
-     * @param awardParents
+     * @param achievement the achievement to award.
+     * @param awardParents whether parent achievements should be awarded.
      * @return {@code true} if the achievement was awarded, {@code false} otherwise
      */
     public boolean awardAchievement(Achievement achievement, boolean awardParents) {
@@ -1469,17 +1501,24 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
         Achievement parent = achievement.getParent();
         if (parent != null && !hasAchievement(parent)) {
-            if (awardParents) {
-                awardAchievement(parent, awardParents);
-            } else {
-                return false; // player does not have the required parent achievement
+            if (!awardParents || !awardAchievement(parent, true)) {
+                // does not have or failed to award required parent achievement
+                return false;
             }
+        }
+
+        PlayerAchievementAwardedEvent event = new PlayerAchievementAwardedEvent(this, achievement);
+        if (EventFactory.callEvent(event).isCancelled()) {
+            return false; // event was cancelled
         }
 
         stats.setAchievement(achievement, true);
         sendAchievement(achievement, true);
 
-        // todo: make an announcement if that's enabled
+        if (server.getAnnounceAchievements()) {
+            // todo: make message fancier (hover, translated names)
+            server.broadcastMessage(getName() + " earned achievement " + ChatColor.GREEN + "[" + achievement.name() + "]");
+        }
         return true;
     }
 

@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import net.glowstone.command.ColorCommand;
 import net.glowstone.command.TellrawCommand;
+import net.glowstone.constants.GlowEnchantment;
 import net.glowstone.constants.GlowPotionEffect;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.inventory.CraftingManager;
@@ -78,8 +79,15 @@ public final class GlowServer implements Server {
      */
     public static void main(String[] args) {
         try {
+            // check for console
+            /*if (System.console() == null) {
+                ConsoleMissing.display();
+                return;
+            }*/
+
             ConfigurationSerialization.registerClass(GlowOfflinePlayer.class);
             GlowPotionEffect.register();
+            GlowEnchantment.register();
 
             // parse arguments and read config
             final ServerConfig config = parseArguments(args);
@@ -778,7 +786,7 @@ public final class GlowServer implements Server {
     }
 
     /**
-     * Get whether to use color codes in Rcon responses
+     * Get whether to use color codes in Rcon responses.
      * @return True if color codes will be present in Rcon responses
      */
     public boolean useRconColors() {
@@ -786,16 +794,28 @@ public final class GlowServer implements Server {
     }
 
     /**
-     * Get the resource pack url for this server, or {@code null} if not set
-     * @return url The url of the resource pack to use, or {@code null}
+     * Get the resource pack url for this server, or {@code null} if not set.
+     * @return The url of the resource pack to use, or {@code null}
      */
-    public String getResourcePackURL() { return config.getString(ServerConfig.Key.RESOURCE_PACK); }
+    public String getResourcePackURL() {
+        return config.getString(ServerConfig.Key.RESOURCE_PACK);
+    }
 
     /**
-     * Get the resource pack hash for this server, or the empty string if not set
-     * @return hash The hash of the resource pack, or the empty string
+     * Get the resource pack hash for this server, or the empty string if not set.
+     * @return The hash of the resource pack, or the empty string
      */
-    public String getResourcePackHash() { return config.getString(ServerConfig.Key.RESOURCE_PACK_HASH); }
+    public String getResourcePackHash() {
+        return config.getString(ServerConfig.Key.RESOURCE_PACK_HASH);
+    }
+
+    /**
+     * Get whether achievements should be announced.
+     * @return True if achievements should be announced in chat.
+     */
+    public boolean getAnnounceAchievements() {
+        return config.getBoolean(ServerConfig.Key.ANNOUNCE_ACHIEVEMENTS);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     // Static server properties
