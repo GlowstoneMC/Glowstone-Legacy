@@ -1,6 +1,5 @@
 package net.glowstone.net.handler.play.player;
 
-import com.esotericsoftware.minlog.Log;
 import com.flowpowered.networking.MessageHandler;
 
 import net.glowstone.EventFactory;
@@ -91,7 +90,7 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
             if (blockType != null) {
                 blockType.blockDestroy(player, block, face);
             }
-            
+
             // destroy the block
             if (!block.isEmpty() && !block.isLiquid() && player.getGameMode() != GameMode.CREATIVE) {
                 for (ItemStack drop : block.getDrops(holding)) {

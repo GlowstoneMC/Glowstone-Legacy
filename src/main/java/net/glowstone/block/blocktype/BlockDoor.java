@@ -3,11 +3,9 @@ package net.glowstone.block.blocktype;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
-import net.glowstone.block.ItemTable;
 import net.glowstone.entity.GlowPlayer;
 
 import org.bukkit.Material;
@@ -77,7 +75,7 @@ public class BlockDoor extends BlockType {
                 break;
         }
         
-        if ( dropType != null )
+        if (dropType != null)
             return Arrays.asList(new ItemStack(dropType, 1));
         else
             return new ArrayList<ItemStack>();
