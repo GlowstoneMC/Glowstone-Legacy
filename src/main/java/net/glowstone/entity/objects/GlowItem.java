@@ -2,19 +2,20 @@ package net.glowstone.entity.objects;
 
 import com.flowpowered.networking.Message;
 import net.glowstone.entity.GlowEntity;
+import net.glowstone.entity.GlowPlayer;
 import net.glowstone.entity.meta.MetadataIndex;
-import net.glowstone.net.message.play.entity.EntityMetadataMessage;
-import net.glowstone.net.message.play.entity.EntityTeleportMessage;
-import net.glowstone.net.message.play.entity.EntityVelocityMessage;
-import net.glowstone.net.message.play.entity.SpawnObjectMessage;
+import net.glowstone.net.message.play.entity.*;
 import net.glowstone.util.Position;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -42,7 +43,28 @@ public final class GlowItem extends GlowEntity implements Item {
         super(location);
         setItemStack(item);
         setBoundingBox(0.25, 0.25);
-        pickupDelay = 20;
+        pickupDelay = 40;
+    }
+
+    private boolean getPickedUp(GlowPlayer player) {
+        // todo: fire PlayerPickupItemEvent in a way that allows for 'remaining' calculations
+
+        HashMap<Integer, ItemStack> map = player.getInventory().addItem(getItemStack());
+        player.updateInventory(); // workaround for player editing slot & it immediately being filled again
+        if (!map.isEmpty()) {
+            setItemStack(map.values().iterator().next());
+            return false;
+        } else {
+            CollectItemMessage message = new CollectItemMessage(getEntityId(), player.getEntityId());
+            world.playSound(location, Sound.ITEM_PICKUP, 0.3f, (float) (1 + Math.random()));
+            for (GlowPlayer other : world.getRawPlayers()) {
+                if (other.canSeeEntity(this)) {
+                    other.getSession().send(message);
+                }
+            }
+            remove();
+            return true;
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -59,12 +81,21 @@ public final class GlowItem extends GlowEntity implements Item {
 
         // decrement pickupDelay if it's less than the NBT maximum
         if (pickupDelay > 0) {
-            --pickupDelay;
+            if (pickupDelay < Short.MAX_VALUE) {
+                --pickupDelay;
+            }
+        } else {
+            // check for nearby players
+            for (Entity entity : getNearbyEntities(1, 0.5, 1)) {
+                if (entity instanceof GlowPlayer && getPickedUp((GlowPlayer) entity)) {
+                    break;
+                }
+            }
         }
 
         // disappear if we've lived too long
         if (getTicksLived() >= LIFETIME) {
-            // todo: remove();
+            remove();
         }
     }
 
