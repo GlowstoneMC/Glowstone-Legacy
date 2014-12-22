@@ -453,6 +453,10 @@ public final class GlowServer implements Server {
         logger.info("Binding to address: " + address + "...");
         ChannelFuture future = networkServer.bind(address);
         Channel channel = future.awaitUninterruptibly().channel();
+        logger.info("Successfully bound to address: " + channel.localAddress());
+
+        port = ((InetSocketAddress) channel.localAddress()).getPort();
+
         if (!channel.isActive()) {
             throw new RuntimeException("Failed to bind to address. Maybe it is already in use?");
         }
