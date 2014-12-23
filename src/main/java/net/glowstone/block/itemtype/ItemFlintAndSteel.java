@@ -11,50 +11,52 @@ import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-public class ItemFlintAndSteel extends ItemTool {
+public class ItemFlintAndSteel extends DefaultItemType {
 
     public ItemFlintAndSteel() {
-        super(Material.FLINT_AND_STEEL.getMaxDurability());
-    }
+        super(
+                new ItemTool() {
+                    @Override
+                    public boolean onToolRightClick(GlowPlayer player, ItemStack holding, GlowBlock target, BlockFace face, Vector clickedLoc) {
+                        switch (target.getType()) {
+                            case TNT:
+                                fireTnt(target);
+                                return true;
+                            case OBSIDIAN:
+                                fireNetherPortal();
+                                return true;
+                            // TODO: check for non-flammable blocks
+                            default:
+                                return setBlockOnFire(player, target, face, holding, clickedLoc);
+                        }
+                    }
 
-    @Override
-    public boolean onToolRightClick(GlowPlayer player, ItemStack holding, GlowBlock target, BlockFace face, Vector clickedLoc) {
-        switch (target.getType()) {
-            case TNT:
-                fireTnt(target);
-                return true;
-            case OBSIDIAN:
-                fireNetherPortal();
-                return true;
-            // TODO: check for non-flammable blocks
-            default:
-                return setBlockOnFire(player, target, face, holding, clickedLoc);
-        }
-    }
+                    private void fireNetherPortal() {
+                        // TODO: check for nether portal and activate it
+                    }
 
-    private void fireNetherPortal() {
-        // TODO: check for nether portal and activate it
-    }
+                    private void fireTnt(GlowBlock tnt) {
+                        BlockTNT.igniteBlock(tnt, false);
+                    }
 
-    private void fireTnt(GlowBlock tnt) {
-        BlockTNT.igniteBlock(tnt, false);
-    }
+                    private boolean setBlockOnFire(GlowPlayer player, GlowBlock clicked, BlockFace face, ItemStack holding, Vector clickedLoc) {
+                        GlowBlock fireBlock = clicked.getRelative(face);
+                        if (fireBlock.getType() != Material.AIR) {
+                            return true;
+                        }
 
-    private boolean setBlockOnFire(GlowPlayer player, GlowBlock clicked, BlockFace face, ItemStack holding, Vector clickedLoc) {
-        GlowBlock fireBlock = clicked.getRelative(face);
-        if (fireBlock.getType() != Material.AIR) {
-            return true;
-        }
+                        BlockIgniteEvent event = EventFactory.callEvent(new BlockIgniteEvent(fireBlock, BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL, player, null));
+                        if (event.isCancelled()) {
+                            player.setItemInHand(holding);
+                            return false;
+                        }
 
-        BlockIgniteEvent event = EventFactory.callEvent(new BlockIgniteEvent(fireBlock, BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL, player, null));
-        if (event.isCancelled()) {
-            player.setItemInHand(holding);
-            return false;
-        }
+                        // clone holding to avoid decreasing of the item's amount
+                        ItemTable.instance().getBlock(Material.FIRE).rightClickBlock(player, clicked, BlockFace.UP, holding.clone(), clickedLoc);
 
-        // clone holding to avoid decreasing of the item's amount
-        ItemTable.instance().getBlock(Material.FIRE).rightClickBlock(player, clicked, BlockFace.UP, holding.clone(), clickedLoc);
-
-        return true;
+                        return true;
+                    }
+                }
+        );
     }
 }

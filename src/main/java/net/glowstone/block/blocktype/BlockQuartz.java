@@ -10,7 +10,9 @@ import org.bukkit.util.Vector;
 public class BlockQuartz extends DefaultBlockType {
 
     public BlockQuartz() {
-        super(new BlockDropWithoutData(ToolType.PICKAXE));
+        super(
+                new BlockDropWithoutData(ToolType.PICKAXE)
+        );
     }
 
     @Override

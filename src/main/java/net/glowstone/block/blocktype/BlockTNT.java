@@ -7,7 +7,7 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
-public class BlockTNT extends BlockType {
+public class BlockTNT extends DefaultBlockType {
 
     /**
      * Convert a TNT block into a primed TNT entity.

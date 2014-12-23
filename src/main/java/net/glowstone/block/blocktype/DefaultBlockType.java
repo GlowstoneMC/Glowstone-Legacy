@@ -10,6 +10,7 @@ import net.glowstone.block.entity.TileEntity;
 import net.glowstone.block.itemtype.DefaultItemType;
 import net.glowstone.entity.GlowPlayer;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.BlockCanBuildEvent;
@@ -179,5 +180,29 @@ public class DefaultBlockType extends DefaultItemType implements BlockType {
 
 
         return result == null ? block.isLiquid() : result;
+    }
+
+    @Override
+    public void onNearBlockChanged(GlowBlock block, BlockFace face, GlowBlock changedBlock, Material oldType, byte oldData, Material newType, byte newData) {
+        for (BlockType feature : getFeatures())
+            feature.onNearBlockChanged(block, face, changedBlock, oldType, oldData, newType, newData);
+    }
+
+    @Override
+    public void onBlockChanged(GlowBlock block, Material oldType, byte oldData, Material newType, byte data) {
+        for (BlockType feature : getFeatures())
+            feature.onBlockChanged(block, oldType, oldData, newType, data);
+    }
+
+    @Override
+    public void onBreak(GlowBlock block, GlowPlayer player, ItemStack itemInHand) {
+        for (BlockType feature : getFeatures())
+            feature.onBreak(block, player, itemInHand);
+    }
+
+    @Override
+    public void updatePhysics(GlowBlock me) {
+        for (BlockType feature : getFeatures())
+            feature.updatePhysics(me);
     }
 }

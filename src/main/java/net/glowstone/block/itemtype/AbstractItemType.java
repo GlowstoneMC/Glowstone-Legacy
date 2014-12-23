@@ -34,11 +34,9 @@ public class AbstractItemType implements ItemType {
 
     @Override
     public void rightClickAir(GlowPlayer player, ItemStack holding) {
-
     }
 
     @Override
     public void rightClickBlock(GlowPlayer player, GlowBlock target, BlockFace face, ItemStack holding, Vector clickedLoc) {
-
     }
 }

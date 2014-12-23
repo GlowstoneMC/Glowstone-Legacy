@@ -4,15 +4,16 @@ import net.glowstone.block.GlowBlock;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
-public class BlockSugarCane extends BlockNeedsAttached {
-
+public class BlockSugarCane extends DefaultBlockType {
     private static final BlockFace[] DIRECT_FACES = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH};
+
+    public BlockSugarCane() {
+        super(
+                new BlockNeedsAttached(),
+                new BlockDirectDrops(Material.SUGAR_CANE)
+        );
+    }
 
     @Override
     public void onNearBlockChanged(GlowBlock block, BlockFace face, GlowBlock changedBlock, Material oldType, byte oldData, Material newType, byte newData) {
@@ -20,7 +21,7 @@ public class BlockSugarCane extends BlockNeedsAttached {
     }
 
     @Override
-    public boolean canPlaceAt(GlowBlock block, BlockFace against) {
+    public Boolean canPlaceAt(GlowBlock block, BlockFace against) {
         Block below = block.getRelative(BlockFace.DOWN);
         Material type = below.getType();
         switch (type) {
@@ -45,10 +46,5 @@ public class BlockSugarCane extends BlockNeedsAttached {
         }
 
         return false;
-    }
-
-    @Override
-    public Collection<ItemStack> getDrops(GlowBlock me, ItemStack tool) {
-        return Collections.unmodifiableList(Arrays.asList(new ItemStack(Material.SUGAR_CANE)));
     }
 }

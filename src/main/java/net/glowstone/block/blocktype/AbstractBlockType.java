@@ -7,6 +7,7 @@ import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.entity.TileEntity;
 import net.glowstone.block.itemtype.AbstractItemType;
 import net.glowstone.entity.GlowPlayer;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
@@ -75,5 +76,21 @@ public class AbstractBlockType extends AbstractItemType implements BlockType {
     @Override
     public Boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
         return null;
+    }
+
+    @Override
+    public void onNearBlockChanged(GlowBlock block, BlockFace face, GlowBlock changedBlock, Material oldType, byte oldData, Material newType, byte newData) {
+    }
+
+    @Override
+    public void onBlockChanged(GlowBlock block, Material oldType, byte oldData, Material newType, byte data) {
+    }
+
+    @Override
+    public void onBreak(GlowBlock block, GlowPlayer player, ItemStack itemInHand) {
+    }
+
+    @Override
+    public void updatePhysics(GlowBlock me) {
     }
 }
