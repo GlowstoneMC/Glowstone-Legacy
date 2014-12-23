@@ -10,7 +10,9 @@ import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.*;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -112,6 +114,14 @@ public final class ServerConfig {
         }
 
         return config.getBoolean(key.path, (Boolean) key.def);
+    }
+
+    public List<String> getStringList(Key key) {
+        if (parameters.containsKey(key)) {
+            return (List<String>) parameters.get(key);
+        }
+
+        return config.getStringList(key.path);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -365,6 +375,9 @@ public final class ServerConfig {
         RESOURCE_PACK("game.resource-pack", "", Migrate.PROPS, "resource-pack"),
         RESOURCE_PACK_HASH("game.resource-pack-hash", "", Migrate.PROPS, "resource-pack-hash"),
         SNOOPER_ENABLED("server.snooper-enabled", false, Migrate.PROPS, "snooper-enabled"),
+
+        LIBRARY("libraries.depend", Arrays.asList("org.xerial:sqlite-jdbc:3.7.2", "mysql:mysql-connector-java:5.1.14", "org.apache.logging.log4j:log4j-core:2.0", "org.apache.logging.log4j:log4j-api:2.0")),
+        LIBRARY_REPO("libraries.repo", "http://repo1.maven.org/maven2/"),
 
         // critters
         SPAWN_MONSTERS("creatures.enable.monsters", true, Migrate.PROPS, "spawn-monsters"),

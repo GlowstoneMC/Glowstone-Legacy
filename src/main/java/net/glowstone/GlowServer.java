@@ -442,6 +442,8 @@ public final class GlowServer implements Server {
         enablePlugins(PluginLoadOrder.POSTWORLD);
         commandMap.registerServerAliases();
         scheduler.start();
+        doLibs();
+
     }
 
     /**
@@ -1267,6 +1269,13 @@ public final class GlowServer implements Server {
     @Override
     public GlowMapView createMap(World world) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Library Manager
+
+    public LibraryManager doLibs() {
+        return new LibraryManager(this);
     }
 
     ////////////////////////////////////////////////////////////////////////////
