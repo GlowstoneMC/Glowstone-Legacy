@@ -898,16 +898,16 @@ public final class GlowServer implements Server {
 
     /**
      * Sets a player as being online internally
-     * @param player
+     * @param player player to set online/offline
+     * @param online whether the player is online or offline
      */
-    public void setPlayerOnline(GlowPlayer player) {
+    public void setPlayerOnline(GlowPlayer player, boolean online) {
         Validate.notNull(player);
-        onlinePlayers.add(player);
-    }
-
-    public void setPlayerOffline(GlowPlayer player) {
-        Validate.notNull(player);
-        onlinePlayers.remove(player);
+        if (online) {
+            onlinePlayers.add(player);
+        } else {
+            onlinePlayers.remove(player);
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////
