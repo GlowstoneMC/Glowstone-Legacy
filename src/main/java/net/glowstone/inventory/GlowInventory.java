@@ -223,6 +223,7 @@ public class GlowInventory implements Inventory {
         for (int i = 0; i < items.length; ++i) {
             ItemStack item = ItemStack.sanitize(items[i]);
 
+            //fail silently on invalid item
             if (item == null) continue;
 
             while (item.getAmount() > 0) {
@@ -233,18 +234,19 @@ public class GlowInventory implements Inventory {
                     break;
                 } else {
                     ItemStack curItem = getItem(available);
-                    int fill = item.getAmount();
-                    if (curItem == null) {
-                        ItemStack temp = new ItemStack(item);
-                        fill = item.getAmount() >= getMaxStackSize() ? getMaxStackSize() : item.getAmount();
-                        temp.setAmount(fill);
-                        setItem(available, temp);
+
+                    int curAmount = curItem == null ? 0 : curItem.getAmount();
+                    int add;
+
+                    if (curAmount + item.getAmount() >= item.getMaxStackSize()) {
+                        add = item.getMaxStackSize() - curAmount;
                     } else {
-                        fill = item.getAmount() + curItem.getAmount() >= curItem.getMaxStackSize()
-                                ? curItem.getMaxStackSize() : curItem.getAmount() + item.getAmount();
-                        curItem.setAmount(fill);
+                        add = item.getAmount();
                     }
-                    item.setAmount(item.getAmount() - fill);
+
+                    ItemStack temp = new ItemStack(item.getType(), curAmount + add);
+                    setItem(available, temp);
+                    item.setAmount(item.getAmount() - add);
                 }
             }
         }
