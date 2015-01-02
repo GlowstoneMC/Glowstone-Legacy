@@ -2,7 +2,6 @@ package net.glowstone.entity;
 
 import com.flowpowered.networking.Message;
 import net.glowstone.entity.meta.profile.PlayerProfile;
-import net.glowstone.entity.objects.GlowItem;
 import net.glowstone.inventory.*;
 import net.glowstone.net.message.play.entity.EntityEquipmentMessage;
 import net.glowstone.net.message.play.entity.EntityHeadRotationMessage;
