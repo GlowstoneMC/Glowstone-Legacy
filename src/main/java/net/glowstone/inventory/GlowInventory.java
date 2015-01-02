@@ -221,42 +221,51 @@ public class GlowInventory implements Inventory {
         HashMap<Integer, ItemStack> result = new HashMap<>();
 
         for (int i = 0; i < items.length; ++i) {
-            ItemStack item = ItemIds.sanitize(items[i]);
-            if (item == null) continue; // invalid items fail silently
-            int maxStackSize = item.getType() == null ? 64 : item.getType().getMaxStackSize();
-            int toAdd = item.getAmount();
+            ItemStack item = ItemStack.sanitize(items[i]);
 
-            for (int j = 0; toAdd > 0 && j < getSize(); ++j) {
-                // Look for existing stacks to add to
-                if (slots[j] != null && slots[j].isSimilar(item)) {
-                    int space = maxStackSize - slots[j].getAmount();
-                    if (space < 0) continue;
-                    if (space > toAdd) space = toAdd;
+            //fail silently on invalid item
+            if (item == null) continue;
 
-                    slots[j].setAmount(slots[j].getAmount() + space);
-                    toAdd -= space;
-                }
-            }
+            while (item.getAmount() > 0) {
+                int available = firstAvailable(item);
 
-            if (toAdd > 0) {
-                // Look for empty slots to add to
-                for (int j = 0; toAdd > 0 && j < getSize(); ++j) {
-                    if (slots[j] == null) {
-                        int num = toAdd > maxStackSize ? maxStackSize : toAdd;
-                        slots[j] = item.clone();
-                        slots[j].setAmount(num);
-                        toAdd -= num;
+                if (available == -1) {
+                    result.put(i, item);
+                    break;
+                } else {
+                    ItemStack curItem = getItem(available);
+
+                    int curAmount = curItem == null ? 0 : curItem.getAmount();
+                    int add;
+
+                    if (curAmount + item.getAmount() >= item.getMaxStackSize()) {
+                        add = item.getMaxStackSize() - curAmount;
+                    } else {
+                        add = item.getAmount();
                     }
-                }
-            }
 
-            if (toAdd > 0) {
-                // Still couldn't stash them all.
-                result.put(i, item.clone());
+                    ItemStack temp = new ItemStack(item.getType(), curAmount + add);
+                    setItem(available, temp);
+                    item.setAmount(item.getAmount() - add);
+                }
             }
         }
 
         return result;
+    }
+
+    public int firstAvailable(ItemStack item) {
+        ItemStack[] inventory = getContents();
+        if (item == null) {
+            return -1;
+        }
+        for (int i = 0; i < inventory.length; ++i) {
+            ItemStack curItem = inventory[i];
+            if (curItem == null || (curItem.isSimilar(item) && curItem.getAmount() < curItem.getMaxStackSize())) {
+                return i;
+            }
+        }
+        return firstEmpty();
     }
 
     @Override
