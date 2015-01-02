@@ -13,6 +13,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,6 +34,11 @@ public final class GlowItem extends GlowEntity implements Item {
      * The remaining delay until this item may be picked up.
      */
     private int pickupDelay;
+
+    /**
+     * A player to bias this item's pickup selection towards.
+     */
+    private GlowPlayer biasPlayer;
 
     /**
      * Creates a new item entity.
@@ -67,6 +73,10 @@ public final class GlowItem extends GlowEntity implements Item {
         }
     }
 
+    public void setBias(GlowPlayer player) {
+        biasPlayer = player;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Overrides
 
@@ -84,6 +94,14 @@ public final class GlowItem extends GlowEntity implements Item {
             if (pickupDelay < Short.MAX_VALUE) {
                 --pickupDelay;
             }
+            if (pickupDelay < 20 && biasPlayer != null) {
+                // check for the bias player
+                for (Entity entity : getNearbyEntities(1, 0.5, 1)) {
+                    if (entity == biasPlayer && getPickedUp((GlowPlayer) entity)) {
+                        break;
+                    }
+                }
+            }
         } else {
             // check for nearby players
             for (Entity entity : getNearbyEntities(1, 0.5, 1)) {
@@ -93,10 +111,38 @@ public final class GlowItem extends GlowEntity implements Item {
             }
         }
 
+        // teleport to actual position fairly frequently in order to account
+        // for missing/incorrect physics simulation
+        if (getTicksLived() % (2 * 20) == 0) {
+            teleported = true;
+        }
+
         // disappear if we've lived too long
         if (getTicksLived() >= LIFETIME) {
             remove();
         }
+    }
+
+    @Override
+    protected void pulsePhysics() {
+        // simple temporary gravity - should eventually be improved to be real
+        // physics and moved up to GlowEntity
+
+        // continuously set velocity to 0 to make things look more normal
+        setVelocity(new Vector(0, 0, 0));
+
+        if (location.getBlock().getType().isSolid()) {
+            // float up out of solid blocks
+            setRawLocation(location.clone().add(0, 0.2, 0));
+        } else {
+            // fall down on top of solid blocks
+            Location down = location.clone().add(0, -0.1, 0);
+            if (!down.getBlock().getType().isSolid()) {
+                setRawLocation(down);
+            }
+        }
+
+        super.pulsePhysics();
     }
 
     @Override
@@ -140,5 +186,4 @@ public final class GlowItem extends GlowEntity implements Item {
         // stone is the "default state" for the item stack according to the client
         metadata.set(MetadataIndex.ITEM_ITEM, stack == null ? new ItemStack(Material.STONE) : stack.clone());
     }
-
 }

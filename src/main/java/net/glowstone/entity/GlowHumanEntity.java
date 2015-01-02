@@ -13,6 +13,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Item;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
@@ -403,7 +404,7 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
             dropping.setAmount(1);
         }
 
-        GlowItem dropped = drop(dropping);
+        Item dropped = drop(dropping);
         if (dropped == null) {
             return;
         }
@@ -424,13 +425,13 @@ public abstract class GlowHumanEntity extends GlowLivingEntity implements HumanE
      * @return the GlowItem that was generated, or null if the spawning was cancelled
      * @throws IllegalArgumentException if the stack is null or has an amount less than one
      */
-    public GlowItem drop(ItemStack stack) {
+    public Item drop(ItemStack stack) {
         Validate.notNull(stack, "stack must not be null");
         Validate.isTrue(stack.getAmount() > 0, "stack amount must be greater than zero");
 
         Location dropLocation = location.clone();
         dropLocation.add(0, getEyeHeight(true) - 0.3, 0);
-        GlowItem dropItem = new GlowItem(dropLocation, stack);
+        Item dropItem = world.dropItem(dropLocation, stack);
         Vector vel = location.getDirection().multiply(0.3f);
         vel.setY(vel.getY() + 0.1F);
         dropItem.setVelocity(vel);

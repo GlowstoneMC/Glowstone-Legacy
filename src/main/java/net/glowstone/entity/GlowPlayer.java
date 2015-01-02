@@ -9,8 +9,8 @@ import net.glowstone.constants.*;
 import net.glowstone.entity.meta.ClientSettings;
 import net.glowstone.entity.meta.MetadataIndex;
 import net.glowstone.entity.meta.MetadataMap;
-import net.glowstone.entity.objects.GlowItem;
 import net.glowstone.entity.meta.profile.PlayerProfile;
+import net.glowstone.entity.objects.GlowItem;
 import net.glowstone.inventory.GlowInventory;
 import net.glowstone.inventory.InventoryMonitor;
 import net.glowstone.io.PlayerDataService;
@@ -34,6 +34,7 @@ import org.bukkit.configuration.serialization.DelegateDeserialization;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -1688,8 +1689,8 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     }
 
     @Override
-    public GlowItem drop(ItemStack stack) {
-        GlowItem dropping = super.drop(stack);
+    public Item drop(ItemStack stack) {
+        Item dropping = super.drop(stack);
         if (dropping != null) {
             PlayerDropItemEvent event = new PlayerDropItemEvent(this, dropping);
             EventFactory.callEvent(event);
