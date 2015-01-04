@@ -195,12 +195,6 @@ public class DefaultBlockType extends DefaultItemType implements BlockType {
     }
 
     @Override
-    public void onBreak(GlowBlock block, GlowPlayer player, ItemStack itemInHand) {
-        for (BlockType feature : getFeatures())
-            feature.onBreak(block, player, itemInHand);
-    }
-
-    @Override
     public void updatePhysics(GlowBlock me) {
         for (BlockType feature : getFeatures())
             feature.updatePhysics(me);

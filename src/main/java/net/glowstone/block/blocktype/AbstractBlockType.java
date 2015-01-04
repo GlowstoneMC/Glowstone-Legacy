@@ -87,10 +87,6 @@ public class AbstractBlockType extends AbstractItemType implements BlockType {
     }
 
     @Override
-    public void onBreak(GlowBlock block, GlowPlayer player, ItemStack itemInHand) {
-    }
-
-    @Override
     public void updatePhysics(GlowBlock me) {
     }
 }
