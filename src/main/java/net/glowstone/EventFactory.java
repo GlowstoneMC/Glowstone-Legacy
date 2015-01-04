@@ -104,10 +104,10 @@ public final class EventFactory {
                     "Banned: " + ipBans.getBanEntry(addressString).getReason());
         } else if (server.hasWhitelist() && !player.isWhitelisted()) {
             event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST,
-                    "You are not whitelisted on this server.");
+                    server.getWhitelistKickMessage());
         } else if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
             event.disallow(PlayerLoginEvent.Result.KICK_FULL,
-                    "The server is full (" + player.getServer().getMaxPlayers() + " players).");
+                    server.getServerIsFullMessage());
         }
 
         return callEvent(event);

@@ -853,6 +853,47 @@ public final class GlowServer implements Server {
     public boolean getProxySupport() {
         return config.getBoolean(ServerConfig.Key.PROXY_SUPPORT);
     }
+    
+    /**
+     * Get the reason of kick that server sends to you if you're not in the whitelist.
+     * @return Kick reason for whitelist disconnection.
+     */
+    public String getWhitelistKickMessage() {
+        return config.getString(ServerConfig.Key.KICK_WHITELIST_MESSAGE);
+    }
+    
+    /**
+     * Get the reason of kick if the server is full
+     * @return Kick reason if server is full
+     */
+    public String getServerIsFullMessage() {
+        return config.getString(ServerConfig.Key.KICK_SERVERFULL).replace("{0}", Integer.toString(this.getMaxPlayers()));
+    }
+    
+    /**
+     * Get the reason of kick if the client is outdated
+     * @return Kick reason if client is outdated
+     */
+    public String getOutdatedClientMessage() {
+        return config.getString(ServerConfig.Key.OUTDATED_CLIENT).replace("{0}", GAME_VERSION);
+    }
+    
+    /**
+     * Get the reason of kick if the server is outdated
+     * @return Kick reason if server is outdated
+     */
+    public String getOutdatedServerMessage() {
+        return config.getString(ServerConfig.Key.OUTDATED_SERVER).replace("{0}", GAME_VERSION);
+    }
+    
+    /**
+     * Get the message that server send to player if it execute a wrong command
+     * @param command
+     * @return Unknown command message
+     */
+    public String getUnknownCommandMessage(String command) {
+        return config.getString(ServerConfig.Key.UNKNOW_COMMAND).replace("{0}", command);
+    }
 
     /**
      * Get whether to use color codes in Rcon responses.
@@ -1012,8 +1053,7 @@ public final class GlowServer implements Server {
         if (firstword.indexOf(' ') >= 0) {
             firstword = firstword.substring(0, firstword.indexOf(' '));
         }
-
-        sender.sendMessage(ChatColor.GRAY + "Unknown command \"" + firstword + "\", try \"help\"");
+        sender.sendMessage(ChatColor.GRAY + getUnknownCommandMessage(firstword));
         return false;
     }
 

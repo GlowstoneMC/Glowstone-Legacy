@@ -26,3 +26,10 @@ world:
     gen-structures: true
     allow-nether: true
     allow-end: true
+   
+messages:
+    kick-whitelist-message: You are not whitelisted on this server
+    kick-serverfull: The server is full (Max {0} players)
+    outdated-client: Outdated client! Please use {0}
+    outdated-server: Outdated server! Server is still on {0}
+    unknown-command: Unknown command "{0}", try "help"

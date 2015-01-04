@@ -306,12 +306,19 @@ public final class ServerConfig {
         MOTD("server.motd", "Glowstone Server", Migrate.PROPS, "motd"),
         SHUTDOWN_MESSAGE("server.shutdown-message", "Server shutting down.", Migrate.BUKKIT, "settings.shutdown-message"),
         USE_JLINE("server.use-jline", true),
-
+        
         // folders
         PLUGIN_FOLDER("folders.plugins", "plugins"),
         UPDATE_FOLDER("folders.update", "update", Migrate.BUKKIT, "settings.update-folder"),
         WORLD_FOLDER("folders.worlds", "worlds", Migrate.BUKKIT, "settings.world-container"),
-
+        
+        // custom messages
+        KICK_WHITELIST_MESSAGE("messages.kick-whitelist-message", "You are not whitelisted on this server"),
+        KICK_SERVERFULL("messages.kick-serverfull", "The server is full (Max {0} players)"),
+        OUTDATED_CLIENT("messages.outdated-client", "Outdated client! Please use {0}"),
+        OUTDATED_SERVER("messages.outdated-server", "Outdated server! Server is still on {0}"),
+        UNKNOW_COMMAND("messages.unknown-command", "Unknown command {0}, try \"help\""),        
+        
         // files
         PERMISSIONS_FILE("files.permissions", "permissions.yml", Migrate.BUKKIT, "settings.permissions-file"),
         COMMANDS_FILE("files.commands", "commands.yml"),
