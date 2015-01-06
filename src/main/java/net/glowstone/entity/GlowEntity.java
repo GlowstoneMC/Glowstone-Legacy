@@ -518,6 +518,25 @@ public abstract class GlowEntity implements Entity {
         return true;
     }
 
+    /**
+     *
+     * @param material to check if the player is buy
+     * @return if the player is near material or not
+     */
+    public boolean isTouchingMaterial(Material material) {
+
+        BlockFace[] sides = {BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.NORTH, BlockFace.UP, BlockFace.SELF,
+                BlockFace.NORTH_EAST, BlockFace.NORTH_WEST,  BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST};
+
+        //todo: This isnt the most accurate way. A more accurate one can be made once entity support is finished
+        //uses a bounding box
+        for (BlockFace face : sides) {
+            if (getLocation().getBlock().getRelative(face).getType() == material)
+                return true;
+        }
+        return false;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Physics stuff
 
