@@ -115,7 +115,7 @@ public final class GlowWorld implements World {
     /**
      * The game rules used in this world.
      */
-    private final Map<String, String> gameRules = new HashMap<>();
+    private final GameRuleManager gameRules = new GameRuleManager();
 
     /**
      * The environment.
@@ -391,7 +391,9 @@ public final class GlowWorld implements World {
         // Tick the world age and time of day
         // Modulus by 24000, the tick length of a day
         worldAge++;
-        time = (time + 1) % DAY_LENGTH;
+        if (gameRules.getAsBoolean("doDaylightCycle")) {
+            time = (time + 1) % DAY_LENGTH;
+        }
         if (worldAge % (30 * 20) == 0) {
             // Only send the time every so often; clients are smart.
             for (GlowPlayer player : getRawPlayers()) {
@@ -1403,27 +1405,22 @@ public final class GlowWorld implements World {
 
     @Override
     public String[] getGameRules() {
-        return gameRules.keySet().toArray(new String[gameRules.size()]);
+        return gameRules.getGameRules();
     }
 
     @Override
     public String getGameRuleValue(String rule) {
-        return gameRules.get(rule);
+        return gameRules.getAsString(rule);
     }
 
     @Override
     public boolean setGameRuleValue(String rule, String value) {
-        if (value == null || !gameRules.containsKey(rule)) {
-            return false;
-        } else {
-            gameRules.put(rule, value);
-            return true;
-        }
+        return gameRules.setValue(rule, value);
     }
 
     @Override
     public boolean isGameRule(String rule) {
-        return gameRules.containsKey(rule);
+        return gameRules.isGameRule(rule);
     }
 
     ////////////////////////////////////////////////////////////////////////////
