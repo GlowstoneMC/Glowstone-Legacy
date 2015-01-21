@@ -12,14 +12,14 @@ import org.bukkit.material.Door;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
-public class BlockDoor extends BlockType {
+public class BlockDoor extends DefaultBlockType {
 
     public BlockDoor(Material itemMaterial) {
-        setDrops(new ItemStack(itemMaterial));
+        super(new BlockDirectDrops(itemMaterial));
     }
 
     @Override
-    public boolean canPlaceAt(GlowBlock block, BlockFace against) {
+    public Boolean canPlaceAt(GlowBlock block, BlockFace against) {
         GlowBlock topHalf = block.getRelative(BlockFace.UP);
         if (!topHalf.isEmpty()) {
             BlockType type = ItemTable.instance().getBlock(topHalf.getType());
@@ -113,7 +113,7 @@ public class BlockDoor extends BlockType {
      * Opens and closes the door when right-clicked by the player.
      */
     @Override
-    public boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
+    public Boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
         // handles opening and closing the door
         if (block.getType() == Material.IRON_DOOR_BLOCK)
             return false;
