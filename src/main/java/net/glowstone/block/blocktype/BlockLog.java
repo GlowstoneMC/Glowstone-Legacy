@@ -9,7 +9,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.Tree;
 import org.bukkit.util.Vector;
 
-public class BlockLog extends BlockType {
+public class BlockLog extends DefaultBlockType {
 
     @Override
     public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {

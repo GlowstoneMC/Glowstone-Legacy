@@ -12,16 +12,27 @@ import org.bukkit.util.Vector;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class BlockSnow extends BlockNeedsAttached {
+public class BlockSnow extends DefaultBlockType {
+    public BlockSnow() {
+        super(
+                new BlockNeedsAttached(),
+                new BlockNeedsTool(ToolType.SPADE) {
+                    @Override
+                    protected Collection<ItemStack> getMinedDrops(GlowBlock block, ItemStack tool) {
+                        return Arrays.asList(new ItemStack(Material.SNOW_BALL, block.getData() + 1));
+                    }
+                }
+        );
+    }
 
     @Override
-    public boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack holding) {
+    public Boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack holding) {
         // can absorb snow layers if non-full, or all blocks if single layer
         return (holding.getType() == Material.SNOW && block.getData() < 7) || block.getData() == 0;
     }
 
     @Override
-    public boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
+    public Boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
         // can always be overridden by more snow or any other block
         return true;
     }
@@ -40,15 +51,6 @@ public class BlockSnow extends BlockNeedsAttached {
         } else {
             // place first snow layer
             state.setType(Material.SNOW);
-        }
-    }
-
-    @Override
-    public Collection<ItemStack> getDrops(GlowBlock block, ItemStack tool) {
-        if (tool != null && ToolType.SPADE.matches(tool.getType())) {
-            return Arrays.asList(new ItemStack(Material.SNOW_BALL, block.getData() + 1));
-        } else {
-            return BlockDropless.EMPTY_STACK;
         }
     }
 }

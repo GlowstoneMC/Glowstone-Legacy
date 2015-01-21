@@ -14,7 +14,7 @@ import org.bukkit.util.Vector;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class BlockStairs extends BlockType {
+public class BlockStairs extends DefaultBlockType {
 
     @Override
     public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {

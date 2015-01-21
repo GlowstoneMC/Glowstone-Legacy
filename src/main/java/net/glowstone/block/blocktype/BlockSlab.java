@@ -15,7 +15,7 @@ import org.bukkit.util.Vector;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class BlockSlab extends BlockType {
+public class BlockSlab extends DefaultBlockType {
 
     @Override
     public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {
@@ -59,12 +59,12 @@ public class BlockSlab extends BlockType {
     }
 
     @Override
-    public boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
+    public Boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
         return matchingType(block, face, holding, true);
     }
 
     @Override
-    public boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack holding) {
+    public Boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack holding) {
         return matchingType(block, face, holding, false);
     }
 

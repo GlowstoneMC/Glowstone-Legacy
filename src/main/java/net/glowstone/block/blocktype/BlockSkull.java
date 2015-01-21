@@ -19,14 +19,10 @@ import org.bukkit.util.Vector;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class BlockSkull extends BlockType {
-
-    public BlockSkull() {
-        setDrops(new ItemStack(Material.SKULL_ITEM));
-    }
+public class BlockSkull extends DefaultBlockType {
 
     @Override
-    public boolean canPlaceAt(GlowBlock block, BlockFace against) {
+    public Boolean canPlaceAt(GlowBlock block, BlockFace against) {
         return BlockFace.DOWN != against; // Skulls can't be placed on bottom of block
     }
 

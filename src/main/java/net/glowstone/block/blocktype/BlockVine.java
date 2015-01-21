@@ -3,22 +3,36 @@ package net.glowstone.block.blocktype;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.entity.GlowPlayer;
-import org.bukkit.Material;
+import net.glowstone.inventory.ToolType;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Vine;
 import org.bukkit.util.Vector;
 
-import java.util.Arrays;
-import java.util.Collection;
+public class BlockVine extends DefaultBlockType {
 
-public class BlockVine extends BlockClimbable {
+    public BlockVine() {
+        super(
+                new BlockDropWithoutData(ToolType.SHEARS),
+                new BlockClimbable() {
+                    @Override
+                    public Boolean canPlaceAt(GlowBlock block, BlockFace against) {
+                        return super.canPlaceAt(block, against) ||
+                                against == BlockFace.UP && isTargetOccluding(block, BlockFace.UP);
+                    }
+                }
+        );
+    }
 
     @Override
-    public boolean canPlaceAt(GlowBlock block, BlockFace against) {
-        return super.canPlaceAt(block, against) ||
-                against == BlockFace.UP && isTargetOccluding(block, BlockFace.UP);
+    public Boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack holding) {
+        return true;
+    }
+
+    @Override
+    public Boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
+        return true;
     }
 
     @Override
@@ -36,23 +50,5 @@ public class BlockVine extends BlockClimbable {
         } else {
             warnMaterialData(Vine.class, data);
         }
-    }
-
-    @Override
-    public boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack holding) {
-        return true;
-    }
-
-    @Override
-    public boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
-        return true;
-    }
-
-    @Override
-    public Collection<ItemStack> getDrops(GlowBlock block, ItemStack tool) {
-        if (tool != null && tool.getType() == Material.SHEARS)
-            return Arrays.asList(new ItemStack(Material.VINE));
-
-        return BlockDropless.EMPTY_STACK;
     }
 }

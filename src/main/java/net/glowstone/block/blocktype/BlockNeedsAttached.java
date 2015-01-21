@@ -4,7 +4,7 @@ import net.glowstone.block.GlowBlock;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 
-public class BlockNeedsAttached extends BlockType {
+public class BlockNeedsAttached extends AbstractBlockType {
     @Override
     public void onNearBlockChanged(GlowBlock block, BlockFace face, GlowBlock changedBlock, Material oldType, byte oldData, Material newType, byte newData) {
         if (face == getAttachedFace(block)) {

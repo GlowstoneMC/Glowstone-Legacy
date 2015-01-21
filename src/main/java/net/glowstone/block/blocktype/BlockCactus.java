@@ -4,12 +4,11 @@ import net.glowstone.block.GlowBlock;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 
-public class BlockCactus extends BlockType {
-
+public class BlockCactus extends DefaultBlockType {
     private static final BlockFace[] NEAR_BLOCKS = new BlockFace[]{BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST};
 
     @Override
-    public boolean canPlaceAt(GlowBlock block, BlockFace against) {
+    public Boolean canPlaceAt(GlowBlock block, BlockFace against) {
         Material below = block.getRelative(BlockFace.DOWN).getType();
         return (below == Material.CACTUS || below == Material.SAND) && !hasNearBlocks(block);
     }

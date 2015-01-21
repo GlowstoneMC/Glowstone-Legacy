@@ -9,7 +9,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-public class ItemSign extends ItemType {
+public class ItemSign extends DefaultItemType {
 
     @Override
     public void rightClickBlock(GlowPlayer player, GlowBlock target, BlockFace face, ItemStack holding, Vector clickedLoc) {
@@ -23,5 +23,4 @@ public class ItemSign extends ItemType {
         }
         placeAs.rightClickBlock(player, target, face, holding, clickedLoc);
     }
-
 }

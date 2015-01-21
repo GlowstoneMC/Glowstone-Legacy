@@ -10,8 +10,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 
-public class BlockTallGrass extends BlockNeedsAttached {
+public class BlockTallGrass extends DefaultBlockType {
     private final Random random = new Random();
+
+    public BlockTallGrass() {
+        super(
+                new BlockNeedsAttached()
+        );
+    }
 
     @Override
     public Collection<ItemStack> getDrops(GlowBlock block, ItemStack tool) {
@@ -22,12 +28,12 @@ public class BlockTallGrass extends BlockNeedsAttached {
     }
 
     @Override
-    public boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack holding) {
+    public Boolean canAbsorb(GlowBlock block, BlockFace face, ItemStack holding) {
         return true;
     }
 
     @Override
-    public boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
+    public Boolean canOverride(GlowBlock block, BlockFace face, ItemStack holding) {
         return true;
     }
 }

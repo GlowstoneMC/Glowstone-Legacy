@@ -79,7 +79,7 @@ public final class ItemTable {
         reg(Material.RED_SANDSTONE, new BlockDirectDrops(ToolType.PICKAXE));
         reg(Material.SANDSTONE, new BlockDirectDrops(ToolType.PICKAXE));
         reg(Material.NETHER_BRICK, new BlockDirectDrops(ToolType.PICKAXE));
-        reg(Material.NETHER_FENCE, new BlockDirectDrops(Material.NETHER_FENCE, ToolType.PICKAXE));
+        reg(Material.NETHER_FENCE, new BlockDropWithoutData(ToolType.PICKAXE));
         reg(Material.NETHERRACK, new BlockDirectDrops(ToolType.PICKAXE));
         reg(Material.IRON_FENCE, new BlockDirectDrops(ToolType.PICKAXE));
         reg(Material.BRICK, new BlockDirectDrops(ToolType.PICKAXE));
@@ -151,20 +151,20 @@ public final class ItemTable {
         reg(Material.STEP, new BlockSlab());
         reg(Material.WOOD_STEP, new BlockSlab());
         reg(Material.STEP_2, new BlockSlab());
-        reg(Material.HAY_BLOCK, new BlockHay());
+        reg(Material.HAY_BLOCK, new BlockDirectional());
         reg(Material.QUARTZ_BLOCK, new BlockQuartz());
         reg(Material.LOG, new BlockLog());
         reg(Material.LOG_2, new BlockLog2());
         reg(Material.LADDER, new BlockLadder());
         reg(Material.VINE, new BlockVine());
-        reg(Material.STONE_BUTTON, new BlockButton(Material.STONE_BUTTON));
-        reg(Material.WOOD_BUTTON, new BlockButton(Material.WOOD_BUTTON));
+        reg(Material.STONE_BUTTON, new BlockButton());
+        reg(Material.WOOD_BUTTON, new BlockButton());
         reg(Material.BED_BLOCK, new BlockBed());
         reg(Material.SKULL, new BlockSkull());
         reg(Material.TORCH, new BlockTorch());
-        reg(Material.GOLD_PLATE, new BlockDirectDrops(Material.GOLD_PLATE, ToolType.PICKAXE));
-        reg(Material.IRON_PLATE, new BlockDirectDrops(Material.IRON_PLATE, ToolType.PICKAXE));
-        reg(Material.STONE_PLATE, new BlockDirectDrops(Material.STONE_PLATE, ToolType.PICKAXE));
+        reg(Material.GOLD_PLATE, new BlockDropWithoutData(ToolType.PICKAXE));
+        reg(Material.IRON_PLATE, new BlockDropWithoutData(ToolType.PICKAXE));
+        reg(Material.STONE_PLATE, new BlockDropWithoutData(ToolType.PICKAXE));
         reg(Material.DAYLIGHT_DETECTOR, new BlockDaylightDetector());
         reg(Material.DAYLIGHT_DETECTOR_INVERTED, new BlockDaylightDetector());
         reg(Material.YELLOW_FLOWER, new BlockNeedsAttached());
@@ -214,8 +214,8 @@ public final class ItemTable {
         reg(Material.MELON_SEEDS, new ItemSeeds(Material.MELON_STEM, Material.SOIL));
         reg(Material.PUMPKIN_SEEDS, new ItemSeeds(Material.PUMPKIN_STEM, Material.SOIL));
         reg(Material.NETHER_STALK, new ItemSeeds(Material.NETHER_WARTS, Material.SOUL_SAND));
-        reg(Material.CARROT_ITEM, new ItemFoodSeeds(Material.CARROT, Material.SOIL));
-        reg(Material.POTATO_ITEM, new ItemFoodSeeds(Material.POTATO, Material.SOIL));
+        reg(Material.CARROT_ITEM, new ItemSeeds(Material.CARROT, Material.SOIL));
+        reg(Material.POTATO_ITEM, new ItemSeeds(Material.POTATO, Material.SOIL));
         reg(Material.INK_SACK, new ItemDye());
         reg(Material.BANNER, new ItemBanner());
         reg(Material.WOOD_DOOR, new ItemPlaceAs(Material.WOODEN_DOOR));
@@ -228,7 +228,15 @@ public final class ItemTable {
         reg(Material.WRITTEN_BOOK, new ItemWrittenBook());
     }
 
-    private void reg(Material material, ItemType type) {
+    private void reg(Material material, AbstractBlockType features) {
+        reg(material, new DefaultBlockType(features));
+    }
+
+    private void reg(Material material, AbstractItemType features) {
+        reg(material, new DefaultItemType(features));
+    }
+
+    private void reg(Material material, DefaultItemType type) {
         if (material.isBlock() != (type instanceof BlockType)) {
             throw new IllegalArgumentException("Cannot mismatch item and block: " + material + ", " + type);
         }
@@ -238,7 +246,7 @@ public final class ItemTable {
         }
 
         idToType.put(material.getId(), type);
-        type.setId(material.getId());
+        type.onInit(null, material.getId());
 
         if (material.isBlock()) {
             nextBlockId = Math.max(nextBlockId, material.getId() + 1);
@@ -251,7 +259,7 @@ public final class ItemTable {
      * Register a new, non-Vanilla ItemType. It will be assigned an ID automatically.
      * @param type the ItemType to register.
      */
-    public void register(ItemType type) {
+    public void register(DefaultItemType type) {
         int id;
         if (type instanceof BlockType) {
             id = nextBlockId;
@@ -264,7 +272,7 @@ public final class ItemTable {
         }
 
         idToType.put(id, type);
-        type.setId(id);
+        type.onInit(null, id);
 
         if (type instanceof BlockType) {
             nextBlockId = id + 1;
@@ -279,11 +287,11 @@ public final class ItemTable {
             return null;
         }
 
-        ItemType result;
+        DefaultItemType result;
         if (material.isBlock()) {
-            result = new BlockType();
+            result = new DefaultBlockType();
         } else {
-            result = new ItemType();
+            result = new DefaultItemType();
         }
         reg(material, result);
         return result;

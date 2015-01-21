@@ -13,13 +13,12 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-public class ItemFilledBucket extends ItemType {
+public class ItemFilledBucket extends DefaultItemType {
 
     private final BlockType liquid;
 
     public ItemFilledBucket(Material liquid) {
         this.liquid = ItemTable.instance().getBlock(liquid);
-        setMaxStackSize(1);
     }
 
     @Override

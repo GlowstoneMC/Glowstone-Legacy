@@ -16,8 +16,7 @@ import org.bukkit.util.Vector;
 
 import java.util.Set;
 
-public class BlockSponge extends BlockType {
-
+public class BlockSponge extends DefaultBlockType {
     private static final Set<Material> WATER_MATERIALS = Sets.immutableEnumSet(Material.WATER, Material.STATIONARY_WATER);
 
     @Override

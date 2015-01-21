@@ -9,11 +9,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 
-public class BlockGravel extends BlockFalling {
+public class BlockGravel extends DefaultBlockType {
     private final Random random = new Random();
 
     public BlockGravel() {
-        super(Material.GRAVEL);
+        super(
+                new BlockFalling(Material.GRAVEL)
+        );
     }
 
     @Override

@@ -4,10 +4,10 @@ import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import org.bukkit.block.BlockFace;
 
-public abstract class BlockClimbable extends BlockType {
+public abstract class BlockClimbable extends AbstractBlockType {
 
     @Override
-    public boolean canPlaceAt(GlowBlock block, BlockFace against) {
+    public Boolean canPlaceAt(GlowBlock block, BlockFace against) {
         return against != BlockFace.DOWN && against != BlockFace.UP && isTargetOccluding(block, against.getOppositeFace());
     }
 

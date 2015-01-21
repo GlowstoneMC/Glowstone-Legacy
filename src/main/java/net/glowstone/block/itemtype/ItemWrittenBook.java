@@ -7,7 +7,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-public class ItemWrittenBook extends ItemType {
+public class ItemWrittenBook extends DefaultItemType {
 
     private static final byte[] EMPTY = new byte[0];
 

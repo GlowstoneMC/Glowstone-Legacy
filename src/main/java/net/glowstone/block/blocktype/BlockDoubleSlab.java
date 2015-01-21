@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class BlockDoubleSlab extends BlockType {
+public class BlockDoubleSlab extends DefaultBlockType {
 
     @Override
     public Collection<ItemStack> getDrops(GlowBlock block, ItemStack tool) {
@@ -32,5 +32,4 @@ public class BlockDoubleSlab extends BlockType {
         GlowServer.logger.warning("BlockDoubleSlab got wrong material: " + block.getType());
         return new ItemStack(Material.STEP, 2);
     }
-
 }

@@ -9,15 +9,7 @@ import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-public class ItemTool extends ItemType {
-
-    private final int maxDurability;
-
-    public ItemTool(int maxDurability) {
-        setMaxStackSize(1);
-        this.maxDurability = maxDurability;
-    }
-
+public class ItemTool extends AbstractItemType {
     @Override
     public final void rightClickBlock(GlowPlayer player, GlowBlock target, BlockFace face, ItemStack holding, Vector clickedLoc) {
         if (onToolRightClick(player, holding, target, face, clickedLoc)) {
@@ -31,7 +23,7 @@ public class ItemTool extends ItemType {
         }
 
         holding.setDurability((short) (holding.getDurability() + 1));
-        if (holding.getDurability() == maxDurability + 1) {
+        if (holding.getDurability() == holding.getType().getMaxDurability() + 1) {
             EventFactory.callEvent(new PlayerItemBreakEvent(player, holding));
             holding.setAmount(0);
         }

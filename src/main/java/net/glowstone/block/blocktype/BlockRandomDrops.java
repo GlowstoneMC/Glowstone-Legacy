@@ -16,11 +16,10 @@ public class BlockRandomDrops extends BlockNeedsTool {
     private final short data;
     private final int minDrops;
     private final int maxDrops;
-    private final MaterialMatcher neededTool;
 
     public BlockRandomDrops(Material dropType, int data, int minDrops, int maxDrops, MaterialMatcher neededTool) {
+        super(neededTool);
         this.dropType = dropType;
-        this.neededTool = neededTool;
         this.data = (short) data;
         this.minDrops = minDrops;
         this.maxDrops = maxDrops;
@@ -41,10 +40,5 @@ public class BlockRandomDrops extends BlockNeedsTool {
     @Override
     public Collection<ItemStack> getMinedDrops(GlowBlock block, ItemStack tool) {
         return Collections.unmodifiableList(Arrays.asList(new ItemStack(dropType, random.nextInt(maxDrops - minDrops + 1) + minDrops, data)));
-    }
-
-    @Override
-    protected MaterialMatcher getNeededMiningTool(GlowBlock block) {
-        return neededTool;
     }
 }

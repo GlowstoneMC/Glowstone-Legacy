@@ -2,7 +2,6 @@ package net.glowstone.block.blocktype;
 
 import net.glowstone.EventFactory;
 import net.glowstone.block.GlowBlock;
-import net.glowstone.block.GlowBlockState;
 import net.glowstone.entity.GlowPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -12,48 +11,43 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.entity.EntityCreatePortalEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.EnderPortalFrame;
+import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockEnderPortalFrame extends BlockDropless {
+public class BlockEnderPortalFrame extends DefaultBlockType {
     private static final BlockFace[] DIRECTION = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
 
-    @Override
-    public void placeBlock(GlowPlayer player, GlowBlockState state, BlockFace face, ItemStack holding, Vector clickedLoc) {
-        state.setType(Material.ENDER_PORTAL_FRAME);
-        switch (getOppositeBlockFace(player.getLocation(), false).getOppositeFace()) {
-            case NORTH:
-                state.setRawData((byte) 0);
-                break;
-            case EAST:
-                state.setRawData((byte) 1);
-                break;
-            case SOUTH:
-                state.setRawData((byte) 2);
-                break;
-            case WEST:
-                state.setRawData((byte) 3);
-                break;
-            default:
-                state.setRawData((byte) 0);
-                break;
-        }
+    public BlockEnderPortalFrame() {
+        super(new BlockDirectional());
     }
 
     @Override
-    public boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
+    public Boolean blockInteract(GlowPlayer player, GlowBlock block, BlockFace face, Vector clickedLoc) {
+        BlockState state = block.getState();
+        MaterialData data = state.getData();
+
+        if (!(data instanceof EnderPortalFrame)) {
+            warnMaterialData(EnderPortalFrame.class, data);
+            return false;
+        }
+
+        EnderPortalFrame portalFrame = (EnderPortalFrame) data;
+
         ItemStack item = player.getItemInHand();
         if (item != null && item.getType() == Material.EYE_OF_ENDER) {
-            if ((block.getData() & 0x4) != 0) {
+            if (portalFrame.hasEye()) {
                 return true;
             }
             if (player.getGameMode() != GameMode.CREATIVE) {
                 item.setAmount(item.getAmount() - 1);
             }
 
-            block.setData((byte) (block.getData() | 0x4));
+            portalFrame.setEye(true);
+            state.update();
             if (block.getWorld().getEnvironment() != Environment.THE_END) {
                 searchForCompletedPortal(player, block);
             }

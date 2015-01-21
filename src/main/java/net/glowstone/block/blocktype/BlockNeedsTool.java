@@ -6,10 +6,15 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 
-public abstract class BlockNeedsTool extends BlockType {
+public abstract class BlockNeedsTool extends AbstractBlockType {
+    private final MaterialMatcher neededTool;
+
+    public BlockNeedsTool(MaterialMatcher neededTool) {
+        this.neededTool = neededTool;
+    }
+
     @Override
     public final Collection<ItemStack> getDrops(GlowBlock block, ItemStack tool) {
-        MaterialMatcher neededTool = getNeededMiningTool(block);
         if (neededTool != null &&
                 (tool == null || !neededTool.matches(tool.getType())))
             return BlockDropless.EMPTY_STACK;
@@ -17,9 +22,5 @@ public abstract class BlockNeedsTool extends BlockType {
         return getMinedDrops(block, tool);
     }
 
-    protected Collection<ItemStack> getMinedDrops(GlowBlock block, ItemStack tool) {
-        return super.getDrops(block, tool);
-    }
-
-    protected abstract MaterialMatcher getNeededMiningTool(GlowBlock block);
+    protected abstract Collection<ItemStack> getMinedDrops(GlowBlock block, ItemStack tool);
 }

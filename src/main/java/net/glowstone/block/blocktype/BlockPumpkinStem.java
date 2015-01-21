@@ -9,8 +9,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 
-public class BlockPumpkinStem extends BlockNeedsAttached {
+public class BlockPumpkinStem extends DefaultBlockType {
     private final Random random = new Random();
+
+    public BlockPumpkinStem() {
+        super(
+                new BlockNeedsAttached()
+        );
+    }
 
     @Override
     public Collection<ItemStack> getDrops(GlowBlock block, ItemStack tool) {

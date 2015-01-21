@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 
-public class BlockMelon extends BlockType {
+public class BlockMelon extends DefaultBlockType {
     private final Random random = new Random();
 
     @Override
