@@ -4,6 +4,7 @@ import com.flowpowered.networking.AsyncableMessage;
 import com.flowpowered.networking.ConnectionManager;
 import com.flowpowered.networking.Message;
 import com.flowpowered.networking.MessageHandler;
+import com.flowpowered.networking.exception.IllegalOpcodeException;
 import com.flowpowered.networking.session.BasicSession;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -282,44 +283,44 @@ public final class GlowSession extends BasicSession {
         }
 
         // initialize the player
-        PlayerDataService.PlayerReader reader = server.getPlayerDataService().beginReadingData(profile.getUniqueId());
-        player = new GlowPlayer(this, profile, reader);
+        try (PlayerDataService.PlayerReader reader = server.getPlayerDataService().beginReadingData(profile.getUniqueId())) {
+            player = new GlowPlayer(this, profile, reader);
 
-        // isActive check here in case player disconnected after authentication,
-        // but before the GlowPlayer initialization was completed
-        if (!isActive()) {
-            onDisconnect();
-            return;
-        }
-
-        // login event
-        PlayerLoginEvent event = EventFactory.onPlayerLogin(player, hostname);
-        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
-            disconnect(event.getKickMessage(), true);
-            return;
-        }
-
-        // Kick other players with the same UUID
-        for (GlowPlayer other : getServer().getOnlinePlayers()) {
-            if (other != player && other.getUniqueId().equals(player.getUniqueId())) {
-                other.getSession().disconnect("You logged in from another location.", true);
-                break;
+            // isActive check here in case player disconnected after authentication,
+            // but before the GlowPlayer initialization was completed
+            if (!isActive()) {
+                player.remove();
+                player = null;
+                return;
             }
+
+            // login event
+            PlayerLoginEvent event = EventFactory.onPlayerLogin(player, hostname);
+            if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+                disconnect(event.getKickMessage(), true);
+                return;
+            }
+
+            // Kick other players with the same UUID
+            for (GlowPlayer other : getServer().getOnlinePlayers()) {
+                if (other != player && other.getUniqueId().equals(player.getUniqueId())) {
+                    other.getSession().disconnect("You logged in from another location.", true);
+                    break;
+                }
+            }
+
+            GlowServer.logger.info(player.getName() + " [" + address + "] connected, UUID: " + player.getUniqueId());
+            player.finishLogin(reader);
+            joined = true;
         }
 
-        GlowServer.logger.info(player.getName() + " [" + address + "] connected, UUID: " + player.getUniqueId());
-        player.finishLogin();
-        player.getWorld().getRawPlayers().add(player);
-        joined = true;
-
-        // message and user list
+        // join game event and message
         String message = EventFactory.onPlayerJoin(player).getJoinMessage();
         if (message != null && !message.isEmpty()) {
             server.broadcastMessage(message);
         }
 
-        // todo: display names are included in the outgoing messages here, but
-        // don't show up on the client. A workaround or proper fix is needed.
+        // user list update
         Message addMessage = new UserListItemMessage(UserListItemMessage.Action.ADD_PLAYER, player.getUserListEntry());
         List<UserListItemMessage.Entry> entries = new ArrayList<>();
         for (GlowPlayer other : server.getOnlinePlayers()) {
@@ -335,7 +336,7 @@ public final class GlowSession extends BasicSession {
 
     @Override
     public ChannelFuture sendWithFuture(Message message) {
-        if (!isActive()) {
+        if (disconnected || !isActive()) {
             // discard messages sent if we're closed, since this happens a lot
             return null;
         }
@@ -379,13 +380,14 @@ public final class GlowSession extends BasicSession {
             }
         }
 
-        // log that the player was kicked
+        // if they had joined, log that they were kicked
         if (player != null) {
-            GlowServer.logger.info(player.getName() + " kicked: " + reason);
-        } else {
-            GlowServer.logger.info("[" + address + "] kicked: " + reason);
+            if (joined) {
+                GlowServer.logger.info(player.getName() + " kicked: " + reason);
+            } else {
+                GlowServer.logger.info(this + " kicked: " + reason);
+            }
         }
-
         if (quitReason == null) {
             quitReason = "kicked";
         }
@@ -426,15 +428,19 @@ public final class GlowSession extends BasicSession {
             if (player == null) {
                 return;
             }
-
+            GlowPlayer player = this.player;
+            this.player = null;
             player.remove();
 
+            if (!joined) {
+                return;
+            }
             Message userListMessage = UserListItemMessage.removeOne(player.getUniqueId());
-            for (GlowPlayer player : server.getOnlinePlayers()) {
-                if (player.canSee(this.player)) {
-                    player.getSession().send(userListMessage);
+            for (GlowPlayer other : server.getOnlinePlayers()) {
+                if (other.canSee(player)) {
+                    other.getSession().send(userListMessage);
                 } else {
-                    player.stopHidingDisconnectedPlayer(this.player);
+                    other.stopHidingDisconnectedPlayer(player);
                 }
             }
 
@@ -444,14 +450,10 @@ public final class GlowSession extends BasicSession {
             }
             GlowServer.logger.info(logMessage);
 
-            if (joined) {
-                final String text = EventFactory.onPlayerQuit(player).getQuitMessage();
-                if (text != null && !text.isEmpty()) {
-                    server.broadcastMessage(text);
-                }
+            final String text = EventFactory.onPlayerQuit(player).getQuitMessage();
+            if (text != null && !text.isEmpty()) {
+                server.broadcastMessage(text);
             }
-
-            player = null; // in case we are disposed twice
         }
     }
 
@@ -504,23 +506,37 @@ public final class GlowSession extends BasicSession {
 
     @Override
     public void onInboundThrowable(Throwable t) {
+        if (disconnected) {
+            return;
+        }
+        if (quitReason != null) {
+            getChannel().close();
+            return;
+        }
+        quitReason = "read error: " + t;
         if (t instanceof CodecException) {
-            // generated by the pipeline, not a network error
-            GlowServer.logger.log(Level.SEVERE, "Error in network input", t);
+            // the client may have caused this somehow - should kick them
+            if (t.getCause() instanceof IllegalOpcodeException) {
+                // either an actual illegal ID or we're getting junk - definitely the client's fault
+                disconnect("Illegal packet ID.", true);
+            } else {
+                GlowServer.logger.log(Level.SEVERE, this + ": Error in network input ", t);
+                disconnect("Internal server error.", true);
+            }
         } else {
             // probably a network-level error - consider the client gone
-            if (quitReason == null) {
-                quitReason = "read error: " + t;
-            }
             getChannel().close();
         }
     }
 
     @Override
     public void onOutboundThrowable(Throwable t) {
+        if (disconnected) {
+            return;
+        }
         if (t instanceof CodecException) {
             // generated by the pipeline, not a network error
-            GlowServer.logger.log(Level.SEVERE, "Error in network output", t);
+            GlowServer.logger.log(Level.SEVERE, this + ": Error in network output", t);
         } else {
             // probably a network-level error - consider the client gone
             if (quitReason == null) {
@@ -532,14 +548,14 @@ public final class GlowSession extends BasicSession {
 
     @Override
     public void onHandlerThrowable(Message message, MessageHandler<?, ?> handle, Throwable t) {
-        // can be safely logged and the connection maintained
-        GlowServer.logger.log(Level.SEVERE, "Error while handling " + message + " (handler: " + handle.getClass().getSimpleName() + ")", t);
+        // can probably be safely logged and the connection maintained
+        GlowServer.logger.log(Level.SEVERE, this + ": Error in " + handle.getClass().getSimpleName() + " for " + message, t);
     }
 
     @Override
     public String toString() {
         if (player != null) {
-            return player.getName() + "[" + address + "]";
+            return player.getName() + " [" + address + "]";
         } else {
             return "[" + address + "]";
         }

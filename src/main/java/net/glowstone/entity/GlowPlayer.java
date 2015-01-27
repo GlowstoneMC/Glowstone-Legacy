@@ -269,10 +269,6 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
             session.enableCompression(compression);
         }
 
-        // send login response
-        session.send(new LoginSuccessMessage(profile.getUniqueId().toString(), profile.getName()));
-        session.setProtocol(ProtocolType.PLAY);
-
         // read data from player reader
         hasPlayedBefore = reader.hasPlayedBefore();
         if (hasPlayedBefore) {
@@ -284,8 +280,6 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
             lastPlayed = 0;
         }
         joinTime = System.currentTimeMillis();
-        reader.readData(this);
-        reader.close();
     }
 
     /**
@@ -333,11 +327,15 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
      * Perform the tasks required to finish the player's login sequence.
      * @throws IllegalStateException if the player is already logged in.
      */
-    public void finishLogin() {
+    public void finishLogin(PlayerDataService.PlayerReader reader) {
         if (joined) {
             throw new IllegalStateException("already logged in");
         }
         joined = true;
+
+        // send login success
+        session.send(new LoginSuccessMessage(getUniqueId().toString(), getName()));
+        session.setProtocol(ProtocolType.PLAY);
 
         // send join game
         String type = world.getWorldType().getName().toLowerCase();
@@ -354,6 +352,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
         // spawn in
         invMonitor = new InventoryMonitor(getOpenInventory());
+        reader.readData(this);
         spawnCommon();
 
         if (!server.getResourcePackURL().isEmpty()) {

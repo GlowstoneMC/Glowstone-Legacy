@@ -125,8 +125,8 @@ public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSe
                     try {
                         json = (JSONObject) new JSONParser().parse(new InputStreamReader(is));
                     } catch (ParseException e) {
-                        GlowServer.logger.warning("Username \"" + username + "\" failed to authenticate!");
-                        session.disconnect("Failed to verify username!");
+                        GlowServer.logger.warning(session + " failed to authenticate as \"" + username + "\"!");
+                        session.disconnect("Failed to verify username!", true);
                         return;
                     }
                 }
@@ -139,8 +139,8 @@ public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSe
                 try {
                     uuid = UuidUtils.fromFlatString(id);
                 } catch (IllegalArgumentException ex) {
-                    GlowServer.logger.log(Level.SEVERE, "Returned authentication UUID invalid: " + id, ex);
-                    session.disconnect("Invalid UUID.");
+                    GlowServer.logger.log(Level.SEVERE, session + ": Returned authentication UUID invalid: " + id, ex);
+                    session.disconnect("Failed to verify username!", true);
                     return;
                 }
 
@@ -170,8 +170,8 @@ public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSe
                     }
                 });
             } catch (Exception e) {
-                GlowServer.logger.log(Level.SEVERE, "Error in authentication thread", e);
-                session.disconnect("Internal error during authentication.", true);
+                GlowServer.logger.log(Level.SEVERE, session + ": Error in authentication thread", e);
+                session.disconnect("Failed to verify username!", true);
             }
         }
     }
