@@ -88,7 +88,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
     /**
      * A queue of BlockChangeMessages to be sent.
      */
-    private final List<BlockChangeMessage> blockChanges = new LinkedList<>();
+    private final Queue<BlockChangeMessage> blockChanges = new LinkedList<>();
 
     /**
      * A queue of messages that should be sent after block changes are processed.
@@ -464,13 +464,13 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
      * Process and send pending BlockChangeMessages.
      */
     private void processBlockChanges() {
-        List<BlockChangeMessage> messages = new ArrayList<>(blockChanges);
-        blockChanges.clear();
-
         // separate messages by chunk
         // inner map is used to only send one entry for same coordinates
+        long startTime = System.nanoTime(), i = 0;
         Map<GlowChunk.Key, Map<BlockVector, BlockChangeMessage>> chunks = new HashMap<>();
-        for (BlockChangeMessage message : messages) {
+        while (!blockChanges.isEmpty()) {
+            BlockChangeMessage message = blockChanges.remove();
+
             GlowChunk.Key key = new GlowChunk.Key(message.getX() >> 4, message.getZ() >> 4);
             Map<BlockVector, BlockChangeMessage> map = chunks.get(key);
             if (map == null) {
@@ -478,6 +478,12 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
                 chunks.put(key, map);
             }
             map.put(new BlockVector(message.getX(), message.getY(), message.getZ()), message);
+
+            ++i;
+            if (System.nanoTime() - startTime > 5000000L) { // 1/10th of a tick
+                GlowServer.logger.info(getName() + ": block change count = " + i);
+                break;
+            }
         }
 
         // send away

@@ -11,6 +11,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.handler.codec.CodecException;
+import io.netty.handler.timeout.ReadTimeoutException;
 import net.glowstone.EventFactory;
 import net.glowstone.GlowServer;
 import net.glowstone.entity.GlowPlayer;
@@ -513,17 +514,23 @@ public final class GlowSession extends BasicSession {
             getChannel().close();
             return;
         }
-        quitReason = "read error: " + t;
         if (t instanceof CodecException) {
             // the client may have caused this somehow - should kick them
             if (t.getCause() instanceof IllegalOpcodeException) {
                 // either an actual illegal ID or we're getting junk - definitely the client's fault
+                quitReason = "client protocol error";
                 disconnect("Illegal packet ID.", true);
             } else {
+                quitReason = "server protocol error";
                 GlowServer.logger.log(Level.SEVERE, this + ": Error in network input ", t);
                 disconnect("Internal server error.", true);
             }
         } else {
+            if (t instanceof ReadTimeoutException) {
+                quitReason = "read timeout";
+            } else {
+                quitReason = "read error: " + t;
+            }
             // probably a network-level error - consider the client gone
             getChannel().close();
         }
