@@ -1,8 +1,8 @@
 package net.glowstone.net.pipeline;
 
-import com.flowpowered.networking.Codec;
-import com.flowpowered.networking.Message;
-import com.flowpowered.networking.util.ByteBufUtils;
+import net.glowstone.net.flow.Codec;
+import net.glowstone.net.flow.Message;
+import net.glowstone.net.flow.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;

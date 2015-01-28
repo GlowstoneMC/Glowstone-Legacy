@@ -1,6 +1,6 @@
 package net.glowstone.net.codec;
 
-import com.flowpowered.networking.Codec;
+import net.glowstone.net.flow.Codec;
 import io.netty.buffer.ByteBuf;
 import net.glowstone.net.GlowBufUtils;
 import net.glowstone.net.message.KickMessage;

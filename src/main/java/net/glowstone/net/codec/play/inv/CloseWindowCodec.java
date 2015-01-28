@@ -1,6 +1,6 @@
 package net.glowstone.net.codec.play.inv;
 
-import com.flowpowered.networking.Codec;
+import net.glowstone.net.flow.Codec;
 import io.netty.buffer.ByteBuf;
 import net.glowstone.net.message.play.inv.CloseWindowMessage;
 

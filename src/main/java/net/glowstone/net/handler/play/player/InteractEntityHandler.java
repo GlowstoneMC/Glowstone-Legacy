@@ -1,6 +1,6 @@
 package net.glowstone.net.handler.play.player;
 
-import com.flowpowered.networking.MessageHandler;
+import net.glowstone.net.flow.MessageHandler;
 import net.glowstone.GlowServer;
 import net.glowstone.constants.AttackDamage;
 import net.glowstone.entity.GlowEntity;

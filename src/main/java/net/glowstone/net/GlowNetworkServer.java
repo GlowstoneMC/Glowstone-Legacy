@@ -1,7 +1,7 @@
 package net.glowstone.net;
 
-import com.flowpowered.networking.ConnectionManager;
-import com.flowpowered.networking.session.Session;
+import net.glowstone.net.flow.ConnectionManager;
+import net.glowstone.net.flow.Session;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;

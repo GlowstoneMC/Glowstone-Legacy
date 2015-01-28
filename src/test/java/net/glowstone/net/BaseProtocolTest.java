@@ -1,8 +1,8 @@
 package net.glowstone.net;
 
-import com.flowpowered.networking.Codec;
-import com.flowpowered.networking.Message;
-import com.flowpowered.networking.service.CodecLookupService;
+import net.glowstone.net.flow.Codec;
+import net.glowstone.net.flow.Message;
+import net.glowstone.net.flow.CodecLookupService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.glowstone.net.message.play.inv.HeldItemMessage;

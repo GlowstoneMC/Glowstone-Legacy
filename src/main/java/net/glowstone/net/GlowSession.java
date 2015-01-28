@@ -1,11 +1,11 @@
 package net.glowstone.net;
 
-import com.flowpowered.networking.AsyncableMessage;
-import com.flowpowered.networking.ConnectionManager;
-import com.flowpowered.networking.Message;
-import com.flowpowered.networking.MessageHandler;
-import com.flowpowered.networking.exception.IllegalOpcodeException;
-import com.flowpowered.networking.session.BasicSession;
+import net.glowstone.net.flow.AsyncableMessage;
+import net.glowstone.net.flow.ConnectionManager;
+import net.glowstone.net.flow.Message;
+import net.glowstone.net.flow.MessageHandler;
+import net.glowstone.net.flow.IllegalOpcodeException;
+import net.glowstone.net.flow.BasicSession;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;

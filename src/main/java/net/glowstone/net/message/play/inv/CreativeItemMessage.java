@@ -1,6 +1,6 @@
 package net.glowstone.net.message.play.inv;
 
-import com.flowpowered.networking.Message;
+import net.glowstone.net.flow.Message;
 import lombok.Data;
 import org.bukkit.inventory.ItemStack;
 

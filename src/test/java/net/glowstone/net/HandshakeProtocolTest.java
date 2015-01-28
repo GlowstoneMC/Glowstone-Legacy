@@ -1,6 +1,6 @@
 package net.glowstone.net;
 
-import com.flowpowered.networking.Message;
+import net.glowstone.net.flow.Message;
 import net.glowstone.net.message.handshake.HandshakeMessage;
 import net.glowstone.net.protocol.HandshakeProtocol;
 

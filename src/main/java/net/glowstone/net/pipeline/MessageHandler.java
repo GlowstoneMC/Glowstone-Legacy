@@ -1,8 +1,8 @@
 package net.glowstone.net.pipeline;
 
-import com.flowpowered.networking.ConnectionManager;
-import com.flowpowered.networking.Message;
-import com.flowpowered.networking.session.Session;
+import net.glowstone.net.flow.ConnectionManager;
+import net.glowstone.net.flow.Message;
+import net.glowstone.net.flow.Session;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

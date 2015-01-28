@@ -1,6 +1,6 @@
 package net.glowstone.net.message.play.game;
 
-import com.flowpowered.networking.Message;
+import net.glowstone.net.flow.Message;
 import lombok.Data;
 import net.glowstone.entity.meta.profile.PlayerProfile;
 import net.glowstone.util.TextMessage;

@@ -1,7 +1,7 @@
 package net.glowstone.net.codec.play.entity;
 
-import com.flowpowered.networking.Codec;
-import com.flowpowered.networking.util.ByteBufUtils;
+import net.glowstone.net.flow.Codec;
+import net.glowstone.net.flow.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
 import net.glowstone.net.message.play.entity.SpawnObjectMessage;
 

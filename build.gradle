@@ -99,7 +99,7 @@ repositories {
 // Dependencies used by our project
 dependencies {
     compile group: 'net.glowstone', name: 'glowkit', version: project.ext.bukkitVersion
-    compile 'com.flowpowered:flow-networking:1.0.0-SNAPSHOT'
+    compile 'io.netty:netty-all:4.0.21.Final'
     compile 'jline:jline:2.11'
     //compile 'mysql:mysql-connector-java:5.1.14'
     //compile 'org.xerial:sqlite-jdbc:3.7.2'

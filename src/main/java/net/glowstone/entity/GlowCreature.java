@@ -1,6 +1,6 @@
 package net.glowstone.entity;
 
-import com.flowpowered.networking.Message;
+import net.glowstone.net.flow.Message;
 import net.glowstone.net.message.play.entity.EntityHeadRotationMessage;
 import net.glowstone.net.message.play.entity.SpawnMobMessage;
 import net.glowstone.util.Position;

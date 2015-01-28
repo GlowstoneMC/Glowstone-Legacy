@@ -1,6 +1,6 @@
 package net.glowstone.net.codec.play.game;
 
-import com.flowpowered.networking.Codec;
+import net.glowstone.net.flow.Codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.DecoderException;
 import net.glowstone.net.message.play.game.ExplosionMessage;

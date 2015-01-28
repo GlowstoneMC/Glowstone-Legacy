@@ -1,6 +1,6 @@
 package net.glowstone.net.pipeline;
 
-import com.flowpowered.networking.ConnectionManager;
+import net.glowstone.net.flow.ConnectionManager;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;

@@ -1,6 +1,6 @@
 package net.glowstone.net.message.play.player;
 
-import com.flowpowered.networking.Message;
+import net.glowstone.net.flow.Message;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
