@@ -52,18 +52,11 @@ public class Session {
     private final String sessionId = Long.toString(random.nextLong(), 16).trim();
 
     /**
-     * The protocol for this session
-     */
-    private HandlerLookup protocol;
-
-    /**
      * Creates a new session.
      * @param channel The channel associated with this session.
-     * @param protocol the initial protocol
      */
-    public Session(Channel channel, HandlerLookup protocol) {
+    public Session(Channel channel) {
         this.channel = channel;
-        this.protocol = protocol;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -145,10 +138,14 @@ public class Session {
         });
     }
 
+    /**
+     * Call the appropriate handler for a message.
+     * @param message The message to handle.
+     */
     @SuppressWarnings("unchecked")
     protected final void handleMessage(Message message) {
-        Class<Message> messageClass = (Class<Message>) message.getClass();
-        MessageHandler handler = (MessageHandler) protocol.getHandler(messageClass);
+        Class<? extends Message> messageClass = message.getClass();
+        MessageHandler handler = (MessageHandler) getHandlerLookup().getHandler(messageClass);
         if (handler != null) {
             try {
                 handler.handle(this, message);
@@ -158,12 +155,13 @@ public class Session {
         }
     }
 
-    public HandlerLookup getProtocol() {
-        return this.protocol;
-    }
-
-    protected void setProtocol(HandlerLookup protocol) {
-        this.protocol = protocol;
+    /**
+     * Get the {@link HandlerLookup} to use with {@link #handleMessage(Message)}.
+     * By default, a HandlerLookup which never finds a handler is returned.
+     * @return The HandlerLookup.
+     */
+    protected HandlerLookup getHandlerLookup() {
+        return HandlerLookup.NULL;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -179,7 +177,7 @@ public class Session {
      * Called when a message has been received.
      * @param message the message
      */
-    public void messageReceived(Message message) {
+    public void onMessageReceived(Message message) {
         handleMessage(message);
     }
 

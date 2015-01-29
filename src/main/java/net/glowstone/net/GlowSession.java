@@ -21,9 +21,6 @@ import net.glowstone.net.pipeline.CodecsHandler;
 import net.glowstone.net.pipeline.CompressionHandler;
 import net.glowstone.net.pipeline.EncryptionHandler;
 import net.glowstone.net.pipeline.NoopHandler;
-import net.glowstone.net.protocol.GlowProtocol;
-import net.glowstone.net.protocol.LoginProtocol;
-import net.glowstone.net.protocol.PlayProtocol;
 import net.glowstone.net.protocol.ProtocolType;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -118,12 +115,17 @@ public final class GlowSession extends Session {
     private boolean joined;
 
     /**
+     * The protocol variant currently in use.
+     */
+    private ProtocolType protocol = ProtocolType.HANDSHAKE;
+
+    /**
      * Creates a new session.
      * @param server The server this session belongs to.
      * @param channel The channel associated with this session.
      */
     public GlowSession(GlowServer server, Channel channel) {
-        super(channel, ProtocolType.HANDSHAKE.getProtocol());
+        super(channel);
         this.server = server;
         address = super.getAddress();
         server.getSessionRegistry().add(this);
@@ -202,7 +204,7 @@ public final class GlowSession extends Session {
      * Notify that the session is currently idle.
      */
     public void idle() {
-        if (pingMessageId == 0 && getProtocol() instanceof PlayProtocol) {
+        if (pingMessageId == 0 && protocol == ProtocolType.PLAY) {
             pingMessageId = random.nextInt();
             if (pingMessageId == 0) {
                 pingMessageId++;
@@ -378,7 +380,7 @@ public final class GlowSession extends Session {
         }
 
         // perform the kick, sending a kick message if possible
-        if (isActive() && (getProtocol() instanceof LoginProtocol || getProtocol() instanceof PlayProtocol)) {
+        if (isActive() && (protocol == ProtocolType.LOGIN || protocol == ProtocolType.PLAY)) {
             // channel is both currently connected and in a protocol state allowing kicks
             sendWithFuture(new KickMessage(reason)).addListener(ChannelFutureListener.CLOSE);
         } else {
@@ -445,12 +447,15 @@ public final class GlowSession extends Session {
     ////////////////////////////////////////////////////////////////////////////
     // Pipeline management
 
+    @Override
+    protected HandlerLookup getHandlerLookup() {
+        return protocol.getProtocol();
+    }
+
     public void setProtocol(ProtocolType protocol) {
         getChannel().flush();
-
-        GlowProtocol proto = protocol.getProtocol();
-        updatePipeline("codecs", new CodecsHandler(proto));
-        super.setProtocol(proto);
+        updatePipeline("codecs", new CodecsHandler(protocol.getProtocol()));
+        this.protocol = protocol;
     }
 
     public void enableEncryption(SecretKey sharedSecret) {
@@ -480,7 +485,7 @@ public final class GlowSession extends Session {
     }
 
     @Override
-    public void messageReceived(Message message) {
+    public void onMessageReceived(Message message) {
         if (message instanceof AsyncableMessage && ((AsyncableMessage) message).isAsync()) {
             // async messages get their handlers called immediately
             handleMessage(message);

@@ -12,4 +12,14 @@ public interface HandlerLookup {
      */
     <M extends Message> MessageHandler<?, M> getHandler(Class<M> clazz);
 
+    /**
+     * A simple no-op HandlerLookup.
+     */
+    HandlerLookup NULL = new HandlerLookup() {
+        @Override
+        public <M extends Message> MessageHandler<?, M> getHandler(Class<M> clazz) {
+            return null;
+        }
+    };
+
 }
