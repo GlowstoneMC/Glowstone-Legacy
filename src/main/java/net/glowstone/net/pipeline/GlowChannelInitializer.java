@@ -1,10 +1,10 @@
 package net.glowstone.net.pipeline;
 
-import net.glowstone.net.flow.ConnectionManager;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
+import net.glowstone.GlowServer;
 import net.glowstone.net.protocol.ProtocolType;
 
 /**
@@ -24,15 +24,15 @@ public final class GlowChannelInitializer extends ChannelInitializer<SocketChann
      */
     private static final int WRITE_IDLE_TIMEOUT = 15;
 
-    private final ConnectionManager connectionManager;
+    private final GlowServer server;
 
-    public GlowChannelInitializer(ConnectionManager connectionManager) {
-        this.connectionManager = connectionManager;
+    public GlowChannelInitializer(GlowServer server) {
+        this.server = server;
     }
 
     @Override
     protected void initChannel(SocketChannel c) {
-        MessageHandler handler = new MessageHandler(connectionManager);
+        MessageHandler handler = new MessageHandler(server);
         CodecsHandler codecs = new CodecsHandler(ProtocolType.HANDSHAKE.getProtocol());
         FramingHandler framing = new FramingHandler();
 
@@ -41,8 +41,8 @@ public final class GlowChannelInitializer extends ChannelInitializer<SocketChann
                 .addLast("framing", framing)
                 .addLast("compression", NoopHandler.INSTANCE)
                 .addLast("codecs", codecs)
-                .addLast("readtimeout", new ReadTimeoutHandler(READ_TIMEOUT))
-                .addLast("writeidletimeout", new IdleStateHandler(0, WRITE_IDLE_TIMEOUT, 0))
+                .addLast("read-timeout", new ReadTimeoutHandler(READ_TIMEOUT))
+                .addLast("write-timeout", new IdleStateHandler(0, WRITE_IDLE_TIMEOUT, 0))
                 .addLast("handler", handler);
     }
 }

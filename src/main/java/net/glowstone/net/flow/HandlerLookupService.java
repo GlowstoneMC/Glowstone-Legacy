@@ -26,21 +26,35 @@ package net.glowstone.net.flow;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HandlerLookupService {
+/**
+ * Lookup from {@link Message} classes to {@link MessageHandler} instances.
+ */
+public class HandlerLookupService implements HandlerLookup {
+
+    /**
+     * Table from message classes to handler instances.
+     */
     private final Map<Class<? extends Message>, MessageHandler<?, ?>> handlers = new HashMap<>();
 
-    public <M extends Message, H extends MessageHandler<?, ? super M>> void bind(Class<M> clazz, Class<H> handlerClass) throws InstantiationException, IllegalAccessException {
-        MessageHandler<?, ? super M> handler = handlerClass.newInstance();
-        handlers.put(clazz, handler);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <M extends Message> MessageHandler<?, M> find(Class<M> clazz) {
-        return (MessageHandler<?, M>) handlers.get(clazz);
+    /**
+     * Bind a message class to a handler class. The handler class should be
+     * possible to trivially construct.
+     * @param clazz The message class to bind.
+     * @param handlerClass The handler class to bind.
+     * @throws IllegalArgumentException if an error occurs
+     */
+    public <M extends Message> void bind(Class<M> clazz, Class<? extends MessageHandler<?, ? super M>> handlerClass) throws IllegalArgumentException {
+        try {
+            handlers.put(clazz, handlerClass.newInstance());
+        } catch (ReflectiveOperationException ex) {
+            throw new IllegalArgumentException("Failed to create handler instance", ex);
+        }
     }
 
     @Override
-    public String toString() {
-        return "HandlerLookupService{" + "handlers=" + handlers + '}';
+    @SuppressWarnings("unchecked")
+    public <M extends Message> MessageHandler<?, M> getHandler(Class<M> clazz) {
+        return (MessageHandler<?, M>) handlers.get(clazz);
     }
+
 }

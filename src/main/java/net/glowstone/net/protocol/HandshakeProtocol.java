@@ -6,7 +6,8 @@ import net.glowstone.net.message.handshake.HandshakeMessage;
 
 public final class HandshakeProtocol extends GlowProtocol {
     public HandshakeProtocol() {
-        super("HANDSHAKE", 0);
+        super("HANDSHAKE");
         inbound(0x00, HandshakeMessage.class, HandshakeCodec.class, HandshakeHandler.class);
+        done();
     }
 }

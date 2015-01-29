@@ -17,7 +17,7 @@ import net.glowstone.net.message.login.LoginSuccessMessage;
 
 public final class LoginProtocol extends GlowProtocol {
     public LoginProtocol() {
-        super("LOGIN", 5);
+        super("LOGIN");
 
         inbound(0x00, LoginStartMessage.class, LoginStartCodec.class, LoginStartHandler.class);
         inbound(0x01, EncryptionKeyResponseMessage.class, EncryptionKeyResponseCodec.class, EncryptionKeyResponseHandler.class);
@@ -26,5 +26,7 @@ public final class LoginProtocol extends GlowProtocol {
         outbound(0x01, EncryptionKeyRequestMessage.class, EncryptionKeyRequestCodec.class);
         outbound(0x02, LoginSuccessMessage.class, LoginSuccessCodec.class);
         outbound(0x03, SetCompressionMessage.class, SetCompressionCodec.class);
+
+        done();
     }
 }

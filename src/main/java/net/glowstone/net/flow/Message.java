@@ -33,12 +33,4 @@ package net.glowstone.net.flow;
  * </ul>
  */
 public interface Message {
-    @Override
-    String toString();
-
-    @Override
-    boolean equals(Object other);
-
-    @Override
-    int hashCode();
 }

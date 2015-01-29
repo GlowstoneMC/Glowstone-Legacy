@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -83,7 +84,7 @@ public final class EncryptionKeyResponseHandler implements MessageHandler<GlowSe
         String hash;
         try {
             final MessageDigest digest = MessageDigest.getInstance("SHA-1");
-            digest.update(session.getSessionId().getBytes());
+            digest.update(session.getSessionId().getBytes(StandardCharsets.UTF_8));
             digest.update(sharedSecret.getEncoded());
             digest.update(session.getServer().getKeyPair().getPublic().getEncoded());
 

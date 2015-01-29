@@ -1,11 +1,5 @@
 package net.glowstone.net;
 
-import net.glowstone.net.flow.AsyncableMessage;
-import net.glowstone.net.flow.ConnectionManager;
-import net.glowstone.net.flow.Message;
-import net.glowstone.net.flow.MessageHandler;
-import net.glowstone.net.flow.IllegalOpcodeException;
-import net.glowstone.net.flow.BasicSession;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -17,6 +11,7 @@ import net.glowstone.GlowServer;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.entity.meta.profile.PlayerProfile;
 import net.glowstone.io.PlayerDataService;
+import net.glowstone.net.flow.*;
 import net.glowstone.net.message.KickMessage;
 import net.glowstone.net.message.SetCompressionMessage;
 import net.glowstone.net.message.play.game.PingMessage;
@@ -43,17 +38,12 @@ import java.util.logging.Level;
  * player.
  * @author Graham Edgecombe
  */
-public final class GlowSession extends BasicSession {
+public final class GlowSession extends Session {
 
     /**
      * The server this session belongs to.
      */
     private final GlowServer server;
-
-    /**
-     * The connection manager this session belongs to.
-     */
-    private final ConnectionManager connectionManager;
 
     /**
      * The Random for this session
@@ -132,11 +122,11 @@ public final class GlowSession extends BasicSession {
      * @param server The server this session belongs to.
      * @param channel The channel associated with this session.
      */
-    public GlowSession(GlowServer server, Channel channel, ConnectionManager connectionManager) {
+    public GlowSession(GlowServer server, Channel channel) {
         super(channel, ProtocolType.HANDSHAKE.getProtocol());
         this.server = server;
-        this.connectionManager = connectionManager;
         address = super.getAddress();
+        server.getSessionRegistry().add(this);
     }
 
     /**
@@ -337,17 +327,11 @@ public final class GlowSession extends BasicSession {
 
     @Override
     public ChannelFuture sendWithFuture(Message message) {
-        if (disconnected || !isActive()) {
-            // discard messages sent if we're closed, since this happens a lot
-            return null;
+        ChannelFuture future = super.sendWithFuture(message);
+        if (future == null) {
+            GlowServer.logger.warning(this + ": discarded " + message);
         }
-        return super.sendWithFuture(message);
-    }
-
-    @Override
-    @Deprecated
-    public void disconnect() {
-        disconnect("No reason specified.");
+        return future;
     }
 
     /**
@@ -419,12 +403,12 @@ public final class GlowSession extends BasicSession {
                 continue;
             }
 
-            super.messageReceived(message);
+            handleMessage(message);
         }
 
         // check if the client is disconnected
         if (disconnected) {
-            connectionManager.sessionInactivated(this);
+            server.getSessionRegistry().remove(this);
 
             if (player == null) {
                 return;
@@ -499,7 +483,7 @@ public final class GlowSession extends BasicSession {
     public void messageReceived(Message message) {
         if (message instanceof AsyncableMessage && ((AsyncableMessage) message).isAsync()) {
             // async messages get their handlers called immediately
-            super.messageReceived(message);
+            handleMessage(message);
         } else {
             messageQueue.add(message);
         }
@@ -516,10 +500,10 @@ public final class GlowSession extends BasicSession {
         }
         if (t instanceof CodecException) {
             // the client may have caused this somehow - should kick them
-            if (t.getCause() instanceof IllegalOpcodeException) {
-                // either an actual illegal ID or we're getting junk - definitely the client's fault
+            if (t.getCause() instanceof IllegalArgumentException) {
+                // highly likely to be caused by the client
                 quitReason = "client protocol error";
-                disconnect("Illegal packet ID.", true);
+                disconnect(t.getCause().getMessage(), true);
             } else {
                 quitReason = "server protocol error";
                 GlowServer.logger.log(Level.SEVERE, this + ": Error in network input ", t);
@@ -554,9 +538,9 @@ public final class GlowSession extends BasicSession {
     }
 
     @Override
-    public void onHandlerThrowable(Message message, MessageHandler<?, ?> handle, Throwable t) {
+    public void onHandlerThrowable(Message message, MessageHandler<?, ?> handler, Throwable t) {
         // can probably be safely logged and the connection maintained
-        GlowServer.logger.log(Level.SEVERE, this + ": Error in " + handle.getClass().getSimpleName() + " for " + message, t);
+        GlowServer.logger.log(Level.SEVERE, this + ": Error in " + handler.getClass().getSimpleName() + " for " + message, t);
     }
 
     @Override

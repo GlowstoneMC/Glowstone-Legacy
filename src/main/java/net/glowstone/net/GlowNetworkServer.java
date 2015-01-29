@@ -1,9 +1,6 @@
 package net.glowstone.net;
 
-import net.glowstone.net.flow.ConnectionManager;
-import net.glowstone.net.flow.Session;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -15,9 +12,9 @@ import net.glowstone.net.pipeline.GlowChannelInitializer;
 import java.net.SocketAddress;
 
 /**
- * Modified implementation of {@link com.flowpowered.networking.NetworkServer}.
+ * Modified implementation of flow-networking NetworkServer.
  */
-public final class GlowNetworkServer implements ConnectionManager {
+public final class GlowNetworkServer {
     /**
      * The {@link io.netty.bootstrap.ServerBootstrap} used to initialize Netty.
      */
@@ -25,35 +22,19 @@ public final class GlowNetworkServer implements ConnectionManager {
     private final EventLoopGroup bossGroup = new NioEventLoopGroup();
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-    private final GlowServer server;
-
     public GlowNetworkServer(GlowServer server) {
-        this.server = server;
         bootstrap
                 .group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new GlowChannelInitializer(this))
+                .childHandler(new GlowChannelInitializer(server))
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
-    }
-
-    @Override
-    public Session newSession(Channel c) {
-        GlowSession session = new GlowSession(server, c, this);
-        server.getSessionRegistry().add(session);
-        return session;
-    }
-
-    @Override
-    public void sessionInactivated(Session session) {
-        server.getSessionRegistry().remove((GlowSession) session);
     }
 
     public ChannelFuture bind(final SocketAddress address) {
         return bootstrap.bind(address);
     }
 
-    @Override
     public void shutdown() {
         workerGroup.shutdownGracefully();
         bossGroup.shutdownGracefully();

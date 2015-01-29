@@ -1,14 +1,14 @@
 package net.glowstone.net.pipeline;
 
-import net.glowstone.net.flow.Codec;
-import net.glowstone.net.flow.Message;
-import net.glowstone.net.flow.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.EncoderException;
 import io.netty.handler.codec.MessageToMessageCodec;
 import net.glowstone.GlowServer;
+import net.glowstone.net.flow.ByteBufUtils;
+import net.glowstone.net.flow.Codec;
+import net.glowstone.net.flow.CodecRegistration;
+import net.glowstone.net.flow.Message;
 import net.glowstone.net.protocol.GlowProtocol;
 
 import java.util.List;
@@ -28,9 +28,9 @@ public final class CodecsHandler extends MessageToMessageCodec<ByteBuf, Message>
     protected void encode(ChannelHandlerContext ctx, Message msg, List<Object> out) throws Exception {
         // find codec
         final Class<? extends Message> clazz = msg.getClass();
-        Codec.CodecRegistration reg = protocol.getCodecRegistration(clazz);
+        final CodecRegistration reg = protocol.getOutboundCodec(clazz);
         if (reg == null) {
-            throw new EncoderException("Unknown message type: " + clazz + ".");
+            return;
         }
 
         // write header
@@ -47,7 +47,11 @@ public final class CodecsHandler extends MessageToMessageCodec<ByteBuf, Message>
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
         // find codec and read header
-        final Codec<?> codec = protocol.newReadHeader(msg);
+        final int opcode = ByteBufUtils.readVarInt(msg);
+        final Codec<?> codec = protocol.getInboundCodec(opcode);
+        if (codec == null) {
+            throw new IllegalArgumentException("Invalid packet id 0x" + Integer.toHexString(opcode));
+        }
 
         // read body
         Message decoded = codec.decode(msg);

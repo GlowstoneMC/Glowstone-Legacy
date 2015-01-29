@@ -1,13 +1,13 @@
 package net.glowstone.net.pipeline;
 
-import net.glowstone.net.flow.ConnectionManager;
-import net.glowstone.net.flow.Message;
-import net.glowstone.net.flow.Session;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;
+import net.glowstone.GlowServer;
 import net.glowstone.net.GlowSession;
+import net.glowstone.net.flow.Message;
+import net.glowstone.net.flow.Session;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -17,22 +17,26 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class MessageHandler extends SimpleChannelInboundHandler<Message> {
 
     /**
-     * The associated session
+     * The associated session.
      */
     private final AtomicReference<Session> session = new AtomicReference<>(null);
-    private final ConnectionManager connectionManager;
+
+    /**
+     * The server.
+     */
+    private final GlowServer server;
 
     /**
      * Creates a new network event handler.
      */
-    public MessageHandler(ConnectionManager connectionManager) {
-        this.connectionManager = connectionManager;
+    public MessageHandler(GlowServer server) {
+        this.server = server;
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        final Channel c = ctx.channel();
-        Session s = connectionManager.newSession(c);
+        final Channel channel = ctx.channel();
+        Session s = new GlowSession(server, channel);
         if (!session.compareAndSet(null, s)) {
             throw new IllegalStateException("Session may not be set more than once");
         }
@@ -41,8 +45,7 @@ public final class MessageHandler extends SimpleChannelInboundHandler<Message> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        Session session = this.session.get();
-        session.onDisconnect();
+        session.get().onDisconnect();
     }
 
     @Override

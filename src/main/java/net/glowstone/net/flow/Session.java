@@ -23,60 +23,193 @@
  */
 package net.glowstone.net.flow;
 
-import org.slf4j.Logger;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
+
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.Random;
 
 /**
- * Represents a connection to another engine.
- * <br/>
- * Controls the state, protocol and channels of a connection to another engine.
+ * A basic implementation of a session which handles and sends messages instantly.
  */
-public interface Session {
+public class Session {
     /**
-     * Passes a message to a session for processing.
-     * @param message message to be processed
+     * The Random used for sessionIds.
      */
-    <T extends Message> void messageReceived(T message);
+    private static final Random random = new Random();
 
     /**
-     * Gets the protocol associated with this session.
-     * @return the protocol
+     * The channel associated with this session.
      */
-    Protocol getProtocol();
-
-    MessageProcessor getProcessor();
+    private final Channel channel;
 
     /**
-     * Sends a message across the network.
-     * @param message The message.
+     * The random long used for client-server handshake
      */
-    void send(Message message) throws ChannelClosedException;
+    private final String sessionId = Long.toString(random.nextLong(), 16).trim();
 
     /**
-     * Sends any amount of messages to the client.
-     * @param messages the messages to send to the client
+     * The protocol for this session
      */
-    void sendAll(Message... messages) throws ChannelClosedException;
+    private HandlerLookup protocol;
 
     /**
-     * Closes the session.
+     * Creates a new session.
+     * @param channel The channel associated with this session.
+     * @param protocol the initial protocol
      */
-    void disconnect();
+    public Session(Channel channel, HandlerLookup protocol) {
+        this.channel = channel;
+        this.protocol = protocol;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Base accessors
 
     /**
-     * Called after the Session has been disconnected, right before the Session is invalidated.
+     * Get the {@link Channel} associated with this session.
+     * @return The channel.
      */
-    void onDisconnect();
+    public final Channel getChannel() {
+        return channel;
+    }
+
+    /**
+     * Get the remote address of this session.
+     * @return The remote address.
+     */
+    public InetSocketAddress getAddress() {
+        SocketAddress addr = channel.remoteAddress();
+        if (!(addr instanceof InetSocketAddress)) {
+            return null;
+        }
+
+        return (InetSocketAddress) addr;
+    }
+
+    /**
+     * Get the randomly-generated session id string for this session.
+     * @return The session id.
+     */
+    public final String getSessionId() {
+        return sessionId;
+    }
+
+    /**
+     * Check if the session's channel is currently active.
+     * @return true if the channel is active.
+     * @see Channel#isActive()
+     */
+    public final boolean isActive() {
+        return channel.isActive();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getName() + " [address=" + channel.remoteAddress() + "]";
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Actions
+
+    /**
+     * Send a message through the pipeline.
+     * @param message The message to send.
+     */
+    public final void send(Message message) {
+        sendWithFuture(message);
+    }
+
+    /**
+     * Send a message through the pipeline, returning a {@link ChannelFuture}
+     * representing its completion. If the channel has been closed, the message
+     * is not sent and null is returned.
+     * @param message The message to send.
+     * @return The ChannelFuture, or null.
+     */
+    public ChannelFuture sendWithFuture(Message message) {
+        if (!channel.isActive()) {
+            return null;
+        }
+        return channel.writeAndFlush(message).addListener(new GenericFutureListener<Future<? super Void>>() {
+            @Override
+            public void operationComplete(Future<? super Void> future) throws Exception {
+                Throwable cause = future.cause();
+                if (cause != null) {
+                    onOutboundThrowable(cause);
+                }
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    protected final void handleMessage(Message message) {
+        Class<Message> messageClass = (Class<Message>) message.getClass();
+        MessageHandler handler = (MessageHandler) protocol.getHandler(messageClass);
+        if (handler != null) {
+            try {
+                handler.handle(this, message);
+            } catch (Throwable t) {
+                onHandlerThrowable(message, handler, t);
+            }
+        }
+    }
+
+    public HandlerLookup getProtocol() {
+        return this.protocol;
+    }
+
+    protected void setProtocol(HandlerLookup protocol) {
+        this.protocol = protocol;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Callbacks
 
     /**
      * Called once the Session is ready for messages.
      */
-    void onReady();
+    public void onReady() {
+    }
 
     /**
-     * Called when a throwable is thrown in the pipeline during inbound operations.
-     * @param throwable
+     * Called when a message has been received.
+     * @param message the message
      */
-    void onInboundThrowable(Throwable throwable);
+    public void messageReceived(Message message) {
+        handleMessage(message);
+    }
 
-    Logger getLogger();
+    /**
+     * Called when the channel has become inactive.
+     */
+    public void onDisconnect() {
+    }
+
+    /**
+     * Called when an error occurs on the inbound pipeline.
+     * @param throwable the throwable
+     */
+    public void onInboundThrowable(Throwable throwable) {
+    }
+
+    /**
+     * Called when an error occurs on the outbound pipeline.
+     * @param throwable the throwable
+     */
+    public void onOutboundThrowable(Throwable throwable) {
+    }
+
+    /**
+     * Called when an error occurs in a message handler.
+     * @param message the message that the handler threw an exception on
+     * @param handler the handler that threw the exception
+     * @param throwable the throwable
+     */
+    public void onHandlerThrowable(Message message, MessageHandler<?, ?> handler, Throwable throwable) {
+    }
+
 }

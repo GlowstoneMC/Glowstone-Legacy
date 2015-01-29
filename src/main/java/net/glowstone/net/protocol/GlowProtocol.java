@@ -1,103 +1,73 @@
 package net.glowstone.net.protocol;
 
-import net.glowstone.net.flow.Codec;
-import net.glowstone.net.flow.Message;
-import net.glowstone.net.flow.MessageHandler;
-import net.glowstone.net.flow.IllegalOpcodeException;
-import net.glowstone.net.flow.UnknownPacketException;
-import net.glowstone.net.flow.AbstractProtocol;
-import net.glowstone.net.flow.CodecLookupService;
-import net.glowstone.net.flow.HandlerLookupService;
-import net.glowstone.net.flow.ByteBufUtils;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import net.glowstone.GlowServer;
+import net.glowstone.net.flow.*;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
 
-public abstract class GlowProtocol extends AbstractProtocol {
+public abstract class GlowProtocol implements HandlerLookup {
 
-    private final CodecLookupService inboundCodecs;
-    private final CodecLookupService outboundCodecs;
+    private MapCodecLookup wipInbound;
+    private MapCodecLookup wipOutbound;
+
+    private ArrayCodecLookup inboundCodecs;
+    private ArrayCodecLookup outboundCodecs;
+
     private final HandlerLookupService handlers;
+    private final String name;
 
-    public GlowProtocol(String name, int highestOpcode) {
-        super(name);
-        inboundCodecs = new CodecLookupService(highestOpcode + 1);
-        outboundCodecs = new CodecLookupService(highestOpcode + 1);
+    public GlowProtocol(String name) {
+        this.name = name;
+        wipInbound = new MapCodecLookup();
+        wipOutbound = new MapCodecLookup();
         handlers = new HandlerLookupService();
     }
 
-    protected <M extends Message, C extends Codec<? super M>, H extends MessageHandler<?, ? super M>> void inbound(int opcode, Class<M> message, Class<C> codec, Class<H> handler) {
+    // creating bindings
+
+    protected final <M extends Message, C extends Codec<? super M>, H extends MessageHandler<?, ? super M>> void inbound(int opcode, Class<M> message, Class<C> codec, Class<H> handler) {
         try {
-            inboundCodecs.bind(message, codec, opcode);
+            wipInbound.bind(message, codec, opcode);
             handlers.bind(message, handler);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            getLogger().error("Error registering inbound " + opcode + " in " + getName(), e);
+        } catch (Exception e) {
+            GlowServer.logger.log(Level.SEVERE, "Error registering inbound 0x" + Integer.toHexString(opcode) + " in " + name, e);
         }
     }
 
-    protected <M extends Message, C extends Codec<? super M>> void outbound(int opcode, Class<M> message, Class<C> codec) {
+    protected final <M extends Message, C extends Codec<? super M>> void outbound(int opcode, Class<M> message, Class<C> codec) {
         try {
-            outboundCodecs.bind(message, codec, opcode);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            getLogger().error("Error registering outbound " + opcode + " in " + getName(), e);
+            wipOutbound.bind(message, codec, opcode);
+        } catch (Exception e) {
+            GlowServer.logger.log(Level.SEVERE, "Error registering outbound 0x" + Integer.toHexString(opcode) + " in " + name, e);
         }
     }
 
-    @Override
-    public <M extends Message> MessageHandler<?, M> getMessageHandle(Class<M> clazz) {
-        MessageHandler<?, M> handler = handlers.find(clazz);
-        if (handler == null) {
-            GlowServer.logger.warning("No message handler for: " + clazz.getSimpleName() + " in " + getName());
-        }
-        return handler;
+    protected final void done() {
+        inboundCodecs = wipInbound.bake();
+        outboundCodecs = wipOutbound.bake();
+        wipInbound = wipOutbound = null;
     }
 
-    @Override
-    @Deprecated
-    public Codec<?> readHeader(ByteBuf buf) throws UnknownPacketException {
-        int length = -1;
-        int opcode = -1;
-        try {
-            length = ByteBufUtils.readVarInt(buf);
+    // accessing bindings
 
-            // mark point before opcode
-            buf.markReaderIndex();
-
-            opcode = ByteBufUtils.readVarInt(buf);
-            return inboundCodecs.find(opcode);
-        } catch (IOException e) {
-            throw new UnknownPacketException("Failed to read packet data (corrupt?)", opcode, length);
-        } catch (IllegalOpcodeException e) {
-            // go back to before opcode, so that skipping length doesn't skip too much
-            buf.resetReaderIndex();
-            throw new UnknownPacketException("Opcode received is not a registered codec on the server!", opcode, length);
-        }
-    }
-
-    @Override
-    public <M extends Message> Codec.CodecRegistration getCodecRegistration(Class<M> clazz) {
-        Codec.CodecRegistration reg = outboundCodecs.find(clazz);
+    public final <M extends Message> CodecRegistration<M> getOutboundCodec(Class<M> clazz) {
+        CodecRegistration<M> reg = outboundCodecs.find(clazz);
         if (reg == null) {
-            GlowServer.logger.warning("No codec to write: " + clazz.getSimpleName() + " in " + getName());
+            GlowServer.logger.warning("No codec to write: " + clazz.getSimpleName() + " in " + name);
         }
         return reg;
     }
 
-    @Override
-    @Deprecated
-    public ByteBuf writeHeader(ByteBuf out, Codec.CodecRegistration codec, ByteBuf data) {
-        final ByteBuf opcodeBuffer = Unpooled.buffer(5);
-        ByteBufUtils.writeVarInt(opcodeBuffer, codec.getOpcode());
-        ByteBufUtils.writeVarInt(out, opcodeBuffer.readableBytes() + data.readableBytes());
-        ByteBufUtils.writeVarInt(out, codec.getOpcode());
-        return out;
+    public final Codec<?> getInboundCodec(int opcode) {
+        return inboundCodecs.find(opcode);
     }
 
-    public Codec<?> newReadHeader(ByteBuf in) throws IOException, IllegalOpcodeException {
-        int opcode = ByteBufUtils.readVarInt(in);
-        return inboundCodecs.find(opcode);
+    @Override
+    public final <M extends Message> MessageHandler<?, M> getHandler(Class<M> clazz) {
+        MessageHandler<?, M> handler = handlers.getHandler(clazz);
+        if (handler == null) {
+            GlowServer.logger.warning("No message handler for: " + clazz.getSimpleName() + " in " + name);
+        }
+        return handler;
     }
 }

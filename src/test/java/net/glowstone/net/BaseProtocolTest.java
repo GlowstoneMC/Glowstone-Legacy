@@ -1,10 +1,11 @@
 package net.glowstone.net;
 
-import net.glowstone.net.flow.Codec;
-import net.glowstone.net.flow.Message;
-import net.glowstone.net.flow.CodecLookupService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import net.glowstone.net.flow.ArrayCodecLookup;
+import net.glowstone.net.flow.Codec;
+import net.glowstone.net.flow.CodecRegistration;
+import net.glowstone.net.flow.Message;
 import net.glowstone.net.message.play.inv.HeldItemMessage;
 import net.glowstone.net.protocol.GlowProtocol;
 import net.glowstone.net.protocol.PlayProtocol;
@@ -14,7 +15,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -26,8 +26,8 @@ public abstract class BaseProtocolTest {
 
     private final GlowProtocol protocol;
     private final Message[] testMessages;
-    private final CodecLookupService inboundCodecs;
-    private final CodecLookupService outboundCodecs;
+    private final ArrayCodecLookup inboundCodecs;
+    private final ArrayCodecLookup outboundCodecs;
 
     protected BaseProtocolTest(GlowProtocol protocol, Message[] testMessages) {
         this.protocol = protocol;
@@ -46,17 +46,15 @@ public abstract class BaseProtocolTest {
 
     @Test
     public void testProtocol() throws Exception {
-        Map<Class<? extends Message>, Codec.CodecRegistration> inboundMap = getField(inboundCodecs, CodecLookupService.class, "messages");
-        Map<Class<? extends Message>, Codec.CodecRegistration> outboundMap = getField(outboundCodecs, CodecLookupService.class, "messages");
-        Set<Class<? extends Message>> inboundSet = new HashSet<>(inboundMap.keySet());
-        Set<Class<? extends Message>> outboundSet = new HashSet<>(outboundMap.keySet());
+        Set<Class<? extends Message>> inboundSet = new HashSet<>(inboundCodecs.getMessageClasses());
+        Set<Class<? extends Message>> outboundSet = new HashSet<>(outboundCodecs.getMessageClasses());
 
         for (Message message : testMessages) {
             boolean any = false;
             Class<? extends Message> clazz = message.getClass();
 
             // test inbound
-            Codec.CodecRegistration registration = inboundCodecs.find(clazz);
+            CodecRegistration registration = inboundCodecs.find(clazz);
             if (registration != null) {
                 inboundSet.remove(clazz);
                 checkCodec(registration, message);
@@ -85,10 +83,11 @@ public abstract class BaseProtocolTest {
         }
     }
 
-    private void checkCodec(Codec.CodecRegistration reg, Message message) {
+    private void checkCodec(CodecRegistration<?> reg, Message message) {
         // check a message with its codec
         try {
-            Codec<Message> codec = reg.getCodec();
+            @SuppressWarnings("unchecked")
+            Codec<Message> codec = (Codec<Message>) reg.getCodec();
             ByteBuf buffer = codec.encode(Unpooled.buffer(), message);
             Message decoded = codec.decode(buffer);
             assertEquals("Asymmetry for " + reg.getOpcode() + "/" + message.getClass().getName(), message, decoded);

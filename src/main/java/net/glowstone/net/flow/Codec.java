@@ -28,59 +28,24 @@ import io.netty.buffer.ByteBuf;
 import java.io.IOException;
 
 /**
- * {@code Codec}s are used to encode and decode a {@link com.flowpowered.networking.Message} into a {@link io.netty.buffer.ByteBuf}.
+ * {@code Codec}s are used to encode and decode a {@link Message} into a {@link io.netty.buffer.ByteBuf}.
  */
 public interface Codec<T extends Message> {
     /**
-     * Decodes a {@link io.netty.buffer.ByteBuf} into a {@link com.flowpowered.networking.Message}.
+     * Decodes a {@link ByteBuf} into a {@link Message}.
      * @param buffer the buffer to read from
-     * @return the message fully encoded.
+     * @return the message fully decoded.
      * @throws java.io.IOException If any decoding fails on the buffer
      */
     T decode(ByteBuf buffer) throws IOException;
 
     /**
-     * Encodes a {@link com.flowpowered.networking.Message} into a {@link ByteBuf}.
+     * Encodes a {@link Message} into a {@link ByteBuf}.
      * @param buf the buffer to encode into. Should be empty.
      * @param message The message to encode
+     * @return the encoded buffer.
      * @throws java.io.IOException If any data on the message fails to encode
      */
     ByteBuf encode(ByteBuf buf, T message) throws IOException;
 
-    public static class CodecRegistration {
-        private final int opcode;
-        private final Codec<?> codec;
-
-        public CodecRegistration(int opcode, Codec<?> codec) {
-            this.opcode = opcode;
-            this.codec = codec;
-        }
-
-        public int getOpcode() {
-            return opcode;
-        }
-
-        public <M extends Message> Codec<M> getCodec() {
-            return (Codec<M>) codec;
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 5;
-            hash = 67 * hash + this.opcode;
-            return hash;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            final CodecRegistration other = (CodecRegistration) obj;
-            if (this.opcode != other.opcode)
-                return false;
-            return true;
-        }
-    }
 }
