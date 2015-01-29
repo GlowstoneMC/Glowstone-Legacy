@@ -11,6 +11,7 @@ import net.glowstone.constants.GlowEnchantment;
 import net.glowstone.constants.GlowPotionEffect;
 import net.glowstone.entity.EntityIdManager;
 import net.glowstone.entity.GlowPlayer;
+import net.glowstone.entity.meta.profile.PlayerProfile;
 import net.glowstone.generator.CakeTownGenerator;
 import net.glowstone.generator.SurfaceGenerator;
 import net.glowstone.generator.UndergroundGenerator;
@@ -1166,6 +1167,11 @@ public final class GlowServer implements Server {
         return result;
     }
 
+    public OfflinePlayer getOfflinePlayer(PlayerProfile profile) {
+        OfflinePlayer player = new GlowOfflinePlayer(this, profile);
+        return player;
+    }
+
     @Override
     @Deprecated
     public OfflinePlayer getOfflinePlayer(String name) {
@@ -1173,7 +1179,17 @@ public final class GlowServer implements Server {
         if (onlinePlayer != null) {
             return onlinePlayer;
         }
-        return new GlowOfflinePlayer(this, name);
+        OfflinePlayer result = getPlayerExact(name);
+        if (result == null) {
+            //probably blocking (same player once per minute)
+            PlayerProfile profile = PlayerProfile.getProfile(name);
+            if (profile == null) {
+                result = getOfflinePlayer(new PlayerProfile(name, UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes())));
+            } else {
+                result = getOfflinePlayer(profile);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -1182,7 +1198,11 @@ public final class GlowServer implements Server {
         if (onlinePlayer != null) {
             return onlinePlayer;
         }
-        return new GlowOfflinePlayer(this, uuid);
+        OfflinePlayer result = getPlayer(uuid);
+        if (result == null) {
+            result = new GlowOfflinePlayer(this, uuid);
+        }
+        return result;
     }
 
     @Override
@@ -1212,8 +1232,8 @@ public final class GlowServer implements Server {
     @Override
     public Set<OfflinePlayer> getWhitelistedPlayers() {
         Set<OfflinePlayer> players = new HashSet<>();
-        for (UUID uuid : whitelist.getUUIDs()) {
-            players.add(getOfflinePlayer(uuid));
+        for (PlayerProfile profile : whitelist.getProfiles()) {
+            players.add(getOfflinePlayer(profile));
         }
         return players;
     }
