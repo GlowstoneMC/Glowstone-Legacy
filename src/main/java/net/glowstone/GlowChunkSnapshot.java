@@ -24,8 +24,13 @@ public class GlowChunkSnapshot implements ChunkSnapshot {
     public GlowChunkSnapshot(int x, int z, World world, ChunkSection[] sections, byte[] height, byte[] biomes, boolean svTemp) {
         this.x = x;
         this.z = z;
-        this.world = world.getName();
-        this.time = world.getFullTime();
+        if (world == null) {
+            this.world = null;
+            this.time = 0;
+        } else {
+            this.world = world.getName();
+            this.time = world.getFullTime();
+        }
 
         int numSections = sections != null ? sections.length : 0;
         this.sections = new ChunkSection[numSections];
@@ -63,6 +68,7 @@ public class GlowChunkSnapshot implements ChunkSnapshot {
 
     /**
      * Get the ChunkSection array backing this snapshot. In general, it should not be modified.
+     *
      * @return The array of ChunkSections.
      */
     public ChunkSection[] getRawSections() {
