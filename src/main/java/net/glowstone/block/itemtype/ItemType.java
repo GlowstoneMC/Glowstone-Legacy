@@ -128,7 +128,10 @@ public class ItemType {
             rightClickAir(player, holding);
         }
     }
-
+    
+    public void onBreakBlock(GlowPlayer player, GlowBlock target, ItemStack holding) {
+     // nothing by default
+    }
     ////////////////////////////////////////////////////////////////////////////
     // Utility stuff
 

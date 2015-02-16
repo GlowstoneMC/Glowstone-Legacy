@@ -1,5 +1,10 @@
 package net.glowstone.block.blocktype;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import net.glowstone.EventFactory;
 import net.glowstone.GlowChunk;
 import net.glowstone.GlowServer;
@@ -7,9 +12,6 @@ import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.ItemTable;
 import net.glowstone.block.entity.TileEntity;
-import net.glowstone.block.itemtype.ItemHoe;
-import net.glowstone.block.itemtype.ItemSword;
-import net.glowstone.block.itemtype.ItemTool;
 import net.glowstone.block.itemtype.ItemType;
 import net.glowstone.entity.GlowPlayer;
 
@@ -23,11 +25,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Base class for specific types of blocks.
@@ -133,10 +130,7 @@ public class BlockType extends ItemType {
             return;
         }
         
-        Material material = player.getItemInHand().getType();
-        ItemTable itemTable = ItemTable.instance();
-        if (itemTable.getItem(material) instanceof ItemTool && !(itemTable.getItem(material) instanceof ItemHoe))
-            ((ItemTool) itemTable.getItem(material)).damageTool(player, player.getItemInHand(), itemTable.getItem(material) instanceof ItemSword ? 2 : 1);
+        ItemTable.instance().getItem(player.getItemInHand().getType()).onBreakBlock(player, block, player.getItemInHand());
     }
 
     /**

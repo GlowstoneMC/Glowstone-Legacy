@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-public class ItemTool extends ItemType {
+public abstract class ItemTool extends ItemType {
 
     private final int maxDurability;
 
@@ -25,8 +25,8 @@ public class ItemTool extends ItemType {
         }
     }
 
-    public void damageTool(GlowPlayer player, ItemStack holding, int damage) {
-        if (player.getGameMode() == GameMode.CREATIVE) {
+    protected void damageTool(GlowPlayer player, ItemStack holding, int damage) {
+        if (player.getGameMode() == GameMode.CREATIVE || damage == 0) {
             return;
         }
 
@@ -49,5 +49,22 @@ public class ItemTool extends ItemType {
     protected boolean onToolRightClick(GlowPlayer player, ItemStack tool, GlowBlock target, BlockFace face, Vector clickedLoc) {
         // to be overridden in subclasses
         return false;
+    }
+    
+    /**
+     * Called when a player break a block.
+     * @param player The player using the tool
+     * @param tool The tool
+     * @param target The block right clicked with the tool
+     * @param face The clicked BlockFace
+     * @param clickedLoc The click location on the block
+     */
+    @Override
+    public void onBreakBlock(GlowPlayer player, GlowBlock target, ItemStack holding) {
+        damageTool(player, holding, calculateBreakDamage(target));
+    }
+
+    public int calculateBreakDamage(GlowBlock target) {
+        return 1;
     }
 }

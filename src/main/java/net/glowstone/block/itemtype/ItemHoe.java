@@ -2,6 +2,7 @@ package net.glowstone.block.itemtype;
 
 import net.glowstone.block.GlowBlock;
 import net.glowstone.entity.GlowPlayer;
+
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
@@ -28,5 +29,10 @@ public class ItemHoe extends ItemTool {
                 target.setData((byte) 0); // changing it to normal dirt
             }
         }
+    }
+    
+    @Override
+    public int calculateBreakDamage(GlowBlock target) {
+        return 0;
     }
 }
