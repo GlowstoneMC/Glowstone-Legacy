@@ -228,17 +228,17 @@ public final class ItemTable {
         reg(Material.WRITTEN_BOOK, new ItemWrittenBook());
         reg(Material.IRON_SWORD, new ItemSword(Material.IRON_SWORD));
         reg(Material.WOOD_SWORD, new ItemSword(Material.WOOD_SWORD));
-        reg(Material.WOOD_SPADE, new ItemSpade(Material.WOOD_SPADE));
-        reg(Material.WOOD_PICKAXE, new ItemPickaxe(Material.WOOD_PICKAXE));
-        reg(Material.WOOD_AXE, new ItemAxe(Material.WOOD_AXE));
+        reg(Material.WOOD_SPADE, new ItemTool(Material.WOOD_SPADE));
+        reg(Material.WOOD_PICKAXE, new ItemTool(Material.WOOD_PICKAXE));
+        reg(Material.WOOD_AXE, new ItemTool(Material.WOOD_AXE));
         reg(Material.STONE_SWORD, new ItemSword(Material.STONE_SWORD));
-        reg(Material.STONE_SPADE, new ItemSpade(Material.STONE_SPADE));
-        reg(Material.STONE_PICKAXE, new ItemPickaxe(Material.STONE_PICKAXE));
-        reg(Material.STONE_AXE, new ItemAxe(Material.STONE_AXE));
+        reg(Material.STONE_SPADE, new ItemTool(Material.STONE_SPADE));
+        reg(Material.STONE_PICKAXE, new ItemTool(Material.STONE_PICKAXE));
+        reg(Material.STONE_AXE, new ItemTool(Material.STONE_AXE));
         reg(Material.DIAMOND_SWORD, new ItemSword(Material.DIAMOND_SWORD));
-        reg(Material.DIAMOND_SPADE, new ItemSpade(Material.DIAMOND_SPADE));
-        reg(Material.DIAMOND_PICKAXE, new ItemPickaxe(Material.DIAMOND_PICKAXE));
-        reg(Material.DIAMOND_AXE, new ItemAxe(Material.DIAMOND_AXE));
+        reg(Material.DIAMOND_SPADE, new ItemTool(Material.DIAMOND_SPADE));
+        reg(Material.DIAMOND_PICKAXE, new ItemTool(Material.DIAMOND_PICKAXE));
+        reg(Material.DIAMOND_AXE, new ItemTool(Material.DIAMOND_AXE));
     }
 
     private void reg(Material material, ItemType type) {

@@ -3,13 +3,15 @@ package net.glowstone.block.itemtype;
 import net.glowstone.EventFactory;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.entity.GlowPlayer;
+
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-public abstract class ItemTool extends ItemType {
+public class ItemTool extends ItemType {
 
     private final int maxDurability;
 
@@ -17,7 +19,11 @@ public abstract class ItemTool extends ItemType {
         setMaxStackSize(1);
         this.maxDurability = maxDurability;
     }
-
+    
+    public ItemTool(Material material) {
+        this(material.getMaxDurability());
+    }
+    
     @Override
     public void rightClickBlock(GlowPlayer player, GlowBlock target, BlockFace face, ItemStack holding, Vector clickedLoc) {
         if (onToolRightClick(player, holding, target, face, clickedLoc)) {
