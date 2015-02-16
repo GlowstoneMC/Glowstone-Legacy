@@ -25,7 +25,7 @@ public class ItemTool extends ItemType {
         }
     }
 
-    private void damageTool(GlowPlayer player, ItemStack holding, int damage) {
+    public void damageTool(GlowPlayer player, ItemStack holding, int damage) {
         if (player.getGameMode() == GameMode.CREATIVE) {
             return;
         }

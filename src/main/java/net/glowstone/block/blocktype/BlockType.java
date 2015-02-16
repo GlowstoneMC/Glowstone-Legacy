@@ -7,8 +7,12 @@ import net.glowstone.block.GlowBlock;
 import net.glowstone.block.GlowBlockState;
 import net.glowstone.block.ItemTable;
 import net.glowstone.block.entity.TileEntity;
+import net.glowstone.block.itemtype.ItemHoe;
+import net.glowstone.block.itemtype.ItemSword;
+import net.glowstone.block.itemtype.ItemTool;
 import net.glowstone.block.itemtype.ItemType;
 import net.glowstone.entity.GlowPlayer;
+
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -125,7 +129,16 @@ public class BlockType extends ItemType {
      * @param face The block face
      */
     public void blockDestroy(GlowPlayer player, GlowBlock block, BlockFace face) {
-        // do nothing
+        if (player.getItemInHand() == null) {
+            return;
+        }
+        
+        Material material = player.getItemInHand().getType();
+        if (material == null)
+            return;
+        ItemTable itemTable = ItemTable.instance();
+        if (itemTable.getItem(material) instanceof ItemTool && !(itemTable.getItem(material) instanceof ItemHoe))
+            ((ItemTool) itemTable.getItem(material)).damageTool(player, player.getItemInHand(), itemTable.getItem(material) instanceof ItemSword ? 2 : 1);
     }
 
     /**
