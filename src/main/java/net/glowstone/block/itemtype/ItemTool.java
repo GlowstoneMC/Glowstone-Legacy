@@ -51,19 +51,16 @@ public abstract class ItemTool extends ItemType {
         return false;
     }
     
-    /**
-     * Called when a player break a block.
-     * @param player The player using the tool
-     * @param tool The tool
-     * @param target The block right clicked with the tool
-     * @param face The clicked BlockFace
-     * @param clickedLoc The click location on the block
-     */
     @Override
     public void onBreakBlock(GlowPlayer player, GlowBlock target, ItemStack holding) {
         damageTool(player, holding, calculateBreakDamage(target));
     }
 
+    /**
+     * Called when a player break a block.
+     * @param target The block target
+     * @return The damage for breaking block
+     */
     public int calculateBreakDamage(GlowBlock target) {
         return 1;
     }
