@@ -21,19 +21,19 @@ public class ItemTool extends ItemType {
     @Override
     public void rightClickBlock(GlowPlayer player, GlowBlock target, BlockFace face, ItemStack holding, Vector clickedLoc) {
         if (onToolRightClick(player, holding, target, face, clickedLoc)) {
-            damageTool(player, holding);
+            damageTool(player, holding, 1);
         }
     }
 
-    private void damageTool(GlowPlayer player, ItemStack holding) {
+    private void damageTool(GlowPlayer player, ItemStack holding, int damage) {
         if (player.getGameMode() == GameMode.CREATIVE) {
             return;
         }
 
-        holding.setDurability((short) (holding.getDurability() + 1));
-        if (holding.getDurability() == maxDurability + 1) {
+        holding.setDurability((short) (holding.getDurability() + damage));
+        if (holding.getDurability() == maxDurability + damage) {
             EventFactory.callEvent(new PlayerItemBreakEvent(player, holding));
-            holding.setAmount(0);
+            player.getInventory().remove(holding);
         }
     }
 
