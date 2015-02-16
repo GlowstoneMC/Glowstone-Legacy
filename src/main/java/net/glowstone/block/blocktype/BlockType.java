@@ -134,8 +134,6 @@ public class BlockType extends ItemType {
         }
         
         Material material = player.getItemInHand().getType();
-        if (material == null)
-            return;
         ItemTable itemTable = ItemTable.instance();
         if (itemTable.getItem(material) instanceof ItemTool && !(itemTable.getItem(material) instanceof ItemHoe))
             ((ItemTool) itemTable.getItem(material)).damageTool(player, player.getItemInHand(), itemTable.getItem(material) instanceof ItemSword ? 2 : 1);

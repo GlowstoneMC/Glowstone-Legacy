@@ -1267,7 +1267,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
     @Override
     public void kickPlayer(String message) {
-        this.saveData(false);
+        saveData(false);
         session.disconnect(message == null ? "" : message);
     }
 
