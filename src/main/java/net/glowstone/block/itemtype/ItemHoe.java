@@ -20,6 +20,7 @@ public class ItemHoe extends ItemTool {
             if (target.getType() == Material.GRASS || (target.getType() == Material.DIRT && target.getData() == 0)) {
                 // grass or ordinary dirt: become soil
                 target.getWorld().playSound(target.getLocation().add(0.5D, 0.5D, 0.5D), Sound.STEP_GRAVEL, 1, 0.8F);
+                damageTool(player, holding, 1);
                 target.setType(Material.SOIL);
             } else if (target.getType() == Material.DIRT && target.getData() == 1) {
                 // coarse dirt: become regular dirt
