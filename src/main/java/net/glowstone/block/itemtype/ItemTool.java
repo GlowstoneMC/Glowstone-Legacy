@@ -19,11 +19,11 @@ public class ItemTool extends ItemType {
         setMaxStackSize(1);
         this.maxDurability = maxDurability;
     }
-    
+
     public ItemTool(Material material) {
         this(material.getMaxDurability());
     }
-    
+
     @Override
     public void rightClickBlock(GlowPlayer player, GlowBlock target, BlockFace face, ItemStack holding, Vector clickedLoc) {
         if (onToolRightClick(player, holding, target, face, clickedLoc)) {
@@ -56,7 +56,7 @@ public class ItemTool extends ItemType {
         // to be overridden in subclasses
         return false;
     }
-    
+
     @Override
     public void onBreakBlock(GlowPlayer player, GlowBlock target, ItemStack holding) {
         damageTool(player, holding, calculateBreakDamage(target));

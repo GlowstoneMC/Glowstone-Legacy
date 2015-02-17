@@ -10,11 +10,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 public class ItemHoe extends ItemTool {
-    
+
     public ItemHoe(Material material) {
         super(material.getMaxDurability());
     }
-    
+
     @Override
     public void rightClickBlock(GlowPlayer player, GlowBlock target, BlockFace face, ItemStack holding, Vector clickedLoc) {
         if (target.getRelative(BlockFace.UP).getType() == Material.AIR) {
@@ -30,7 +30,7 @@ public class ItemHoe extends ItemTool {
             }
         }
     }
-    
+
     @Override
     public int calculateBreakDamage(GlowBlock target) {
         return 0;
