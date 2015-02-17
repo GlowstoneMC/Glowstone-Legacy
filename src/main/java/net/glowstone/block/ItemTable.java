@@ -227,6 +227,9 @@ public final class ItemTable {
         reg(Material.DARK_OAK_DOOR_ITEM, new ItemPlaceAs(Material.DARK_OAK_DOOR));
         reg(Material.WRITTEN_BOOK, new ItemWrittenBook());
         reg(Material.IRON_SWORD, new ItemSword(Material.IRON_SWORD));
+        reg(Material.IRON_SPADE, new ItemTool(Material.IRON_SPADE));
+        reg(Material.IRON_PICKAXE, new ItemTool(Material.IRON_PICKAXE));
+        reg(Material.IRON_AXE, new ItemTool(Material.IRON_AXE));
         reg(Material.WOOD_SWORD, new ItemSword(Material.WOOD_SWORD));
         reg(Material.WOOD_SPADE, new ItemTool(Material.WOOD_SPADE));
         reg(Material.WOOD_PICKAXE, new ItemTool(Material.WOOD_PICKAXE));
