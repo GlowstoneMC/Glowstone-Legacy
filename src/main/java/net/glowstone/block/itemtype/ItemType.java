@@ -128,7 +128,7 @@ public class ItemType {
             rightClickAir(player, holding);
         }
     }
-    
+
     /**
      * Called when a player break a block.
      * @param player The player using the tool
@@ -136,9 +136,9 @@ public class ItemType {
      * @param holding The ItemStack the player was holding
      */
     public void onBreakBlock(GlowPlayer player, GlowBlock target, ItemStack holding) {
-     // nothing by default
+        // nothing by default
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////
     // Utility stuff
 
