@@ -242,6 +242,7 @@ public final class ItemTable {
         reg(Material.DIAMOND_SPADE, new ItemTool(Material.DIAMOND_SPADE));
         reg(Material.DIAMOND_PICKAXE, new ItemTool(Material.DIAMOND_PICKAXE));
         reg(Material.DIAMOND_AXE, new ItemTool(Material.DIAMOND_AXE));
+        reg(Material.SHEARS, new ItemShears(Material.SHEARS));
     }
 
     private void reg(Material material, ItemType type) {

@@ -1,10 +1,5 @@
 package net.glowstone.block.blocktype;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import net.glowstone.EventFactory;
 import net.glowstone.GlowChunk;
 import net.glowstone.GlowServer;
@@ -14,7 +9,6 @@ import net.glowstone.block.ItemTable;
 import net.glowstone.block.entity.TileEntity;
 import net.glowstone.block.itemtype.ItemType;
 import net.glowstone.entity.GlowPlayer;
-
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,6 +19,11 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Base class for specific types of blocks.
