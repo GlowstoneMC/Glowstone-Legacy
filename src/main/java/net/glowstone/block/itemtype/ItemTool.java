@@ -27,7 +27,7 @@ public class ItemTool extends ItemType {
     @Override
     public void rightClickBlock(GlowPlayer player, GlowBlock target, BlockFace face, ItemStack holding, Vector clickedLoc) {
         if (onToolRightClick(player, holding, target, face, clickedLoc)) {
-            damageTool(player, holding, 1);
+            damageTool(player, holding, calculateRightClickDamage(target));
         }
     }
 
@@ -68,6 +68,15 @@ public class ItemTool extends ItemType {
      * @return The damage for breaking block
      */
     public int calculateBreakDamage(GlowBlock target) {
+        return 1;
+    }
+
+    /**
+     * Called when a player right click on a block.
+     * @param target The block target
+     * @return The damage for right click
+     */
+    protected int calculateRightClickDamage(GlowBlock target) {
         return 1;
     }
 }
