@@ -62,18 +62,18 @@ public class ItemTool extends ItemType {
     }
 
     /**
-     * Calculate damage for break block
+     * Calculate damage to break a block
      * @param target The block target
-     * @return The damage to break block
+     * @return The damage
      */
     public short calculateBreakDamage(GlowBlock target) {
         return 1;
     }
 
     /**
-     * Calculate damage for right click on block
+     * Calculate damage to right click a block
      * @param target The block target
-     * @return The damage to right click
+     * @return The damage
      */
     protected short calculateRightClickDamage(GlowBlock target) {
         return 1;
