@@ -226,10 +226,6 @@ public final class ItemTable {
         reg(Material.ACACIA_DOOR_ITEM, new ItemPlaceAs(Material.ACACIA_DOOR));
         reg(Material.DARK_OAK_DOOR_ITEM, new ItemPlaceAs(Material.DARK_OAK_DOOR));
         reg(Material.WRITTEN_BOOK, new ItemWrittenBook());
-        reg(Material.IRON_SWORD, new ItemSword(Material.IRON_SWORD));
-        reg(Material.IRON_SPADE, new ItemTool(Material.IRON_SPADE));
-        reg(Material.IRON_PICKAXE, new ItemTool(Material.IRON_PICKAXE));
-        reg(Material.IRON_AXE, new ItemTool(Material.IRON_AXE));
         reg(Material.WOOD_SWORD, new ItemSword(Material.WOOD_SWORD));
         reg(Material.WOOD_SPADE, new ItemTool(Material.WOOD_SPADE));
         reg(Material.WOOD_PICKAXE, new ItemTool(Material.WOOD_PICKAXE));
@@ -238,6 +234,14 @@ public final class ItemTable {
         reg(Material.STONE_SPADE, new ItemTool(Material.STONE_SPADE));
         reg(Material.STONE_PICKAXE, new ItemTool(Material.STONE_PICKAXE));
         reg(Material.STONE_AXE, new ItemTool(Material.STONE_AXE));
+        reg(Material.IRON_SWORD, new ItemSword(Material.IRON_SWORD));
+        reg(Material.IRON_SPADE, new ItemTool(Material.IRON_SPADE));
+        reg(Material.IRON_PICKAXE, new ItemTool(Material.IRON_PICKAXE));
+        reg(Material.IRON_AXE, new ItemTool(Material.IRON_AXE));
+        reg(Material.GOLD_SWORD, new ItemSword(Material.GOLD_SWORD));
+        reg(Material.GOLD_SPADE, new ItemTool(Material.GOLD_SPADE));
+        reg(Material.GOLD_PICKAXE, new ItemTool(Material.GOLD_PICKAXE));
+        reg(Material.GOLD_AXE, new ItemTool(Material.GOLD_AXE));
         reg(Material.DIAMOND_SWORD, new ItemSword(Material.DIAMOND_SWORD));
         reg(Material.DIAMOND_SPADE, new ItemTool(Material.DIAMOND_SPADE));
         reg(Material.DIAMOND_PICKAXE, new ItemTool(Material.DIAMOND_PICKAXE));

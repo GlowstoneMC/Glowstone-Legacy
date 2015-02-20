@@ -11,7 +11,7 @@ public class ItemSword extends ItemTool {
     }
 
     @Override
-    public int calculateBreakDamage(GlowBlock target) {
+    public short calculateBreakDamage(GlowBlock target) {
         return 2;
     }
 }

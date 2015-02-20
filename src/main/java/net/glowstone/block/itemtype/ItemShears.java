@@ -1,7 +1,6 @@
 package net.glowstone.block.itemtype;
 
 import net.glowstone.block.GlowBlock;
-
 import org.bukkit.Material;
 
 public class ItemShears extends ItemTool {
@@ -11,7 +10,7 @@ public class ItemShears extends ItemTool {
     }
 
     @Override
-    public int calculateBreakDamage(GlowBlock target) {
-        return target.getType().equals(Material.LEAVES) ? 1 : 0;
+    public short calculateBreakDamage(GlowBlock target) {
+        return (short) (target.getType().equals(Material.LEAVES) ? 1 : 0);
     }
 }
