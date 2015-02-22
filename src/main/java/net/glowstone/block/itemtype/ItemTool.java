@@ -2,6 +2,7 @@ package net.glowstone.block.itemtype;
 
 import net.glowstone.EventFactory;
 import net.glowstone.block.GlowBlock;
+import net.glowstone.entity.GlowLivingEntity;
 import net.glowstone.entity.GlowPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -11,7 +12,7 @@ import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-public class ItemTool extends ItemType {
+public abstract class ItemTool extends ItemType {
 
     private final int maxDurability;
 
@@ -39,16 +40,19 @@ public class ItemTool extends ItemType {
      * @return The damage
      */
     private int calculateDamageEfficiency(ItemStack holding, int basic) {
-        return ((int) (Math.random() * (holding.getItemMeta().getEnchantLevel(Enchantment.DURABILITY) + 1)) == 0 ? basic : 0);
+        int durabilityLevel = holding.getItemMeta().getEnchantLevel(Enchantment.DURABILITY);
+        if (durabilityLevel == 0)
+            return basic;
+        return ((int) (Math.random() * (durabilityLevel + 1)) == 0 ? basic : 0);
     }
     
     protected void damageTool(GlowPlayer player, ItemStack holding, int damage) {
-        if (player.getGameMode() == GameMode.CREATIVE || damage == 0) {
+        if (holding == null || player.getGameMode() == GameMode.CREATIVE || damage == 0) {
             return;
         }
 
         holding.setDurability((short) (holding.getDurability() + damage));
-        if (holding.getDurability() == maxDurability + damage) {
+        if (holding.getDurability() > maxDurability) {
             EventFactory.callEvent(new PlayerItemBreakEvent(player, holding));
             player.getInventory().remove(holding);
         }
@@ -72,6 +76,11 @@ public class ItemTool extends ItemType {
     public void onBreakBlock(GlowPlayer player, GlowBlock target, ItemStack holding) {
         damageTool(player, holding, calculateDamageEfficiency(holding, calculateRightClickDamage(target)));
     }
+    
+    @Override
+    public void onAttackEntity(GlowPlayer player, GlowLivingEntity target, ItemStack holding) {
+        damageTool(player, holding, calculateDamageEfficiency(holding, calculateAttackDamage(target)));
+    }
 
     /**
      * Calculate damage to break a block.
@@ -79,7 +88,7 @@ public class ItemTool extends ItemType {
      * @return The damage
      */
     public short calculateBreakDamage(GlowBlock target) {
-        return 1;
+        return 0;
     }
 
     /**
@@ -89,5 +98,14 @@ public class ItemTool extends ItemType {
      */
     protected short calculateRightClickDamage(GlowBlock target) {
         return 1;
+    }
+    
+    /**
+     * Calculate damage to attack entity.
+     * @param target The Entity target
+     * @return The damage
+     */
+    protected short calculateAttackDamage(GlowLivingEntity target) {
+        return 0;
     }
 }

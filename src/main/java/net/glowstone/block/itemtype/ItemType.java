@@ -3,6 +3,7 @@ package net.glowstone.block.itemtype;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.block.ItemTable;
 import net.glowstone.block.blocktype.BlockType;
+import net.glowstone.entity.GlowLivingEntity;
 import net.glowstone.entity.GlowPlayer;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -136,6 +137,16 @@ public class ItemType {
      * @param holding The ItemStack the player was holding
      */
     public void onBreakBlock(GlowPlayer player, GlowBlock target, ItemStack holding) {
+        // nothing by default
+    }
+    
+    /**
+     * Called when a player attack entity.
+     * @param player The GlowPlayer using the tool
+     * @param target The GlowLivingEntity target
+     * @param holding The ItemStack the player was holding
+     */
+    public void onAttackEntity(GlowPlayer player, GlowLivingEntity target, ItemStack holding) {
         // nothing by default
     }
 

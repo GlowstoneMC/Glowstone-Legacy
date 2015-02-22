@@ -6,8 +6,8 @@ import org.bukkit.Material;
 
 public class ItemShears extends ItemTool {
 
-    public ItemShears(Material material) {
-        super(material.getMaxDurability());
+    public ItemShears() {
+        super(Material.SHEARS.getMaxDurability());
     }
 
     @Override
