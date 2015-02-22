@@ -4,6 +4,7 @@ import net.glowstone.block.blocktype.*;
 import net.glowstone.block.itemtype.*;
 import net.glowstone.inventory.ToolType;
 import org.bukkit.Material;
+
 import java.util.HashMap;
 import java.util.Map;
 

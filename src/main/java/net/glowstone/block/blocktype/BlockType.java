@@ -125,11 +125,9 @@ public class BlockType extends ItemType {
      * @param face The block face
      */
     public void blockDestroy(GlowPlayer player, GlowBlock block, BlockFace face) {
-        if (player.getItemInHand() == null) {
-            return;
+        if (player.getItemInHand() != null) {
+            ItemTable.instance().getItem(player.getItemInHand().getType()).onBreakBlock(player, block, player.getItemInHand());
         }
-        
-        ItemTable.instance().getItem(player.getItemInHand().getType()).onBreakBlock(player, block, player.getItemInHand());
     }
 
     /**

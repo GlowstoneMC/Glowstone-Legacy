@@ -132,8 +132,8 @@ public class ItemType {
 
     /**
      * Called when a player break a block.
-     * @param player The player using the tool
-     * @param target The block right clicked with the tool
+     * @param player The GlowPlayer using the tool
+     * @param target The GlowBlock right clicked with the tool
      * @param holding The ItemStack the player was holding
      */
     public void onBreakBlock(GlowPlayer player, GlowBlock target, ItemStack holding) {

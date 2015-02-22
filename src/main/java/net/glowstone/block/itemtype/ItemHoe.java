@@ -30,9 +30,4 @@ public class ItemHoe extends ItemTool {
         }
         return false;
     }
-
-    @Override
-    public short calculateBreakDamage(GlowBlock target) {
-        return 0;
-    }
 }

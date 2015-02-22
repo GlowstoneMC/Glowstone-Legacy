@@ -5,7 +5,6 @@ import net.glowstone.block.GlowBlock;
 import net.glowstone.entity.GlowLivingEntity;
 import net.glowstone.entity.GlowPlayer;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.player.PlayerItemBreakEvent;
@@ -19,10 +18,6 @@ public abstract class ItemTool extends ItemType {
     public ItemTool(int maxDurability) {
         setMaxStackSize(1);
         this.maxDurability = maxDurability;
-    }
-
-    public ItemTool(Material material) {
-        this(material.getMaxDurability());
     }
 
     @Override
@@ -84,7 +79,7 @@ public abstract class ItemTool extends ItemType {
 
     /**
      * Calculate damage to break a block.
-     * @param target The block target
+     * @param target The GlowBlock target
      * @return The damage
      */
     public short calculateBreakDamage(GlowBlock target) {
@@ -93,7 +88,7 @@ public abstract class ItemTool extends ItemType {
 
     /**
      * Calculate damage to right click a block.
-     * @param target The block target
+     * @param target The GlowBlock target
      * @return The damage
      */
     protected short calculateRightClickDamage(GlowBlock target) {
@@ -102,7 +97,7 @@ public abstract class ItemTool extends ItemType {
     
     /**
      * Calculate damage to attack entity.
-     * @param target The Entity target
+     * @param target The GlowLivingEntity target
      * @return The damage
      */
     protected short calculateAttackDamage(GlowLivingEntity target) {
