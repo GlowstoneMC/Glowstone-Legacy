@@ -281,6 +281,9 @@ public final class GlowWorld implements World {
             this.uid = UUID.randomUUID();
         }
 
+        this.scheduleStorm();
+        this.scheduleThundering();
+
         // begin loading spawn area
         spawnChunkLock = newChunkLock("spawn");
         server.addWorld(this);
@@ -1121,6 +1124,15 @@ public final class GlowWorld implements World {
         return currentlyRaining;
     }
 
+    private void scheduleStorm() {
+        // Numbers borrowed from CraftBukkit.
+        if (currentlyRaining) {
+            setWeatherDuration(random.nextInt(12000) + 12000);
+        } else {
+            setWeatherDuration(random.nextInt(168000) + 12000);
+        }
+    }
+
     @Override
     public void setStorm(boolean hasStorm) {
         // call event
@@ -1133,12 +1145,7 @@ public final class GlowWorld implements World {
         boolean previouslyRaining = currentlyRaining;
         currentlyRaining = hasStorm;
 
-        // Numbers borrowed from CraftBukkit.
-        if (currentlyRaining) {
-            setWeatherDuration(random.nextInt(12000) + 12000);
-        } else {
-            setWeatherDuration(random.nextInt(168000) + 12000);
-        }
+        scheduleStorm();
 
         // update players
         if (previouslyRaining != currentlyRaining) {
@@ -1163,6 +1170,15 @@ public final class GlowWorld implements World {
         return currentlyThundering;
     }
 
+    private void scheduleThundering() {
+        // Numbers borrowed from CraftBukkit.
+        if (currentlyThundering) {
+            setThunderDuration(random.nextInt(12000) + 3600);
+        } else {
+            setThunderDuration(random.nextInt(168000) + 12000);
+        }
+    }
+
     @Override
     public void setThundering(boolean thundering) {
         // call event
@@ -1174,12 +1190,7 @@ public final class GlowWorld implements World {
         // change weather
         currentlyThundering = thundering;
 
-        // Numbers borrowed from CraftBukkit.
-        if (currentlyThundering) {
-            setThunderDuration(random.nextInt(12000) + 3600);
-        } else {
-            setThunderDuration(random.nextInt(168000) + 12000);
-        }
+        scheduleThundering();
     }
 
     @Override
