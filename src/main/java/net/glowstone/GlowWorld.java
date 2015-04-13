@@ -170,7 +170,7 @@ public final class GlowWorld implements World {
     /**
      * Whether it is currently raining/snowing on this world.
      */
-    private boolean currentlyRaining = true;
+    private boolean currentlyRaining = false;
 
     /**
      * How many ticks until the rain/snow status is expected to change.
@@ -180,7 +180,7 @@ public final class GlowWorld implements World {
     /**
      * Whether it is currently thundering on this world.
      */
-    private boolean currentlyThundering = true;
+    private boolean currentlyThundering = false;
 
     /**
      * How many ticks until the thundering status is expected to change.
