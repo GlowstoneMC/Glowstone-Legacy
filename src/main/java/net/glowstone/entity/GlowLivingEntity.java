@@ -139,9 +139,9 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
             damage(4, EntityDamageEvent.DamageCause.VOID);
         }
 
-        if (isWithinSolidBlock())
+        if (isWithinSolidBlock()) {
                 damage(1, EntityDamageEvent.DamageCause.SUFFOCATION);
-
+        }
         // potion effects
         List<PotionEffect> effects = new ArrayList<>(potionEffects.values());
         for (PotionEffect effect : effects) {
