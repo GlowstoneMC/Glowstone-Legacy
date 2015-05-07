@@ -12,7 +12,7 @@ import java.util.Collections;
 public class ColorCommand extends BukkitCommand {
     
     public ColorCommand() {
-        super("colors", "Display all colors.", "/colors", Collections.<String>emptyList());
+        super("colours", "Display all colours.", "/colour", Collections.<String>emptyList());
     }
 
     @Override
