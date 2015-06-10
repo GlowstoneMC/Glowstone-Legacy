@@ -1,6 +1,5 @@
 package net.glowstone.net.handler.play.player;
 
-import com.flowpowered.networking.MessageHandler;
 import net.glowstone.EventFactory;
 import net.glowstone.GlowWorld;
 import net.glowstone.block.GlowBlock;
@@ -10,6 +9,7 @@ import net.glowstone.entity.GlowPlayer;
 import net.glowstone.entity.objects.GlowItem;
 import net.glowstone.net.GlowSession;
 import net.glowstone.net.message.play.player.DiggingMessage;
+
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -21,6 +21,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+
+import com.flowpowered.networking.MessageHandler;
 
 public final class DiggingHandler implements MessageHandler<GlowSession, DiggingMessage> {
     @Override
@@ -71,6 +73,11 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
                     blockBroken = damageEvent.getInstaBreak() || instaBreak;
                 }
             }
+
+            if (startIsFinish(block))
+            {
+                handle(session, new DiggingMessage(DiggingMessage.FINISH_DIGGING, message.getX(), message.getY(), message.getZ(), message.getFace()));
+            }
         } else if (message.getState() == DiggingMessage.FINISH_DIGGING) {
             // shouldn't happen in creative mode
 
@@ -115,6 +122,43 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
         } else if (revert) {
             // replace the block that wasn't really dug
             BlockPlacementHandler.revert(player, block);
+        }
+    }
+
+    private boolean startIsFinish(GlowBlock block) {
+        switch (block.getType()) {
+            case CARROT:
+            case DEAD_BUSH:
+            case FIRE:
+            case FLOWER_POT:
+            case YELLOW_FLOWER:
+            case RED_ROSE:
+            case DOUBLE_PLANT:
+            case LONG_GRASS:
+            case MELON_STEM:
+            case RED_MUSHROOM:
+            case BROWN_MUSHROOM:
+            case NETHER_WARTS:
+            case POTATO:
+            case PUMPKIN_STEM:
+            case REDSTONE_COMPARATOR_OFF:
+            case REDSTONE_COMPARATOR_ON:
+            case DIODE_BLOCK_OFF:
+            case DIODE_BLOCK_ON:
+            case REDSTONE_TORCH_OFF:
+            case REDSTONE_TORCH_ON:
+            case REDSTONE_WIRE:
+            case SAPLING:
+            case SLIME_BLOCK:
+            case SUGAR_CANE_BLOCK:
+            case TNT:
+            case TORCH:
+            case TRIPWIRE:
+            case TRIPWIRE_HOOK:
+            case CROPS:
+                return true;
+            default:
+                return false;
         }
     }
 }
