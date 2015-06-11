@@ -74,8 +74,7 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
                 }
             }
 
-            if (startIsFinish(block))
-            {
+            if (startIsFinish(block)) {
                 handle(session, new DiggingMessage(DiggingMessage.FINISH_DIGGING, message.getX(), message.getY(), message.getZ(), message.getFace()));
             }
         } else if (message.getState() == DiggingMessage.FINISH_DIGGING) {
