@@ -1,6 +1,11 @@
 Glowstone
 ==========
 
+Notice
+------
+
+Well, it's been six months since we've seen SpaceManiac. In that time, Glowstone++, a fork, has become a lot more complete and advanced. As such, until SpaceManiac comes back, we recommend that those interested in Glowstone seek Glowstone++ out in their channel, `#glowstone++` on Espernet - or [here on GitHub](https://github.com/GlowstonePlusPlus/GlowstonePlusPlus). Thanks for flying with us up until now!
+
 Introduction
 ------------
 Glowstone is a lightweight, from scratch, open source
