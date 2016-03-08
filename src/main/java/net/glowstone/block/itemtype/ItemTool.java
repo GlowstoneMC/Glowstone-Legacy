@@ -2,14 +2,16 @@ package net.glowstone.block.itemtype;
 
 import net.glowstone.EventFactory;
 import net.glowstone.block.GlowBlock;
+import net.glowstone.entity.GlowLivingEntity;
 import net.glowstone.entity.GlowPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.block.BlockFace;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-public class ItemTool extends ItemType {
+public abstract class ItemTool extends ItemType {
 
     private final int maxDurability;
 
@@ -19,21 +21,35 @@ public class ItemTool extends ItemType {
     }
 
     @Override
-    public final void rightClickBlock(GlowPlayer player, GlowBlock target, BlockFace face, ItemStack holding, Vector clickedLoc) {
+    public void rightClickBlock(GlowPlayer player, GlowBlock target, BlockFace face, ItemStack holding, Vector clickedLoc) {
         if (onToolRightClick(player, holding, target, face, clickedLoc)) {
-            damageTool(player, holding);
+            damageTool(player, holding, calculateDamageEfficiency(holding, calculateRightClickDamage(target)));
         }
+        
     }
-
-    private void damageTool(GlowPlayer player, ItemStack holding) {
-        if (player.getGameMode() == GameMode.CREATIVE) {
+    
+    /**
+     * Calculate the damage with Unbreaking enchantment
+     * @param holding The ItemStack the player was holding
+     * @param basic The default damage
+     * @return The damage
+     */
+    private int calculateDamageEfficiency(ItemStack holding, int basic) {
+        int durabilityLevel = holding.getItemMeta().getEnchantLevel(Enchantment.DURABILITY);
+        if (durabilityLevel == 0)
+            return basic;
+        return ((int) (Math.random() * (durabilityLevel + 1)) == 0 ? basic : 0);
+    }
+    
+    protected void damageTool(GlowPlayer player, ItemStack holding, int damage) {
+        if (holding == null || player.getGameMode() == GameMode.CREATIVE || damage == 0) {
             return;
         }
 
-        holding.setDurability((short) (holding.getDurability() + 1));
-        if (holding.getDurability() == maxDurability + 1) {
+        holding.setDurability((short) (holding.getDurability() + damage));
+        if (holding.getDurability() > maxDurability) {
             EventFactory.callEvent(new PlayerItemBreakEvent(player, holding));
-            holding.setAmount(0);
+            player.getInventory().remove(holding);
         }
     }
 
@@ -49,5 +65,42 @@ public class ItemTool extends ItemType {
     protected boolean onToolRightClick(GlowPlayer player, ItemStack tool, GlowBlock target, BlockFace face, Vector clickedLoc) {
         // to be overridden in subclasses
         return false;
+    }
+
+    @Override
+    public void onBreakBlock(GlowPlayer player, GlowBlock target, ItemStack holding) {
+        damageTool(player, holding, calculateDamageEfficiency(holding, calculateRightClickDamage(target)));
+    }
+    
+    @Override
+    public void onAttackEntity(GlowPlayer player, GlowLivingEntity target, ItemStack holding) {
+        damageTool(player, holding, calculateDamageEfficiency(holding, calculateAttackDamage(target)));
+    }
+
+    /**
+     * Calculate damage to break a block.
+     * @param target The GlowBlock target
+     * @return The damage
+     */
+    public short calculateBreakDamage(GlowBlock target) {
+        return 0;
+    }
+
+    /**
+     * Calculate damage to right click a block.
+     * @param target The GlowBlock target
+     * @return The damage
+     */
+    protected short calculateRightClickDamage(GlowBlock target) {
+        return 1;
+    }
+    
+    /**
+     * Calculate damage to attack entity.
+     * @param target The GlowLivingEntity target
+     * @return The damage
+     */
+    protected short calculateAttackDamage(GlowLivingEntity target) {
+        return 0;
     }
 }

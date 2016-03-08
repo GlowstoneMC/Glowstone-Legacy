@@ -205,11 +205,11 @@ public final class ItemTable {
         reg(Material.BUCKET, new ItemBucket());
         reg(Material.WATER_BUCKET, new ItemFilledBucket(Material.WATER));
         reg(Material.LAVA_BUCKET, new ItemFilledBucket(Material.LAVA));
-        reg(Material.WOOD_HOE, new ItemHoe());
-        reg(Material.STONE_HOE, new ItemHoe());
-        reg(Material.IRON_HOE, new ItemHoe());
-        reg(Material.GOLD_HOE, new ItemHoe());
-        reg(Material.DIAMOND_HOE, new ItemHoe());
+        reg(Material.WOOD_HOE, new ItemHoe(Material.WOOD_HOE));
+        reg(Material.STONE_HOE, new ItemHoe(Material.STONE_HOE));
+        reg(Material.IRON_HOE, new ItemHoe(Material.IRON_HOE));
+        reg(Material.GOLD_HOE, new ItemHoe(Material.GOLD_HOE));
+        reg(Material.DIAMOND_HOE, new ItemHoe(Material.DIAMOND_HOE));
         reg(Material.SEEDS, new ItemSeeds(Material.CROPS, Material.SOIL));
         reg(Material.MELON_SEEDS, new ItemSeeds(Material.MELON_STEM, Material.SOIL));
         reg(Material.PUMPKIN_SEEDS, new ItemSeeds(Material.PUMPKIN_STEM, Material.SOIL));
@@ -226,6 +226,30 @@ public final class ItemTable {
         reg(Material.ACACIA_DOOR_ITEM, new ItemPlaceAs(Material.ACACIA_DOOR));
         reg(Material.DARK_OAK_DOOR_ITEM, new ItemPlaceAs(Material.DARK_OAK_DOOR));
         reg(Material.WRITTEN_BOOK, new ItemWrittenBook());
+        reg(Material.WOOD_SWORD, new ItemSword(Material.WOOD_SWORD));
+        reg(Material.WOOD_SPADE, new ItemSpade(Material.WOOD_SPADE));
+        reg(Material.WOOD_PICKAXE, new ItemPickaxe(Material.WOOD_PICKAXE));
+        reg(Material.WOOD_AXE, new ItemAxe(Material.WOOD_AXE));
+        reg(Material.STONE_SWORD, new ItemSword(Material.STONE_SWORD));
+        reg(Material.STONE_SPADE, new ItemSpade(Material.STONE_SPADE));
+        reg(Material.STONE_PICKAXE, new ItemPickaxe(Material.STONE_PICKAXE));
+        reg(Material.STONE_AXE, new ItemAxe(Material.STONE_AXE));
+        reg(Material.IRON_SWORD, new ItemSword(Material.IRON_SWORD));
+        reg(Material.IRON_SPADE, new ItemSpade(Material.IRON_SPADE));
+        reg(Material.IRON_PICKAXE, new ItemPickaxe(Material.IRON_PICKAXE));
+        reg(Material.IRON_AXE, new ItemAxe(Material.IRON_AXE));
+        reg(Material.GOLD_SWORD, new ItemSword(Material.GOLD_SWORD));
+        reg(Material.GOLD_SPADE, new ItemSpade(Material.GOLD_SPADE));
+        reg(Material.GOLD_PICKAXE, new ItemPickaxe(Material.GOLD_PICKAXE));
+        reg(Material.GOLD_AXE, new ItemAxe(Material.GOLD_AXE));
+        reg(Material.DIAMOND_SWORD, new ItemSword(Material.DIAMOND_SWORD));
+        reg(Material.DIAMOND_SPADE, new ItemSpade(Material.DIAMOND_SPADE));
+        reg(Material.DIAMOND_PICKAXE, new ItemPickaxe(Material.DIAMOND_PICKAXE));
+        reg(Material.DIAMOND_AXE, new ItemAxe(Material.DIAMOND_AXE));
+        reg(Material.SHEARS, new ItemShears());
+        reg(Material.CARROT_STICK, new ItemCarrotStick());
+        reg(Material.FISHING_ROD, new ItemFishingRod());
+        reg(Material.BOW, new ItemBow());
     }
 
     private void reg(Material material, ItemType type) {

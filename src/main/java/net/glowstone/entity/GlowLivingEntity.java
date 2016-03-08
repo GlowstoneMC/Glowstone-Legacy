@@ -387,6 +387,9 @@ public abstract class GlowLivingEntity extends GlowEntity implements LivingEntit
         if (health < 0) health = 0;
         if (health > maxHealth) health = maxHealth;
         this.health = health;
+        if (health == 0) {
+            active = false;
+        }
     }
 
     @Override

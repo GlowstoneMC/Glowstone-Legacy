@@ -99,6 +99,9 @@ public final class DiggingHandler implements MessageHandler<GlowSession, Digging
             BlockType blockType = ItemTable.instance().getBlock(block.getType());
             if (blockType != null) {
                 blockType.blockDestroy(player, block, face);
+                if (player.getItemInHand() != null) {
+                    ItemTable.instance().getItem(player.getItemInHand().getType()).onBreakBlock(player, block, player.getItemInHand());
+                }
             }
 
             // destroy the block

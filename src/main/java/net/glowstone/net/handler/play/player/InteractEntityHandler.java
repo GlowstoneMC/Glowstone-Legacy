@@ -2,13 +2,13 @@ package net.glowstone.net.handler.play.player;
 
 import com.flowpowered.networking.MessageHandler;
 import net.glowstone.GlowServer;
+import net.glowstone.block.ItemTable;
 import net.glowstone.constants.AttackDamage;
 import net.glowstone.entity.GlowEntity;
 import net.glowstone.entity.GlowLivingEntity;
 import net.glowstone.entity.GlowPlayer;
 import net.glowstone.net.GlowSession;
 import net.glowstone.net.message.play.player.InteractEntityMessage;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
@@ -41,13 +41,8 @@ public final class InteractEntityHandler implements MessageHandler<GlowSession, 
 
                 // Apply damage. Calls the EntityDamageByEntityEvent
                 target.damage(damage, player, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
-
-                // Apply durability loss (if applicable)
-                short durabilityLoss = AttackDamage.getMeleeDurabilityLoss(type);
-                if (durabilityLoss > 0 && hand != null && player.getGameMode() != GameMode.CREATIVE) {
-                    // Yes, this actually subtracts
-                    hand.setDurability((short) (hand.getDurability() + durabilityLoss));
-                }
+                if (type != Material.AIR)
+                    ItemTable.instance().getItem(type).onAttackEntity(player, target, hand);
             }
         } else if (message.getAction() == InteractEntityMessage.Action.INTERACT_AT.ordinal()) {
             // todo: Interaction with entity at a specified location (X, Y, and Z are present in the message)
