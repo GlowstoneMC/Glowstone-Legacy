@@ -188,6 +188,20 @@ public final class GlowBlock implements Block {
     public void setType(Material type) {
         setTypeId(type.getId());
     }
+    
+    /**
+     * Convenience Method.
+     */
+    public void setType(Material type, boolean applyPhysics) {
+        setTypeId(type.getId(), applyPhysics);
+    }
+    
+    /**
+     * Convenience Method.
+     */
+    public void setType(Material type, byte data, boolean applyPhysics) {
+        setTypeIdAndData(type.getId(), data, applyPhysics);
+    }
 
     @Override
     public boolean setTypeId(int type) {

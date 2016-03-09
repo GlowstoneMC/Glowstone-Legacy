@@ -2,6 +2,8 @@ package net.glowstone;
 
 import lombok.ToString;
 import net.glowstone.block.GlowBlock;
+import net.glowstone.block.ItemTable;
+import net.glowstone.block.blocktype.BlockType;
 import net.glowstone.constants.GlowBiome;
 import net.glowstone.constants.GlowEffect;
 import net.glowstone.constants.GlowParticle;
@@ -231,6 +233,11 @@ public final class GlowWorld implements World {
      * Per-chunk spawn limits on various types of entities.
      */
     private int monsterLimit, animalLimit, waterAnimalLimit, ambientLimit;
+    
+    /**
+     * Contains how regular blocks should be pulsed.
+     */
+     private final Map tickMap = new HashMap<>();
 
     /**
      * Creates a new world from the options in the given WorldCreator.
@@ -367,6 +374,9 @@ public final class GlowWorld implements World {
     public void pulse() {
         List<GlowEntity> temp = new ArrayList<>(entities.getAll());
         List<GlowEntity> players = new LinkedList<>();
+
+        // We should pulse our tickmap, so blocks get updated.
+        this.pulseTickMap();
 
         // pulse players last so they actually see that other entities have
         // moved. unfortunately pretty hacky. not a problem for players b/c
@@ -1485,5 +1495,40 @@ public final class GlowWorld implements World {
             result.addAll(player.getListeningPluginChannels());
         }
         return result;
+    }
+    
+    private void pulseTickMap() {
+        ItemTable itemTable = ItemTable.instance();
+        Map<Location, Integer> map = getTickMap();
+        for (Map.Entry<Location, Integer> entry : map.entrySet()) {
+            if (worldAge % entry.getValue() == 0) {
+                GlowBlock block = this.getBlockAt(entry.getKey());
+                BlockType notifyType = itemTable.getBlock(block.getTypeId());
+                if (notifyType != null)
+                    notifyType.recievePulse(block);
+            }
+        }
+    }
+    
+    private Map<Location, Integer> getTickMap() {
+        return new HashMap<>(tickMap);
+    }
+
+    /**
+     * Calling this method will request that the block is ticked on the next iteration
+     * that applies to the specified tick rate.
+     */
+    public void requestPulse(GlowBlock block, int tickRate) {
+        Location target = block.getLocation();
+    
+    
+            if (tickRate > 0)
+                tickMap.put(target, tickRate);
+            else if (tickMap.containsKey(target))
+                tickMap.remove(target);
+    }
+    
+    public void cancelPulse(GlowBlock block) {
+        requestPulse(block, 0);
     }
 }
