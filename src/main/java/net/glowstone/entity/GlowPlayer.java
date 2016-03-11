@@ -378,6 +378,17 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
         getServer().setPlayerOnline(this, false);
         super.remove();
     }
+    
+    public void remove(boolean asyncSave) {
+        knownChunks.clear();
+        chunkLock.clear();
+        saveData(asyncSave);
+        getInventory().removeViewer(this);
+        getInventory().getCraftingInventory().removeViewer(this);
+        permissions.clearPermissions();
+        getServer().setPlayerOnline(this, false);
+        super.remove();
+    }
 
     @Override
     public boolean shouldSave() {
@@ -1267,6 +1278,7 @@ public final class GlowPlayer extends GlowHumanEntity implements Player {
 
     @Override
     public void kickPlayer(String message) {
+        remove(false);
         session.disconnect(message == null ? "" : message);
     }
 
