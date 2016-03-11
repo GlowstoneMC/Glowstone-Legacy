@@ -3,11 +3,12 @@ package net.glowstone;
 import lombok.ToString;
 import net.glowstone.block.GlowBlock;
 import net.glowstone.constants.GlowBiome;
+import net.glowstone.constants.GlowBiomeTemperature;
 import net.glowstone.constants.GlowEffect;
 import net.glowstone.constants.GlowParticle;
+import net.glowstone.constants.GlowTree;
 import net.glowstone.entity.*;
 import net.glowstone.entity.objects.GlowItem;
-import net.glowstone.generator.TreeGenerator;
 import net.glowstone.io.WorldMetadataService.WorldFinalValues;
 import net.glowstone.io.WorldStorageProvider;
 import net.glowstone.io.anvil.AnvilWorldStorageProvider;
@@ -249,7 +250,6 @@ public final class GlowWorld implements World {
         final ChunkGenerator generator = creator.generator();
         storageProvider = new AnvilWorldStorageProvider(new File(server.getWorldContainer(), name));
         storageProvider.setWorld(this);
-        chunks = new ChunkManager(this, storageProvider.getChunkIoService(), generator);
         populators = generator.getDefaultPopulators(this);
 
         // set up values from server defaults
@@ -281,6 +281,8 @@ public final class GlowWorld implements World {
             this.uid = UUID.randomUUID();
         }
 
+        chunks = new ChunkManager(this, storageProvider.getChunkIoService(), generator);
+
         // begin loading spawn area
         spawnChunkLock = newChunkLock("spawn");
         server.addWorld(this);
@@ -298,7 +300,7 @@ public final class GlowWorld implements World {
                 GlowChunk chunk = getChunkAt(spawnX >> 4, spawnZ >> 4);
                 //GlowServer.logger.info("determining spawn: " + chunk.getX() + " " + chunk.getZ());
                 chunk.load(true);  // I'm not sure there's a sane way around this
-                for (int tries = 0; tries < 10 && !generator.canSpawn(this, spawnX, spawnZ); ++tries) {
+                for (int tries = 0; tries < 1000 && !generator.canSpawn(this, spawnX, spawnZ); ++tries) {
                     spawnX += random.nextInt(128) - 64;
                     spawnZ += random.nextInt(128) - 64;
                 }
@@ -707,7 +709,7 @@ public final class GlowWorld implements World {
 
     @Override
     public int getSeaLevel() {
-        return getMaxHeight() / 2;
+        return 64;
     }
 
     @Override
@@ -771,9 +773,8 @@ public final class GlowWorld implements World {
     @Override
     public boolean generateTree(Location loc, TreeType type, BlockChangeDelegate delegate) {
         final BlockStateDelegate blockStateDelegate = new BlockStateDelegate();
-        final TreeGenerator generator = new TreeGenerator(blockStateDelegate);
-        if (generator.generate(random, loc, type)) {
-            final List<BlockState> blockStates = new ArrayList<>(blockStateDelegate.getBlockStates());
+        if (GlowTree.newInstance(type, random, loc, blockStateDelegate).generate()) {
+            final List<BlockState> blockStates = new ArrayList<BlockState>(blockStateDelegate.getBlockStates());
             StructureGrowEvent growEvent = new StructureGrowEvent(loc, type, false, null, blockStates);
             EventFactory.callEvent(growEvent);
             if (!growEvent.isCancelled()) {
@@ -979,12 +980,12 @@ public final class GlowWorld implements World {
 
     @Override
     public double getTemperature(int x, int z) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return GlowBiomeTemperature.getBiomeTemperature(getBiome(x, z));
     }
 
     @Override
     public double getHumidity(int x, int z) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return GlowBiomeTemperature.getBiomeHumidity(getBiome(x, z));
     }
 
     ////////////////////////////////////////////////////////////////////////////
