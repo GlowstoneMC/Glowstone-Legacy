@@ -24,12 +24,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Base class for specific types of blocks.
  */
 public class BlockType extends ItemType {
 
+    protected static final Random random = new Random();
     protected List<ItemStack> drops = null;
 
     ////////////////////////////////////////////////////////////////////////////
@@ -240,6 +242,22 @@ public class BlockType extends ItemType {
         if (player.getGameMode() != GameMode.CREATIVE) {
             holding.setAmount(holding.getAmount() - 1);
         }
+    }
+
+    /**
+     * Called to check if this block can perform random tick updates.
+     * @return Whether this block updates on tick.
+     */
+    public boolean canTickRandomly() {
+        return false;
+    }
+
+    /**
+     * Called when this block needs to be updated.
+     * @param block The block that needs an update
+     */
+    public void updateBlock(GlowBlock block) {
+        // do nothing
     }
 
     ////////////////////////////////////////////////////////////////////////////
