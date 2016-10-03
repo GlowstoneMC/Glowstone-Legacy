@@ -26,12 +26,16 @@ public class FlowerPopulator extends BlockPopulator {
                 Block block = source.getBlock(x, y, z);
                 if (block.getType() == Material.AIR
                         && block.getRelative(BlockFace.DOWN).getType() == Material.GRASS) {
-                    if (block.getBiome() == Biome.PLAINS) {
+                    if (block.getBiome() == Biome.OCEAN) {
                         int n = random.nextInt(64);
-                        if (n < 1) {
+                        /*if (n < 1) {
                             block.setType(Material.RED_ROSE);
                         } else if (n < 4) {
                             block.setType(Material.YELLOW_FLOWER);
+                        }*/
+                        if (n < 12) {
+                            block.setType(Material.LONG_GRASS);
+                            block.setData((byte) 1);
                         }
                     } else if (block.getBiome() == Biome.SAVANNA) {
                         int n = random.nextInt(256);

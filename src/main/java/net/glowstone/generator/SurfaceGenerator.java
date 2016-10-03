@@ -23,7 +23,7 @@ public class SurfaceGenerator extends GlowChunkGenerator {
                 // On-ground
                 // Desert is before tree and mushroom but snow is after so trees have snow on top
                 new DesertPopulator(),
-                new TreePopulator(),
+                //new TreePopulator(),
                 new MushroomPopulator(),
                 new SnowPopulator(),
                 new FlowerPopulator(),
@@ -35,12 +35,15 @@ public class SurfaceGenerator extends GlowChunkGenerator {
         );
     }
 
+    private OctaveGenerator height;
+
+    private OctaveGenerator density;
+    private OctaveGenerator roughness;
+    private OctaveGenerator detail;
+
     @Override
     public byte[] generate(World world, Random random, int chunkX, int chunkZ) {
-        Map<String, OctaveGenerator> octaves = getWorldOctaves(world);
-        OctaveGenerator noiseHeight = octaves.get("height");
-        OctaveGenerator noiseJitter = octaves.get("jitter");
-        OctaveGenerator noiseType = octaves.get("type");
+        /*if (density == null)*/ createWorldOctaves(world, null);
 
         chunkX <<= 4;
         chunkZ <<= 4;
@@ -60,65 +63,97 @@ public class SurfaceGenerator extends GlowChunkGenerator {
         boolean noDirt = true;
         int waterLevel = WORLD_DEPTH / 2;
 
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
+        for (int ix = 0; ix < 16; ix++) {
+            for (int iz = 0; iz < 16; iz++) {
                 int deep = 0;
-                for (int y = (int) Math.min(baseHeight
-                        + noiseHeight.noise(x + chunkX, z + chunkZ, 0.7, 0.6, true)
-                        * terrainHeight
-                        + noiseJitter.noise(x + chunkX, z + chunkZ, 0.5, 0.5)
-                        * 1.5, WORLD_DEPTH - 1); y > 0; y--) {
-                    double terrainType = noiseType.noise(x + chunkX, y, z + chunkZ, 0.5, 0.5);
-                    Material ground = matTop;
-                    if (Math.abs(terrainType) < random.nextDouble() / 3 && !noDirt) {
-                        ground = matMain;
-                    } else if (deep != 0 || y < waterLevel) {
-                        ground = matMain;
-                    }
+                int x = ix + chunkX;
+                int z = iz + chunkZ;
 
-                    if (Math.abs(y - waterLevel) < 5 - random.nextInt(2) && deep < 7) {
-                        if (terrainType < random.nextDouble() / 2) {
-                            if (terrainType < random.nextDouble() / 4) {
-                                ground = matShore;
+                // height is sea or noise
+                double h = height.noise(x, z, 2.5, 0.9, true);
+                if (h > 0) {
+                    int top = 0;
+                    for (int y = 127; y > 0; y--) {
+                        double finalDensity;
+                        if (h < 0.15) {
+                            // linear interpolation
+                            finalDensity =
+                                    (h * (20 / 3.0)) * grasslandDensity(x, y, z) +
+                                    (1 - (20 / 3.0) * h) * seaDensity(x, y, z);
+                        } else {
+                            finalDensity = grasslandDensity(x, y, z);
+                        }
+                        if (finalDensity > 0) {
+                            if (y > top) top = y;
+
+                            if (y == top) {
+                                if (y <= 60) {
+                                    set(buf, ix, y, iz, Material.DIRT);
+                                } else {
+                                    if (h < 0.15) {
+                                        set(buf, ix, y, iz, Material.SAND);
+                                    } else {
+                                        set(buf, ix, y, iz, Material.GRASS);
+                                    }
+                                }
+                            } else if (y > top - 4) {
+                                set(buf, ix, y, iz, Material.DIRT);
                             } else {
-                                ground = matShore2;
+                                set(buf, ix, y, iz, Material.STONE);
                             }
+                        } else if (y <= 60) {
+                            set(buf, ix, y, iz, Material.WATER);
                         }
                     }
+                } else {
+                    int top = 0;
+                    for (int y = 60; y > 0; y--) {
+                        double finalDensity = seaDensity(x, y, z);
+                        if (finalDensity > 0) {
+                            if (y > top) top = y;
 
-                    if (deep > random.nextInt(3) + 6) {
-                        ground = matUnder;
+                            if (y == top) {
+                                set(buf, ix, y, iz, Material.GRAVEL);
+                            } else if (y > top - 4) {
+                                set(buf, ix, y, iz, Material.DIRT);
+                            } else {
+                                set(buf, ix, y, iz, Material.STONE);
+                            }
+                        } else {
+                            set(buf, ix, y, iz, Material.WATER);
+                        }
                     }
-
-                    set(buf, x, y, z, ground);
-                    deep++;
                 }
-                set(buf, x, 0, z, Material.BEDROCK);
-            }
-        }
 
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                for (int y = 0; y < waterLevel; y++) {
-                    if (get(buf, x, y, z) == Material.AIR) {
-                        set(buf, x, y, z, matLiquid);
-                    }
-                }
+                set(buf, ix, 0, iz, Material.BEDROCK);
             }
         }
 
         return buf;
     }
 
+    private double grasslandDensity(int x, int y, int z) {
+        return density.noise(x, y, z, 1.2, 0.6, true)
+                - roughness.noise(x, y, z, 1.2, 0.6, true)
+                * detail.noise(x, y, z, 1.2, 0.6, true) + 50.0 / 3 - (5.0 / 24) * y;
+    }
+
+    private double seaDensity(int x, int y, int z) {
+        return density.noise(x, y, z, 1.2, 0.6, true)
+                - roughness.noise(x, y, z, 1.2, 0.6, true)
+                * detail.noise(x, y, z, 1.2, 0.6, true) + (54 - y) / 3;
+    }
+
     @Override
     protected void createWorldOctaves(World world, Map<String, OctaveGenerator> octaves) {
         Random seed = new Random(world.getSeed());
+        double largeScale = 1 / 8.0;
 
         /* With default settings, this is 5 octaves. With tscale=256,terrainheight=50,
          * this comes out to 14 octaves, which makes more complex terrain at the cost
          * of more complex generation. Without this, the terrain looks bad, especially
          * on higher tscale/terrainheight pairs. */
-        double value = Math.round(Math.sqrt(50 * 256.0 / (128 - 50)) * 1.1 - 0.2);
+        /*double value = Math.round(Math.sqrt(50 * 256.0 / (128 - 50)) * 1.1 - 0.2);
         OctaveGenerator gen = new SimplexOctaveGenerator(seed, Math.max((int) value, 5));
         gen.setScale(1 / 256.0);
         octaves.put("height", gen);
@@ -130,11 +165,33 @@ public class SurfaceGenerator extends GlowChunkGenerator {
         gen = new SimplexOctaveGenerator(seed, 2);
         gen.setScale(1 / WORLD_DEPTH);
         octaves.put("type", gen);
+
+
+        octaves.put("density", gen);*/
+
+        // we don't care about y for the height so we set the scale overall
+        height = new SimplexOctaveGenerator(seed, 5);
+        height.setScale(largeScale / 32 / 8);
+
+        density = new SimplexOctaveGenerator(seed, 1);
+        density.setXScale(largeScale / 1 / 8);
+        density.setYScale(largeScale / 1 / 4);
+        density.setZScale(largeScale / 1 / 8);
+
+        roughness = new SimplexOctaveGenerator(seed, 1);
+        roughness.setXScale(largeScale / 1 / 8);
+        roughness.setYScale(largeScale / 1 / 4);
+        roughness.setZScale(largeScale / 1 / 8);
+
+        detail = new SimplexOctaveGenerator(seed, 1);
+        detail.setXScale(largeScale * 3 / 8);
+        detail.setYScale(largeScale * 3 / 4);
+        detail.setZScale(largeScale * 3 / 8);
     }
 
     @Override
     public Location getFixedSpawnLocation(World world, Random random) {
-        return new Location(world, 0, 2 + world.getHighestBlockYAt(0, 0), 0);
+        return new Location(world, 0, 128, 0);
     }
 
 }
