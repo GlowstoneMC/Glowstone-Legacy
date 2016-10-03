@@ -174,7 +174,7 @@ public final class ConsoleManager {
             while (running) {
                 try {
                     if (jLine) {
-                        command = reader.readLine(">", null);
+                        command = reader.readLine("> ", null);
                     } else {
                         command = reader.readLine();
                     }
