@@ -70,6 +70,11 @@ compileJava {
     options.encoding = 'UTF-8'
 }
 
+// Configuration settings
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds' // Always check for new snapshots
+}
+
 // Simple build script information
 buildscript {
     repositories {
