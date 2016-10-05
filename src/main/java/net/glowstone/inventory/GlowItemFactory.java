@@ -111,6 +111,11 @@ public final class GlowItemFactory implements ItemFactory {
             case BOOK_AND_QUILL:
             case WRITTEN_BOOK:
                 return new GlowMetaBook(meta);
+            case LEATHER_HELMET:
+            case LEATHER_CHESTPLATE:
+            case LEATHER_LEGGINGS:
+            case LEATHER_BOOTS:
+                return new GlowMetaLeatherArmor(meta);
             case SKULL_ITEM:
                 return new GlowMetaSkull(meta);
             case BANNER:
