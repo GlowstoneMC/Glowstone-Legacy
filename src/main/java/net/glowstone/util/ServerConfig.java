@@ -62,6 +62,26 @@ public final class ServerConfig {
 
         config.options().indent(4);
     }
+    ////////////////////////////////////////////////////////////////////////////
+    // Save config
+
+    public void save() {
+        try {
+            config.save(configFile);
+        } catch (IOException e) {
+            GlowServer.logger.log(Level.SEVERE, "Failed to write config: " + configFile, e);
+            return;
+        }
+    }
+
+    /**
+     * Function call sets runtime config information. For saving config to glowstone.yml, see {@link ServerConfig#save()}
+     * @param key the config key to write the value to
+     * @param value value to write to config key
+     */
+    public void set(Key key, Object value) {
+        config.set(key.path, value);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     // Modification
