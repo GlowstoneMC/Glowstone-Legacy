@@ -125,7 +125,36 @@ public class BlockType extends ItemType {
      * @param face The block face
      */
     public void blockDestroy(GlowPlayer player, GlowBlock block, BlockFace face) {
-        // do nothing
+        GlowBlock b = block.getRelative(BlockFace.UP);
+        BlockType type = ItemTable.instance().getBlock(b.getType());
+        if (type instanceof BlockAttachable) {
+            b.breakNaturally();
+        }
+        b = block.getRelative(BlockFace.DOWN);
+        type = ItemTable.instance().getBlock(b.getType());
+        if (type instanceof BlockAttachable) {
+            b.breakNaturally();
+        }
+        b = block.getRelative(BlockFace.NORTH);
+        type = ItemTable.instance().getBlock(b.getType());
+        if (type instanceof BlockAttachable) {
+            b.breakNaturally();
+        }
+        b = block.getRelative(BlockFace.EAST);
+        type = ItemTable.instance().getBlock(b.getType());
+        if (type instanceof BlockAttachable) {
+            b.breakNaturally();
+        }
+        b = block.getRelative(BlockFace.SOUTH);
+        type = ItemTable.instance().getBlock(b.getType());
+        if (type instanceof BlockAttachable) {
+            b.breakNaturally();
+        }
+        b = block.getRelative(BlockFace.WEST);
+        type = ItemTable.instance().getBlock(b.getType());
+        if (type instanceof BlockAttachable) {
+            b.breakNaturally();
+        }
     }
 
     /**
