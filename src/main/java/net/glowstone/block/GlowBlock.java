@@ -1,5 +1,8 @@
 package net.glowstone.block;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Random;
 import net.glowstone.GlowChunk;
 import net.glowstone.GlowWorld;
 import net.glowstone.block.blocktype.BlockType;
@@ -17,10 +20,6 @@ import org.bukkit.metadata.MetadataStore;
 import org.bukkit.metadata.MetadataStoreBase;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
 
 /**
  * Represents a single block in a world.
@@ -211,9 +210,12 @@ public final class GlowBlock implements Block {
             applyPhysics(oldTypeId, type, oldData, data);
         }
 
-        BlockChangeMessage bcmsg = new BlockChangeMessage(x, y, z, type, data);
-        for (GlowPlayer p : getWorld().getRawPlayers()) {
-            p.sendBlockChange(bcmsg);
+        GlowWorld world = getWorld();
+        if (world != null) {
+            BlockChangeMessage bcmsg = new BlockChangeMessage(x, y, z, type, data);
+            for (GlowPlayer p : world.getRawPlayers()) {
+                p.sendBlockChange(bcmsg);
+            }
         }
 
         return true;
@@ -250,9 +252,12 @@ public final class GlowBlock implements Block {
         if (applyPhysics) {
             applyPhysics(getType(), getTypeId(), oldData, data);
         }
-        BlockChangeMessage bcmsg = new BlockChangeMessage(x, y, z, getTypeId(), data);
-        for (GlowPlayer p : getWorld().getRawPlayers()) {
-            p.sendBlockChange(bcmsg);
+        GlowWorld world = getWorld();
+        if (world != null) {
+            BlockChangeMessage bcmsg = new BlockChangeMessage(x, y, z, getTypeId(), data);
+            for (GlowPlayer p : getWorld().getRawPlayers()) {
+                p.sendBlockChange(bcmsg);
+            }
         }
     }
 
