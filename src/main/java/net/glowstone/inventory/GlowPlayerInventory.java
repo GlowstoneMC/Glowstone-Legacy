@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.Material;
 
 import java.util.Arrays;
 
@@ -179,7 +180,14 @@ public class GlowPlayerInventory extends GlowInventory implements PlayerInventor
 
     @Override
     public ItemStack getItemInHand() {
-        return getItem(heldSlot);
+        ItemStack item = getItem(heldSlot);
+        if (item != null) {
+            return item;
+        } else {
+            /* The other implementation doesn't return null here, and
+             * plugins seem to expect this. Do the same to avoid NPEs. */
+            return new ItemStack(Material.AIR, 0);
+        }
     }
 
     @Override
