@@ -15,6 +15,7 @@ import net.glowstone.GlowServer;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
 
 public abstract class GlowProtocol extends AbstractProtocol {
 
@@ -34,7 +35,7 @@ public abstract class GlowProtocol extends AbstractProtocol {
             inboundCodecs.bind(message, codec, opcode);
             handlers.bind(message, handler);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            getLogger().error("Error registering inbound " + opcode + " in " + getName(), e);
+            GlowServer.logger.log(Level.SEVERE, "Error registering inbound " + opcode + " in " + getName(), e);
         }
     }
 
@@ -42,7 +43,7 @@ public abstract class GlowProtocol extends AbstractProtocol {
         try {
             outboundCodecs.bind(message, codec, opcode);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            getLogger().error("Error registering outbound " + opcode + " in " + getName(), e);
+            GlowServer.logger.log(Level.SEVERE, "Error registering outbound " + opcode + " in " + getName(), e);
         }
     }
 
