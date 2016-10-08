@@ -2,23 +2,28 @@
 language: java
 jdk: oraclejdk7
 
-install:
-  # Required for fetch_glowkit_pr.sh
-  - "[[ $TRAVIS_PULL_REQUEST == false ]] || sudo apt-get install jq"
+# Enable routing builds to the new container-based infrastructure
+sudo: false
 
+install:
   # Try to fetch required glowkit PRs, if any.
   - "./etc/fetch_glowkit_pr.sh $TRAVIS_PULL_REQUEST || echo 'Glowkit build failed - trying to continue anyway'"
-
-  # Fetch gradle stuff, so it doesn't appear in the script step
-  - "gradle clean"
 
 script:
   # Compile and package JAR and set build properties
   - "gradle build remap"
 
+  # Avoid including some files in the build cache
+  - "rm -rf ~/.gradle/caches/modules-2/{metadata,modules-2.lock}*"
+
 after_success:
   # Check if commit is not a pull request, if repo is official, and branch is master, generate and deploy artifacts and reports
   - "[[ $TRAVIS_PULL_REQUEST == false ]] && [[ $TRAVIS_REPO_SLUG == GlowstoneMC/Glowstone ]] && [[ $TRAVIS_BRANCH == master ]] && gradle publish"
+
+cache:
+  directories:
+    - "$HOME/.gradle"
+    - "$HOME/.m2"
 
 # Notification services
 notifications:
