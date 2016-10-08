@@ -79,6 +79,11 @@ public final class GlowSession extends BasicSession {
     private String verifyUsername;
 
     /**
+     * The connection's online state.
+     */
+    private boolean online = false;
+
+    /**
      * A message describing under what circumstances the connection ended.
      */
     private String quitReason;
@@ -239,6 +244,14 @@ public final class GlowSession extends BasicSession {
         return address;
     }
 
+    /**
+     * Get the session's online state.
+     * @return True is this session has passed online state.
+     */
+    public boolean isOnline() {
+        return online;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Player and state management
 
@@ -294,6 +307,8 @@ public final class GlowSession extends BasicSession {
         }
 
         player.getWorld().getRawPlayers().add(player);
+
+        online = true;
 
         GlowServer.logger.info(player.getName() + " [" + address + "] connected, UUID: " + player.getUniqueId());
 
@@ -360,7 +375,7 @@ public final class GlowSession extends BasicSession {
 
             reason = event.getReason();
 
-            if (event.getLeaveMessage() != null) {
+            if (online && event.getLeaveMessage() != null) {
                 server.broadcastMessage(event.getLeaveMessage());
             }
         }
@@ -478,9 +493,11 @@ public final class GlowSession extends BasicSession {
 
         GlowServer.logger.info(player.getName() + " [" + address + "] lost connection");
 
-        final String text = EventFactory.onPlayerQuit(player).getQuitMessage();
-        if (text != null && !text.isEmpty()) {
-            server.broadcastMessage(text);
+        if (online) {
+            final String text = EventFactory.onPlayerQuit(player).getQuitMessage();
+            if (text != null && !text.isEmpty()) {
+                server.broadcastMessage(text);
+            }
         }
 
         player = null; // in case we are disposed twice
