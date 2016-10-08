@@ -107,6 +107,12 @@ public final class GlowSession extends BasicSession {
     private int writeTimeoutCounter = 0;
 
     /**
+     * Whether to kick the player the next time it's updated. This is set to {@code true}
+     * when a timeout occurs in order for the player to be kicked from the main thread.
+     */
+    private boolean timedOut = false;
+
+    /**
      * The player associated with this session (if there is one).
      */
     private GlowPlayer player;
@@ -372,6 +378,12 @@ public final class GlowSession extends BasicSession {
             GlowServer.logger.info("[" + address + "] kicked: " + reason);
         }
 
+        if (timedOut) {
+            quitReason = "timed out";
+            // consider this session gone
+            onDisconnect();
+        }
+
         if (quitReason == null) {
             quitReason = "kicked";
         }
@@ -389,9 +401,6 @@ public final class GlowSession extends BasicSession {
      * Pulse this session, performing any updates needed.
      */
     void pulse() {
-        readTimeoutCounter++;
-        writeTimeoutCounter++;
-
         // drop the previous placement if needed
         if (previousPlacementTicks > 0 && --previousPlacementTicks == 0) {
             previousPlacement = null;
@@ -409,21 +418,37 @@ public final class GlowSession extends BasicSession {
             readTimeoutCounter = 0;
         }
 
-        // let us know if the client has timed out yet
-        if (readTimeoutCounter >= TIMEOUT_TICKS) {
-            if (pingMessageId == 0 && getProtocol() instanceof PlayProtocol) {
+        // connection timed out, we should disconnect them
+        if (timedOut && player != null) {
+            disconnect("Timed out", true);
+        }
+    }
+
+    /**
+     * Pulse this session in an asynchronous thread.
+     */
+    void pulseAsync() {
+        readTimeoutCounter++;
+        writeTimeoutCounter++;
+
+        // do not try to keep a dead connection alive
+        if (!timedOut) {
+            // let us know if the client has timed out yet
+            if (readTimeoutCounter >= TIMEOUT_TICKS) {
+                if (pingMessageId == 0 && getProtocol() instanceof PlayProtocol) {
+                    send(new PingMessage(pingMessageId));
+                } else {
+                    timedOut = true;
+                }
+                readTimeoutCounter = 0;
+            }
+
+            // let the client know we haven't timed out yet
+            if (writeTimeoutCounter >= TIMEOUT_TICKS && getProtocol() instanceof PlayProtocol) {
+                pingMessageId = random.nextInt();
                 pingMessageId = random.nextInt();
                 send(new PingMessage(pingMessageId));
-            } else {
-                disconnect("Timed out");
             }
-            readTimeoutCounter = 0;
-        }
-
-        // let the client know we haven't timed out yet
-        if (writeTimeoutCounter >= TIMEOUT_TICKS && getProtocol() instanceof PlayProtocol) {
-            pingMessageId = random.nextInt();
-            send(new PingMessage(pingMessageId));
         }
     }
 

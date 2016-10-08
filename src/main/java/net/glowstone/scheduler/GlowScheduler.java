@@ -53,6 +53,11 @@ public final class GlowScheduler implements BukkitScheduler {
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(GlowThreadFactory.INSTANCE);
 
     /**
+     * The scheduled executor service which backs all operation requiring execution at a steady rate not blocked by expensive operations.
+     */
+    private final ScheduledExecutorService asyncExecutor = Executors.newSingleThreadScheduledExecutor(GlowThreadFactory.INSTANCE);
+
+    /**
      * Executor to handle execution of async tasks
      */
     private final ExecutorService asyncTaskExecutor = Executors.newCachedThreadPool(GlowThreadFactory.INSTANCE);
@@ -114,6 +119,16 @@ public final class GlowScheduler implements BukkitScheduler {
                 }
             }
         }, 0, PULSE_EVERY, TimeUnit.MILLISECONDS);
+        asyncExecutor.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    pulseAsync();
+                } catch (Exception ex) {
+                    GlowServer.logger.log(Level.SEVERE, "Error while pulsing async", ex);
+                }
+            }
+        }, 0, PULSE_EVERY, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -123,6 +138,7 @@ public final class GlowScheduler implements BukkitScheduler {
         cancelAllTasks();
         worlds.stop();
         executor.shutdownNow();
+        asyncExecutor.shutdownNow();
         asyncTaskExecutor.shutdown();
 
         synchronized (inTickTaskCondition) {
@@ -211,6 +227,16 @@ public final class GlowScheduler implements BukkitScheduler {
             Thread.currentThread().interrupt();
         }
 
+    }
+
+    /**
+     * Pulses all things which should never be blocked by the main thread.
+     * This includes sessions.
+     * No expensive operations should occur in this method as this would defeat its purpose.
+     */
+    private void pulseAsync() {
+        // Tell players not to time out
+        server.getSessionRegistry().pulseAsync();
     }
 
     @Override
